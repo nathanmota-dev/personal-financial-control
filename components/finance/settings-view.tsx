@@ -11,7 +11,6 @@ import {
   deleteCategoryAction,
 } from "@/app/actions/finance";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { InlineWarning } from "@/components/finance/inline-warning";
 import { PageHeader } from "@/components/finance/page-header";
 import { AccountSetupDialog, CategorySetupDialog } from "@/components/finance/setup-dialogs";
 import { Badge } from "@/components/ui/badge";
@@ -44,11 +43,9 @@ type CategoryRow = {
 export function SettingsView({
   accounts,
   categories,
-  warning,
 }: {
   accounts: AccountRow[];
   categories: CategoryRow[];
-  warning?: string;
 }) {
   const categoriesByGroup = useMemo(
     () =>
@@ -73,9 +70,6 @@ export function SettingsView({
           </>
         }
       />
-      {warning ? (
-        <InlineWarning message="A leitura de configurações falhou, mas a tela foi carregada vazia para permitir o cadastro inicial." />
-      ) : null}
 
       <Tabs defaultValue="accounts">
         <TabsList variant="line">

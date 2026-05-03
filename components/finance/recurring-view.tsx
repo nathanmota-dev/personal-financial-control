@@ -13,7 +13,6 @@ import {
   updateRecurringTemplateAction,
 } from "@/app/actions/finance";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { InlineWarning } from "@/components/finance/inline-warning";
 import { PageHeader } from "@/components/finance/page-header";
 import {
   AccountSetupDialog,
@@ -78,13 +77,11 @@ export function RecurringView({
   categories,
   month,
   templates,
-  warning,
 }: {
   accounts: AccountOption[];
   categories: CategoryOption[];
   month: string;
   templates: TemplateRow[];
-  warning?: string;
 }) {
   const router = useRouter();
   const [isGenerating, startGenerating] = useTransition();
@@ -122,9 +119,6 @@ export function RecurringView({
           </>
         }
       />
-      {warning ? (
-        <InlineWarning message="A leitura das recorrências falhou, mas a tela abriu zerada para você configurar a base." />
-      ) : null}
 
       <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
         <CardHeader>

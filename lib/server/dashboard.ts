@@ -15,7 +15,7 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
   const [transactionRows, accountRows, investmentProjection] = await Promise.all([
     listTransactions({ competenceMonth }, db),
     listAccounts(undefined, db),
-    getInvestmentProjection(undefined, db),
+    getInvestmentProjection(db),
   ]);
 
   const activeTransactions = transactionRows.filter((row) => row.status !== "cancelled");

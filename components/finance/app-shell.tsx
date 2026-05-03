@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   ArrowLeftRight,
   ChartNoAxesCombined,
@@ -34,6 +34,18 @@ const navigation = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  function buildNavigationHref(targetPath: string) {
+    const params = new URLSearchParams();
+    const month = searchParams.get("month");
+
+    if (month && ["/dashboard", "/transactions", "/recurring"].includes(targetPath)) {
+      params.set("month", month);
+    }
+
+    return params.size ? `${targetPath}?${params.toString()}` : targetPath;
+  }
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(37,99,235,0.18),_transparent_20%),linear-gradient(180deg,_#030712_0%,_#071428_48%,_#081a34_100%)] text-slate-100">
@@ -59,7 +71,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={buildNavigationHref(item.href)}
                     className={cn(
                       "flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition",
                       active
@@ -109,7 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     return (
                       <Link
                         key={item.href}
-                        href={item.href}
+                        href={buildNavigationHref(item.href)}
                         className={cn(
                           "flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition",
                           active

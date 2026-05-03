@@ -3,7 +3,6 @@ import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { DashboardActions } from "@/components/finance/dashboard-actions";
 import { DashboardCharts } from "@/components/finance/dashboard-charts";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { InlineWarning } from "@/components/finance/inline-warning";
 import { PageHeader } from "@/components/finance/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,9 +96,6 @@ export default async function DashboardPage({
         description="Resumo consolidado do mês, com leitura de resultado líquido, contas, categorias e carteira."
         actions={<DashboardActions month={month} />}
       />
-      {errorMessage ? (
-        <InlineWarning message="Os dados ainda não puderam ser lidos, então o dashboard abriu zerado. Você já pode cadastrar a base inicial pelas ações acima." />
-      ) : null}
 
       <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard

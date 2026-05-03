@@ -4,7 +4,8 @@ import { z } from "zod";
 import type { AppDb } from "@/lib/db";
 import { getDatabase } from "@/lib/db";
 import { investmentPortfolio } from "@/lib/db/schema";
-import { currentTimestamp, normalizeDate, projectCompoundBalance, serializeTimestamps } from "@/lib/server/finance";
+import { projectCompoundBalance } from "@/lib/investment-projection";
+import { currentTimestamp, normalizeDate, serializeTimestamps } from "@/lib/server/finance";
 
 const investmentPortfolioSchema = z.object({
   currentBalanceCents: z.number().int().nonnegative(),
@@ -62,10 +63,7 @@ export async function getInvestmentPortfolio(database?: AppDb) {
   return serializeTimestamps(portfolio);
 }
 
-export async function getInvestmentProjection(
-  customMonths?: number,
-  database?: AppDb
-) {
+export async function getInvestmentProjection(database?: AppDb) {
   const db = resolveDb(database);
   const portfolio = await db.query.investmentPortfolio.findFirst();
 
@@ -73,9 +71,7 @@ export async function getInvestmentProjection(
     return null;
   }
 
-  const horizons = [1, 6, 12, customMonths].filter(
-    (value): value is number => typeof value === "number" && value > 0
-  );
+  const horizons = [1, 6, 12, 24];
 
   const projection = Object.fromEntries(
     horizons.map((months) => [

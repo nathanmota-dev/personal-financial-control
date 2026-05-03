@@ -9,7 +9,6 @@ export default async function SettingsPage() {
         categories: Awaited<ReturnType<typeof listCategories>>;
       }
     | undefined;
-  let errorMessage: string | undefined;
 
   try {
     const [accounts, categories] = await Promise.all([
@@ -17,16 +16,7 @@ export default async function SettingsPage() {
       listCategories({ includeArchived: true }),
     ]);
     data = { accounts, categories };
-  } catch (error) {
-    errorMessage =
-      error instanceof Error ? error.message : "Falha desconhecida ao ler os dados.";
-  }
+  } catch {}
 
-  return (
-    <SettingsView
-      accounts={data?.accounts ?? []}
-      categories={data?.categories ?? []}
-      warning={errorMessage}
-    />
-  );
+  return <SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} />;
 }

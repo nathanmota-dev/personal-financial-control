@@ -1,5 +1,38 @@
 # Personal Financial Control
 
+## Inicializacao local
+
+Para iniciar o app local sem entrar na pasta nem rodar comandos manualmente, use:
+
+```bash
+./start-app.sh
+```
+
+O script:
+
+- instala dependencias se `node_modules` ainda nao existir
+- reaproveita o build atual quando o codigo nao mudou
+- roda `npm run build` automaticamente quando detectar mudanca relevante
+- aplica as migracoes locais antes de subir o servidor
+- inicia o app com `npm start`
+
+Para usar como um app clicavel no Linux, use:
+
+```bash
+./open-app.sh
+```
+
+Esse launcher sobe o servidor em background na porta `3007` e abre o navegador automaticamente.
+
+Opcoes uteis:
+
+```bash
+PORT=3007 ./start-app.sh
+START_APP_SKIP_SERVER=1 ./start-app.sh
+```
+
+`START_APP_SKIP_SERVER=1` serve para validar o fluxo completo sem deixar o processo preso no servidor.
+
 ## Backend Contract
 
 No v1 atual, o backend não expõe rotas HTTP em `app/api`.

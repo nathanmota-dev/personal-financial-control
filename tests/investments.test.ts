@@ -27,8 +27,9 @@ describe("investments", () => {
       db
     );
 
-    const projection = await getInvestmentProjection(24, db);
+    const projection = await getInvestmentProjection(db);
 
+    expect(Object.keys(projection?.projection ?? {}).map(Number)).toEqual([1, 6, 12, 24]);
     expect(projection?.projection[1]).toBe(111000);
     expect(projection?.projection[6]).toBeGreaterThan(160000);
     expect(projection?.projection[12]).toBeGreaterThan(projection?.projection[6] ?? 0);

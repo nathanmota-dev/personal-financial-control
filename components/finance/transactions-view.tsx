@@ -12,7 +12,6 @@ import {
   updateTransactionAction,
 } from "@/app/actions/finance";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { InlineWarning } from "@/components/finance/inline-warning";
 import { PageHeader } from "@/components/finance/page-header";
 import {
   AccountSetupDialog,
@@ -111,14 +110,12 @@ export function TransactionsView({
   transactions,
   transfers,
   filters,
-  warning,
 }: {
   accounts: AccountOption[];
   categories: CategoryOption[];
   transactions: TransactionRow[];
   transfers: TransferRow[];
   filters: Filters;
-  warning?: string;
 }) {
   const totals = useMemo(
     () =>
@@ -155,9 +152,6 @@ export function TransactionsView({
           </>
         }
       />
-      {warning ? (
-        <InlineWarning message="A leitura do backend falhou, mas a página foi carregada zerada para permitir o cadastro inicial." />
-      ) : null}
 
       <section className="grid gap-4 md:grid-cols-3">
         <SummaryCard label="Receitas filtradas" value={formatCurrency(totals.income)} tone="cyan" />
@@ -424,6 +418,21 @@ function FilterCard({
   filters: Filters;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function updateFilters(formData: FormData) {
+    const params = new URLSearchParams();
+
+    for (const [key, value] of formData.entries()) {
+      const normalizedValue = String(value);
+
+      if (normalizedValue) {
+        params.set(key, normalizedValue);
+      }
+    }
+
+    router.replace(params.size ? `${pathname}?${params.toString()}` : pathname);
+  }
 
   return (
     <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
@@ -431,7 +440,11 @@ function FilterCard({
         <CardTitle>Filtros</CardTitle>
       </CardHeader>
       <CardContent>
-        <form action={pathname} className="grid gap-3 md:grid-cols-6">
+        <form
+          action={pathname}
+          onChange={(event) => updateFilters(new FormData(event.currentTarget))}
+          className="grid gap-3 md:grid-cols-5"
+        >
           <input type="hidden" name="section" value={filters.section ?? "transactions"} />
           <Input type="month" name="month" defaultValue={filters.month} />
           <select
@@ -478,7 +491,6 @@ function FilterCard({
             <option value="posted">Lançado</option>
             <option value="cancelled">Cancelado</option>
           </select>
-          <Button type="submit">Aplicar</Button>
         </form>
       </CardContent>
     </Card>

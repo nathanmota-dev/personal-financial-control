@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Controle Financeiro Pessoal
+Comment=Abre seu app financeiro local
+Exec=/home/nathan/Desktop/git/personal-financial-control/open-app.sh
+Path=/home/nathan/Desktop/git/personal-financial-control
+Icon=applications-office
+Terminal=false
+Categories=Office;Finance;
+StartupNotify=true

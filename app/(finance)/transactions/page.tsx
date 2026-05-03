@@ -27,7 +27,6 @@ export default async function TransactionsPage({
         transfers: Awaited<ReturnType<typeof listTransfers>>;
       }
     | undefined;
-  let errorMessage: string | undefined;
 
   try {
     const [accounts, categories, transactions, transfers] = await Promise.all([
@@ -48,10 +47,7 @@ export default async function TransactionsPage({
       }),
     ]);
     data = { accounts, categories, transactions, transfers };
-  } catch (error) {
-    errorMessage =
-      error instanceof Error ? error.message : "Falha desconhecida ao ler os dados.";
-  }
+  } catch {}
 
   const filteredTransactions =
     type === "income" || type === "expense" || type === "investment_contribution"
@@ -64,7 +60,6 @@ export default async function TransactionsPage({
       categories={data?.categories ?? []}
       transactions={filteredTransactions}
       transfers={data?.transfers ?? []}
-      warning={errorMessage}
       filters={{
         month,
         accountId,

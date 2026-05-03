@@ -20,7 +20,6 @@ export default async function RecurringPage({
         templates: Awaited<ReturnType<typeof listRecurringTemplates>>;
       }
     | undefined;
-  let errorMessage: string | undefined;
 
   try {
     const [accounts, categories, templates] = await Promise.all([
@@ -29,10 +28,7 @@ export default async function RecurringPage({
       listRecurringTemplates(),
     ]);
     data = { accounts, categories, templates };
-  } catch (error) {
-    errorMessage =
-      error instanceof Error ? error.message : "Falha desconhecida ao ler os dados.";
-  }
+  } catch {}
 
   return (
     <RecurringView
@@ -40,7 +36,6 @@ export default async function RecurringPage({
       categories={data?.categories ?? []}
       month={month}
       templates={data?.templates ?? []}
-      warning={errorMessage}
     />
   );
 }

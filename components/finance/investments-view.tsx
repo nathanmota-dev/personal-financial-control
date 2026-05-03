@@ -1,25 +1,28 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Calculator, PiggyBank, TrendingUp } from "lucide-react";
+import { addYears, differenceInCalendarMonths, startOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Calculator, CalendarDays, PiggyBank, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { saveInvestmentPortfolioAction } from "@/app/actions/finance";
-import { InlineWarning } from "@/components/finance/inline-warning";
-import { InvestmentsActions } from "@/components/finance/investments-actions";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   centsToMoneyInput,
   extractErrorMessage,
   formatCurrency,
-  formatDateLabel,
   formatRateFromBps,
   moneyInputToCents,
 } from "@/lib/finance-ui";
+import { projectCompoundBalance } from "@/lib/investment-projection";
 import { cn } from "@/lib/utils";
 
 type Projection = {
@@ -32,16 +35,16 @@ type Projection = {
 } | null;
 
 export function InvestmentsView({
-  customMonths,
   projection,
-  warning,
 }: {
-  customMonths: number;
   projection: Projection;
-  warning?: string;
 }) {
+  const currentMonth = startOfMonth(new Date());
+  const maxSimulationMonth = addYears(currentMonth, 50);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [selectedSimulationDate, setSelectedSimulationDate] = useState<Date | undefined>();
+  const [simulatedMonths, setSimulatedMonths] = useState<number | null>(null);
   const [form, setForm] = useState({
     currentBalance: projection ? centsToMoneyInput(projection.currentBalanceCents) : "0,00",
     monthlyContribution: projection ? centsToMoneyInput(projection.monthlyContributionCents) : "0,00",
@@ -64,10 +67,41 @@ export function InvestmentsView({
     }
   }
 
-  const cards = Object.entries(projection?.projection ?? {}).map(([months, value]) => ({
-    months: Number(months),
-    value,
+  const cards = [1, 6, 12, 24].map((months) => ({
+    months,
+    value: projection?.projection[months] ?? null,
   }));
+
+  const simulatedValue =
+    projection && simulatedMonths
+      ? projectCompoundBalance({
+          currentBalanceCents: projection.currentBalanceCents,
+          monthlyContributionCents: projection.monthlyContributionCents,
+          expectedMonthlyRateBps: projection.expectedMonthlyRateBps,
+          months: simulatedMonths,
+        })
+      : null;
+
+  function applySimulation(date?: Date) {
+    setSelectedSimulationDate(date);
+
+    if (!date) {
+      setSimulatedMonths(null);
+      return;
+    }
+
+    const normalized = differenceInCalendarMonths(
+      startOfMonth(date),
+      currentMonth
+    );
+
+    if (normalized > 0) {
+      setSimulatedMonths(normalized);
+      return;
+    }
+
+    setSimulatedMonths(null);
+  }
 
   return (
     <div className="space-y-6">
@@ -75,11 +109,7 @@ export function InvestmentsView({
         eyebrow="Investimentos"
         title="Carteira consolidada e simulador"
         description="Se a leitura ainda falhar, a página abre vazia e permite salvar a carteira inicial do zero."
-        actions={<InvestmentsActions customMonths={customMonths} />}
       />
-      {warning ? (
-        <InlineWarning message="A leitura da carteira falhou, mas a tela foi aberta zerada para permitir o cadastro inicial." />
-      ) : null}
 
       <section className="grid gap-4 md:grid-cols-3">
         <InfoCard
@@ -108,10 +138,42 @@ export function InvestmentsView({
             <CardTitle>Atualizar carteira</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <Input value={form.currentBalance} onChange={(event) => setForm((state) => ({ ...state, currentBalance: event.target.value }))} placeholder="Saldo atual" />
-            <Input value={form.monthlyContribution} onChange={(event) => setForm((state) => ({ ...state, monthlyContribution: event.target.value }))} placeholder="Aporte mensal" />
-            <Input value={form.expectedMonthlyRate} onChange={(event) => setForm((state) => ({ ...state, expectedMonthlyRate: event.target.value }))} placeholder="Taxa mensal (%)" />
-            <Input type="date" value={form.referenceDate} onChange={(event) => setForm((state) => ({ ...state, referenceDate: event.target.value }))} />
+            <LabeledInput
+              id="investment-current-balance"
+              label="Saldo atual"
+              value={form.currentBalance}
+              placeholder="0,00"
+              onChange={(event) =>
+                setForm((state) => ({ ...state, currentBalance: event.target.value }))
+              }
+            />
+            <LabeledInput
+              id="investment-monthly-contribution"
+              label="Aporte mensal"
+              value={form.monthlyContribution}
+              placeholder="0,00"
+              onChange={(event) =>
+                setForm((state) => ({ ...state, monthlyContribution: event.target.value }))
+              }
+            />
+            <LabeledInput
+              id="investment-expected-rate"
+              label="Taxa mensal esperada"
+              value={form.expectedMonthlyRate}
+              placeholder="0,00"
+              onChange={(event) =>
+                setForm((state) => ({ ...state, expectedMonthlyRate: event.target.value }))
+              }
+            />
+            <LabeledInput
+              id="investment-reference-date"
+              label="Data de referência"
+              type="date"
+              value={form.referenceDate}
+              onChange={(event) =>
+                setForm((state) => ({ ...state, referenceDate: event.target.value }))
+              }
+            />
             <Button disabled={isPending} onClick={() => startTransition(() => void onSubmit())}>
               {isPending ? "Salvando..." : "Salvar carteira"}
             </Button>
@@ -119,43 +181,108 @@ export function InvestmentsView({
         </Card>
 
         <div className="grid gap-4">
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+          <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
             <CardHeader>
-              <CardTitle>Projeções</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              {cards.length ? (
-                cards.map((card) => (
-                  <div key={card.months} className="rounded-[1.5rem] border border-slate-800 bg-slate-900/70 p-4">
-                    <p className="text-sm text-slate-400">
-                      {card.months === customMonths ? `${card.months} meses (simulador)` : `${card.months} meses`}
+            <CardTitle>Simular período</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-slate-100">Data final da simulação</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-between border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900"
+                  >
+                    <span>
+                      {selectedSimulationDate
+                        ? selectedSimulationDate.toLocaleDateString("pt-BR", {
+                            month: "long",
+                            year: "numeric",
+                          })
+                        : "Selecionar mês"}
+                    </span>
+                    <CalendarDays className="size-4 text-slate-400" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-auto border border-slate-800 bg-slate-950 p-0 text-slate-100"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={selectedSimulationDate}
+                    onSelect={applySimulation}
+                    locale={ptBR}
+                    captionLayout="dropdown"
+                    defaultMonth={currentMonth}
+                    startMonth={currentMonth}
+                    endMonth={maxSimulationMonth}
+                    disabled={(date) => differenceInCalendarMonths(startOfMonth(date), currentMonth) <= 0}
+                    className="bg-slate-950"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+              {projection ? (
+                simulatedMonths && simulatedValue !== null ? (
+                  <div className="rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 p-5">
+                    <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/80">
+                      Valor projetado
                     </p>
-                    <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
-                      {formatCurrency(card.value)}
+                    <p className="mt-3 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
+                      {formatCurrency(simulatedValue)}
+                    </p>
+                    <p className="mt-2 text-sm text-slate-300">
+                      {selectedSimulationDate
+                        ? `Até ${selectedSimulationDate.toLocaleDateString("pt-BR", {
+                            month: "long",
+                            year: "numeric",
+                          })}, total de ${simulatedMonths} ${
+                            simulatedMonths === 1 ? "mês" : "meses"
+                          }.`
+                        : null}
                     </p>
                   </div>
-                ))
+                ) : (
+                  <p className="text-sm leading-6 text-slate-300">
+                    Selecione no calendário um mês futuro para gerar a projeção personalizada.
+                  </p>
+                )
               ) : (
-                <p className="text-sm text-slate-400">
-                  Salve a carteira acima para visualizar as projeções de 1, 6, 12 e {customMonths} meses.
+                <p className="text-sm leading-6 text-slate-300">
+                  Salve a carteira acima para liberar a simulação personalizada.
                 </p>
               )}
             </CardContent>
           </Card>
 
-          <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
+          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
             <CardHeader>
-              <CardTitle>Leitura amigável da fórmula</CardTitle>
+              <CardTitle>Projeções fixas</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-6 text-slate-200">
-              <p>A simulação aplica juros compostos sobre o saldo atual e soma o aporte mensal ao final de cada competência.</p>
-              <p>Na prática: saldo seguinte = saldo atual com rendimento + novo aporte.</p>
-              <p>
-                Referência atual:{" "}
-                <span className="font-semibold text-white">
-                  {projection ? formatDateLabel(projection.referenceDate) : "não definida"}
-                </span>
-              </p>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              {projection ? (
+                cards.map((card) => (
+                  <div
+                    key={card.months}
+                    className="rounded-[1.5rem] border border-slate-800 bg-slate-900/70 p-4"
+                  >
+                    <p className="text-sm text-slate-400">
+                      {card.months} {card.months === 1 ? "mês" : "meses"}
+                    </p>
+                    <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
+                      {formatCurrency(card.value ?? 0)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-slate-400">
+                  Salve a carteira acima para visualizar as projeções fixas de 1, 6, 12 e 24 meses.
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -183,11 +310,32 @@ function InfoCard({
 
   return (
     <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
-      <CardContent className="space-y-3 pt-6">
+      <CardContent className="space-y-2 pt-4">
         <div className={cn("inline-flex rounded-full p-2", styles[accent])}>{icon}</div>
         <p className="text-sm text-slate-400">{label}</p>
         <p className="font-heading text-3xl font-semibold tracking-tight text-slate-100">{value}</p>
       </CardContent>
     </Card>
+  );
+}
+
+function LabeledInput({
+  id,
+  label,
+  ...props
+}: React.ComponentProps<typeof Input> & {
+  id: string;
+  label: string;
+}) {
+  const fallbackId = useId();
+  const inputId = id || fallbackId;
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={inputId} className="text-slate-200">
+        {label}
+      </Label>
+      <Input id={inputId} {...props} />
+    </div>
   );
 }
