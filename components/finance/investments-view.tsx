@@ -2,18 +2,17 @@
 
 import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { addYears, differenceInCalendarMonths, startOfMonth } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { addMonths, addYears, differenceInCalendarMonths, startOfMonth } from "date-fns";
 import { Calculator, CalendarDays, PiggyBank, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { saveInvestmentPortfolioAction } from "@/app/actions/finance";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MonthPicker } from "@/components/ui/monthpicker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   centsToMoneyInput,
@@ -34,15 +33,39 @@ type Projection = {
   projection: Record<number, number>;
 } | null;
 
+const SIMULATION_MONTH_LABELS = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
+] as const;
+
+function formatSimulationMonth(date: Date) {
+  return date.toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export function InvestmentsView({
   projection,
 }: {
   projection: Projection;
 }) {
   const currentMonth = startOfMonth(new Date());
+  const minSimulationMonth = addMonths(currentMonth, 1);
   const maxSimulationMonth = addYears(currentMonth, 50);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isSimulationPickerOpen, setIsSimulationPickerOpen] = useState(false);
   const [selectedSimulationDate, setSelectedSimulationDate] = useState<Date | undefined>();
   const [simulatedMonths, setSimulatedMonths] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -83,20 +106,22 @@ export function InvestmentsView({
       : null;
 
   function applySimulation(date?: Date) {
-    setSelectedSimulationDate(date);
+    const normalizedDate = date ? startOfMonth(date) : undefined;
+    setSelectedSimulationDate(normalizedDate);
 
-    if (!date) {
+    if (!normalizedDate) {
       setSimulatedMonths(null);
       return;
     }
 
     const normalized = differenceInCalendarMonths(
-      startOfMonth(date),
+      normalizedDate,
       currentMonth
     );
 
     if (normalized > 0) {
       setSimulatedMonths(normalized);
+      setIsSimulationPickerOpen(false);
       return;
     }
 
@@ -188,7 +213,7 @@ export function InvestmentsView({
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label className="text-slate-100">Data final da simulação</Label>
-              <Popover>
+              <Popover open={isSimulationPickerOpen} onOpenChange={setIsSimulationPickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
@@ -197,10 +222,7 @@ export function InvestmentsView({
                   >
                     <span>
                       {selectedSimulationDate
-                        ? selectedSimulationDate.toLocaleDateString("pt-BR", {
-                            month: "long",
-                            year: "numeric",
-                          })
+                        ? formatSimulationMonth(selectedSimulationDate)
                         : "Selecionar mês"}
                     </span>
                     <CalendarDays className="size-4 text-slate-400" />
@@ -208,19 +230,24 @@ export function InvestmentsView({
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
-                  className="w-auto border border-slate-800 bg-slate-950 p-0 text-slate-100"
+                  className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
                 >
-                  <Calendar
-                    mode="single"
-                    selected={selectedSimulationDate}
-                    onSelect={applySimulation}
-                    locale={ptBR}
-                    captionLayout="dropdown"
-                    defaultMonth={currentMonth}
-                    startMonth={currentMonth}
-                    endMonth={maxSimulationMonth}
-                    disabled={(date) => differenceInCalendarMonths(startOfMonth(date), currentMonth) <= 0}
-                    className="bg-slate-950"
+                  <MonthPicker
+                    selectedMonth={selectedSimulationDate}
+                    onMonthSelect={applySimulation}
+                    minDate={minSimulationMonth}
+                    maxDate={maxSimulationMonth}
+                    callbacks={{
+                      monthLabel: (month) => SIMULATION_MONTH_LABELS[month.number],
+                    }}
+                    variant={{
+                      calendar: {
+                        main: "ghost",
+                        selected: "secondary",
+                      },
+                      chevrons: "ghost",
+                    }}
+                    className="text-slate-100"
                   />
                 </PopoverContent>
               </Popover>
@@ -237,10 +264,7 @@ export function InvestmentsView({
                     </p>
                     <p className="mt-2 text-sm text-slate-300">
                       {selectedSimulationDate
-                        ? `Até ${selectedSimulationDate.toLocaleDateString("pt-BR", {
-                            month: "long",
-                            year: "numeric",
-                          })}, total de ${simulatedMonths} ${
+                        ? `Até ${formatSimulationMonth(selectedSimulationDate)}, total de ${simulatedMonths} ${
                             simulatedMonths === 1 ? "mês" : "meses"
                           }.`
                         : null}
@@ -248,7 +272,7 @@ export function InvestmentsView({
                   </div>
                 ) : (
                   <p className="text-sm leading-6 text-slate-300">
-                    Selecione no calendário um mês futuro para gerar a projeção personalizada.
+                    Selecione um mês futuro para gerar a projeção personalizada.
                   </p>
                 )
               ) : (

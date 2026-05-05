@@ -31,6 +31,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { MonthPickerField } from "@/components/ui/month-picker-field";
 import {
   Table,
   TableBody,
@@ -420,11 +421,20 @@ function FilterCard({
   const pathname = usePathname();
   const router = useRouter();
 
-  function updateFilters(formData: FormData) {
+  function updateFilters(next: Partial<Filters>) {
+    const merged = {
+      month: filters.month,
+      accountId: filters.accountId ?? "",
+      categoryId: filters.categoryId ?? "",
+      status: filters.status ?? "",
+      type: filters.type ?? "",
+      section: filters.section ?? "transactions",
+      ...next,
+    };
     const params = new URLSearchParams();
 
-    for (const [key, value] of formData.entries()) {
-      const normalizedValue = String(value);
+    for (const [key, value] of Object.entries(merged)) {
+      const normalizedValue = String(value ?? "");
 
       if (normalizedValue) {
         params.set(key, normalizedValue);
@@ -440,16 +450,17 @@ function FilterCard({
         <CardTitle>Filtros</CardTitle>
       </CardHeader>
       <CardContent>
-        <form
-          action={pathname}
-          onChange={(event) => updateFilters(new FormData(event.currentTarget))}
-          className="grid gap-3 md:grid-cols-5"
-        >
-          <input type="hidden" name="section" value={filters.section ?? "transactions"} />
-          <Input type="month" name="month" defaultValue={filters.month} />
+        <div className="grid gap-3 md:grid-cols-5">
+          <MonthPickerField
+            month={filters.month}
+            onMonthChange={(month) => updateFilters({ month })}
+            className="w-full"
+          />
           <select
-            name="type"
-            defaultValue={filters.type ?? ""}
+            value={filters.type ?? ""}
+            onChange={(event) =>
+              updateFilters({ type: event.target.value || undefined })
+            }
             className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
           >
             <option value="">Todos os tipos</option>
@@ -458,8 +469,10 @@ function FilterCard({
             <option value="investment_contribution">Aporte</option>
           </select>
           <select
-            name="accountId"
-            defaultValue={filters.accountId ?? ""}
+            value={filters.accountId ?? ""}
+            onChange={(event) =>
+              updateFilters({ accountId: event.target.value || undefined })
+            }
             className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
           >
             <option value="">Todas as contas</option>
@@ -470,8 +483,10 @@ function FilterCard({
             ))}
           </select>
           <select
-            name="categoryId"
-            defaultValue={filters.categoryId ?? ""}
+            value={filters.categoryId ?? ""}
+            onChange={(event) =>
+              updateFilters({ categoryId: event.target.value || undefined })
+            }
             className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
           >
             <option value="">Todas as categorias</option>
@@ -482,8 +497,10 @@ function FilterCard({
             ))}
           </select>
           <select
-            name="status"
-            defaultValue={filters.status ?? ""}
+            value={filters.status ?? ""}
+            onChange={(event) =>
+              updateFilters({ status: event.target.value || undefined })
+            }
             className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
           >
             <option value="">Todos os status</option>
@@ -491,7 +508,7 @@ function FilterCard({
             <option value="posted">Lançado</option>
             <option value="cancelled">Cancelado</option>
           </select>
-        </form>
+        </div>
       </CardContent>
     </Card>
   );
