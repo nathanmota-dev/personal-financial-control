@@ -7,10 +7,14 @@ import { accounts, transactions, transfers } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import { calculateNetBalance, currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
 
+const dayOfMonthSchema = z.number().int().min(1).max(31);
+
 const createAccountSchema = z.object({
   name: z.string().trim().min(1),
   type: z.enum(["checking", "savings", "cash", "credit", "investment"]),
   initialBalanceCents: z.number().int().default(0),
+  creditClosingDay: dayOfMonthSchema.optional(),
+  creditDueDay: dayOfMonthSchema.optional(),
 });
 
 const updateAccountSchema = createAccountSchema.partial().extend({
@@ -21,9 +25,33 @@ function resolveDb(database?: AppDb) {
   return database ?? getDatabase();
 }
 
+function normalizeAccountValues(
+  input: z.infer<typeof createAccountSchema>
+): {
+  name: string;
+  type: "checking" | "savings" | "cash" | "credit" | "investment";
+  initialBalanceCents: number;
+  creditClosingDay: number | null;
+  creditDueDay: number;
+} {
+  if (input.type !== "credit") {
+    return {
+      ...input,
+      creditClosingDay: null,
+      creditDueDay: 10,
+    };
+  }
+
+  return {
+    ...input,
+    creditClosingDay: input.creditClosingDay ?? null,
+    creditDueDay: input.creditDueDay ?? 10,
+  };
+}
+
 export async function createAccount(input: z.input<typeof createAccountSchema>, database?: AppDb) {
   const db = resolveDb(database);
-  const values = createAccountSchema.parse(input);
+  const values = normalizeAccountValues(createAccountSchema.parse(input));
 
   const [account] = await db
     .insert(accounts)
@@ -119,13 +147,19 @@ export async function getAccountDetails(id: string, database?: AppDb) {
 export async function updateAccount(input: z.input<typeof updateAccountSchema>, database?: AppDb) {
   const db = resolveDb(database);
   const { id, ...values } = updateAccountSchema.parse(input);
-
-  await getAccountById(id, db);
+  const existing = await getAccountById(id, db);
+  const normalized = normalizeAccountValues({
+    name: values.name ?? existing.name,
+    type: values.type ?? existing.type,
+    initialBalanceCents: values.initialBalanceCents ?? existing.initialBalanceCents,
+    creditClosingDay: values.creditClosingDay ?? existing.creditClosingDay ?? undefined,
+    creditDueDay: values.creditDueDay ?? existing.creditDueDay ?? undefined,
+  });
 
   const [account] = await db
     .update(accounts)
     .set({
-      ...values,
+      ...normalized,
       updatedAt: currentTimestamp(),
     })
     .where(eq(accounts.id, id))

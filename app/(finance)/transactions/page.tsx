@@ -29,12 +29,15 @@ export default async function TransactionsPage({
     | undefined;
 
   try {
-    const [accounts, categories, transactions, transfers] = await Promise.all([
-      listAccounts(),
-      listCategories(),
+    const [accounts, categories] = await Promise.all([listAccounts(), listCategories()]);
+    const nonCreditAccounts = accounts.filter((account) => account.type !== "credit");
+    const resolvedAccountId = nonCreditAccounts.some((account) => account.id === accountId)
+      ? accountId
+      : undefined;
+    const [transactions, transfers] = await Promise.all([
       listTransactions({
         competenceMonth: month,
-        accountId,
+        accountId: resolvedAccountId,
         categoryId,
         status:
           status === "pending" || status === "posted" || status === "cancelled"
@@ -43,10 +46,17 @@ export default async function TransactionsPage({
       }),
       listTransfers({
         competenceMonth: month,
-        accountId,
+        accountId: resolvedAccountId,
       }),
     ]);
-    data = { accounts, categories, transactions, transfers };
+    data = {
+      accounts: nonCreditAccounts,
+      categories,
+      transactions: transactions.filter((item) => item.account?.type !== "credit"),
+      transfers: transfers.filter(
+        (item) => item.fromAccount?.type !== "credit" && item.toAccount?.type !== "credit"
+      ),
+    };
   } catch {}
 
   const filteredTransactions =
@@ -62,7 +72,7 @@ export default async function TransactionsPage({
       transfers={data?.transfers ?? []}
       filters={{
         month,
-        accountId,
+        accountId: data?.accounts.some((account) => account.id === accountId) ? accountId : undefined,
         categoryId,
         status,
         type,

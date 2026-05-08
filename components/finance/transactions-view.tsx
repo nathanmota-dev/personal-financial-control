@@ -33,6 +33,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -105,6 +112,63 @@ type Filters = {
   section?: string;
 };
 
+const EMPTY_FILTER_VALUE = "__empty-filter__";
+const FILTER_SELECT_TRIGGER_CLASSNAME =
+  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-sky-400/70 focus-visible:ring-sky-400/20 data-[state=open]:border-slate-600 data-[state=open]:bg-slate-900";
+const FILTER_SELECT_CONTENT_CLASSNAME =
+  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+const FILTER_SELECT_ITEM_CLASSNAME =
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
+
+type FilterSelectOption = {
+  value: string;
+  label: string;
+};
+
+function FilterSelect({
+  value,
+  emptyLabel,
+  options,
+  onValueChange,
+}: {
+  value?: string;
+  emptyLabel: string;
+  options: FilterSelectOption[];
+  onValueChange: (value?: string) => void;
+}) {
+  return (
+    <Select
+      value={value || EMPTY_FILTER_VALUE}
+      onValueChange={(nextValue) =>
+        onValueChange(nextValue === EMPTY_FILTER_VALUE ? undefined : nextValue)
+      }
+    >
+      <SelectTrigger className={FILTER_SELECT_TRIGGER_CLASSNAME}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent
+        position="popper"
+        align="start"
+        sideOffset={8}
+        className={FILTER_SELECT_CONTENT_CLASSNAME}
+      >
+        <SelectItem value={EMPTY_FILTER_VALUE} className={FILTER_SELECT_ITEM_CLASSNAME}>
+          {emptyLabel}
+        </SelectItem>
+        {options.map((option) => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+            className={FILTER_SELECT_ITEM_CLASSNAME}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export function TransactionsView({
   accounts,
   categories,
@@ -133,9 +197,6 @@ export function TransactionsView({
       ),
     [transactions]
   );
-  const totalCommitted = totals.expense + totals.investment;
-  const finalMonthlyBalance = totals.income - totalCommitted;
-
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
   return (
@@ -159,43 +220,6 @@ export function TransactionsView({
         <SummaryCard label="Despesas filtradas" value={formatCurrency(totals.expense)} tone="blue" />
         <SummaryCard label="Aportes filtrados" value={formatCurrency(totals.investment)} tone="sky" />
       </section>
-
-      <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d]">
-        <CardHeader>
-          <CardTitle>Resumo mensal para gasto no cartão</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-            <p className="text-sm text-slate-400">Entradas totais do mês</p>
-            <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
-              {formatCurrency(totals.income)}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-            <p className="text-sm text-slate-400">Gastos totais + investimentos</p>
-            <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-blue-300">
-              {formatCurrency(totalCommitted)}
-            </p>
-            <p className="mt-2 text-xs leading-5 text-slate-500">
-              Despesas do mês somadas aos aportes já planejados.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-            <p className="text-sm text-slate-400">Saldo final do mês</p>
-            <p
-              className={cn(
-                "mt-2 font-heading text-3xl font-semibold tracking-tight",
-                finalMonthlyBalance >= 0 ? "text-cyan-300" : "text-rose-300"
-              )}
-            >
-              {formatCurrency(finalMonthlyBalance)}
-            </p>
-            <p className="mt-2 text-xs leading-5 text-slate-500">
-              Fórmula: entradas totais menos gastos totais e investimentos.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
 
       <FilterCard accounts={accounts} categories={categories} filters={filters} />
 
@@ -456,58 +480,44 @@ function FilterCard({
             onMonthChange={(month) => updateFilters({ month })}
             className="w-full"
           />
-          <select
-            value={filters.type ?? ""}
-            onChange={(event) =>
-              updateFilters({ type: event.target.value || undefined })
-            }
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-          >
-            <option value="">Todos os tipos</option>
-            <option value="income">Receita</option>
-            <option value="expense">Despesa</option>
-            <option value="investment_contribution">Aporte</option>
-          </select>
-          <select
-            value={filters.accountId ?? ""}
-            onChange={(event) =>
-              updateFilters({ accountId: event.target.value || undefined })
-            }
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-          >
-            <option value="">Todas as contas</option>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.categoryId ?? ""}
-            onChange={(event) =>
-              updateFilters({ categoryId: event.target.value || undefined })
-            }
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-          >
-            <option value="">Todas as categorias</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filters.status ?? ""}
-            onChange={(event) =>
-              updateFilters({ status: event.target.value || undefined })
-            }
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-          >
-            <option value="">Todos os status</option>
-            <option value="pending">Pendente</option>
-            <option value="posted">Lançado</option>
-            <option value="cancelled">Cancelado</option>
-          </select>
+          <FilterSelect
+            value={filters.type}
+            emptyLabel="Todos os tipos"
+            options={[
+              { value: "income", label: "Receita" },
+              { value: "expense", label: "Despesa" },
+              { value: "investment_contribution", label: "Aporte" },
+            ]}
+            onValueChange={(type) => updateFilters({ type })}
+          />
+          <FilterSelect
+            value={filters.accountId}
+            emptyLabel="Todas as contas"
+            options={accounts.map((account) => ({
+              value: account.id,
+              label: account.name,
+            }))}
+            onValueChange={(accountId) => updateFilters({ accountId })}
+          />
+          <FilterSelect
+            value={filters.categoryId}
+            emptyLabel="Todas as categorias"
+            options={categories.map((category) => ({
+              value: category.id,
+              label: category.name,
+            }))}
+            onValueChange={(categoryId) => updateFilters({ categoryId })}
+          />
+          <FilterSelect
+            value={filters.status}
+            emptyLabel="Todos os status"
+            options={[
+              { value: "pending", label: "Pendente" },
+              { value: "posted", label: "Lançado" },
+              { value: "cancelled", label: "Cancelado" },
+            ]}
+            onValueChange={(status) => updateFilters({ status })}
+          />
         </div>
       </CardContent>
     </Card>

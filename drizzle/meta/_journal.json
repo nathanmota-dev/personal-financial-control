@@ -8,6 +8,13 @@
       "when": 1777665999131,
       "tag": "0000_soft_doctor_spectrum",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778161660956,
+      "tag": "0001_parched_anthem",
+      "breakpoints": true
     }
   ]
 }

@@ -56,6 +56,8 @@ export const accounts = sqliteTable(
     name: text("name").notNull(),
     type: text("type", { enum: accountTypes }).notNull(),
     initialBalanceCents: integer("initial_balance_cents").notNull().default(0),
+    creditClosingDay: integer("credit_closing_day"),
+    creditDueDay: integer("credit_due_day").notNull().default(10),
     isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
     ...timestampColumns(),
   },
@@ -165,6 +167,58 @@ export const transfers = sqliteTable(
   ]
 );
 
+export const creditCardCharges = sqliteTable(
+  "credit_card_charges",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    accountId: text("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "restrict" }),
+    categoryId: text("category_id")
+      .notNull()
+      .references(() => categories.id, { onDelete: "restrict" }),
+    description: text("description").notNull(),
+    notes: text("notes"),
+    purchaseDate: text("purchase_date").notNull(),
+    totalAmountCents: integer("total_amount_cents").notNull(),
+    installmentCount: integer("installment_count").notNull(),
+    firstInvoiceMonth: text("first_invoice_month").notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("credit_card_charges_account_idx").on(table.accountId),
+    index("credit_card_charges_category_idx").on(table.categoryId),
+    index("credit_card_charges_purchase_date_idx").on(table.purchaseDate),
+    index("credit_card_charges_first_invoice_idx").on(table.firstInvoiceMonth),
+  ]
+);
+
+export const creditCardInstallments = sqliteTable(
+  "credit_card_installments",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    chargeId: text("charge_id")
+      .notNull()
+      .references(() => creditCardCharges.id, { onDelete: "cascade" }),
+    installmentNumber: integer("installment_number").notNull(),
+    amountCents: integer("amount_cents").notNull(),
+    invoiceMonth: text("invoice_month").notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("credit_card_installments_charge_idx").on(table.chargeId),
+    index("credit_card_installments_invoice_month_idx").on(table.invoiceMonth),
+    uniqueIndex("credit_card_installments_charge_number_unique").on(
+      table.chargeId,
+      table.installmentNumber
+    ),
+  ]
+);
+
 export const investmentPortfolio = sqliteTable("investment_portfolio", {
   id: text("id")
     .primaryKey()
@@ -181,11 +235,13 @@ export const accountsRelations = relations(accounts, ({ many }) => ({
   outgoingTransfers: many(transfers, { relationName: "outgoing_transfers" }),
   incomingTransfers: many(transfers, { relationName: "incoming_transfers" }),
   recurringTemplates: many(recurringTemplates),
+  creditCardCharges: many(creditCardCharges),
 }));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   transactions: many(transactions),
   recurringTemplates: many(recurringTemplates),
+  creditCardCharges: many(creditCardCharges),
 }));
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({
@@ -228,6 +284,28 @@ export const recurringTemplatesRelations = relations(
       references: [categories.id],
     }),
     transactions: many(transactions),
+  })
+);
+
+export const creditCardChargesRelations = relations(creditCardCharges, ({ one, many }) => ({
+  account: one(accounts, {
+    fields: [creditCardCharges.accountId],
+    references: [accounts.id],
+  }),
+  category: one(categories, {
+    fields: [creditCardCharges.categoryId],
+    references: [categories.id],
+  }),
+  installments: many(creditCardInstallments),
+}));
+
+export const creditCardInstallmentsRelations = relations(
+  creditCardInstallments,
+  ({ one }) => ({
+    charge: one(creditCardCharges, {
+      fields: [creditCardInstallments.chargeId],
+      references: [creditCardCharges.id],
+    }),
   })
 );
 

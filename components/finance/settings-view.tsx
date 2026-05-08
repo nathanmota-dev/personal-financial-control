@@ -30,6 +30,8 @@ type AccountRow = {
   type: "checking" | "savings" | "cash" | "credit" | "investment";
   initialBalanceCents: number;
   currentBalanceCents: number;
+  creditClosingDay: number | null;
+  creditDueDay: number;
   isArchived: boolean;
 };
 
@@ -92,20 +94,37 @@ export function SettingsView({
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="rounded-2xl bg-slate-900/80 p-3">
-                        <p className="text-slate-400">Saldo inicial</p>
-                        <p className="mt-1 font-semibold text-slate-100">
-                          {formatCurrency(account.initialBalanceCents)}
-                        </p>
+                    {account.type === "credit" ? (
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                          <p className="text-slate-400">Fechamento</p>
+                          <p className="mt-1 font-semibold text-slate-100">
+                            {account.creditClosingDay ? `Dia ${account.creditClosingDay}` : "Não configurado"}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                          <p className="text-slate-400">Vencimento</p>
+                          <p className="mt-1 font-semibold text-cyan-300">
+                            Dia {account.creditDueDay}
+                          </p>
+                        </div>
                       </div>
-                      <div className="rounded-2xl bg-slate-900/80 p-3">
-                        <p className="text-slate-400">Saldo atual</p>
-                        <p className="mt-1 font-semibold text-cyan-300">
-                          {formatCurrency(account.currentBalanceCents)}
-                        </p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                          <p className="text-slate-400">Saldo inicial</p>
+                          <p className="mt-1 font-semibold text-slate-100">
+                            {formatCurrency(account.initialBalanceCents)}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                          <p className="text-slate-400">Saldo atual</p>
+                          <p className="mt-1 font-semibold text-cyan-300">
+                            {formatCurrency(account.currentBalanceCents)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <div className="flex gap-2">
                       <AccountSetupDialog
                         account={account}

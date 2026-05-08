@@ -18,9 +18,9 @@ import {
 import {
   getCategorySpendingReport,
   getMonthlyDashboard,
+  getMonthlyExpenseFeed,
   getMonthlyEvolution,
 } from "@/lib/server/dashboard";
-import { listTransactions } from "@/lib/server/transactions";
 
 export default async function DashboardPage({
   searchParams,
@@ -35,24 +35,20 @@ export default async function DashboardPage({
         dashboard: Awaited<ReturnType<typeof getMonthlyDashboard>>;
         evolution: Awaited<ReturnType<typeof getMonthlyEvolution>>;
         categorySpending: Awaited<ReturnType<typeof getCategorySpendingReport>>;
-        transactions: Awaited<ReturnType<typeof listTransactions>>;
+        expenses: Awaited<ReturnType<typeof getMonthlyExpenseFeed>>;
       }
     | undefined;
-  let errorMessage: string | undefined;
 
   try {
     const months = buildRecentMonths(6, month).reverse();
-    const [dashboard, evolution, categorySpending, transactions] = await Promise.all([
+    const [dashboard, evolution, categorySpending, expenses] = await Promise.all([
       getMonthlyDashboard(month),
       getMonthlyEvolution(months),
       getCategorySpendingReport(month),
-      listTransactions({ competenceMonth: month }),
+      getMonthlyExpenseFeed(month),
     ]);
-    data = { dashboard, evolution, categorySpending, transactions };
-  } catch (error) {
-    errorMessage =
-      error instanceof Error ? error.message : "Falha desconhecida ao ler os dados.";
-  }
+    data = { dashboard, evolution, categorySpending, expenses };
+  } catch {}
 
   const resolved = data ?? {
     dashboard: {
@@ -80,11 +76,10 @@ export default async function DashboardPage({
       investmentProjection: null,
     })),
     categorySpending: [],
-    transactions: [],
+    expenses: [],
   };
 
-  const topExpenses = resolved.transactions
-    .filter((item) => item.type === "expense" && item.status !== "cancelled")
+  const topExpenses = resolved.expenses
     .sort((left, right) => right.amountCents - left.amountCents)
     .slice(0, 5);
 
@@ -160,7 +155,7 @@ export default async function DashboardPage({
                     <p className="font-medium text-slate-100">{transaction.description}</p>
                     <p className="text-sm text-slate-400">
                       {transaction.category?.name ?? "Sem categoria"} •{" "}
-                      {formatDateLabel(transaction.transactionDate)}
+                      {formatDateLabel(transaction.expenseDate)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -197,9 +192,14 @@ export default async function DashboardPage({
                     <p className="font-medium text-slate-100">{account.name}</p>
                     <p className="text-sm text-slate-400">{accountTypeLabels[account.type]}</p>
                   </div>
-                  <p className="font-semibold text-cyan-300">
+                  <div className="text-right">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      {account.metricLabel}
+                    </p>
+                    <p className="font-semibold text-cyan-300">
                     {formatCurrency(account.currentBalanceCents)}
-                  </p>
+                    </p>
+                  </div>
                 </div>
               ))}
             </CardContent>

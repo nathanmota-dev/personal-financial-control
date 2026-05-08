@@ -3,12 +3,14 @@
 import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { addMonths, addYears, differenceInCalendarMonths, startOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Calculator, CalendarDays, PiggyBank, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { saveInvestmentPortfolioAction } from "@/app/actions/finance";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -55,6 +57,38 @@ function formatSimulationMonth(date: Date) {
   });
 }
 
+function parseReferenceDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return undefined;
+  }
+
+  return new Date(year, month - 1, day);
+}
+
+function buildReferenceDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatReferenceDateLabel(date: string) {
+  const parsedDate = parseReferenceDate(date);
+
+  if (!parsedDate) {
+    return "Selecionar data";
+  }
+
+  return parsedDate.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 export function InvestmentsView({
   projection,
 }: {
@@ -65,6 +99,7 @@ export function InvestmentsView({
   const maxSimulationMonth = addYears(currentMonth, 50);
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isReferenceDatePickerOpen, setIsReferenceDatePickerOpen] = useState(false);
   const [isSimulationPickerOpen, setIsSimulationPickerOpen] = useState(false);
   const [selectedSimulationDate, setSelectedSimulationDate] = useState<Date | undefined>();
   const [simulatedMonths, setSimulatedMonths] = useState<number | null>(null);
@@ -190,13 +225,13 @@ export function InvestmentsView({
                 setForm((state) => ({ ...state, expectedMonthlyRate: event.target.value }))
               }
             />
-            <LabeledInput
-              id="investment-reference-date"
+            <LabeledDateInput
               label="Data de referência"
-              type="date"
               value={form.referenceDate}
-              onChange={(event) =>
-                setForm((state) => ({ ...state, referenceDate: event.target.value }))
+              open={isReferenceDatePickerOpen}
+              onOpenChange={setIsReferenceDatePickerOpen}
+              onChange={(referenceDate) =>
+                setForm((state) => ({ ...state, referenceDate }))
               }
             />
             <Button disabled={isPending} onClick={() => startTransition(() => void onSubmit())}>
@@ -340,6 +375,69 @@ function InfoCard({
         <p className="font-heading text-3xl font-semibold tracking-tight text-slate-100">{value}</p>
       </CardContent>
     </Card>
+  );
+}
+
+function LabeledDateInput({
+  label,
+  value,
+  open,
+  onOpenChange,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onChange: (value: string) => void;
+}) {
+  const selectedDate = parseReferenceDate(value);
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-slate-200">{label}</Label>
+      <Popover open={open} onOpenChange={onOpenChange}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 w-full justify-between rounded-xl border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900"
+          >
+            <span>{formatReferenceDateLabel(value)}</span>
+            <CalendarDays className="size-4 text-slate-400" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          align="start"
+          className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+        >
+          <Calendar
+            mode="single"
+            locale={ptBR}
+            selected={selectedDate}
+            onSelect={(date) => {
+              if (!date) {
+                return;
+              }
+
+              onChange(buildReferenceDate(date));
+              onOpenChange(false);
+            }}
+            className="bg-transparent p-3 text-slate-100"
+            classNames={{
+              month_caption: "flex h-8 w-full items-center justify-center px-8 text-slate-100",
+              caption_label: "text-sm font-medium text-slate-100",
+              dropdowns: "flex h-8 w-full items-center justify-center gap-1.5 text-sm font-medium text-slate-100",
+              weekday: "flex-1 rounded-md text-[0.8rem] font-normal text-slate-400 select-none",
+              button_previous:
+                "size-8 rounded-md border border-slate-800 bg-slate-900 text-slate-100 hover:bg-slate-800",
+              button_next:
+                "size-8 rounded-md border border-slate-800 bg-slate-900 text-slate-100 hover:bg-slate-800",
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 

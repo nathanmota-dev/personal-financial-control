@@ -17,11 +17,12 @@ import {
   pauseRecurringTemplate,
   updateRecurringTemplate,
 } from "@/lib/server/recurring";
+import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createTransaction, deleteTransaction, updateTransaction } from "@/lib/server/transactions";
 import { createTransfer } from "@/lib/server/transfers";
 
 function revalidateFinanceViews() {
-  ["/", "/dashboard", "/transactions", "/recurring", "/investments"].forEach((path) => {
+  ["/", "/dashboard", "/transactions", "/recurring", "/investments", "/credit-card"].forEach((path) => {
     revalidatePath(path);
   });
 }
@@ -86,6 +87,14 @@ export async function deleteTransactionAction(id: string) {
 
 export async function createTransferAction(input: Parameters<typeof createTransfer>[0]) {
   const result = await createTransfer(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function createCreditCardChargeAction(
+  input: Parameters<typeof createCreditCardCharge>[0]
+) {
+  const result = await createCreditCardCharge(input);
   revalidateFinanceViews();
   return result;
 }

@@ -2,10 +2,12 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
+import { createCreditCardCharge } from "@/lib/server/credit-card";
 import {
   compareMonths,
   getCategorySpendingReport,
   getMonthlyDashboard,
+  getMonthlyExpenseFeed,
   getMonthlyEvolution,
 } from "@/lib/server/dashboard";
 import { createTransaction } from "@/lib/server/transactions";
@@ -96,5 +98,82 @@ describe("dashboard", () => {
     expect(spending[0]?.categoryName).toBe("Rent");
     expect(evolution).toHaveLength(1);
     expect(comparison.left.totals.netResultCents).toBe(125000);
+  });
+
+  it("includes credit card installments in monthly totals and expense feeds", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const checking = await createAccount(
+      { name: "Main", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const card = await createAccount(
+      {
+        name: "Card",
+        type: "credit",
+        initialBalanceCents: 0,
+        creditClosingDay: 4,
+        creditDueDay: 10,
+      },
+      db
+    );
+    const salary = await createCategory({ name: "Salary", group: "income" }, db);
+    const rent = await createCategory({ name: "Rent", group: "fixed_expense" }, db);
+    const food = await createCategory({ name: "Food", group: "variable_expense" }, db);
+
+    await createTransaction(
+      {
+        accountId: checking.id,
+        categoryId: salary.id,
+        type: "income",
+        amountCents: 300000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-01",
+        description: "Salary",
+      },
+      db
+    );
+    await createTransaction(
+      {
+        accountId: checking.id,
+        categoryId: rent.id,
+        type: "expense",
+        amountCents: 120000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-02",
+        description: "Rent",
+      },
+      db
+    );
+    await createCreditCardCharge(
+      {
+        accountId: card.id,
+        categoryId: food.id,
+        description: "Market",
+        purchaseDate: "2026-05-03",
+        totalAmountCents: 30000,
+        installmentCount: 1,
+      },
+      db
+    );
+
+    const dashboard = await getMonthlyDashboard("2026-05", db);
+    const spending = await getCategorySpendingReport("2026-05", db);
+    const expenseFeed = await getMonthlyExpenseFeed("2026-05", db);
+
+    expect(dashboard.totals.fixedExpenseCents).toBe(120000);
+    expect(dashboard.totals.variableExpenseCents).toBe(30000);
+    expect(dashboard.totals.netResultCents).toBe(150000);
+    expect(dashboard.accountBalances.find((account) => account.id === card.id)?.metricLabel).toBe(
+      "Fatura do mês"
+    );
+    expect(dashboard.accountBalances.find((account) => account.id === card.id)?.currentBalanceCents).toBe(
+      30000
+    );
+    expect(spending.find((item) => item.categoryName === "Food")?.amountCents).toBe(30000);
+    expect(expenseFeed.map((item) => item.description)).toContain("Market");
   });
 });

@@ -35,6 +35,8 @@ type AccountRow = {
   name: string;
   type: "checking" | "savings" | "cash" | "credit" | "investment";
   initialBalanceCents: number;
+  creditClosingDay: number | null;
+  creditDueDay: number;
 };
 
 type CategoryRow = {
@@ -53,12 +55,20 @@ export function AccountSetupDialog({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [selectedAccountType, setSelectedAccountType] = useState<AccountRow["type"]>(
+    account?.type ?? "checking"
+  );
 
   async function onSubmit(formData: FormData) {
+    const type = String(formData.get("type")) as AccountRow["type"];
+    const creditClosingDay = String(formData.get("creditClosingDay") ?? "").trim();
+    const creditDueDay = String(formData.get("creditDueDay") ?? "").trim();
     const payload = {
       name: String(formData.get("name")),
-      type: String(formData.get("type")) as AccountRow["type"],
+      type,
       initialBalanceCents: moneyInputToCents(String(formData.get("initialBalance"))),
+      creditClosingDay: type === "credit" && creditClosingDay ? Number(creditClosingDay) : undefined,
+      creditDueDay: type === "credit" && creditDueDay ? Number(creditDueDay) : undefined,
     };
 
     try {
@@ -78,7 +88,15 @@ export function AccountSetupDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen) {
+          setSelectedAccountType(account?.type ?? "checking");
+        }
+      }}
+    >
       <DialogTrigger asChild>
         {trigger ?? (
           <Button>
@@ -96,7 +114,8 @@ export function AccountSetupDialog({
           <Input name="name" defaultValue={account?.name ?? ""} placeholder="Nome da conta" />
           <select
             name="type"
-            defaultValue={account?.type ?? "checking"}
+            value={selectedAccountType}
+            onChange={(event) => setSelectedAccountType(event.target.value as AccountRow["type"])}
             className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
           >
             {Object.entries(accountTypeLabels).map(([value, label]) => (
@@ -110,6 +129,26 @@ export function AccountSetupDialog({
             defaultValue={account ? centsToMoneyInput(account.initialBalanceCents) : "0,00"}
             placeholder="0,00"
           />
+          {selectedAccountType === "credit" ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input
+                name="creditClosingDay"
+                type="number"
+                min="1"
+                max="31"
+                defaultValue={account?.creditClosingDay ?? ""}
+                placeholder="Dia do fechamento"
+              />
+              <Input
+                name="creditDueDay"
+                type="number"
+                min="1"
+                max="31"
+                defaultValue={account?.creditDueDay ?? 10}
+                placeholder="Dia do vencimento"
+              />
+            </div>
+          ) : null}
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Salvando..." : account ? "Salvar alterações" : "Criar conta"}

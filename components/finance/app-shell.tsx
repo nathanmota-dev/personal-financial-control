@@ -6,6 +6,7 @@ import {
   ArrowLeftRight,
   ChartNoAxesCombined,
   ChevronRight,
+  CreditCard,
   Menu,
   PiggyBank,
   ReceiptText,
@@ -27,6 +28,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { href: "/dashboard", label: "Dashboard", icon: ChartNoAxesCombined },
   { href: "/transactions", label: "Lançamentos", icon: ReceiptText },
+  { href: "/credit-card", label: "Cartão", icon: CreditCard },
   { href: "/recurring", label: "Recorrentes", icon: Repeat },
   { href: "/investments", label: "Investimentos", icon: PiggyBank },
   { href: "/settings", label: "Configurações", icon: Settings2 },
@@ -40,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const params = new URLSearchParams();
     const month = searchParams.get("month");
 
-    if (month && ["/dashboard", "/transactions", "/recurring"].includes(targetPath)) {
+    if (month && ["/dashboard", "/transactions", "/credit-card", "/recurring"].includes(targetPath)) {
       params.set("month", month);
     }
 

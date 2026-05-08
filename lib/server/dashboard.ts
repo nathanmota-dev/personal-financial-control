@@ -1,5 +1,6 @@
 import type { AppDb } from "@/lib/db";
 import { getDatabase } from "@/lib/db";
+import { listCreditCardExpenseEntries } from "@/lib/server/credit-card";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import { listAccounts } from "@/lib/server/accounts";
 import { listTransactions } from "@/lib/server/transactions";
@@ -9,25 +10,76 @@ function resolveDb(database?: AppDb) {
   return database ?? getDatabase();
 }
 
+function buildExpenseEntries(
+  transactions: Awaited<ReturnType<typeof listTransactions>>,
+  creditCardExpenses: Awaited<ReturnType<typeof listCreditCardExpenseEntries>>
+) {
+  const nonCreditTransactions = transactions
+    .filter(
+      (row) =>
+        row.type === "expense" &&
+        row.status !== "cancelled" &&
+        row.account?.type !== "credit"
+    )
+    .map((row) => ({
+      id: row.id,
+      amountCents: row.amountCents,
+      description: row.description,
+      expenseDate: row.transactionDate,
+      category: row.category,
+      account: row.account,
+    }));
+
+  const creditEntries = creditCardExpenses.map((row) => ({
+    id: row.id,
+    amountCents: row.amountCents,
+    description: row.description,
+    expenseDate: row.expenseDate,
+    category: row.category,
+    account: row.account,
+  }));
+
+  return [...nonCreditTransactions, ...creditEntries].sort((left, right) => {
+    return (
+      right.expenseDate.localeCompare(left.expenseDate) ||
+      right.amountCents - left.amountCents ||
+      left.description.localeCompare(right.description)
+    );
+  });
+}
+
 export async function getMonthlyDashboard(month: string, database?: AppDb) {
   const db = resolveDb(database);
   const competenceMonth = normalizeCompetenceMonth(month);
-  const [transactionRows, accountRows, investmentProjection] = await Promise.all([
+  const [transactionRows, accountRows, investmentProjection, creditCardExpenses] = await Promise.all([
     listTransactions({ competenceMonth }, db),
     listAccounts(undefined, db),
     getInvestmentProjection(db),
+    listCreditCardExpenseEntries(competenceMonth, db),
   ]);
 
   const activeTransactions = transactionRows.filter((row) => row.status !== "cancelled");
+  const expenseEntries = buildExpenseEntries(transactionRows, creditCardExpenses);
+  const invoiceTotalsByAccountId = creditCardExpenses.reduce<Map<string, number>>((accumulator, entry) => {
+    if (!entry.account?.id) {
+      return accumulator;
+    }
+
+    accumulator.set(
+      entry.account.id,
+      (accumulator.get(entry.account.id) ?? 0) + entry.amountCents
+    );
+    return accumulator;
+  }, new Map());
 
   const incomeCents = activeTransactions
     .filter((row) => row.type === "income")
     .reduce((total, row) => total + row.amountCents, 0);
-  const fixedExpenseCents = activeTransactions
-    .filter((row) => row.type === "expense" && row.category?.group === "fixed_expense")
+  const fixedExpenseCents = expenseEntries
+    .filter((row) => row.category?.group === "fixed_expense")
     .reduce((total, row) => total + row.amountCents, 0);
-  const variableExpenseCents = activeTransactions
-    .filter((row) => row.type === "expense" && row.category?.group === "variable_expense")
+  const variableExpenseCents = expenseEntries
+    .filter((row) => row.category?.group === "variable_expense")
     .reduce((total, row) => total + row.amountCents, 0);
   const investmentContributionCents = activeTransactions
     .filter((row) => row.type === "investment_contribution")
@@ -47,7 +99,11 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
       id: account.id,
       name: account.name,
       type: account.type,
-      currentBalanceCents: account.currentBalanceCents,
+      currentBalanceCents:
+        account.type === "credit"
+          ? (invoiceTotalsByAccountId.get(account.id) ?? 0)
+          : account.currentBalanceCents,
+      metricLabel: account.type === "credit" ? "Fatura do mês" : "Saldo atual",
     })),
     investmentProjection,
   };
@@ -66,11 +122,15 @@ export async function getCategorySpendingReport(
   database?: AppDb
 ) {
   const db = resolveDb(database);
-  const rows = await listTransactions({ competenceMonth }, db);
+  const [rows, creditCardExpenses] = await Promise.all([
+    listTransactions({ competenceMonth }, db),
+    listCreditCardExpenseEntries(competenceMonth, db),
+  ]);
+  const expenseEntries = buildExpenseEntries(rows, creditCardExpenses);
   const report = new Map<string, { categoryId: string; categoryName: string; amountCents: number }>();
 
-  for (const row of rows) {
-    if (row.type !== "expense" || !row.category) {
+  for (const row of expenseEntries) {
+    if (!row.category) {
       continue;
     }
 
@@ -84,6 +144,19 @@ export async function getCategorySpendingReport(
   }
 
   return Array.from(report.values()).sort((left, right) => right.amountCents - left.amountCents);
+}
+
+export async function getMonthlyExpenseFeed(
+  competenceMonth: string,
+  database?: AppDb
+) {
+  const db = resolveDb(database);
+  const [rows, creditCardExpenses] = await Promise.all([
+    listTransactions({ competenceMonth }, db),
+    listCreditCardExpenseEntries(competenceMonth, db),
+  ]);
+
+  return buildExpenseEntries(rows, creditCardExpenses);
 }
 
 export async function compareMonths(

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import { getDatabase } from "@/lib/db";
-import { categories, recurringTemplates, transactions } from "@/lib/db/schema";
+import { categories, creditCardCharges, recurringTemplates, transactions } from "@/lib/db/schema";
 import { DomainError, invariant } from "@/lib/server/errors";
 import { currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
 
@@ -102,11 +102,14 @@ export async function deleteCategory(id: string, database?: AppDb) {
   const recurringUsage = await db.query.recurringTemplates.findFirst({
     where: eq(recurringTemplates.categoryId, id),
   });
+  const creditCardUsage = await db.query.creditCardCharges.findFirst({
+    where: eq(creditCardCharges.categoryId, id),
+  });
 
-  if (usage || recurringUsage) {
+  if (usage || recurringUsage || creditCardUsage) {
     throw new DomainError(
       "CATEGORY_IN_USE",
-      "Category cannot be deleted because it is already used in transactions or recurring templates."
+      "Category cannot be deleted because it is already used in transactions, recurring templates, or credit card charges."
     );
   }
 
