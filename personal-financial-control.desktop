@@ -9,3 +9,4 @@ Icon=applications-office
 Terminal=false
 Categories=Office;Finance;
 StartupNotify=true
+StartupWMClass=personal-financial-control

@@ -22,16 +22,18 @@ Para usar como um app clicavel no Linux, use:
 ./open-app.sh
 ```
 
-Esse launcher sobe o servidor em background na porta `3007` e abre o navegador automaticamente.
+Esse launcher sobe o servidor em background na porta `3007` e abre o app em uma janela dedicada do Brave, com perfil separado do navegador pessoal. Quando essa janela e fechada, o launcher encerra o servidor automaticamente.
 
 Opcoes uteis:
 
 ```bash
 PORT=3007 ./start-app.sh
 START_APP_SKIP_SERVER=1 ./start-app.sh
+START_APP_SKIP_BROWSER=1 ./open-app.sh
 ```
 
 `START_APP_SKIP_SERVER=1` serve para validar o fluxo completo sem deixar o processo preso no servidor.
+`START_APP_SKIP_BROWSER=1` serve para validar a subida supervisionada sem abrir a janela do app.
 
 ## Backend Contract
 

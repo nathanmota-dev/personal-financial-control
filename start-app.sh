@@ -10,7 +10,9 @@ APP_PORT="${PORT:-3007}"
 STATE_DIR="$SCRIPT_DIR/.local/runtime"
 BUILD_FINGERPRINT_FILE="$STATE_DIR/build-fingerprint.txt"
 SERVER_PID_FILE="$STATE_DIR/server.pid"
+SERVER_SESSION_FILE="$STATE_DIR/server-session.txt"
 SERVER_LOG_FILE="$STATE_DIR/server.log"
+NEXT_BIN="$SCRIPT_DIR/node_modules/.bin/next"
 
 mkdir -p "$STATE_DIR"
 
@@ -73,12 +75,18 @@ compute_build_fingerprint() {
 require_command npm
 require_command sha256sum
 require_command awk
+require_command env
 require_command find
 require_command sort
 
 if [[ ! -d node_modules ]]; then
   log "Dependencias nao encontradas. Rodando npm install."
   npm install
+fi
+
+if [[ ! -x "$NEXT_BIN" ]]; then
+  printf 'Erro: binario do Next nao encontrado em %s\n' "$NEXT_BIN" >&2
+  exit 1
 fi
 
 CURRENT_FINGERPRINT="$(compute_build_fingerprint)"
@@ -108,11 +116,16 @@ log "Iniciando app em http://$APP_HOST:$APP_PORT."
 
 if [[ "${START_APP_BACKGROUND:-0}" == "1" ]]; then
   : > "$SERVER_LOG_FILE"
-  nohup env HOST="$APP_HOST" PORT="$APP_PORT" npm start >>"$SERVER_LOG_FILE" 2>&1 &
+  if [[ -n "${START_APP_SESSION_ID:-}" ]]; then
+    printf '%s\n' "$START_APP_SESSION_ID" > "$SERVER_SESSION_FILE"
+  else
+    rm -f "$SERVER_SESSION_FILE"
+  fi
+  env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start >>"$SERVER_LOG_FILE" 2>&1 &
   SERVER_PID=$!
   printf '%s\n' "$SERVER_PID" > "$SERVER_PID_FILE"
   log "Servidor iniciado em background com PID $SERVER_PID. Log: $SERVER_LOG_FILE"
   exit 0
 fi
 
-HOST="$APP_HOST" PORT="$APP_PORT" npm start
+exec env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start
