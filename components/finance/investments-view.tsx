@@ -8,6 +8,7 @@ import { Calculator, CalendarDays, PiggyBank, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
 import { saveInvestmentPortfolioAction } from "@/app/actions/finance";
+import { InvestmentGrowthChart } from "@/components/finance/investment-growth-chart";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -241,52 +242,79 @@ export function InvestmentsView({
         </Card>
 
         <div className="grid gap-4">
+          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+            <CardHeader>
+              <CardTitle>Projeções fixas</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              {projection ? (
+                cards.map((card) => (
+                  <div
+                    key={card.months}
+                    className="rounded-[1.5rem] border border-slate-800 bg-slate-900/70 p-4"
+                  >
+                    <p className="text-sm text-slate-400">
+                      {card.months} {card.months === 1 ? "mês" : "meses"}
+                    </p>
+                    <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
+                      {formatCurrency(card.value ?? 0)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-slate-400">
+                  Salve a carteira acima para visualizar as projeções fixas de 1, 6, 12 e 24 meses.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
           <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
             <CardHeader>
-            <CardTitle>Simular período</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-slate-100">Data final da simulação</Label>
-              <Popover open={isSimulationPickerOpen} onOpenChange={setIsSimulationPickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full justify-between border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900"
+              <CardTitle>Simular período</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-slate-100">Data final da simulação</Label>
+                <Popover open={isSimulationPickerOpen} onOpenChange={setIsSimulationPickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-between border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900"
+                    >
+                      <span>
+                        {selectedSimulationDate
+                          ? formatSimulationMonth(selectedSimulationDate)
+                          : "Selecionar mês"}
+                      </span>
+                      <CalendarDays className="size-4 text-slate-400" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
                   >
-                    <span>
-                      {selectedSimulationDate
-                        ? formatSimulationMonth(selectedSimulationDate)
-                        : "Selecionar mês"}
-                    </span>
-                    <CalendarDays className="size-4 text-slate-400" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  align="start"
-                  className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
-                >
-                  <MonthPicker
-                    selectedMonth={selectedSimulationDate}
-                    onMonthSelect={applySimulation}
-                    minDate={minSimulationMonth}
-                    maxDate={maxSimulationMonth}
-                    callbacks={{
-                      monthLabel: (month) => SIMULATION_MONTH_LABELS[month.number],
-                    }}
-                    variant={{
-                      calendar: {
-                        main: "ghost",
-                        selected: "secondary",
-                      },
-                      chevrons: "ghost",
-                    }}
-                    className="text-slate-100"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+                    <MonthPicker
+                      selectedMonth={selectedSimulationDate}
+                      onMonthSelect={applySimulation}
+                      minDate={minSimulationMonth}
+                      maxDate={maxSimulationMonth}
+                      callbacks={{
+                        monthLabel: (month) => SIMULATION_MONTH_LABELS[month.number],
+                      }}
+                      variant={{
+                        calendar: {
+                          main: "ghost",
+                          selected: "secondary",
+                        },
+                        chevrons: "ghost",
+                      }}
+                      className="text-slate-100"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
 
               {projection ? (
                 simulatedMonths && simulatedValue !== null ? (
@@ -317,35 +345,18 @@ export function InvestmentsView({
               )}
             </CardContent>
           </Card>
-
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
-            <CardHeader>
-              <CardTitle>Projeções fixas</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              {projection ? (
-                cards.map((card) => (
-                  <div
-                    key={card.months}
-                    className="rounded-[1.5rem] border border-slate-800 bg-slate-900/70 p-4"
-                  >
-                    <p className="text-sm text-slate-400">
-                      {card.months} {card.months === 1 ? "mês" : "meses"}
-                    </p>
-                    <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
-                      {formatCurrency(card.value ?? 0)}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-slate-400">
-                  Salve a carteira acima para visualizar as projeções fixas de 1, 6, 12 e 24 meses.
-                </p>
-              )}
-            </CardContent>
-          </Card>
         </div>
       </div>
+
+      {projection && simulatedMonths && selectedSimulationDate ? (
+        <InvestmentGrowthChart
+          currentBalanceCents={projection.currentBalanceCents}
+          monthlyContributionCents={projection.monthlyContributionCents}
+          expectedMonthlyRateBps={projection.expectedMonthlyRateBps}
+          months={simulatedMonths}
+          periodLabel={formatSimulationMonth(selectedSimulationDate)}
+        />
+      ) : null}
     </div>
   );
 }
