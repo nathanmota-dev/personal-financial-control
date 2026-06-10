@@ -65,12 +65,6 @@ export function SettingsView({
         eyebrow="Configurações"
         title="Contas e categorias"
         description="Esta página também abre vazia por padrão e serve como ponto de partida para cadastrar toda a base do app."
-        actions={
-          <>
-            <AccountSetupDialog />
-            <CategorySetupDialog />
-          </>
-        }
       />
 
       <Tabs defaultValue="accounts">

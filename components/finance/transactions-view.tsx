@@ -14,7 +14,6 @@ import {
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
 import {
-  AccountSetupDialog,
   CategorySetupDialog,
   SetupCallout,
 } from "@/components/finance/setup-dialogs";
@@ -207,7 +206,6 @@ export function TransactionsView({
         description="A tela abre vazia por padrão quando ainda não existe base inicial. Você pode criar conta, categoria, lançamento e transferência daqui."
         actions={
           <>
-            <AccountSetupDialog />
             <CategorySetupDialog />
             <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
             <TransferDialog accounts={accounts} month={filters.month} />

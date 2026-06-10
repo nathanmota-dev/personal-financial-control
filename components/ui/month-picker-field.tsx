@@ -59,7 +59,7 @@ export function MonthPickerField({
           type="button"
           variant="outline"
           className={cn(
-            "h-10 justify-between rounded-xl border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900",
+            "h-10 justify-between rounded-xl border-slate-700 bg-slate-950/70 pl-4 text-slate-100 hover:bg-slate-900",
             className
           )}
         >
