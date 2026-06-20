@@ -15,7 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency, formatRateFromBps } from "@/lib/finance-ui";
+import { formatCurrency, formatMonthLabel, formatRateFromBps } from "@/lib/finance-ui";
+import { buildInvestmentGrowthSeries } from "@/lib/investment-projection";
 
 const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -28,30 +29,31 @@ type InvestmentGrowthChartProps = {
   currentBalanceCents: number;
   monthlyContributionCents: number;
   expectedMonthlyRateBps: number;
+  referenceDate: string;
   months: number;
   periodLabel: string;
-};
-
-type GrowthPoint = {
-  month: number;
-  principal: number;
-  interest: number;
-  total: number;
 };
 
 export function InvestmentGrowthChart({
   currentBalanceCents,
   monthlyContributionCents,
   expectedMonthlyRateBps,
+  referenceDate,
   months,
   periodLabel,
 }: InvestmentGrowthChartProps) {
-  const data = buildGrowthSeries({
+  const data = buildInvestmentGrowthSeries({
     currentBalanceCents,
     monthlyContributionCents,
     expectedMonthlyRateBps,
+    referenceDate,
     months,
-  });
+  }).map((point) => ({
+    ...point,
+    principal: point.principalCents / 100,
+    interest: point.interestCents / 100,
+    total: point.balanceCents / 100,
+  }));
   const finalPoint = data[data.length - 1];
   const finalPrincipalCents = Math.round((finalPoint?.principal ?? 0) * 100);
   const finalInterestCents = Math.round((finalPoint?.interest ?? 0) * 100);
@@ -105,11 +107,11 @@ export function InvestmentGrowthChart({
         <AreaChart data={data} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis
-            dataKey="month"
+            dataKey="competenceMonth"
             axisLine={false}
             tickLine={false}
             minTickGap={30}
-            tickFormatter={(value) => formatAxisMonth(Number(value))}
+            tickFormatter={(value) => formatMonthLabel(String(value))}
           />
           <YAxis
             axisLine={false}
@@ -120,7 +122,7 @@ export function InvestmentGrowthChart({
           <ChartTooltip
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => formatHorizonLabel(Number(value))}
+                labelFormatter={(value) => formatMonthLabel(String(value))}
                 formatter={(value, name) => (
                   <>
                     <span className="text-muted-foreground">{String(name)}</span>
@@ -157,39 +159,6 @@ export function InvestmentGrowthChart({
   );
 }
 
-function buildGrowthSeries({
-  currentBalanceCents,
-  monthlyContributionCents,
-  expectedMonthlyRateBps,
-  months,
-}: {
-  currentBalanceCents: number;
-  monthlyContributionCents: number;
-  expectedMonthlyRateBps: number;
-  months: number;
-}): GrowthPoint[] {
-  const rate = expectedMonthlyRateBps / 10_000;
-  let balance = currentBalanceCents / 100;
-  const points: GrowthPoint[] = [];
-
-  for (let month = 1; month <= months; month += 1) {
-    balance = balance * (1 + rate) + monthlyContributionCents / 100;
-
-    const totalCents = Math.round(balance * 100);
-    const principalCents = currentBalanceCents + monthlyContributionCents * month;
-    const interestCents = Math.max(totalCents - principalCents, 0);
-
-    points.push({
-      month,
-      principal: principalCents / 100,
-      interest: interestCents / 100,
-      total: totalCents / 100,
-    });
-  }
-
-  return points;
-}
-
 function SummaryMetric({
   label,
   value,
@@ -215,34 +184,4 @@ function SummaryMetric({
 
 function formatAxisCurrency(value: number) {
   return compactCurrencyFormatter.format(value);
-}
-
-function formatAxisMonth(month: number) {
-  if (month >= 12 && month % 12 === 0) {
-    return `${month / 12}a`;
-  }
-
-  return `${month}m`;
-}
-
-function formatHorizonLabel(month: number) {
-  if (month === 1) {
-    return "1 mês";
-  }
-
-  if (month < 12) {
-    return `${month} meses`;
-  }
-
-  const years = Math.floor(month / 12);
-  const remainingMonths = month % 12;
-  const yearsLabel = `${years} ${years === 1 ? "ano" : "anos"}`;
-
-  if (!remainingMonths) {
-    return yearsLabel;
-  }
-
-  return `${yearsLabel} e ${remainingMonths} ${
-    remainingMonths === 1 ? "mês" : "meses"
-  }`;
 }

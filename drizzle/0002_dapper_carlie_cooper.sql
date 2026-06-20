@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `is_included_in_investment_balance` integer DEFAULT true NOT NULL;

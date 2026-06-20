@@ -129,6 +129,11 @@ export const transactions = sqliteTable(
     competenceMonth: text("competence_month").notNull(),
     description: text("description").notNull(),
     notes: text("notes"),
+    isIncludedInInvestmentBalance: integer("is_included_in_investment_balance", {
+      mode: "boolean",
+    })
+      .notNull()
+      .default(true),
     ...timestampColumns(),
   },
   (table) => [

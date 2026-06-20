@@ -60,7 +60,8 @@ Se no futuro houver necessidade de integração externa, mobile ou API pública,
 | Listar transferências | `listTransfers(filters?)` | `{ competenceMonth?: "YYYY-MM", accountId?: "uuid" }` | `[{ id, fromAccountId, toAccountId, amountCents, transferDate, competenceMonth, description, fromAccount, toAccount, createdAt, updatedAt }]` |
 | Listar recorrências | `listRecurringTemplates()` | `void` | `[{ id, accountId, categoryId, type, status, amountCents, dayOfMonth, startMonth, endMonth, lastGeneratedMonth, description, account, category, createdAt, updatedAt }]` |
 | Carteira consolidada | `getInvestmentPortfolio()` | `void` | `{ id, currentBalanceCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, createdAt, updatedAt } \| null` |
-| Projeção da carteira | `getInvestmentProjection(customMonths?)` | `{ customMonths?: number }` | `{ id, currentBalanceCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, projection: { 1, 6, 12, [customMonths] }, createdAt, updatedAt } \| null` |
+| Projeção da carteira | `getInvestmentProjection()` | `void` | `{ id, currentBalanceCents, baseBalanceCents, unincorporatedContributionCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, baseReferenceDate, projection: { 1, 6, 12, 24 }, createdAt, updatedAt } \| null` |
+| Histórico de aportes | `getInvestmentContributionHistory()` | `void` | `{ totalContributionCents, points: [{ month, monthlyContributionCents, cumulativeContributionCents }] }` |
 
 ## Mutações
 
@@ -83,6 +84,7 @@ Se no futuro houver necessidade de integração externa, mobile ou API pública,
 | Encerrar recorrência | `endRecurringTemplateAction(id, endMonth)` | `{ id: "uuid", endMonth: "YYYY-MM" }` | `{ id, status: "ended", endMonth, ... }` |
 | Gerar lançamentos recorrentes do mês | `generateRecurringTransactionsAction(month)` | `{ month: "YYYY-MM" }` | `Array<Transaction>` |
 | Salvar carteira consolidada | `saveInvestmentPortfolioAction(input)` | `{ currentBalanceCents: number, monthlyContributionCents: number, expectedMonthlyRateBps: number, referenceDate: "YYYY-MM-DD" }` | `{ id, currentBalanceCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, createdAt, updatedAt }` |
+| Registrar aporte da carteira | `createInvestmentContributionAction(input)` | `{ accountId: "uuid", categoryId: "uuid", amountCents: number, transactionDate: "YYYY-MM-DD" }` | `{ id, accountId, categoryId, type: "investment_contribution", status: "posted", amountCents, transactionDate, competenceMonth, createdAt, updatedAt }` |
 
 ## Regras de payload
 
@@ -97,6 +99,8 @@ Se no futuro houver necessidade de integração externa, mobile ou API pública,
 | `status` de lançamento | `pending`, `posted`, `cancelled` |
 | `group` de categoria | `income`, `fixed_expense`, `variable_expense`, `investment` |
 | `status` de recorrência | `active`, `paused`, `ended` |
+
+Nas projeções, o primeiro mês usa a taxa efetiva proporcional aos dias restantes desde `referenceDate` e não recebe o aporte mensal previsto. Os aportes previstos começam no fechamento do mês seguinte. Ao salvar novamente a carteira, o saldo informado se torna o novo checkpoint e os aportes realizados pendentes são consolidados nele.
 
 ## Observação importante
 

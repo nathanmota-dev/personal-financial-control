@@ -82,6 +82,7 @@ export async function createTransaction(
     .insert(transactions)
     .values({
       ...values,
+      isIncludedInInvestmentBalance: values.type !== "investment_contribution",
       updatedAt: currentTimestamp(),
     })
     .returning();
@@ -158,12 +159,20 @@ export async function updateTransaction(
 
   await validateTransactionDependencies(values, db);
 
+  const isIncludedInInvestmentBalance =
+    values.type === "investment_contribution"
+      ? existing.type === "investment_contribution"
+        ? existing.isIncludedInInvestmentBalance
+        : false
+      : true;
+
   const [transaction] = await db
     .update(transactions)
     .set({
       ...rawValues,
       competenceMonth: values.competenceMonth,
       transactionDate: values.transactionDate,
+      isIncludedInInvestmentBalance,
       updatedAt: currentTimestamp(),
     })
     .where(eq(transactions.id, id))

@@ -9,7 +9,10 @@ import {
   deleteCategory,
   updateCategory,
 } from "@/lib/server/categories";
-import { saveInvestmentPortfolio } from "@/lib/server/investments";
+import {
+  createInvestmentContribution,
+  saveInvestmentPortfolio,
+} from "@/lib/server/investments";
 import {
   createRecurringTemplate,
   endRecurringTemplate,
@@ -137,6 +140,14 @@ export async function saveInvestmentPortfolioAction(
   input: Parameters<typeof saveInvestmentPortfolio>[0]
 ) {
   const result = await saveInvestmentPortfolio(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function createInvestmentContributionAction(
+  input: Parameters<typeof createInvestmentContribution>[0]
+) {
+  const result = await createInvestmentContribution(input);
   revalidateFinanceViews();
   return result;
 }
