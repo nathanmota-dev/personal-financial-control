@@ -16,7 +16,15 @@ O script:
 - aplica as migracoes locais antes de subir o servidor
 - inicia o app com `npm start`
 
-Para usar como um app clicavel no Linux, use:
+Para instalar o launcher no menu de aplicativos do Linux, use uma vez:
+
+```bash
+./install-app.sh
+```
+
+O instalador registra o app como `Finance`, associa o logo do projeto e calcula os caminhos a partir do diretorio atual do clone. Depois da instalacao, procure por `Finance` no menu de aplicativos.
+
+Execute o instalador novamente caso clone ou mova o projeto para outro diretorio. Para abrir diretamente pelo terminal sem instalar o launcher, use:
 
 ```bash
 ./open-app.sh

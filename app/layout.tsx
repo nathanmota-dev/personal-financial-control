@@ -4,7 +4,7 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Controle Financeiro Pessoal",
+  title: "Finance",
   description: "Painel financeiro pessoal com dashboard, lançamentos, recorrências e carteira.",
   other: {
     google: "notranslate",
