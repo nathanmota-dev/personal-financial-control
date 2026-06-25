@@ -140,10 +140,12 @@ export function DashboardCharts({
           )}
         </div>
 
-        <div className="rounded-[1.75rem] border border-slate-800 bg-[#06152d] p-5 text-white shadow-[0_24px_80px_rgba(2,6,23,0.45)]">
+        <div className="rounded-[1.75rem] border border-slate-800 bg-slate-950/75 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.35)]">
           <div className="mb-4">
-            <h3 className="font-heading text-lg font-semibold">Distribuição das despesas</h3>
-            <p className="text-sm text-slate-300">Leitura rápida das categorias dominantes.</p>
+            <h3 className="font-heading text-lg font-semibold text-slate-100">
+              Distribuição das despesas
+            </h3>
+            <p className="text-sm text-slate-400">Leitura rápida das categorias dominantes.</p>
           </div>
           {hasCategoryData ? (
             <ChartContainer
@@ -187,7 +189,7 @@ export function DashboardCharts({
               </PieChart>
             </ChartContainer>
           ) : (
-            <div className="flex h-[220px] items-center justify-center rounded-[1.5rem] border border-white/10 bg-slate-950/20 px-6 text-center text-sm text-slate-300">
+            <div className="flex h-[220px] items-center justify-center rounded-[1.5rem] border border-dashed border-slate-800 bg-slate-950/40 px-6 text-center text-sm text-slate-400">
               Adicione despesas com categoria para liberar a distribuição visual.
             </div>
           )}

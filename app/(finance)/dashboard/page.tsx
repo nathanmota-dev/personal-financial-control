@@ -1,4 +1,4 @@
-import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { PiggyBank, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 import { DashboardActions } from "@/components/finance/dashboard-actions";
 import { DashboardCharts } from "@/components/finance/dashboard-charts";
@@ -88,11 +88,11 @@ export default async function DashboardPage({
       <PageHeader
         eyebrow="Dashboard"
         title={`Visão mensal de ${formatMonthLabel(month)}`}
-        description="Resumo consolidado do mês, com leitura de resultado líquido, contas, categorias e carteira."
+        description="Resumo consolidado do mês, com receitas, gastos, investimentos, saldo livre, contas, categorias e carteira."
         actions={<DashboardActions month={month} />}
       />
 
-      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         <MetricCard
           label="Receitas"
           value={formatCurrency(resolved.dashboard.totals.incomeCents)}
@@ -115,13 +115,18 @@ export default async function DashboardPage({
           description="Saídas discricionárias no período."
         />
         <MetricCard
-          label="Resultado líquido"
+          label="Investimentos"
+          value={formatCurrency(resolved.dashboard.totals.investmentContributionCents)}
+          icon={<PiggyBank className="size-4" />}
+          accent="text-teal-300"
+          description="Aportes separados para a carteira."
+        />
+        <MetricCard
+          label="Saldo livre"
           value={formatCurrency(resolved.dashboard.totals.netResultCents)}
           icon={<TrendingUp className="size-4" />}
           accent={resolved.dashboard.totals.netResultCents >= 0 ? "text-cyan-300" : "text-blue-300"}
-          description={`Aportes no mês: ${formatCurrency(
-            resolved.dashboard.totals.investmentContributionCents
-          )}`}
+          description="Disponível para gastos livres do mês."
         />
       </section>
 

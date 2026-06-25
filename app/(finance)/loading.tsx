@@ -14,8 +14,8 @@ export default function Loading() {
         </CardHeader>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {Array.from({ length: 5 }).map((_, index) => (
           <Card key={index} className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
             <CardContent className="space-y-3 pt-6">
               <div className="flex items-center justify-between">
@@ -62,14 +62,14 @@ export default function Loading() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
+          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
             <CardHeader className="space-y-3">
-              <div className="h-6 w-44 animate-pulse rounded-full bg-sky-300/20" />
-              <div className="h-4 w-36 animate-pulse rounded-full bg-slate-800/80" />
+              <div className="h-6 w-44 animate-pulse rounded-full bg-slate-800" />
+              <div className="h-4 w-36 animate-pulse rounded-full bg-slate-900" />
             </CardHeader>
             <CardContent className="space-y-3">
               {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="h-4 animate-pulse rounded-full bg-slate-200/10" />
+                <div key={index} className="h-4 animate-pulse rounded-full bg-slate-900" />
               ))}
             </CardContent>
           </Card>
