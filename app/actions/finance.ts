@@ -16,7 +16,6 @@ import {
 import {
   createRecurringTemplate,
   endRecurringTemplate,
-  generateRecurringTransactions,
   pauseRecurringTemplate,
   updateRecurringTemplate,
 } from "@/lib/server/recurring";
@@ -126,12 +125,6 @@ export async function pauseRecurringTemplateAction(id: string) {
 
 export async function endRecurringTemplateAction(id: string, endMonth: string) {
   const result = await endRecurringTemplate(id, endMonth);
-  revalidateFinanceViews();
-  return result;
-}
-
-export async function generateRecurringTransactionsAction(month: string) {
-  const result = await generateRecurringTransactions(month);
   revalidateFinanceViews();
   return result;
 }

@@ -16,7 +16,7 @@ export function DashboardActions({ month }: { month: string }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <>
       <MonthPickerField
         month={month}
         onMonthChange={updateMonth}
@@ -24,6 +24,6 @@ export function DashboardActions({ month }: { month: string }) {
       />
       <AccountSetupDialog />
       <CategorySetupDialog />
-    </div>
+    </>
   );
 }

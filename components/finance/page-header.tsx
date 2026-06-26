@@ -16,11 +16,11 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "flex flex-col gap-4 rounded-[1.75rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_24px_80px_rgba(2,6,23,0.35)] backdrop-blur md:flex-row md:items-end md:justify-between",
+        "flex flex-col gap-4 rounded-[1.75rem] border border-slate-800 bg-slate-950/75 p-6 shadow-[0_24px_80px_rgba(2,6,23,0.35)] backdrop-blur md:flex-row md:items-center md:justify-between",
         className
       )}
     >
-      <div className="space-y-2">
+      <div className="min-w-0 space-y-2">
         {eyebrow ? (
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-sky-300">
             {eyebrow}
@@ -33,7 +33,11 @@ export function PageHeader({
           <p className="max-w-2xl text-sm leading-6 text-slate-400">{description}</p>
         </div>
       </div>
-      {actions ? <div className="flex flex-wrap items-center gap-3">{actions}</div> : null}
+      {actions ? (
+        <div className="flex w-full flex-wrap items-center gap-3 md:w-auto md:justify-end lg:shrink-0 lg:flex-nowrap">
+          {actions}
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -2,13 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Pause, Pencil, Play, Plus, Sparkles } from "lucide-react";
+import { Pause, Pencil, Play, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import {
   createRecurringTemplateAction,
   endRecurringTemplateAction,
-  generateRecurringTransactionsAction,
   pauseRecurringTemplateAction,
   updateRecurringTemplateAction,
 } from "@/app/actions/finance";
@@ -83,8 +82,6 @@ export function RecurringView({
   month: string;
   templates: TemplateRow[];
 }) {
-  const router = useRouter();
-  const [isGenerating, startGenerating] = useTransition();
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
   return (
@@ -98,24 +95,6 @@ export function RecurringView({
             <AccountSetupDialog />
             <CategorySetupDialog />
             <RecurringDialog accounts={accounts} categories={categories} month={month} />
-            <Button
-              variant="outline"
-              disabled={isGenerating}
-              onClick={() =>
-                startGenerating(async () => {
-                  try {
-                    await generateRecurringTransactionsAction(month);
-                    toast.success("Lançamentos recorrentes gerados.");
-                    router.refresh();
-                  } catch (error) {
-                    toast.error(extractErrorMessage(error));
-                  }
-                })
-              }
-            >
-              <Sparkles className="size-4" />
-              {isGenerating ? "Gerando..." : "Gerar mês"}
-            </Button>
           </>
         }
       />
