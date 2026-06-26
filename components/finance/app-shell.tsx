@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   ArrowLeftRight,
+  ChartLine,
   ChartNoAxesCombined,
   ChevronRight,
   CreditCard,
@@ -30,6 +31,7 @@ const navigation = [
   { href: "/transactions", label: "Lançamentos", icon: ReceiptText },
   { href: "/credit-card", label: "Cartão", icon: CreditCard },
   { href: "/recurring", label: "Recorrentes", icon: Repeat },
+  { href: "/projected-balance", label: "Saldo Projetado", icon: ChartLine },
   { href: "/investments", label: "Investimentos", icon: PiggyBank },
   { href: "/settings", label: "Configurações", icon: Settings2 },
 ];

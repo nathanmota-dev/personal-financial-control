@@ -24,7 +24,15 @@ import { createTransaction, deleteTransaction, updateTransaction } from "@/lib/s
 import { createTransfer } from "@/lib/server/transfers";
 
 function revalidateFinanceViews() {
-  ["/", "/dashboard", "/transactions", "/recurring", "/investments", "/credit-card"].forEach((path) => {
+  [
+    "/",
+    "/dashboard",
+    "/transactions",
+    "/recurring",
+    "/projected-balance",
+    "/investments",
+    "/credit-card",
+  ].forEach((path) => {
     revalidatePath(path);
   });
 }
