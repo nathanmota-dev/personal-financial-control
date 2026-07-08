@@ -15,6 +15,7 @@ import {
   Settings2,
 } from "lucide-react";
 
+import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -53,6 +54,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(37,99,235,0.18),_transparent_20%),linear-gradient(180deg,_#030712_0%,_#071428_48%,_#081a34_100%)] text-slate-100">
+      <RecurringAutoGenerator />
       <div className="mx-auto flex min-h-screen max-w-[1600px] gap-6 p-4 md:p-6">
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[2rem] border border-sky-900/40 bg-[linear-gradient(180deg,_rgba(2,6,23,0.95)_0%,_rgba(5,22,53,0.96)_100%)] px-6 py-7 text-white shadow-[0_24px_80px_rgba(2,6,23,0.55)]">

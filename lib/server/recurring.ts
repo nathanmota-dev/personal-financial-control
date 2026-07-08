@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { AppDb } from "@/lib/db";
 import { getDatabase } from "@/lib/db";
 import { recurringTemplates, transactions } from "@/lib/db/schema";
-import { DomainError, invariant } from "@/lib/server/errors";
+import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, serializeTimestamps } from "@/lib/server/finance";
 import { createTransaction } from "@/lib/server/transactions";
 import { getAccountById } from "@/lib/server/accounts";
@@ -164,6 +164,25 @@ function buildTransactionDate(month: string, dayOfMonth: number) {
   return `${month}-${String(dayOfMonth).padStart(2, "0")}`;
 }
 
+async function markTemplateGenerated(
+  template: typeof recurringTemplates.$inferSelect,
+  competenceMonth: string,
+  database: AppDb
+) {
+  const lastGeneratedMonth =
+    !template.lastGeneratedMonth || template.lastGeneratedMonth < competenceMonth
+      ? competenceMonth
+      : template.lastGeneratedMonth;
+
+  await database
+    .update(recurringTemplates)
+    .set({
+      lastGeneratedMonth,
+      updatedAt: currentTimestamp(),
+    })
+    .where(eq(recurringTemplates.id, template.id));
+}
+
 export async function generateRecurringTransactions(month: string, database?: AppDb) {
   const db = resolveDb(database);
   const competenceMonth = normalizeCompetenceMonth(month);
@@ -190,10 +209,8 @@ export async function generateRecurringTransactions(month: string, database?: Ap
     });
 
     if (duplicate) {
-      throw new DomainError(
-        "RECURRING_DUPLICATE",
-        `Recurring transaction for template ${template.id} already exists in ${competenceMonth}.`
-      );
+      await markTemplateGenerated(template, competenceMonth, db);
+      continue;
     }
 
     const transaction = await createTransaction(
@@ -211,13 +228,7 @@ export async function generateRecurringTransactions(month: string, database?: Ap
       db
     );
 
-    await db
-      .update(recurringTemplates)
-      .set({
-        lastGeneratedMonth: competenceMonth,
-        updatedAt: currentTimestamp(),
-      })
-      .where(eq(recurringTemplates.id, template.id));
+    await markTemplateGenerated(template, competenceMonth, db);
 
     created.push(transaction);
   }
