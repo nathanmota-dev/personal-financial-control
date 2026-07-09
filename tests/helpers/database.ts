@@ -15,6 +15,7 @@ export async function createTestDatabase() {
 
   return {
     db,
+    databaseUrl: `file:${databasePath}`,
     async cleanup() {
       await rm(directory, { recursive: true, force: true });
     },

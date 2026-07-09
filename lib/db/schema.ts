@@ -36,6 +36,26 @@ export const transactionStatuses = [
 
 export const recurringStatuses = ["active", "paused", "ended"] as const;
 
+export const goalCategories = [
+  "housing",
+  "vehicle",
+  "electronics",
+  "travel",
+  "education",
+  "emergency",
+  "other",
+] as const;
+
+export const goalStatuses = ["active", "paused", "completed", "archived"] as const;
+
+export const allocationTypes = [
+  "initial_allocation",
+  "manual_allocation",
+  "manual_release",
+  "contribution",
+  "correction",
+] as const;
+
 function timestampColumns() {
   return {
     createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -235,6 +255,58 @@ export const investmentPortfolio = sqliteTable("investment_portfolio", {
   ...timestampColumns(),
 });
 
+export const financialGoals = sqliteTable(
+  "financial_goals",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    category: text("category", { enum: goalCategories }).notNull(),
+    targetAmountCents: integer("target_amount_cents").notNull(),
+    targetDate: text("target_date"),
+    plannedMonthlyContributionCents: integer(
+      "planned_monthly_contribution_cents"
+    )
+      .notNull()
+      .default(0),
+    priority: integer("priority").notNull().default(1),
+    status: text("status", { enum: goalStatuses }).notNull().default("active"),
+    color: text("color").notNull().default("#38bdf8"),
+    notes: text("notes"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("financial_goals_status_idx").on(table.status),
+    index("financial_goals_priority_idx").on(table.priority),
+  ]
+);
+
+export const financialGoalAllocations = sqliteTable(
+  "financial_goal_allocations",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    goalId: text("goal_id")
+      .notNull()
+      .references(() => financialGoals.id, { onDelete: "cascade" }),
+    transactionId: text("transaction_id").references(() => transactions.id, {
+      onDelete: "set null",
+    }),
+    type: text("type", { enum: allocationTypes }).notNull(),
+    amountCents: integer("amount_cents").notNull(),
+    occurredOn: text("occurred_on").notNull(),
+    notes: text("notes"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("financial_goal_allocations_goal_idx").on(table.goalId),
+    index("financial_goal_allocations_transaction_idx").on(table.transactionId),
+    index("financial_goal_allocations_occurred_idx").on(table.occurredOn),
+  ]
+);
+
 export const accountsRelations = relations(accounts, ({ many }) => ({
   transactions: many(transactions),
   outgoingTransfers: many(transfers, { relationName: "outgoing_transfers" }),
@@ -249,7 +321,7 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   creditCardCharges: many(creditCardCharges),
 }));
 
-export const transactionsRelations = relations(transactions, ({ one }) => ({
+export const transactionsRelations = relations(transactions, ({ one, many }) => ({
   account: one(accounts, {
     fields: [transactions.accountId],
     references: [accounts.id],
@@ -262,7 +334,26 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
     fields: [transactions.recurringTemplateId],
     references: [recurringTemplates.id],
   }),
+  goalAllocations: many(financialGoalAllocations),
 }));
+
+export const financialGoalsRelations = relations(financialGoals, ({ many }) => ({
+  allocations: many(financialGoalAllocations),
+}));
+
+export const financialGoalAllocationsRelations = relations(
+  financialGoalAllocations,
+  ({ one }) => ({
+    goal: one(financialGoals, {
+      fields: [financialGoalAllocations.goalId],
+      references: [financialGoals.id],
+    }),
+    transaction: one(transactions, {
+      fields: [financialGoalAllocations.transactionId],
+      references: [transactions.id],
+    }),
+  })
+);
 
 export const transfersRelations = relations(transfers, ({ one }) => ({
   fromAccount: one(accounts, {
@@ -319,3 +410,6 @@ export type CategoryGroup = (typeof categoryGroups)[number];
 export type TransactionType = (typeof transactionTypes)[number];
 export type TransactionStatus = (typeof transactionStatuses)[number];
 export type RecurringStatus = (typeof recurringStatuses)[number];
+export type GoalCategory = (typeof goalCategories)[number];
+export type GoalStatus = (typeof goalStatuses)[number];
+export type AllocationType = (typeof allocationTypes)[number];

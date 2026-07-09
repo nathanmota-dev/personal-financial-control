@@ -22,6 +22,13 @@
       "when": 1781996767241,
       "tag": "0002_dapper_carlie_cooper",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1783619773776,
+      "tag": "0003_groovy_masque",
+      "breakpoints": true
     }
   ]
 }
