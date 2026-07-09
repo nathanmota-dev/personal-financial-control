@@ -32,6 +32,7 @@ function revalidateFinanceViews() {
     "/recurring",
     "/projected-balance",
     "/investments",
+    "/goals",
     "/credit-card",
   ].forEach((path) => {
     revalidatePath(path);

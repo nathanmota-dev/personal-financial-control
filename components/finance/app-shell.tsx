@@ -13,6 +13,7 @@ import {
   ReceiptText,
   Repeat,
   Settings2,
+  Target,
 } from "lucide-react";
 
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
@@ -34,6 +35,7 @@ const navigation = [
   { href: "/recurring", label: "Recorrentes", icon: Repeat },
   { href: "/projected-balance", label: "Saldo Projetado", icon: ChartLine },
   { href: "/investments", label: "Investimentos", icon: PiggyBank },
+  { href: "/goals", label: "Metas", icon: Target },
   { href: "/settings", label: "Configurações", icon: Settings2 },
 ];
 
