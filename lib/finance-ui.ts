@@ -22,6 +22,11 @@ const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
+const moneyInputFormatter = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export const accountTypeLabels: Record<AccountType, string> = {
   checking: "Conta corrente",
   savings: "Poupança",
@@ -91,7 +96,23 @@ export function buildRecentMonths(count: number, anchorMonth = getDefaultMonth()
 }
 
 export function moneyInputToCents(value: string) {
-  const normalized = value.trim().replace(/\./g, "").replace(",", ".");
+  const trimmed = value.trim().replace(/^R\$\s*/i, "");
+  const lastComma = trimmed.lastIndexOf(",");
+  const lastDot = trimmed.lastIndexOf(".");
+  let normalized = trimmed;
+
+  if (lastComma >= 0 && lastDot >= 0) {
+    normalized =
+      lastComma > lastDot
+        ? trimmed.replace(/\./g, "").replace(",", ".")
+        : trimmed.replace(/,/g, "");
+  } else if (lastComma >= 0) {
+    normalized = trimmed.replace(/\./g, "").replace(",", ".");
+  } else if (lastDot >= 0) {
+    const decimalDigits = trimmed.length - lastDot - 1;
+    normalized = decimalDigits <= 2 ? trimmed : trimmed.replace(/\./g, "");
+  }
+
   const parsed = Number(normalized);
 
   if (!Number.isFinite(parsed)) {
@@ -103,6 +124,18 @@ export function moneyInputToCents(value: string) {
 
 export function centsToMoneyInput(value: number) {
   return (value / 100).toFixed(2).replace(".", ",");
+}
+
+export function formatMoneyInput(value: string) {
+  if (!value.trim()) {
+    return "";
+  }
+
+  try {
+    return moneyInputFormatter.format(moneyInputToCents(value) / 100);
+  } catch {
+    return value;
+  }
 }
 
 export function extractErrorMessage(error: unknown) {

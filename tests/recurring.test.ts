@@ -96,4 +96,32 @@ describe("recurring", () => {
       "Utilities",
     ]);
   });
+
+  it("accepts day 31 and clamps it to the last day of shorter months", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Main", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const category = await createCategory({ name: "Rent", group: "fixed_expense" }, db);
+
+    await createRecurringTemplate(
+      {
+        accountId: account.id,
+        categoryId: category.id,
+        type: "expense",
+        amountCents: 50000,
+        dayOfMonth: 31,
+        startMonth: "2026-04",
+        description: "Monthly rent",
+      },
+      db
+    );
+
+    const created = await generateRecurringTransactions("2026-04", db);
+
+    expect(created[0]?.transactionDate).toBe("2026-04-30");
+  });
 });

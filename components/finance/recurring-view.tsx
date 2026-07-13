@@ -15,6 +15,7 @@ import { CategorySpendingCharts } from "@/components/finance/category-spending-c
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
 import { RecurringCalendar } from "@/components/finance/recurring-calendar";
+import { RecurringMonthPicker } from "@/components/finance/recurring-month-picker";
 import { RecurringSegmentedControl } from "@/components/finance/recurring-segmented-control";
 import {
   AccountSetupDialog,
@@ -55,6 +56,7 @@ import {
   centsToMoneyInput,
   extractErrorMessage,
   formatCurrency,
+  formatMoneyInput,
   formatMonthLabel,
   getStatusTone,
   moneyInputToCents,
@@ -205,10 +207,22 @@ function RecurringDialog({
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const formId = useId();
+  const [startMonth, setStartMonth] = useState(template?.startMonth ?? month);
+  const [endMonth, setEndMonth] = useState<string | undefined>(template?.endMonth ?? undefined);
   const [selectedType, setSelectedType] = useState<RecurringTemplateRow["type"]>(
     template?.type ?? "expense"
   );
   const hasSetup = accounts.length > 0 && categories.length > 0;
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+
+    if (nextOpen) {
+      setSelectedType(template?.type ?? "expense");
+      setStartMonth(template?.startMonth ?? month);
+      setEndMonth(template?.endMonth ?? undefined);
+    }
+  }
 
   const filteredCategories = categories.filter((category) => {
     if (selectedType === "income") return category.group === "income";
@@ -245,7 +259,7 @@ function RecurringDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button>
@@ -376,14 +390,26 @@ function RecurringDialog({
                 <Label htmlFor={`${formId}-amount`} className={recurringFieldLabelClassName}>
                   Valor da recorrência
                 </Label>
-                <Input
-                  id={`${formId}-amount`}
-                  name="amount"
-                  inputMode="decimal"
-                  defaultValue={template ? centsToMoneyInput(template.amountCents) : ""}
-                  placeholder="Ex.: 150,00"
-                  className={cn(recurringFieldClassName, "font-mono")}
-                />
+                <div className="relative">
+                  <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-semibold text-slate-400">
+                    R$
+                  </span>
+                  <Input
+                    id={`${formId}-amount`}
+                    name="amount"
+                    type="text"
+                    inputMode="decimal"
+                    data-currency="BRL"
+                    defaultValue={
+                      template ? formatMoneyInput(centsToMoneyInput(template.amountCents)) : ""
+                    }
+                    onBlur={(event) => {
+                      event.currentTarget.value = formatMoneyInput(event.currentTarget.value);
+                    }}
+                    placeholder="120,00"
+                    className={cn(recurringFieldClassName, "pl-12 text-right font-mono")}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -396,25 +422,30 @@ function RecurringDialog({
                   type="number"
                   inputMode="numeric"
                   min={1}
-                  max={28}
+                  max={31}
                   defaultValue={template?.dayOfMonth ?? 5}
                   placeholder="Ex.: 5"
                   className={recurringFieldClassName}
                 />
-                <p className="text-xs text-slate-500">Use um dia entre 1 e 28.</p>
+                <p className="text-xs text-slate-500">
+                  Use um dia entre 1 e 31. Em meses menores, usamos o último dia disponível.
+                </p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor={`${formId}-start-month`} className={recurringFieldLabelClassName}>
                   Mês de início
                 </Label>
-                <Input
+                <RecurringMonthPicker
                   id={`${formId}-start-month`}
                   name="startMonth"
-                  type="month"
-                  defaultValue={template?.startMonth ?? month}
-                  placeholder="AAAA-MM"
-                  className={recurringFieldClassName}
+                  month={startMonth}
+                  placeholder="Selecione o mês de início"
+                  onMonthChange={(nextMonth) => {
+                    if (nextMonth) {
+                      setStartMonth(nextMonth);
+                    }
+                  }}
                 />
                 <p className="text-xs text-slate-500">A partir de qual competência gerar.</p>
               </div>
@@ -423,13 +454,13 @@ function RecurringDialog({
                 <Label htmlFor={`${formId}-end-month`} className={recurringFieldLabelClassName}>
                   Mês de encerramento <span className="normal-case tracking-normal text-slate-600">(opcional)</span>
                 </Label>
-                <Input
+                <RecurringMonthPicker
                   id={`${formId}-end-month`}
                   name="endMonth"
-                  type="month"
-                  defaultValue={template?.endMonth ?? ""}
-                  placeholder="AAAA-MM · deixe vazio para sem fim"
-                  className={recurringFieldClassName}
+                  month={endMonth}
+                  placeholder="Sem fim"
+                  clearable
+                  onMonthChange={setEndMonth}
                 />
               </div>
             </div>

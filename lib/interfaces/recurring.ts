@@ -84,3 +84,13 @@ export type RecurringCalendarProps = {
 export type RecurringCalendarEventItemProps = {
   event: RecurringCalendarEvent;
 };
+
+export type RecurringMonthPickerProps = {
+  id: string;
+  name: string;
+  month?: string;
+  placeholder: string;
+  clearable?: boolean;
+  onMonthChange: (month: string | undefined) => void;
+  className?: string;
+};

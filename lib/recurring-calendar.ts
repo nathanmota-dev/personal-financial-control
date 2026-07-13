@@ -21,12 +21,13 @@ export function buildRecurringCalendarEvents(
   templates: RecurringTemplateRow[]
 ): RecurringCalendarEvent[] {
   const [year, monthNumber] = month.split("-").map(Number);
+  const lastDay = new Date(year, monthNumber, 0).getDate();
 
   return templates
     .filter((template) => isRecurringTemplateVisibleInMonth(template, month))
     .map((template) => ({
       id: template.id,
-      date: new Date(year, monthNumber - 1, template.dayOfMonth, 12),
+      date: new Date(year, monthNumber - 1, Math.min(template.dayOfMonth, lastDay), 12),
       description: template.description,
       amountCents: template.amountCents,
       type: template.type,

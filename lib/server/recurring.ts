@@ -16,7 +16,7 @@ const recurringTemplateSchema = z.object({
   type: z.enum(["income", "expense", "investment_contribution"]),
   status: z.enum(["active", "paused", "ended"]).default("active"),
   amountCents: z.number().int().positive(),
-  dayOfMonth: z.number().int().min(1).max(28),
+  dayOfMonth: z.number().int().min(1).max(31),
   startMonth: z.string(),
   endMonth: z.string().optional(),
   description: z.string().trim().min(1),
@@ -161,7 +161,11 @@ export async function endRecurringTemplate(
 }
 
 function buildTransactionDate(month: string, dayOfMonth: number) {
-  return `${month}-${String(dayOfMonth).padStart(2, "0")}`;
+  const [year, monthNumber] = month.split("-").map(Number);
+  const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
+  const effectiveDay = Math.min(dayOfMonth, lastDay);
+
+  return `${month}-${String(effectiveDay).padStart(2, "0")}`;
 }
 
 async function markTemplateGenerated(

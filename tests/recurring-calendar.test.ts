@@ -65,4 +65,13 @@ describe("recurring calendar", () => {
     expect(isRecurringTemplateVisibleInMonth(endedTemplate, "2026-07")).toBe(true);
     expect(isRecurringTemplateVisibleInMonth(endedTemplate, "2026-08")).toBe(false);
   });
+
+  it("clamps day 31 to the last day of the displayed month", () => {
+    const [event] = buildRecurringCalendarEvents("2026-04", [
+      template({ dayOfMonth: 31, startMonth: "2026-04" }),
+    ]);
+
+    expect(event?.date.getMonth()).toBe(3);
+    expect(event?.date.getDate()).toBe(30);
+  });
 });
