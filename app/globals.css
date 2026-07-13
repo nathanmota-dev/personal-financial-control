@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@zach.codes/react-calendar/dist/calendar-tailwind-no-reset.css";
+
+@source "../node_modules/@zach.codes/react-calendar/dist";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -111,4 +114,42 @@
   .font-heading {
     font-family: var(--font-heading), serif;
   }
+}
+
+.recurring-calendar .rc-bg-white {
+  background-color: rgba(2, 6, 23, 0.72);
+}
+
+.recurring-calendar .rc-border-l-2,
+.recurring-calendar .rc-border-t-2,
+.recurring-calendar .rc-border-r-2,
+.recurring-calendar .rc-border-b-2 {
+  border-color: rgba(30, 41, 59, 0.82);
+  border-width: 1px;
+}
+
+.recurring-calendar .rc-font-bold {
+  color: rgb(226, 232, 240);
+}
+
+.recurring-calendar .rc-text-gray-500 {
+  color: rgb(100, 116, 139);
+}
+
+.recurring-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(30, 41, 59, 0.72);
+}
+
+.recurring-calendar .rc-overflow-y-auto {
+  scrollbar-color: rgba(71, 85, 105, 0.7) transparent;
+  scrollbar-width: thin;
+}
+
+.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar {
+  width: 5px;
+}
+
+.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(71, 85, 105, 0.7);
 }

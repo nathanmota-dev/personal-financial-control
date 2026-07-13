@@ -138,10 +138,7 @@ export default async function DashboardPage({
           investments: item.totals.investmentContributionCents / 100,
           net: item.totals.netResultCents / 100,
         }))}
-        categorySpending={resolved.categorySpending.map((item) => ({
-          categoryName: item.categoryName,
-          amount: item.amountCents / 100,
-        }))}
+        categorySpending={resolved.categorySpending}
       />
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">

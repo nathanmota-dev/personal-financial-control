@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pause, Pencil, Play, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -11,8 +11,11 @@ import {
   pauseRecurringTemplateAction,
   updateRecurringTemplateAction,
 } from "@/app/actions/finance";
+import { CategorySpendingCharts } from "@/components/finance/category-spending-charts";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
+import { RecurringCalendar } from "@/components/finance/recurring-calendar";
+import { RecurringSegmentedControl } from "@/components/finance/recurring-segmented-control";
 import {
   AccountSetupDialog,
   CategorySetupDialog,
@@ -31,7 +34,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import type {
+  EndRecurringButtonProps,
+  RecurringActionButtonProps,
+  RecurringDialogProps,
+  RecurringTemplateRow,
+  RecurringViewProps,
+} from "@/lib/interfaces/recurring";
 import {
   centsToMoneyInput,
   extractErrorMessage,
@@ -44,44 +63,24 @@ import {
 } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
-type AccountOption = {
-  id: string;
-  name: string;
-};
-
-type CategoryOption = {
-  id: string;
-  name: string;
-  group: "income" | "fixed_expense" | "variable_expense" | "investment";
-};
-
-type TemplateRow = {
-  id: string;
-  accountId: string;
-  categoryId: string;
-  type: "income" | "expense" | "investment_contribution";
-  status: "active" | "paused" | "ended";
-  amountCents: number;
-  dayOfMonth: number;
-  startMonth: string;
-  endMonth?: string | null;
-  lastGeneratedMonth?: string | null;
-  description: string;
-  account: { id: string; name: string } | null;
-  category: { id: string; name: string; group: string } | null;
-};
+const recurringFieldClassName =
+  "h-10 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+const recurringSelectTriggerClassName =
+  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20 data-[state=open]:border-slate-600 data-[state=open]:bg-slate-900";
+const recurringSelectContentClassName =
+  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+const recurringSelectItemClassName =
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
+const recurringFieldLabelClassName =
+  "text-xs uppercase tracking-[0.16em] text-slate-400";
 
 export function RecurringView({
   accounts,
   categories,
+  categorySpending,
   month,
   templates,
-}: {
-  accounts: AccountOption[];
-  categories: CategoryOption[];
-  month: string;
-  templates: TemplateRow[];
-}) {
+}: RecurringViewProps) {
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
   return (
@@ -99,81 +98,98 @@ export function RecurringView({
         }
       />
 
-      <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
-        <CardHeader>
-          <CardTitle>Recorrências cadastradas</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {templates.length ? (
-            templates.map((template) => (
-              <div key={template.id} className="rounded-[1.5rem] border border-slate-800 p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-heading text-xl font-semibold text-slate-100">
-                        {template.description}
-                      </h3>
-                      <Badge className={cn("ring-1", getStatusTone(template.status))}>
-                        {recurringStatusLabels[template.status]}
-                      </Badge>
-                      <Badge variant="outline">{transactionTypeLabels[template.type]}</Badge>
-                    </div>
-                    <div className="grid gap-2 text-sm text-slate-400 md:grid-cols-2">
-                      <p>Conta: {template.account?.name ?? "-"}</p>
-                      <p>Categoria: {template.category?.name ?? "-"}</p>
-                      <p>Valor: {formatCurrency(template.amountCents)}</p>
-                      <p>Dia de lançamento: {template.dayOfMonth}</p>
-                      <p>Início: {template.startMonth}</p>
-                      <p>Fim: {template.endMonth ?? "Sem fim"}</p>
-                    </div>
-                    <p className="text-sm leading-6 text-slate-400">
-                      {template.lastGeneratedMonth === month
-                        ? `Já gerou lançamento em ${month}.`
-                        : "Ainda não há geração para a competência em foco."}
-                    </p>
-                  </div>
+      <Tabs defaultValue="recurring" className="gap-4">
+        <RecurringSegmentedControl />
 
-                  <div className="flex flex-wrap gap-2">
-                    <RecurringDialog
-                      accounts={accounts}
-                      categories={categories}
-                      month={month}
-                      template={template}
-                      trigger={
-                        <Button variant="outline">
-                          <Pencil className="size-4" />
-                          Editar
-                        </Button>
-                      }
-                    />
-                    {template.status === "active" ? (
-                      <PauseRecurringButton id={template.id} />
-                    ) : template.status === "paused" ? (
-                      <ResumeRecurringButton id={template.id} />
-                    ) : null}
-                    <EndRecurringButton id={template.id} month={month} />
+        <TabsContent value="recurring" className="mt-0">
+          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+            <CardHeader>
+              <CardTitle>Recorrências cadastradas</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              {templates.length ? (
+                templates.map((template) => (
+                  <div key={template.id} className="rounded-[1.5rem] border border-slate-800 p-5">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-heading text-xl font-semibold text-slate-100">
+                            {template.description}
+                          </h3>
+                          <Badge className={cn("ring-1", getStatusTone(template.status))}>
+                            {recurringStatusLabels[template.status]}
+                          </Badge>
+                          <Badge variant="outline">{transactionTypeLabels[template.type]}</Badge>
+                        </div>
+                        <div className="grid gap-2 text-sm text-slate-400 md:grid-cols-2">
+                          <p>Conta: {template.account?.name ?? "-"}</p>
+                          <p>Categoria: {template.category?.name ?? "-"}</p>
+                          <p>Valor: {formatCurrency(template.amountCents)}</p>
+                          <p>Dia de lançamento: {template.dayOfMonth}</p>
+                          <p>Início: {template.startMonth}</p>
+                          <p>Fim: {template.endMonth ?? "Sem fim"}</p>
+                        </div>
+                        <p className="text-sm leading-6 text-slate-400">
+                          {template.lastGeneratedMonth === month
+                            ? `Já gerou lançamento em ${month}.`
+                            : "Ainda não há geração para a competência em foco."}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <RecurringDialog
+                          accounts={accounts}
+                          categories={categories}
+                          month={month}
+                          template={template}
+                          trigger={
+                            <Button variant="outline">
+                              <Pencil className="size-4" />
+                              Editar
+                            </Button>
+                          }
+                        />
+                        {template.status === "active" ? (
+                          <PauseRecurringButton id={template.id} />
+                        ) : template.status === "paused" ? (
+                          <ResumeRecurringButton id={template.id} />
+                        ) : null}
+                        <EndRecurringButton id={template.id} month={month} />
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <FinanceEmptyState
-              title="Sem recorrências"
-              description="Crie a base de conta e categoria e depois cadastre a primeira recorrência."
-              action={
-                hasSetup ? (
-                  <RecurringDialog accounts={accounts} categories={categories} month={month} />
-                ) : (
-                  <SetupCallout
-                    title="Base inicial obrigatoria"
-                    description="Você precisa de uma conta e uma categoria para criar entradas, despesas ou aportes recorrentes."
-                  />
-                )
-              }
-            />
-          )}
-        </CardContent>
-      </Card>
+                ))
+              ) : (
+                <FinanceEmptyState
+                  title="Sem recorrências"
+                  description="Crie a base de conta e categoria e depois cadastre a primeira recorrência."
+                  action={
+                    hasSetup ? (
+                      <RecurringDialog accounts={accounts} categories={categories} month={month} />
+                    ) : (
+                      <SetupCallout
+                        title="Base inicial obrigatoria"
+                        description="Você precisa de uma conta e uma categoria para criar entradas, despesas ou aportes recorrentes."
+                      />
+                    )
+                  }
+                />
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="category" className="mt-0">
+          <CategorySpendingCharts
+            categorySpending={categorySpending}
+            className="xl:grid-cols-2"
+          />
+        </TabsContent>
+
+        <TabsContent value="calendar" className="mt-0">
+          <RecurringCalendar key={month} month={month} templates={templates} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -184,17 +200,14 @@ function RecurringDialog({
   month,
   template,
   trigger,
-}: {
-  accounts: AccountOption[];
-  categories: CategoryOption[];
-  month: string;
-  template?: TemplateRow;
-  trigger?: React.ReactNode;
-}) {
+}: RecurringDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [selectedType, setSelectedType] = useState<TemplateRow["type"]>(template?.type ?? "expense");
+  const formId = useId();
+  const [selectedType, setSelectedType] = useState<RecurringTemplateRow["type"]>(
+    template?.type ?? "expense"
+  );
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
   const filteredCategories = categories.filter((category) => {
@@ -207,8 +220,8 @@ function RecurringDialog({
     const payload = {
       accountId: String(formData.get("accountId")),
       categoryId: String(formData.get("categoryId")),
-      type: String(formData.get("type")) as TemplateRow["type"],
-      status: String(formData.get("status")) as TemplateRow["status"],
+      type: String(formData.get("type")) as RecurringTemplateRow["type"],
+      status: String(formData.get("status")) as RecurringTemplateRow["status"],
       amountCents: moneyInputToCents(String(formData.get("amount"))),
       dayOfMonth: Number(formData.get("dayOfMonth")),
       startMonth: String(formData.get("startMonth")),
@@ -241,62 +254,198 @@ function RecurringDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-slate-800 bg-slate-950/95 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{template ? "Editar recorrência" : "Nova recorrência"}</DialogTitle>
           <DialogDescription>Sem conta e categoria, a recorrência não pode ser criada.</DialogDescription>
         </DialogHeader>
         {hasSetup ? (
-          <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
+          <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-5">
             <div className="grid gap-4 md:grid-cols-2">
-              <select
-                name="type"
-                value={selectedType}
-                onChange={(event) => setSelectedType(event.target.value as TemplateRow["type"])}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-              >
-                <option value="income">Receita</option>
-                <option value="expense">Despesa</option>
-                <option value="investment_contribution">Aporte</option>
-              </select>
-              <select
-                name="status"
-                defaultValue={template?.status ?? "active"}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-              >
-                <option value="active">Ativa</option>
-                <option value="paused">Pausada</option>
-                <option value="ended">Encerrada</option>
-              </select>
-              <select
-                name="accountId"
-                defaultValue={template?.accountId ?? accounts[0]?.id}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-              >
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.id}>
-                    {account.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                key={`${template?.id ?? "new"}-${selectedType}`}
-                name="categoryId"
-                defaultValue={template?.categoryId ?? filteredCategories[0]?.id}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-              >
-                {filteredCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <Input name="amount" defaultValue={template ? centsToMoneyInput(template.amountCents) : ""} placeholder="0,00" />
-              <Input name="dayOfMonth" type="number" min={1} max={28} defaultValue={template?.dayOfMonth ?? 5} />
-              <Input name="startMonth" type="month" defaultValue={template?.startMonth ?? month} />
-              <Input name="endMonth" type="month" defaultValue={template?.endMonth ?? ""} />
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-type`} className={recurringFieldLabelClassName}>
+                  Tipo de recorrência
+                </Label>
+                <Select
+                  name="type"
+                  value={selectedType}
+                  onValueChange={(value) =>
+                    setSelectedType(value as RecurringTemplateRow["type"])
+                  }
+                >
+                  <SelectTrigger id={`${formId}-type`} className={recurringSelectTriggerClassName}>
+                    <SelectValue placeholder="Selecione o tipo" />
+                  </SelectTrigger>
+                  <SelectContent className={recurringSelectContentClassName}>
+                    <SelectItem value="income" className={recurringSelectItemClassName}>
+                      Receita
+                    </SelectItem>
+                    <SelectItem value="expense" className={recurringSelectItemClassName}>
+                      Despesa
+                    </SelectItem>
+                    <SelectItem
+                      value="investment_contribution"
+                      className={recurringSelectItemClassName}
+                    >
+                      Aporte
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-status`} className={recurringFieldLabelClassName}>
+                  Status da recorrência
+                </Label>
+                <Select name="status" defaultValue={template?.status ?? "active"}>
+                  <SelectTrigger
+                    id={`${formId}-status`}
+                    className={recurringSelectTriggerClassName}
+                  >
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent className={recurringSelectContentClassName}>
+                    <SelectItem value="active" className={recurringSelectItemClassName}>
+                      Ativa
+                    </SelectItem>
+                    <SelectItem value="paused" className={recurringSelectItemClassName}>
+                      Pausada
+                    </SelectItem>
+                    <SelectItem value="ended" className={recurringSelectItemClassName}>
+                      Encerrada
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-account`} className={recurringFieldLabelClassName}>
+                  Conta de origem
+                </Label>
+                <Select name="accountId" defaultValue={template?.accountId ?? accounts[0]?.id}>
+                  <SelectTrigger
+                    id={`${formId}-account`}
+                    className={recurringSelectTriggerClassName}
+                  >
+                    <SelectValue placeholder="Selecione a conta" />
+                  </SelectTrigger>
+                  <SelectContent className={recurringSelectContentClassName}>
+                    {accounts.map((account) => (
+                      <SelectItem
+                        key={account.id}
+                        value={account.id}
+                        className={recurringSelectItemClassName}
+                      >
+                        {account.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-category`} className={recurringFieldLabelClassName}>
+                  Categoria
+                </Label>
+                <Select
+                  key={`${template?.id ?? "new"}-${selectedType}`}
+                  name="categoryId"
+                  defaultValue={template?.categoryId ?? filteredCategories[0]?.id}
+                >
+                  <SelectTrigger
+                    id={`${formId}-category`}
+                    className={recurringSelectTriggerClassName}
+                  >
+                    <SelectValue placeholder="Selecione a categoria" />
+                  </SelectTrigger>
+                  <SelectContent className={recurringSelectContentClassName}>
+                    {filteredCategories.map((category) => (
+                      <SelectItem
+                        key={category.id}
+                        value={category.id}
+                        className={recurringSelectItemClassName}
+                      >
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-amount`} className={recurringFieldLabelClassName}>
+                  Valor da recorrência
+                </Label>
+                <Input
+                  id={`${formId}-amount`}
+                  name="amount"
+                  inputMode="decimal"
+                  defaultValue={template ? centsToMoneyInput(template.amountCents) : ""}
+                  placeholder="Ex.: 150,00"
+                  className={cn(recurringFieldClassName, "font-mono")}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-day`} className={recurringFieldLabelClassName}>
+                  Dia do lançamento
+                </Label>
+                <Input
+                  id={`${formId}-day`}
+                  name="dayOfMonth"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={28}
+                  defaultValue={template?.dayOfMonth ?? 5}
+                  placeholder="Ex.: 5"
+                  className={recurringFieldClassName}
+                />
+                <p className="text-xs text-slate-500">Use um dia entre 1 e 28.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-start-month`} className={recurringFieldLabelClassName}>
+                  Mês de início
+                </Label>
+                <Input
+                  id={`${formId}-start-month`}
+                  name="startMonth"
+                  type="month"
+                  defaultValue={template?.startMonth ?? month}
+                  placeholder="AAAA-MM"
+                  className={recurringFieldClassName}
+                />
+                <p className="text-xs text-slate-500">A partir de qual competência gerar.</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-end-month`} className={recurringFieldLabelClassName}>
+                  Mês de encerramento <span className="normal-case tracking-normal text-slate-600">(opcional)</span>
+                </Label>
+                <Input
+                  id={`${formId}-end-month`}
+                  name="endMonth"
+                  type="month"
+                  defaultValue={template?.endMonth ?? ""}
+                  placeholder="AAAA-MM · deixe vazio para sem fim"
+                  className={recurringFieldClassName}
+                />
+              </div>
             </div>
-            <Textarea name="description" defaultValue={template?.description ?? ""} placeholder="Descrição operacional" />
+
+            <div className="space-y-2">
+              <Label htmlFor={`${formId}-description`} className={recurringFieldLabelClassName}>
+                Nome da recorrência
+              </Label>
+              <Textarea
+                id={`${formId}-description`}
+                name="description"
+                defaultValue={template?.description ?? ""}
+                placeholder="Ex.: Academia, aluguel ou plano de celular"
+                className="min-h-20 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 placeholder:text-slate-600 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20"
+              />
+            </div>
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
                 {isPending ? "Salvando..." : template ? "Salvar alterações" : "Criar recorrência"}
@@ -314,7 +463,7 @@ function RecurringDialog({
   );
 }
 
-function PauseRecurringButton({ id }: { id: string }) {
+function PauseRecurringButton({ id }: RecurringActionButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -340,7 +489,7 @@ function PauseRecurringButton({ id }: { id: string }) {
   );
 }
 
-function ResumeRecurringButton({ id }: { id: string }) {
+function ResumeRecurringButton({ id }: RecurringActionButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -366,7 +515,7 @@ function ResumeRecurringButton({ id }: { id: string }) {
   );
 }
 
-function EndRecurringButton({ id, month }: { id: string; month: string }) {
+function EndRecurringButton({ id, month }: EndRecurringButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
