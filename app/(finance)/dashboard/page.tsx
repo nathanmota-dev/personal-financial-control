@@ -2,6 +2,12 @@ import { PiggyBank, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 import { DashboardActions } from "@/components/finance/dashboard-actions";
 import { DashboardCharts } from "@/components/finance/dashboard-charts";
+import {
+  financeHeaderClassName,
+  financeItemClassName,
+  financeMetricClassName,
+  financePanelClassName,
+} from "@/components/finance/finance-styles";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -15,18 +21,18 @@ import {
   getDefaultMonth,
   isValidMonth,
 } from "@/lib/finance-ui";
+import type { DashboardPageProps, MetricCardProps } from "@/lib/interfaces/dashboard";
 import {
   getCategorySpendingReport,
   getMonthlyDashboard,
   getMonthlyExpenseFeed,
   getMonthlyEvolution,
 } from "@/lib/server/dashboard";
+import { cn } from "@/lib/utils";
 
 export default async function DashboardPage({
   searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
+}: DashboardPageProps) {
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
   const month = isValidMonth(monthParam) ? monthParam : getDefaultMonth();
@@ -146,8 +152,8 @@ export default async function DashboardPage({
       />
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
-          <CardHeader>
+        <Card className={financePanelClassName}>
+          <CardHeader className={financeHeaderClassName}>
             <CardTitle>Maiores gastos do mês</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -155,7 +161,10 @@ export default async function DashboardPage({
               topExpenses.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-200/80 px-4 py-3"
+                  className={cn(
+                    financeItemClassName,
+                    "flex items-center justify-between gap-4 px-4 py-3"
+                  )}
                 >
                   <div>
                     <p className="font-medium text-slate-100">{transaction.description}</p>
@@ -168,7 +177,10 @@ export default async function DashboardPage({
                     <p className="font-semibold text-blue-300">
                       {formatCurrency(transaction.amountCents)}
                     </p>
-                    <Badge variant="outline" className="mt-1">
+                    <Badge
+                      variant="outline"
+                      className="mt-1 border-slate-700 bg-slate-950/50 text-slate-300"
+                    >
                       {transaction.account?.name ?? "Conta"}
                     </Badge>
                   </div>
@@ -184,15 +196,18 @@ export default async function DashboardPage({
         </Card>
 
         <div className="grid gap-6">
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
-            <CardHeader>
+          <Card className={financePanelClassName}>
+            <CardHeader className={financeHeaderClassName}>
               <CardTitle>Saldos por conta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {resolved.dashboard.accountBalances.map((account) => (
                 <div
                   key={account.id}
-                  className="flex items-center justify-between rounded-2xl border border-slate-800 px-4 py-3"
+                  className={cn(
+                    financeItemClassName,
+                    "flex items-center justify-between gap-4 px-4 py-3"
+                  )}
                 >
                   <div>
                     <p className="font-medium text-slate-100">{account.name}</p>
@@ -211,48 +226,75 @@ export default async function DashboardPage({
             </CardContent>
           </Card>
 
-          <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
-            <CardHeader>
+          <Card className={financePanelClassName}>
+            <CardHeader className={financeHeaderClassName}>
               <CardTitle>Carteira consolidada</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-200">
+            <CardContent className="grid gap-3 text-sm">
               {resolved.dashboard.investmentProjection ? (
                 <>
-                  <p>
-                    Saldo estimado hoje:{" "}
-                    <span className="font-semibold text-white">
+                  <div
+                    className={cn(
+                      financeItemClassName,
+                      "flex items-center justify-between gap-4 px-4 py-3"
+                    )}
+                  >
+                    <p className="text-slate-400">Saldo estimado hoje</p>
+                    <p className="text-right font-semibold text-cyan-300">
                       {formatCurrency(resolved.dashboard.investmentProjection.currentBalanceCents)}
-                    </span>
-                  </p>
-                  <p>
-                    Rendimento estimado:{" "}
-                    <span className="font-semibold text-white">
-                      {formatCurrency(resolved.dashboard.investmentProjection.estimatedInterestCents)}
-                    </span>
-                  </p>
-                  <p>
-                    Desde o checkpoint:{" "}
-                    <span className="font-semibold text-white">
-                      {formatDateLabel(resolved.dashboard.investmentProjection.checkpointDate)}
-                    </span>
-                  </p>
-                  <p>
-                    Taxa esperada:{" "}
-                    <span className="font-semibold text-white">
-                      {(resolved.dashboard.investmentProjection.expectedMonthlyRateBps / 100).toFixed(2)}%
-                    </span>
-                  </p>
-                  {resolved.dashboard.investmentProjection.nextContributionDate ? (
-                    <p>
-                      Próximo aporte previsto:{" "}
-                      <span className="font-semibold text-white">
-                        {formatDateLabel(resolved.dashboard.investmentProjection.nextContributionDate)}
-                      </span>
                     </p>
+                  </div>
+                  <div
+                    className={cn(
+                      financeItemClassName,
+                      "flex items-center justify-between gap-4 px-4 py-3"
+                    )}
+                  >
+                    <p className="text-slate-400">Rendimento estimado</p>
+                    <p className="text-right font-semibold text-cyan-300">
+                      {formatCurrency(resolved.dashboard.investmentProjection.estimatedInterestCents)}
+                    </p>
+                  </div>
+                  <div
+                    className={cn(
+                      financeItemClassName,
+                      "flex items-center justify-between gap-4 px-4 py-3"
+                    )}
+                  >
+                    <p className="text-slate-400">Desde o checkpoint</p>
+                    <p className="text-right font-semibold text-slate-100">
+                      {formatDateLabel(resolved.dashboard.investmentProjection.checkpointDate)}
+                    </p>
+                  </div>
+                  <div
+                    className={cn(
+                      financeItemClassName,
+                      "flex items-center justify-between gap-4 px-4 py-3"
+                    )}
+                  >
+                    <p className="text-slate-400">Taxa esperada</p>
+                    <p className="text-right font-semibold text-slate-100">
+                      {(resolved.dashboard.investmentProjection.expectedMonthlyRateBps / 100).toFixed(2)}%
+                    </p>
+                  </div>
+                  {resolved.dashboard.investmentProjection.nextContributionDate ? (
+                    <div
+                      className={cn(
+                        financeItemClassName,
+                        "flex items-center justify-between gap-4 px-4 py-3"
+                      )}
+                    >
+                      <p className="text-slate-400">Próximo aporte previsto</p>
+                      <p className="text-right font-semibold text-slate-100">
+                        {formatDateLabel(resolved.dashboard.investmentProjection.nextContributionDate)}
+                      </p>
+                    </div>
                   ) : null}
                 </>
               ) : (
-                <p>A carteira ainda não foi configurada.</p>
+                <div className={cn(financeItemClassName, "px-4 py-3")}>
+                  <p className="text-slate-400">A carteira ainda não foi configurada.</p>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -268,17 +310,13 @@ function MetricCard({
   description,
   accent,
   icon,
-}: {
-  label: string;
-  value: string;
-  description: string;
-  accent: string;
-  icon: React.ReactNode;
-}) {
+}: MetricCardProps) {
   return (
-    <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
+    <Card className={financeMetricClassName}>
       <CardContent className="space-y-3 pt-6">
-        <div className={`inline-flex rounded-full bg-slate-900 p-2 ${accent}`}>{icon}</div>
+        <div className={`inline-flex rounded-full border border-slate-700 bg-slate-900 p-2 ${accent}`}>
+          {icon}
+        </div>
         <div>
           <p className="text-sm text-slate-400">{label}</p>
           <p className={`font-heading text-3xl font-semibold tracking-tight ${accent}`}>{value}</p>

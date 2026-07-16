@@ -2,6 +2,7 @@
 
 import { Cell, Pie, PieChart } from "recharts";
 
+import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -9,6 +10,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 import { ALLOCATION_BREAKDOWN_CHART_CONFIG } from "../goals-constants";
 import type { AllocationBreakdownCardProps } from "../goals-types";
@@ -31,7 +33,7 @@ export function AllocationBreakdownCard({
       <CardContent>
         {hasData ? (
           <ChartContainer
-            className="h-[260px] w-full"
+            className={cn(financeChartSurfaceClassName, "h-[260px] w-full")}
             config={ALLOCATION_BREAKDOWN_CHART_CONFIG}
           >
             <PieChart>

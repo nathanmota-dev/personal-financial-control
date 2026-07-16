@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { financeIconClassName } from "@/components/finance/finance-styles";
 import type { InvestmentSummaryCardProps } from "@/lib/interfaces/investments";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ export function InvestmentSummaryCard({
   return (
     <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
       <CardContent className="space-y-3 pt-5">
-        <div className={cn("inline-flex rounded-full p-2", tones[tone])}>{icon}</div>
+        <div className={cn(financeIconClassName, tones[tone])}>{icon}</div>
         <div>
           <p className="text-sm text-slate-400">{label}</p>
           <p className="font-heading text-3xl font-semibold tracking-tight text-slate-100">

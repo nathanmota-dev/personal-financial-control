@@ -39,7 +39,7 @@ export function RecurringCalendarEventItem({
         <div className="flex min-w-0 items-start gap-2">
           <span
             className={cn(
-              "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-md",
+              "mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-md border border-current/15",
               eventIconTone[event.type]
             )}
           >
@@ -55,7 +55,7 @@ export function RecurringCalendarEventItem({
           </div>
           {event.isGenerated ? (
             <span
-              className="flex size-4 shrink-0 items-center justify-center rounded-full bg-slate-950/30 text-slate-100"
+              className="flex size-4 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-950/30 text-slate-100"
               title="Lançamento já gerado"
             >
               <Check className="size-3" aria-hidden="true" />

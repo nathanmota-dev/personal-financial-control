@@ -6,6 +6,7 @@ import type {
   DailyProjectionTableProps,
   MobileDayMetricProps,
 } from "@/app/interfaces/projected-balance";
+import { financeItemClassName } from "@/components/finance/finance-styles";
 import { DayDetailSheet } from "@/components/finance/projected-balance-components/day-detail-sheet";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,7 +153,7 @@ export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
 
 function MobileDayMetric({ label, value, className }: MobileDayMetricProps) {
   return (
-    <div className="rounded-xl bg-slate-900/70 p-3">
+    <div className={cn(financeItemClassName, "p-3")}>
       <p className="text-xs text-slate-500">{label}</p>
       <p className={cn("mt-1 font-semibold", className)}>{value}</p>
     </div>

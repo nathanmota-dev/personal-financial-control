@@ -11,6 +11,7 @@ import {
   deleteCategoryAction,
 } from "@/app/actions/finance";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
+import { financeItemClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import { AccountSetupDialog, CategorySetupDialog } from "@/components/finance/setup-dialogs";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import {
   extractErrorMessage,
   formatCurrency,
 } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 type AccountRow = {
   id: string;
@@ -90,13 +92,13 @@ export function SettingsView({
                   <CardContent className="space-y-4">
                     {account.type === "credit" ? (
                       <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                        <div className={cn(financeItemClassName, "p-3")}>
                           <p className="text-slate-400">Fechamento</p>
                           <p className="mt-1 font-semibold text-slate-100">
                             {account.creditClosingDay ? `Dia ${account.creditClosingDay}` : "Não configurado"}
                           </p>
                         </div>
-                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                        <div className={cn(financeItemClassName, "p-3")}>
                           <p className="text-slate-400">Vencimento</p>
                           <p className="mt-1 font-semibold text-cyan-300">
                             Dia {account.creditDueDay}
@@ -105,13 +107,13 @@ export function SettingsView({
                       </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                        <div className={cn(financeItemClassName, "p-3")}>
                           <p className="text-slate-400">Saldo inicial</p>
                           <p className="mt-1 font-semibold text-slate-100">
                             {formatCurrency(account.initialBalanceCents)}
                           </p>
                         </div>
-                        <div className="rounded-2xl bg-slate-900/80 p-3">
+                        <div className={cn(financeItemClassName, "p-3")}>
                           <p className="text-slate-400">Saldo atual</p>
                           <p className="mt-1 font-semibold text-cyan-300">
                             {formatCurrency(account.currentBalanceCents)}

@@ -13,6 +13,7 @@ import {
 } from "@/app/actions/finance";
 import { CategorySpendingCharts } from "@/components/finance/category-spending-charts";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
+import { financeItemClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import { RecurringCalendar } from "@/components/finance/recurring-calendar";
 import { RecurringMonthPicker } from "@/components/finance/recurring-month-picker";
@@ -111,7 +112,10 @@ export function RecurringView({
             <CardContent className="grid gap-4 md:grid-cols-2">
               {templates.length ? (
                 templates.map((template) => (
-                  <div key={template.id} className="rounded-[1.5rem] border border-slate-800 p-5">
+                  <div
+                    key={template.id}
+                    className={cn(financeItemClassName, "rounded-[1.5rem] p-5")}
+                  >
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-3">
                         <div className="flex flex-wrap items-center gap-2">
@@ -123,7 +127,12 @@ export function RecurringView({
                           </Badge>
                           <Badge variant="outline">{transactionTypeLabels[template.type]}</Badge>
                         </div>
-                        <div className="grid gap-2 text-sm text-slate-400 md:grid-cols-2">
+                        <div
+                          className={cn(
+                            financeItemClassName,
+                            "grid gap-2 p-3 text-sm text-slate-400 md:grid-cols-2"
+                          )}
+                        >
                           <p>Conta: {template.account?.name ?? "-"}</p>
                           <p>Categoria: {template.category?.name ?? "-"}</p>
                           <p>Valor: {formatCurrency(template.amountCents)}</p>
@@ -131,7 +140,7 @@ export function RecurringView({
                           <p>Início: {template.startMonth}</p>
                           <p>Fim: {template.endMonth ?? "Sem fim"}</p>
                         </div>
-                        <p className="text-sm leading-6 text-slate-400">
+                        <p className="rounded-xl border border-slate-800 bg-slate-950/30 px-3 py-2 text-sm leading-6 text-slate-400">
                           {template.lastGeneratedMonth === month
                             ? `Já gerou lançamento em ${month}.`
                             : "Ainda não há geração para a competência em foco."}
