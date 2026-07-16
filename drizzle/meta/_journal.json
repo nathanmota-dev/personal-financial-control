@@ -36,6 +36,13 @@
       "when": 1784200000000,
       "tag": "0004_estimated_investment_balance",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1785000000000,
+      "tag": "0005_encrypted_money_columns",
+      "breakpoints": true
     }
   ]
 }

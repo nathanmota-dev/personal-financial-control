@@ -13,6 +13,7 @@ const serverEnvSchema = z.object({
   TOKEN: z.string().min(1).optional(),
   TURSO_DATABASE_URL: z.string().min(1).optional(),
   TURSO_AUTH_TOKEN: z.string().min(1).optional(),
+  DATA_ENCRYPTION_KEY: z.string().min(1, "DATA_ENCRYPTION_KEY is required"),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & {

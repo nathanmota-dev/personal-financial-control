@@ -1,11 +1,14 @@
 import { relations, sql } from "drizzle-orm";
 import {
+  check,
   index,
   integer,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+
+import { encryptedMoneyColumn } from "@/lib/db/encrypted-money";
 
 export const accountTypes = [
   "checking",
@@ -82,13 +85,22 @@ export const accounts = sqliteTable(
       .$defaultFn(() => crypto.randomUUID()),
     name: text("name").notNull(),
     type: text("type", { enum: accountTypes }).notNull(),
-    initialBalanceCents: integer("initial_balance_cents").notNull().default(0),
+    initialBalanceCents: encryptedMoneyColumn(
+      "initial_balance_cents",
+      "accounts.initial_balance_cents"
+    ).notNull(),
     creditClosingDay: integer("credit_closing_day"),
     creditDueDay: integer("credit_due_day").notNull().default(10),
     isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
     ...timestampColumns(),
   },
-  (table) => [uniqueIndex("accounts_name_unique").on(table.name)]
+  (table) => [
+    uniqueIndex("accounts_name_unique").on(table.name),
+    check(
+      "accounts_initial_balance_cents_encrypted",
+      sql`typeof(${table.initialBalanceCents}) = 'text' AND ${table.initialBalanceCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
 );
 
 export const categories = sqliteTable(
@@ -119,7 +131,7 @@ export const recurringTemplates = sqliteTable(
       .references(() => categories.id, { onDelete: "restrict" }),
     type: text("type", { enum: recurringTransactionTypes }).notNull(),
     status: text("status", { enum: recurringStatuses }).notNull().default("active"),
-    amountCents: integer("amount_cents").notNull(),
+    amountCents: encryptedMoneyColumn("amount_cents", "recurring_templates.amount_cents").notNull(),
     dayOfMonth: integer("day_of_month").notNull(),
     startMonth: text("start_month").notNull(),
     endMonth: text("end_month"),
@@ -130,6 +142,10 @@ export const recurringTemplates = sqliteTable(
   (table) => [
     index("recurring_templates_account_idx").on(table.accountId),
     index("recurring_templates_category_idx").on(table.categoryId),
+    check(
+      "recurring_templates_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
@@ -151,7 +167,7 @@ export const transactions = sqliteTable(
     ),
     type: text("type", { enum: transactionTypes }).notNull(),
     status: text("status", { enum: transactionStatuses }).notNull().default("posted"),
-    amountCents: integer("amount_cents").notNull(),
+    amountCents: encryptedMoneyColumn("amount_cents", "transactions.amount_cents").notNull(),
     transactionDate: text("transaction_date").notNull(),
     competenceMonth: text("competence_month").notNull(),
     description: text("description").notNull(),
@@ -171,6 +187,10 @@ export const transactions = sqliteTable(
       table.recurringTemplateId,
       table.competenceMonth
     ),
+    check(
+      "transactions_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
@@ -186,7 +206,7 @@ export const transfers = sqliteTable(
     toAccountId: text("to_account_id")
       .notNull()
       .references(() => accounts.id, { onDelete: "restrict" }),
-    amountCents: integer("amount_cents").notNull(),
+    amountCents: encryptedMoneyColumn("amount_cents", "transfers.amount_cents").notNull(),
     transferDate: text("transfer_date").notNull(),
     competenceMonth: text("competence_month").notNull(),
     description: text("description").notNull(),
@@ -196,6 +216,10 @@ export const transfers = sqliteTable(
     index("transfers_from_account_idx").on(table.fromAccountId),
     index("transfers_to_account_idx").on(table.toAccountId),
     index("transfers_competence_idx").on(table.competenceMonth),
+    check(
+      "transfers_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
@@ -214,7 +238,10 @@ export const creditCardCharges = sqliteTable(
     description: text("description").notNull(),
     notes: text("notes"),
     purchaseDate: text("purchase_date").notNull(),
-    totalAmountCents: integer("total_amount_cents").notNull(),
+    totalAmountCents: encryptedMoneyColumn(
+      "total_amount_cents",
+      "credit_card_charges.total_amount_cents"
+    ).notNull(),
     installmentCount: integer("installment_count").notNull(),
     firstInvoiceMonth: text("first_invoice_month").notNull(),
     ...timestampColumns(),
@@ -224,6 +251,10 @@ export const creditCardCharges = sqliteTable(
     index("credit_card_charges_category_idx").on(table.categoryId),
     index("credit_card_charges_purchase_date_idx").on(table.purchaseDate),
     index("credit_card_charges_first_invoice_idx").on(table.firstInvoiceMonth),
+    check(
+      "credit_card_charges_total_amount_cents_encrypted",
+      sql`typeof(${table.totalAmountCents}) = 'text' AND ${table.totalAmountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
@@ -237,7 +268,10 @@ export const creditCardInstallments = sqliteTable(
       .notNull()
       .references(() => creditCardCharges.id, { onDelete: "cascade" }),
     installmentNumber: integer("installment_number").notNull(),
-    amountCents: integer("amount_cents").notNull(),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "credit_card_installments.amount_cents"
+    ).notNull(),
     invoiceMonth: text("invoice_month").notNull(),
     ...timestampColumns(),
   },
@@ -248,18 +282,34 @@ export const creditCardInstallments = sqliteTable(
       table.chargeId,
       table.installmentNumber
     ),
+    check(
+      "credit_card_installments_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
-export const investmentPortfolio = sqliteTable("investment_portfolio", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  checkpointBalanceCents: integer("checkpoint_balance_cents").notNull(),
-  expectedMonthlyRateBps: integer("expected_monthly_rate_bps").notNull(),
-  checkpointDate: text("checkpoint_date").notNull(),
-  ...timestampColumns(),
-});
+export const investmentPortfolio = sqliteTable(
+  "investment_portfolio",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    checkpointBalanceCents: encryptedMoneyColumn(
+      "checkpoint_balance_cents",
+      "investment_portfolio.checkpoint_balance_cents"
+    ).notNull(),
+    expectedMonthlyRateBps: integer("expected_monthly_rate_bps").notNull(),
+    checkpointDate: text("checkpoint_date").notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    check(
+      "investment_portfolio_checkpoint_balance_cents_encrypted",
+      sql`typeof(${table.checkpointBalanceCents}) = 'text' AND ${table.checkpointBalanceCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
 
 export const financialGoals = sqliteTable(
   "financial_goals",
@@ -269,13 +319,15 @@ export const financialGoals = sqliteTable(
       .$defaultFn(() => crypto.randomUUID()),
     name: text("name").notNull(),
     category: text("category", { enum: goalCategories }).notNull(),
-    targetAmountCents: integer("target_amount_cents").notNull(),
+    targetAmountCents: encryptedMoneyColumn(
+      "target_amount_cents",
+      "financial_goals.target_amount_cents"
+    ).notNull(),
     targetDate: text("target_date"),
-    plannedMonthlyContributionCents: integer(
-      "planned_monthly_contribution_cents"
-    )
-      .notNull()
-      .default(0),
+    plannedMonthlyContributionCents: encryptedMoneyColumn(
+      "planned_monthly_contribution_cents",
+      "financial_goals.planned_monthly_contribution_cents"
+    ).notNull(),
     priority: integer("priority").notNull().default(1),
     status: text("status", { enum: goalStatuses }).notNull().default("active"),
     color: text("color").notNull().default("#38bdf8"),
@@ -285,6 +337,14 @@ export const financialGoals = sqliteTable(
   (table) => [
     index("financial_goals_status_idx").on(table.status),
     index("financial_goals_priority_idx").on(table.priority),
+    check(
+      "financial_goals_target_amount_cents_encrypted",
+      sql`typeof(${table.targetAmountCents}) = 'text' AND ${table.targetAmountCents} LIKE 'pfc:v1:%'`
+    ),
+    check(
+      "financial_goals_planned_monthly_contribution_cents_encrypted",
+      sql`typeof(${table.plannedMonthlyContributionCents}) = 'text' AND ${table.plannedMonthlyContributionCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 
@@ -301,7 +361,10 @@ export const financialGoalAllocations = sqliteTable(
       onDelete: "set null",
     }),
     type: text("type", { enum: allocationTypes }).notNull(),
-    amountCents: integer("amount_cents").notNull(),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "financial_goal_allocations.amount_cents"
+    ).notNull(),
     occurredOn: text("occurred_on").notNull(),
     notes: text("notes"),
     ...timestampColumns(),
@@ -310,6 +373,10 @@ export const financialGoalAllocations = sqliteTable(
     index("financial_goal_allocations_goal_idx").on(table.goalId),
     index("financial_goal_allocations_transaction_idx").on(table.transactionId),
     index("financial_goal_allocations_occurred_idx").on(table.occurredOn),
+    check(
+      "financial_goal_allocations_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
   ]
 );
 

@@ -134,17 +134,19 @@ export async function POST(request: Request) {
 
       const amountCents = parseMoneyToCents(row.item.value);
 
-      const duplicate = await db.query.transactions.findFirst({
+      const duplicateCandidates = await db.query.transactions.findMany({
         where: and(
           eq(transactions.accountId, account.id),
           eq(transactions.categoryId, category.id),
           eq(transactions.type, row.transactionType),
-          eq(transactions.amountCents, amountCents),
           eq(transactions.transactionDate, payload.context.transactionDate),
           eq(transactions.competenceMonth, payload.context.competenceMonth),
           eq(transactions.description, row.item.name)
         ),
       });
+      const duplicate = duplicateCandidates.find(
+        (candidate) => candidate.amountCents === amountCents
+      );
 
       if (duplicate) {
         skippedTransactions.push({
