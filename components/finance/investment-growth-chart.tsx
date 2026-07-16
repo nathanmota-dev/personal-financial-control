@@ -8,6 +8,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import {
   ChartContainer,
   ChartLegend,
@@ -19,6 +20,7 @@ import { InvestmentGrowthSummaryMetric } from "@/components/finance/investment-g
 import type { InvestmentGrowthChartProps } from "@/lib/interfaces/investments";
 import { formatCurrency, formatMonthLabel, formatRateFromBps } from "@/lib/finance-ui";
 import { buildInvestmentGrowthSeries } from "@/lib/investment-projection";
+import { cn } from "@/lib/utils";
 
 const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -91,7 +93,7 @@ export function InvestmentGrowthChart({
       </div>
 
       <ChartContainer
-        className="h-[460px] w-full"
+        className={cn(financeChartSurfaceClassName, "h-[460px] w-full")}
         config={{
           principal: { label: "Saldo + movimentos", color: "#38bdf8" },
           interest: { label: "Rendimento estimado", color: "#f59e0b" },

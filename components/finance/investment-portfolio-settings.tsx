@@ -10,6 +10,7 @@ import {
   reconcileInvestmentBalanceAction,
   updateInvestmentSettingsAction,
 } from "@/app/actions/finance";
+import { financeIconClassName } from "@/components/finance/finance-styles";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,6 +31,7 @@ import {
   formatRateFromBps,
   moneyInputToCents,
 } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioSettingsProps) {
   const router = useRouter();
@@ -143,7 +145,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
                 divergir da taxa modelada.
               </p>
             </div>
-            <div className="rounded-full bg-cyan-400/10 p-2 text-cyan-300">
+            <div className={cn(financeIconClassName, "bg-cyan-400/10 text-cyan-300")}>
               <SlidersHorizontal className="size-5" />
             </div>
           </div>

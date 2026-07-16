@@ -3,6 +3,7 @@
 import { Area, Bar, CartesianGrid, ComposedChart, XAxis, YAxis } from "recharts";
 import { ArrowDownToLine, ArrowUpFromLine, WalletCards } from "lucide-react";
 
+import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InvestmentHistoryMetric } from "@/components/finance/investment-history-metric";
 import {
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/chart";
 import type { InvestmentContributionChartProps } from "@/lib/interfaces/investments";
 import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -81,7 +83,7 @@ export function InvestmentContributionChart({
 
         {data.length ? (
           <ChartContainer
-            className="h-[330px] w-full"
+            className={cn(financeChartSurfaceClassName, "h-[330px] w-full")}
             config={{
               monthlyContribution: { label: "Aportes", color: "#38bdf8" },
               monthlyWithdrawal: { label: "Resgates", color: "#f59e0b" },

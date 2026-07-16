@@ -12,6 +12,7 @@ import type {
   ProjectionAlertsProps,
   ProjectionSummaryCardsProps,
 } from "@/app/interfaces/projected-balance";
+import { financeIconClassName } from "@/components/finance/finance-styles";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
@@ -125,7 +126,7 @@ function MetricCard({ label, value, description, icon, tone }: MetricCardProps) 
   return (
     <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
       <CardContent className="space-y-3 pt-6">
-        <div className={cn("inline-flex rounded-full p-2", tones[tone])}>{icon}</div>
+        <div className={cn(financeIconClassName, tones[tone])}>{icon}</div>
         <div>
           <p className="text-sm text-slate-400">{label}</p>
           <p className={cn("font-heading text-2xl font-semibold tracking-tight", tones[tone])}>

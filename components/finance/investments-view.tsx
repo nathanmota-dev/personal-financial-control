@@ -9,6 +9,7 @@ import { InvestmentContributionChart } from "@/components/finance/investment-con
 import { InvestmentGrowthChart } from "@/components/finance/investment-growth-chart";
 import { InvestmentPortfolioSettings } from "@/components/finance/investment-portfolio-settings";
 import { InvestmentSummaryCard } from "@/components/finance/investment-summary-card";
+import { financePanelClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { InvestmentsViewProps } from "@/lib/interfaces/investments";
 import { formatCurrency, formatDateLabel, formatRateFromBps } from "@/lib/finance-ui";
 import { projectCompoundBalance } from "@/lib/investment-projection";
+import { cn } from "@/lib/utils";
 
 const SIMULATION_MONTH_LABELS = [
   "Jan",
@@ -162,7 +164,7 @@ export function InvestmentsView({
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Card className="h-full rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+        <Card className={cn(financePanelClassName, "h-full")}>
           <CardHeader>
             <CardTitle>Projeções com seus lançamentos</CardTitle>
             <p className="text-sm leading-6 text-slate-400">
@@ -192,7 +194,7 @@ export function InvestmentsView({
           </CardContent>
         </Card>
 
-        <Card className="h-full rounded-[1.75rem] border-slate-800 bg-[#06152d] text-white">
+        <Card className={cn(financePanelClassName, "h-full")}>
           <CardHeader>
             <CardTitle>Simular período</CardTitle>
             <p className="text-sm leading-6 text-slate-300">

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { financePanelClassName } from "@/components/finance/finance-styles";
 import { formatCurrency } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +22,7 @@ export function CreditBudgetSummary({
     nonCardExpenseCents + investmentContributionCents - investmentWithdrawalCents;
 
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d]">
+    <Card className={financePanelClassName}>
       <CardHeader>
         <CardTitle>Resumo mensal para gasto no cartão</CardTitle>
       </CardHeader>

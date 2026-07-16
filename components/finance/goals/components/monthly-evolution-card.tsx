@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -16,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 import {
   COMPACT_CURRENCY_FORMATTER,
@@ -40,7 +42,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
       <CardContent>
         {data.length ? (
           <ChartContainer
-            className="h-[280px] w-full"
+            className={cn(financeChartSurfaceClassName, "h-[280px] w-full")}
             config={MONTHLY_EVOLUTION_CHART_CONFIG}
           >
             <ComposedChart

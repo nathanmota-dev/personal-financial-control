@@ -5,6 +5,7 @@ import type {
   DetailMetricProps,
   EventRowProps,
 } from "@/app/interfaces/projected-balance";
+import { financeItemClassName } from "@/components/finance/finance-styles";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -101,7 +102,7 @@ function EventRow({ event }: EventRowProps) {
       : undefined;
 
   return (
-    <div className="rounded-2xl bg-slate-900/70 p-3">
+    <div className={cn(financeItemClassName, "p-3")}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">

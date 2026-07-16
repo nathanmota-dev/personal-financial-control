@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createCreditCardChargeAction } from "@/app/actions/finance";
 import { CreditBudgetSummary } from "@/components/finance/credit-budget-summary";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
+import { financeItemClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import {
   AccountSetupDialog,
@@ -177,7 +178,7 @@ export function CreditCardView({
             </p>
             <div className="grid gap-3 md:grid-cols-2">
               {overview.accounts.map((account) => (
-                <div key={account.id} className="rounded-2xl border border-slate-800 p-4">
+                <div key={account.id} className={cn(financeItemClassName, "p-4")}>
                   <p className="font-medium text-slate-100">{account.name}</p>
                   <p className="mt-2 text-sm text-slate-400">
                     Fechamento: {account.creditClosingDay ? `dia ${account.creditClosingDay}` : "não configurado"}
@@ -396,7 +397,7 @@ export function CreditCardView({
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   {charge.installments.map((installment) => (
-                    <div key={installment.id} className="rounded-2xl bg-slate-900/80 p-3">
+                    <div key={installment.id} className={cn(financeItemClassName, "p-3")}>
                       <p className="text-sm text-slate-400">
                         {installment.installmentNumber}/{charge.installmentCount} •{" "}
                         {formatMonthLabel(installment.invoiceMonth)}

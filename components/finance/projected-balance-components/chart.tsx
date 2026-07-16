@@ -14,6 +14,7 @@ import type {
   ProjectedBalanceChartPoint,
   ProjectedBalanceChartProps,
 } from "@/app/interfaces/projected-balance";
+import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -21,6 +22,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
 
 import { statusLabels } from "./labels";
 
@@ -57,7 +59,7 @@ export function ProjectedBalanceChart({
       </CardHeader>
       <CardContent>
         <ChartContainer
-          className="h-[360px] w-full"
+          className={cn(financeChartSurfaceClassName, "h-[360px] w-full")}
           config={{
             balance: { label: "Saldo projetado", color: "#22d3ee" },
             zero: { label: "Zero", color: "#f43f5e" },

@@ -81,10 +81,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={buildNavigationHref(item.href)}
                     className={cn(
-                      "flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition",
+                      "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
                       active
-                        ? "bg-cyan-300 text-slate-950 shadow-lg"
-                        : "text-slate-300 hover:bg-sky-400/10 hover:text-white"
+                        ? "border-cyan-200/70 bg-cyan-300 text-slate-950 shadow-lg"
+                        : "border-slate-800/60 text-slate-300 hover:border-sky-400/30 hover:bg-sky-400/10 hover:text-white"
                     )}
                   >
                     <span className="flex items-center gap-3">
@@ -131,10 +131,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={buildNavigationHref(item.href)}
                         className={cn(
-                          "flex items-center justify-between rounded-2xl px-4 py-3 text-sm transition",
+                          "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
                           active
-                            ? "bg-cyan-300 text-slate-950"
-                            : "text-slate-200 hover:bg-sky-400/10 hover:text-white"
+                            ? "border-cyan-200/70 bg-cyan-300 text-slate-950"
+                            : "border-slate-800/60 text-slate-200 hover:border-sky-400/30 hover:bg-sky-400/10 hover:text-white"
                         )}
                       >
                         <span className="flex items-center gap-3">

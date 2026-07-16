@@ -9,6 +9,7 @@ import type {
   ProjectionFiltersProps,
   ToggleFilterProps,
 } from "@/app/interfaces/projected-balance";
+import { financeIconClassName } from "@/components/finance/finance-styles";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -112,7 +113,7 @@ export function ProjectionFilters({
     <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
       <CardHeader className="gap-2">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-cyan-400/10 p-2 text-cyan-300">
+          <div className={cn(financeIconClassName, "bg-cyan-400/10 text-cyan-300")}>
             <SlidersHorizontal className="size-4" />
           </div>
           <CardTitle>Filtros da projeção</CardTitle>
