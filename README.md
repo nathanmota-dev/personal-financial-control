@@ -67,19 +67,19 @@ Se o projeto for movido para outra pasta, execute `./install-app.sh` novamente p
 O navegador padrão está configurado no `.env`:
 
 ```env
-BROWSER_BIN="brave"
-```
-
-Essa é a configuração usada atualmente para abrir o app no Brave. Para usar o Chrome, altere a flag para o executável disponível no sistema, por exemplo:
-
-```env
 BROWSER_BIN="google-chrome"
 ```
 
-Também é possível testar a alteração sem editar o arquivo:
+O Chrome é usado por padrão para abrir o app. Para usar outro navegador, altere o valor para o executável disponível no sistema, por exemplo:
+
+```env
+BROWSER_BIN="google-chrome-stable"
+```
+
+Também é possível testar outro navegador sem editar o arquivo:
 
 ```bash
-BROWSER_BIN=google-chrome ./open-app.sh
+BROWSER_BIN=chromium ./open-app.sh
 ```
 
 Outros nomes comuns são `google-chrome-stable`, `chromium` e `chromium-browser`. O `.example.env` já contém a mesma flag para novas instalações.
