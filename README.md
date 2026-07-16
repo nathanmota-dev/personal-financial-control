@@ -1,121 +1,119 @@
 # Personal Financial Control
 
-## Inicializacao local
+O Personal Financial Control é um app web de finanças pessoais. Ele ajuda a organizar contas, categorias, lançamentos, transferências, recorrências, cartões, investimentos, metas e projeções de saldo.
 
-Para iniciar o app local sem entrar na pasta nem rodar comandos manualmente, use:
+Há duas formas de iniciar o app: usando Docker ou instalando um launcher no menu de aplicativos do Linux.
+
+## 1. Iniciar com Docker
+
+Pré-requisitos:
+
+- Docker;
+- Docker Compose, disponível pelo comando `docker compose`.
+
+Se ainda não existir um `.env`, crie-o a partir do exemplo:
 
 ```bash
-./start-app.sh
+cp .example.env .env
 ```
 
-O script:
+Preencha `DATA_ENCRYPTION_KEY` no `.env`. O Compose sempre sobrescreve `DATABASE_URL` com `file:/app/.local/personal-finance.db`, mesmo que o `.env` contenha configurações do Turso. O arquivo é criado e migrado automaticamente dentro do container.
 
-- instala dependencias se `node_modules` ainda nao existir
-- reaproveita o build atual quando o codigo nao mudou
-- roda `npm run build` automaticamente quando detectar mudanca relevante
-- aplica as migracoes locais antes de subir o servidor
-- inicia o app com `npm start`
-
-Para instalar o launcher no menu de aplicativos do Linux, use uma vez:
+Na raiz do projeto, rode:
 
 ```bash
+docker compose up --build
+```
+
+Depois, acesse <http://localhost:3007>. O Compose aplica as migrações antes de iniciar o servidor. O SQLite é um arquivo local acessado pelo próprio app; não existe um serviço de banco separado. Os dados ficam no volume `personal_financial_control_data`.
+
+Para iniciar em segundo plano:
+
+```bash
+docker compose up -d --build
+```
+
+Para parar o container:
+
+```bash
+docker compose down
+```
+
+Esse comando preserva o volume e os dados. Para remover também o banco local, use `docker compose down -v`.
+
+## 2. Instalar como app no Linux
+
+A instalação local usa Node.js, npm, um navegador baseado em Chromium e os scripts `.sh` do projeto. O `install-app.sh` registra o app no menu de aplicativos; o `open-app.sh` sobe o servidor e abre uma janela dedicada do navegador.
+
+Com os pré-requisitos instalados, execute na raiz do projeto:
+
+```bash
+chmod +x ./*.sh
 ./install-app.sh
 ```
 
-O instalador registra o app como `Finance`, associa o logo do projeto e calcula os caminhos a partir do diretorio atual do clone. Depois da instalacao, procure por `Finance` no menu de aplicativos.
-
-Execute o instalador novamente caso clone ou mova o projeto para outro diretorio. Para abrir diretamente pelo terminal sem instalar o launcher, use:
+Depois, procure por `Finance` no menu de aplicativos do Linux. Para iniciar pelo terminal sem instalar o launcher, use:
 
 ```bash
 ./open-app.sh
 ```
 
-Esse launcher sobe o servidor em background na porta `3007` e abre o app em uma janela dedicada do Brave, com perfil separado do navegador pessoal. Quando essa janela e fechada, o launcher encerra o servidor automaticamente.
+Antes de iniciar fora do Docker, preencha no `.env` `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` com as credenciais do Turso. O primeiro início instala as dependências se necessário, gera o build quando houver alterações, aplica as migrações, inicia o servidor na porta `3007` e abre o app no navegador configurado.
 
-Opcoes uteis:
+Se o projeto for movido para outra pasta, execute `./install-app.sh` novamente para atualizar o launcher.
 
-```bash
-PORT=3007 ./start-app.sh
-START_APP_SKIP_SERVER=1 ./start-app.sh
-START_APP_SKIP_BROWSER=1 ./open-app.sh
+### Escolher o navegador
+
+O navegador padrão está configurado no `.env`:
+
+```env
+BROWSER_BIN="brave"
 ```
 
-`START_APP_SKIP_SERVER=1` serve para validar o fluxo completo sem deixar o processo preso no servidor.
-`START_APP_SKIP_BROWSER=1` serve para validar a subida supervisionada sem abrir a janela do app.
+Essa é a configuração usada atualmente para abrir o app no Brave. Para usar o Chrome, altere a flag para o executável disponível no sistema, por exemplo:
 
-## Backend Contract
+```env
+BROWSER_BIN="google-chrome"
+```
 
-No v1 atual, o backend não expõe rotas HTTP em `app/api`.
-O frontend consome:
+Também é possível testar a alteração sem editar o arquivo:
 
-- leituras via funções server-side em `lib/server/*`
-- mutações via `Server Actions` em [app/actions/finance.ts](/home/nathan/Desktop/git/personal-financial-control/app/actions/finance.ts)
+```bash
+BROWSER_BIN=google-chrome ./open-app.sh
+```
 
-Se no futuro houver necessidade de integração externa, mobile ou API pública, essas mesmas regras podem ser reaproveitadas em `app/api/.../route.ts`.
+Outros nomes comuns são `google-chrome-stable`, `chromium` e `chromium-browser`. O `.example.env` já contém a mesma flag para novas instalações.
 
-## Leituras
+### Scripts disponíveis
 
-| Consumo | Origem | Payload de entrada | Retorno resumido |
-| --- | --- | --- | --- |
-| Dashboard mensal | `getMonthlyDashboard(month)` | `{ month: "YYYY-MM" }` | `{ competenceMonth, totals: { incomeCents, fixedExpenseCents, variableExpenseCents, investmentContributionCents, netResultCents }, accountBalances: [{ id, name, type, currentBalanceCents }], investmentProjection }` |
-| Evolução mensal | `getMonthlyEvolution(months)` | `{ months: ["YYYY-MM", "YYYY-MM"] }` | `Array<MonthlyDashboard>` |
-| Gastos por categoria | `getCategorySpendingReport(competenceMonth)` | `{ competenceMonth: "YYYY-MM" }` | `[{ categoryId, categoryName, amountCents }]` |
-| Comparação entre meses | `compareMonths(leftMonth, rightMonth)` | `{ leftMonth: "YYYY-MM", rightMonth: "YYYY-MM" }` | `{ left: MonthlyDashboard, right: MonthlyDashboard }` |
-| Listar contas | `listAccounts(options?)` | `{ includeArchived?: boolean }` | `[{ id, name, type, initialBalanceCents, isArchived, currentBalanceCents, metrics, createdAt, updatedAt }]` |
-| Detalhar conta | `getAccountDetails(id)` | `{ id: "uuid" }` | `{ id, name, type, initialBalanceCents, isArchived, currentBalanceCents, metrics: { postedIncomeCents, postedExpenseCents, postedInvestmentContributionCents, outgoingTransferCents, incomingTransferCents }, createdAt, updatedAt }` |
-| Listar categorias | `listCategories(options?)` | `{ includeArchived?: boolean }` | `[{ id, name, group, isArchived, createdAt, updatedAt }]` |
-| Listar lançamentos | `listTransactions(filters?)` | `{ competenceMonth?: "YYYY-MM", accountId?: "uuid", categoryId?: "uuid", status?: "pending" \| "posted" \| "cancelled" }` | `[{ id, accountId, categoryId, type, status, amountCents, transactionDate, competenceMonth, description, notes, recurringTemplateId, account, category, createdAt, updatedAt }]` |
-| Listar transferências | `listTransfers(filters?)` | `{ competenceMonth?: "YYYY-MM", accountId?: "uuid" }` | `[{ id, fromAccountId, toAccountId, amountCents, transferDate, competenceMonth, description, fromAccount, toAccount, createdAt, updatedAt }]` |
-| Listar recorrências | `listRecurringTemplates()` | `void` | `[{ id, accountId, categoryId, type, status, amountCents, dayOfMonth, startMonth, endMonth, lastGeneratedMonth, description, account, category, createdAt, updatedAt }]` |
-| Carteira consolidada | `getInvestmentPortfolio()` | `void` | `{ id, currentBalanceCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, createdAt, updatedAt } \| null` |
-| Projeção da carteira | `getInvestmentProjection()` | `void` | `{ id, currentBalanceCents, baseBalanceCents, unincorporatedContributionCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, baseReferenceDate, projection: { 1, 6, 12, 24 }, createdAt, updatedAt } \| null` |
-| Histórico de aportes | `getInvestmentContributionHistory()` | `void` | `{ totalContributionCents, points: [{ month, monthlyContributionCents, cumulativeContributionCents }] }` |
+- `./install-app.sh`: instala ou atualiza o launcher `Finance` no menu do Linux;
+- `./open-app.sh`: inicia o app em background, abre a janela dedicada e encerra o servidor ao fechar a janela;
+- `./start-app.sh`: prepara o build, aplica as migrações e inicia apenas o servidor;
+- `./open-app.sh` com `START_APP_SKIP_BROWSER=1`: valida a subida sem abrir o navegador;
+- `./start-app.sh` com `START_APP_SKIP_SERVER=1`: valida dependências, build e migrações sem manter o servidor ativo.
 
-## Mutações
+Exemplo de porta diferente:
 
-| Ação do frontend | Server Action | Payload de entrada | Retorno resumido |
-| --- | --- | --- | --- |
-| Criar conta | `createAccountAction(input)` | `{ name: string, type: "checking" \| "savings" \| "cash" \| "credit" \| "investment", initialBalanceCents: number }` | `{ id, name, type, initialBalanceCents, isArchived, createdAt, updatedAt }` |
-| Editar conta | `updateAccountAction(input)` | `{ id: "uuid", name?: string, type?: "checking" \| "savings" \| "cash" \| "credit" \| "investment", initialBalanceCents?: number }` | `{ id, name, type, initialBalanceCents, isArchived, createdAt, updatedAt }` |
-| Arquivar conta | `archiveAccountAction(id)` | `{ id: "uuid" }` | `{ id, name, type, initialBalanceCents, isArchived: true, createdAt, updatedAt }` |
-| Criar categoria | `createCategoryAction(input)` | `{ name: string, group: "income" \| "fixed_expense" \| "variable_expense" \| "investment" }` | `{ id, name, group, isArchived, createdAt, updatedAt }` |
-| Editar categoria | `updateCategoryAction(input)` | `{ id: "uuid", name?: string, group?: "income" \| "fixed_expense" \| "variable_expense" \| "investment" }` | `{ id, name, group, isArchived, createdAt, updatedAt }` |
-| Arquivar categoria | `archiveCategoryAction(id)` | `{ id: "uuid" }` | `{ id, name, group, isArchived: true, createdAt, updatedAt }` |
-| Excluir categoria | `deleteCategoryAction(id)` | `{ id: "uuid" }` | `void` |
-| Criar lançamento | `createTransactionAction(input)` | `{ accountId: "uuid", categoryId: "uuid", type: "income" \| "expense" \| "investment_contribution", status?: "pending" \| "posted" \| "cancelled", amountCents: number, transactionDate: "YYYY-MM-DD", competenceMonth: "YYYY-MM", description: string, notes?: string, recurringTemplateId?: "uuid" }` | `{ id, accountId, categoryId, type, status, amountCents, transactionDate, competenceMonth, description, notes, recurringTemplateId, createdAt, updatedAt }` |
-| Editar lançamento | `updateTransactionAction(input)` | `{ id: "uuid", accountId?: "uuid", categoryId?: "uuid", type?: "income" \| "expense" \| "investment_contribution", status?: "pending" \| "posted" \| "cancelled", amountCents?: number, transactionDate?: "YYYY-MM-DD", competenceMonth?: "YYYY-MM", description?: string, notes?: string, recurringTemplateId?: "uuid" }` | `{ id, accountId, categoryId, type, status, amountCents, transactionDate, competenceMonth, description, notes, recurringTemplateId, createdAt, updatedAt }` |
-| Excluir lançamento | `deleteTransactionAction(id)` | `{ id: "uuid" }` | `void` |
-| Criar transferência | `createTransferAction(input)` | `{ fromAccountId: "uuid", toAccountId: "uuid", amountCents: number, transferDate: "YYYY-MM-DD", competenceMonth: "YYYY-MM", description: string }` | `{ id, fromAccountId, toAccountId, amountCents, transferDate, competenceMonth, description, createdAt, updatedAt }` |
-| Criar recorrência | `createRecurringTemplateAction(input)` | `{ accountId: "uuid", categoryId: "uuid", type: "income" \| "expense" \| "investment_contribution", status?: "active" \| "paused" \| "ended", amountCents: number, dayOfMonth: number, startMonth: "YYYY-MM", endMonth?: "YYYY-MM", description: string }` | `{ id, accountId, categoryId, type, status, amountCents, dayOfMonth, startMonth, endMonth, lastGeneratedMonth, description, createdAt, updatedAt }` |
-| Editar recorrência | `updateRecurringTemplateAction(input)` | `{ id: "uuid", accountId?: "uuid", categoryId?: "uuid", type?: "income" \| "expense" \| "investment_contribution", status?: "active" \| "paused" \| "ended", amountCents?: number, dayOfMonth?: number, startMonth?: "YYYY-MM", endMonth?: "YYYY-MM", description?: string }` | `{ id, accountId, categoryId, type, status, amountCents, dayOfMonth, startMonth, endMonth, lastGeneratedMonth, description, createdAt, updatedAt }` |
-| Pausar recorrência | `pauseRecurringTemplateAction(id)` | `{ id: "uuid" }` | `{ id, status: "paused", ... }` |
-| Encerrar recorrência | `endRecurringTemplateAction(id, endMonth)` | `{ id: "uuid", endMonth: "YYYY-MM" }` | `{ id, status: "ended", endMonth, ... }` |
-| Gerar lançamentos recorrentes do mês | `generateRecurringTransactionsAction(month)` | `{ month: "YYYY-MM" }` | `Array<Transaction>` |
-| Salvar carteira consolidada | `saveInvestmentPortfolioAction(input)` | `{ currentBalanceCents: number, monthlyContributionCents: number, expectedMonthlyRateBps: number, referenceDate: "YYYY-MM-DD" }` | `{ id, currentBalanceCents, monthlyContributionCents, expectedMonthlyRateBps, referenceDate, createdAt, updatedAt }` |
-| Registrar aporte da carteira | `createInvestmentContributionAction(input)` | `{ accountId: "uuid", categoryId: "uuid", amountCents: number, transactionDate: "YYYY-MM-DD" }` | `{ id, accountId, categoryId, type: "investment_contribution", status: "posted", amountCents, transactionDate, competenceMonth, createdAt, updatedAt }` |
+```bash
+PORT=3008 ./open-app.sh
+```
 
-## Regras de payload
+## Configuração e dados
 
-| Campo | Regra |
-| --- | --- |
-| `id`, `accountId`, `categoryId`, `fromAccountId`, `toAccountId`, `recurringTemplateId` | UUID |
-| `amountCents`, `initialBalanceCents`, `currentBalanceCents`, `monthlyContributionCents` | inteiro em centavos |
-| `expectedMonthlyRateBps` | taxa mensal em basis points. Ex.: `100` = `1%` ao mês |
-| `competenceMonth`, `startMonth`, `endMonth`, `month` | formato `YYYY-MM` |
-| `transactionDate`, `transferDate`, `referenceDate` | formato `YYYY-MM-DD` |
-| `type` de lançamento | `income`, `expense`, `investment_contribution` |
-| `status` de lançamento | `pending`, `posted`, `cancelled` |
-| `group` de categoria | `income`, `fixed_expense`, `variable_expense`, `investment` |
-| `status` de recorrência | `active`, `paused`, `ended` |
+`.env` é o arquivo usado localmente e não deve ser versionado. Use `.example.env` como modelo. As variáveis principais são:
 
-Nas projeções, o primeiro mês usa a taxa efetiva proporcional aos dias restantes desde `referenceDate` e não recebe o aporte mensal previsto. Os aportes previstos começam no fechamento do mês seguinte. Ao salvar novamente a carteira, o saldo informado se torna o novo checkpoint e os aportes realizados pendentes são consolidados nele.
+- `DATABASE_URL`: URL do banco selecionado. No Docker, o Compose injeta `file:/app/.local/personal-finance.db` automaticamente;
+- `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`: conexão com Turso quando `DATABASE_URL` não estiver definida;
+- `DATA_ENCRYPTION_KEY`: chave base64 de 32 bytes usada para proteger os dados financeiros;
+- `BROWSER_BIN`: executável usado pelo launcher do Linux.
 
-## Observação importante
+Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; trocá-la impede a leitura desses dados.
 
-Se você quiser consumir isso a partir de componentes client-side, o fluxo esperado neste v1 é:
+## Desenvolvimento
 
-- o formulário client importa a `Server Action`
-- envia o payload diretamente para a action
-- a action persiste e revalida as páginas afetadas
+Para executar o servidor de desenvolvimento:
 
-Ou seja, a “interface de backend” atual para o frontend é essa tabela de funções e payloads, não endpoints REST.
+```bash
+npm install
+npm run dev
+```

@@ -37,10 +37,13 @@ export function getServerEnv(): ServerEnv {
     (parsed.data.NODE_ENV === "test"
       ? "file:./.tmp/test.db"
       : "file:./.local/personal-finance.db");
+  const token = url.startsWith("file:")
+    ? undefined
+    : parsed.data.TOKEN ?? parsed.data.TURSO_AUTH_TOKEN;
 
   return {
     ...parsed.data,
     DATABASE_URL: url,
-    TOKEN: parsed.data.TOKEN ?? parsed.data.TURSO_AUTH_TOKEN,
+    TOKEN: token,
   };
 }

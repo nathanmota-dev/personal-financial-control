@@ -5,6 +5,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+ENV_BROWSER_BIN="${BROWSER_BIN-}"
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR/.env"
+  set +a
+fi
+
+if [[ -n "$ENV_BROWSER_BIN" ]]; then
+  BROWSER_BIN="$ENV_BROWSER_BIN"
+fi
+
 APP_HOST="${HOST:-127.0.0.1}"
 APP_PORT="${PORT:-3007}"
 APP_URL="http://$APP_HOST:$APP_PORT"
@@ -16,19 +28,31 @@ SERVER_SESSION_FILE="$STATE_DIR/server-session.txt"
 SERVER_LOG_FILE="$STATE_DIR/server.log"
 BROWSER_PID_FILE="$STATE_DIR/browser.pid"
 WINDOW_CLASS="personal-financial-control"
-BRAVE_BIN="${BRAVE_BIN:-}"
-BRAVE_PROFILE_DIR="${BRAVE_PROFILE_DIR:-$HOME/snap/brave/common/personal-financial-control-profile}"
+BROWSER_BIN="${BROWSER_BIN:-}"
+BROWSER_PROFILE_DIR="${BROWSER_PROFILE_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/personal-financial-control/browser-profile}"
 SESSION_ID=""
 OWNS_SERVER=0
 SERVER_STARTED=0
 
 mkdir -p "$STATE_DIR"
 
-if [[ -z "$BRAVE_BIN" ]]; then
+if [[ -z "$BROWSER_BIN" && -n "${BRAVE_BIN:-}" ]]; then
+  BROWSER_BIN="$BRAVE_BIN"
+fi
+
+if [[ -z "$BROWSER_BIN" ]]; then
   if command -v brave >/dev/null 2>&1; then
-    BRAVE_BIN="brave"
+    BROWSER_BIN="brave"
   elif command -v brave-browser >/dev/null 2>&1; then
-    BRAVE_BIN="brave-browser"
+    BROWSER_BIN="brave-browser"
+  elif command -v google-chrome >/dev/null 2>&1; then
+    BROWSER_BIN="google-chrome"
+  elif command -v google-chrome-stable >/dev/null 2>&1; then
+    BROWSER_BIN="google-chrome-stable"
+  elif command -v chromium >/dev/null 2>&1; then
+    BROWSER_BIN="chromium"
+  elif command -v chromium-browser >/dev/null 2>&1; then
+    BROWSER_BIN="chromium-browser"
   fi
 fi
 
@@ -103,7 +127,7 @@ port_listener_pid() {
 }
 
 find_browser_pid() {
-  pgrep -f -- "--user-data-dir=$BRAVE_PROFILE_DIR" | head -n 1 || true
+  pgrep -f -- "--user-data-dir=$BROWSER_PROFILE_DIR" | head -n 1 || true
 }
 
 wait_until_ready() {
@@ -206,13 +230,13 @@ launch_browser() {
     return 0
   fi
 
-  mkdir -p "$BRAVE_PROFILE_DIR"
+  mkdir -p "$BROWSER_PROFILE_DIR"
 
-  "$BRAVE_BIN" \
+  "$BROWSER_BIN" \
     --app="$APP_URL" \
     --new-window \
     --start-maximized \
-    --user-data-dir="$BRAVE_PROFILE_DIR" \
+    --user-data-dir="$BROWSER_PROFILE_DIR" \
     --class="$WINDOW_CLASS" \
     --disable-background-mode \
     --no-first-run \
@@ -224,7 +248,7 @@ monitor_browser_lifecycle() {
   local pid
   pid="$(wait_for_browser_start)"
   printf '%s\n' "$pid" > "$BROWSER_PID_FILE"
-  log "App aberto no Brave com PID $pid."
+  log "App aberto no navegador $BROWSER_BIN com PID $pid."
 
   while is_pid_running "$(find_browser_pid)"; do
     sleep 1
@@ -236,12 +260,12 @@ require_command flock
 require_command lsof
 require_command pgrep
 
-if [[ -z "$BRAVE_BIN" ]]; then
-  printf 'Erro: Brave nao encontrado. Instale o Brave ou defina BRAVE_BIN.\n' >&2
+if [[ -z "$BROWSER_BIN" ]]; then
+  printf 'Erro: navegador nao encontrado. Instale o Brave/Chrome ou defina BROWSER_BIN.\n' >&2
   exit 1
 fi
 
-require_command "$BRAVE_BIN"
+require_command "$BROWSER_BIN"
 
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
