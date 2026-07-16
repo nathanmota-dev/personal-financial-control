@@ -6,16 +6,19 @@ export function CreditBudgetSummary({
   incomeCents,
   nonCardExpenseCents,
   investmentContributionCents,
+  investmentWithdrawalCents,
   availableForInvoiceCents,
   invoiceTotalCents,
 }: {
   incomeCents: number;
   nonCardExpenseCents: number;
   investmentContributionCents: number;
+  investmentWithdrawalCents: number;
   availableForInvoiceCents: number;
   invoiceTotalCents: number;
 }) {
-  const totalCommittedCents = nonCardExpenseCents + investmentContributionCents;
+  const totalCommittedCents =
+    nonCardExpenseCents + investmentContributionCents - investmentWithdrawalCents;
 
   return (
     <Card className="rounded-[1.75rem] border-slate-800 bg-[#06152d]">
@@ -30,12 +33,12 @@ export function CreditBudgetSummary({
           </p>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-          <p className="text-sm text-slate-400">Gastos fora do cartão + investimentos</p>
+          <p className="text-sm text-slate-400">Gastos fora do cartão + investimentos líquidos</p>
           <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-blue-300">
             {formatCurrency(totalCommittedCents)}
           </p>
           <p className="mt-2 text-xs leading-5 text-slate-500">
-            Despesas fora do cartão somadas aos aportes já planejados.
+            Despesas fora do cartão somadas aos aportes e descontando os resgates.
           </p>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">

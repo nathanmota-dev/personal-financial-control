@@ -330,6 +330,10 @@ async function calculateInitialBalance(
       return total + transaction.amountCents;
     }
 
+    if (transaction.type === "investment_withdrawal") {
+      return total + transaction.amountCents;
+    }
+
     return total - transaction.amountCents;
   }, 0);
   const transferImpactCents = transferRows.reduce((total, transfer) => {
@@ -394,6 +398,28 @@ function mapTransactionToEvent(
       categoryId: transaction.categoryId,
       metadata: {
         status: transaction.status,
+        direction: "contribution",
+        competenceMonth: transaction.competenceMonth,
+        accountName: transaction.account?.name ?? null,
+        categoryName: transaction.category?.name ?? null,
+      },
+    };
+  }
+
+  if (transaction.type === "investment_withdrawal") {
+    return {
+      id: transaction.id,
+      source: "investment",
+      type: "investment",
+      description: transaction.description,
+      amountCents: transaction.amountCents,
+      netImpactCents: transaction.amountCents,
+      date: transaction.transactionDate,
+      accountId: transaction.accountId,
+      categoryId: transaction.categoryId,
+      metadata: {
+        status: transaction.status,
+        direction: "withdrawal",
         competenceMonth: transaction.competenceMonth,
         accountName: transaction.account?.name ?? null,
         categoryName: transaction.category?.name ?? null,
@@ -447,7 +473,11 @@ async function listTransactionEvents(
   });
 
   return rows
-    .filter((row) => includeInvestments || row.type !== "investment_contribution")
+    .filter(
+      (row) =>
+        includeInvestments ||
+        (row.type !== "investment_contribution" && row.type !== "investment_withdrawal")
+    )
     .map((row) => mapTransactionToEvent(row))
     .filter((event): event is ProjectionEvent => Boolean(event));
 }
@@ -557,6 +587,7 @@ async function listRecurringEvents(
         categoryId: row.categoryId,
         metadata: {
           templateId: row.id,
+          direction: "contribution",
           competenceMonth: month,
           accountName: row.account?.name ?? null,
           categoryName: row.category?.name ?? null,

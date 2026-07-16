@@ -300,9 +300,12 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
   const investmentContributionCents = activeTransactions
     .filter((row) => row.type === "investment_contribution")
     .reduce((total, row) => total + row.amountCents, 0);
+  const investmentWithdrawalCents = activeTransactions
+    .filter((row) => row.type === "investment_withdrawal")
+    .reduce((total, row) => total + row.amountCents, 0);
   const invoiceTotalCents = invoiceEntries.reduce((total, entry) => total + entry.amountCents, 0);
   const availableForInvoiceCents =
-    incomeCents - nonCardExpenseCents - investmentContributionCents;
+    incomeCents - nonCardExpenseCents - investmentContributionCents + investmentWithdrawalCents;
 
   const futureInstallments = futureChargeRows
     .map((charge) => {
@@ -342,6 +345,7 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
       incomeCents,
       nonCardExpenseCents,
       investmentContributionCents,
+      investmentWithdrawalCents,
       availableForInvoiceCents,
       invoiceTotalCents,
       remainingAfterInvoiceCents: availableForInvoiceCents - invoiceTotalCents,

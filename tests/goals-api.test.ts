@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { saveInvestmentPortfolio } from "@/lib/server/investments";
+import { configureInvestmentPortfolio } from "@/lib/server/investments";
 import { createTestDatabase } from "@/tests/helpers/database";
 
 vi.mock("next/cache", () => ({
@@ -42,12 +42,11 @@ describe("goals api", () => {
     const { db, databaseUrl, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 100000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 100000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -107,12 +106,11 @@ describe("goals api", () => {
     const { db, databaseUrl, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 1000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 1000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );

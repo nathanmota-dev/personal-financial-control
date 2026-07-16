@@ -46,6 +46,7 @@ export const transactionTypeLabels: Record<TransactionType, string> = {
   income: "Receita",
   expense: "Despesa",
   investment_contribution: "Aporte",
+  investment_withdrawal: "Resgate",
 };
 
 export const transactionStatusLabels: Record<TransactionStatus, string> = {
@@ -153,6 +154,10 @@ export function getTransactionTone(type: TransactionType) {
 
   if (type === "investment_contribution") {
     return "bg-sky-500/12 text-sky-700 ring-sky-500/20";
+  }
+
+  if (type === "investment_withdrawal") {
+    return "bg-amber-500/12 text-amber-700 ring-amber-500/20";
   }
 
   return "bg-rose-500/12 text-rose-700 ring-rose-500/20";

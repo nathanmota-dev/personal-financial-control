@@ -79,7 +79,7 @@ type TransactionRow = {
   id: string;
   accountId: string;
   categoryId: string;
-  type: "income" | "expense" | "investment_contribution";
+  type: "income" | "expense" | "investment_contribution" | "investment_withdrawal";
   status: "pending" | "posted" | "cancelled";
   amountCents: number;
   transactionDate: string;
@@ -190,9 +190,12 @@ export function TransactionsView({
           if (item.type === "investment_contribution" && item.status !== "cancelled") {
             accumulator.investment += item.amountCents;
           }
+          if (item.type === "investment_withdrawal" && item.status !== "cancelled") {
+            accumulator.withdrawal += item.amountCents;
+          }
           return accumulator;
         },
-        { income: 0, expense: 0, investment: 0 }
+        { income: 0, expense: 0, investment: 0, withdrawal: 0 }
       ),
     [transactions]
   );
@@ -213,10 +216,11 @@ export function TransactionsView({
         }
       />
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="Receitas filtradas" value={formatCurrency(totals.income)} tone="cyan" />
         <SummaryCard label="Despesas filtradas" value={formatCurrency(totals.expense)} tone="blue" />
         <SummaryCard label="Aportes filtrados" value={formatCurrency(totals.investment)} tone="sky" />
+        <SummaryCard label="Resgates filtrados" value={formatCurrency(totals.withdrawal)} tone="amber" />
       </section>
 
       <FilterCard accounts={accounts} categories={categories} filters={filters} />
@@ -411,12 +415,13 @@ function SummaryCard({
 }: {
   label: string;
   value: string;
-  tone: "cyan" | "blue" | "sky";
+  tone: "cyan" | "blue" | "sky" | "amber";
 }) {
   const tones = {
     cyan: "text-cyan-300 bg-cyan-500/10",
     blue: "text-blue-300 bg-blue-500/10",
     sky: "text-sky-300 bg-sky-500/10",
+    amber: "text-amber-300 bg-amber-500/10",
   } as const;
 
   return (
@@ -485,6 +490,7 @@ function FilterCard({
               { value: "income", label: "Receita" },
               { value: "expense", label: "Despesa" },
               { value: "investment_contribution", label: "Aporte" },
+              { value: "investment_withdrawal", label: "Resgate" },
             ]}
             onValueChange={(type) => updateFilters({ type })}
           />
@@ -543,8 +549,23 @@ function TransactionDialog({
 
   const filteredCategories = categories.filter((category) => {
     if (selectedType === "income") return category.group === "income";
-    if (selectedType === "investment_contribution") return category.group === "investment";
+    if (
+      selectedType === "investment_contribution" ||
+      selectedType === "investment_withdrawal"
+    ) {
+      return category.group === "investment";
+    }
     return category.group === "fixed_expense" || category.group === "variable_expense";
+  });
+  const filteredAccounts = accounts.filter((account) => {
+    if (
+      selectedType === "investment_contribution" ||
+      selectedType === "investment_withdrawal"
+    ) {
+      return account.type === "checking" || account.type === "savings" || account.type === "cash";
+    }
+
+    return true;
   });
 
   async function onSubmit(formData: FormData) {
@@ -602,6 +623,7 @@ function TransactionDialog({
                 <option value="income">Receita</option>
                 <option value="expense">Despesa</option>
                 <option value="investment_contribution">Aporte</option>
+                <option value="investment_withdrawal">Resgate</option>
               </select>
               <select
                 name="status"
@@ -613,11 +635,12 @@ function TransactionDialog({
                 <option value="cancelled">Cancelado</option>
               </select>
               <select
+                key={`${transaction?.id ?? "new"}-account-${selectedType}`}
                 name="accountId"
-                defaultValue={transaction?.accountId ?? accounts[0]?.id}
+                defaultValue={transaction?.accountId ?? filteredAccounts[0]?.id}
                 className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
               >
-                {accounts.map((account) => (
+                {filteredAccounts.map((account) => (
                   <option key={account.id} value={account.id}>
                     {account.name}
                   </option>

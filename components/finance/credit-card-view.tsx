@@ -75,6 +75,7 @@ type CreditCardOverview =
         incomeCents: number;
         nonCardExpenseCents: number;
         investmentContributionCents: number;
+        investmentWithdrawalCents: number;
         availableForInvoiceCents: number;
         invoiceTotalCents: number;
         remainingAfterInvoiceCents: number;
@@ -234,6 +235,7 @@ export function CreditCardView({
         incomeCents={overview.budgetSummary.incomeCents}
         nonCardExpenseCents={overview.budgetSummary.nonCardExpenseCents}
         investmentContributionCents={overview.budgetSummary.investmentContributionCents}
+        investmentWithdrawalCents={overview.budgetSummary.investmentWithdrawalCents}
         availableForInvoiceCents={overview.budgetSummary.availableForInvoiceCents}
         invoiceTotalCents={overview.budgetSummary.invoiceTotalCents}
       />

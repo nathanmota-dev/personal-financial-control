@@ -26,6 +26,13 @@ export const transactionTypes = [
   "income",
   "expense",
   "investment_contribution",
+  "investment_withdrawal",
+] as const;
+
+export const recurringTransactionTypes = [
+  "income",
+  "expense",
+  "investment_contribution",
 ] as const;
 
 export const transactionStatuses = [
@@ -110,7 +117,7 @@ export const recurringTemplates = sqliteTable(
     categoryId: text("category_id")
       .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
-    type: text("type", { enum: transactionTypes }).notNull(),
+    type: text("type", { enum: recurringTransactionTypes }).notNull(),
     status: text("status", { enum: recurringStatuses }).notNull().default("active"),
     amountCents: integer("amount_cents").notNull(),
     dayOfMonth: integer("day_of_month").notNull(),
@@ -149,7 +156,7 @@ export const transactions = sqliteTable(
     competenceMonth: text("competence_month").notNull(),
     description: text("description").notNull(),
     notes: text("notes"),
-    isIncludedInInvestmentBalance: integer("is_included_in_investment_balance", {
+    isIncludedInInvestmentCheckpoint: integer("is_included_in_investment_checkpoint", {
       mode: "boolean",
     })
       .notNull()
@@ -248,10 +255,9 @@ export const investmentPortfolio = sqliteTable("investment_portfolio", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  currentBalanceCents: integer("current_balance_cents").notNull(),
-  monthlyContributionCents: integer("monthly_contribution_cents").notNull(),
+  checkpointBalanceCents: integer("checkpoint_balance_cents").notNull(),
   expectedMonthlyRateBps: integer("expected_monthly_rate_bps").notNull(),
-  referenceDate: text("reference_date").notNull(),
+  checkpointDate: text("checkpoint_date").notNull(),
   ...timestampColumns(),
 });
 
@@ -408,6 +414,7 @@ export const creditCardInstallmentsRelations = relations(
 export type AccountType = (typeof accountTypes)[number];
 export type CategoryGroup = (typeof categoryGroups)[number];
 export type TransactionType = (typeof transactionTypes)[number];
+export type RecurringTransactionType = (typeof recurringTransactionTypes)[number];
 export type TransactionStatus = (typeof transactionStatuses)[number];
 export type RecurringStatus = (typeof recurringStatuses)[number];
 export type GoalCategory = (typeof goalCategories)[number];

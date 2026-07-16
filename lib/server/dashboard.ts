@@ -84,6 +84,9 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
   const investmentContributionCents = activeTransactions
     .filter((row) => row.type === "investment_contribution")
     .reduce((total, row) => total + row.amountCents, 0);
+  const investmentWithdrawalCents = activeTransactions
+    .filter((row) => row.type === "investment_withdrawal")
+    .reduce((total, row) => total + row.amountCents, 0);
 
   return {
     competenceMonth,
@@ -92,8 +95,14 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
       fixedExpenseCents,
       variableExpenseCents,
       investmentContributionCents,
+      investmentWithdrawalCents,
+      netInvestmentFlowCents: investmentContributionCents - investmentWithdrawalCents,
       netResultCents:
-        incomeCents - fixedExpenseCents - variableExpenseCents - investmentContributionCents,
+        incomeCents -
+        fixedExpenseCents -
+        variableExpenseCents -
+        investmentContributionCents +
+        investmentWithdrawalCents,
     },
     accountBalances: accountRows.map((account) => ({
       id: account.id,

@@ -42,7 +42,7 @@ export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
                   <TableHead>Data</TableHead>
                   <TableHead className="text-right">Entradas</TableHead>
                   <TableHead className="text-right">Saídas</TableHead>
-                  <TableHead className="text-right">Investimentos</TableHead>
+                  <TableHead className="text-right">Investimentos líquidos</TableHead>
                   <TableHead className="text-right">Cartão</TableHead>
                   <TableHead className="text-right">Saldo projetado</TableHead>
                   <TableHead className="text-right">Disponível/dia</TableHead>

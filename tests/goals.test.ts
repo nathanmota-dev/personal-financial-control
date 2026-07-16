@@ -10,7 +10,7 @@ import {
   getGoalsDashboard,
   releaseGoalFunds,
 } from "@/lib/server/goals";
-import { saveInvestmentPortfolio } from "@/lib/server/investments";
+import { configureInvestmentPortfolio } from "@/lib/server/investments";
 import { createTestDatabase } from "@/tests/helpers/database";
 
 const cleanups: Array<() => Promise<void>> = [];
@@ -24,12 +24,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 100000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 100000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -84,12 +83,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 200000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 200000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -115,12 +113,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 10000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 10000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -151,12 +148,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 50000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 50000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -207,12 +203,11 @@ describe("goals", () => {
       db
     );
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 0,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 0,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-01",
       },
       db
     );
@@ -243,7 +238,7 @@ describe("goals", () => {
       type: "investment_contribution",
       status: "posted",
       amountCents: 15000,
-      isIncludedInInvestmentBalance: false,
+      isIncludedInInvestmentCheckpoint: false,
     });
     expect(contribution.allocation).toMatchObject({
       transactionId: contribution.transaction.id,
@@ -257,12 +252,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 100000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 100000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-07-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );
@@ -290,12 +284,11 @@ describe("goals", () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
-    await saveInvestmentPortfolio(
+    await configureInvestmentPortfolio(
       {
-        currentBalanceCents: 100000,
-        monthlyContributionCents: 0,
+        checkpointBalanceCents: 100000,
         expectedMonthlyRateBps: 100,
-        referenceDate: "2026-05-01",
+        checkpointDate: "2026-07-16",
       },
       db
     );

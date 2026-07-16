@@ -229,6 +229,13 @@ function RecurringDialog({
     if (selectedType === "investment_contribution") return category.group === "investment";
     return category.group === "fixed_expense" || category.group === "variable_expense";
   });
+  const filteredAccounts = accounts.filter((account) => {
+    if (selectedType === "investment_contribution") {
+      return account.type === "checking" || account.type === "savings" || account.type === "cash";
+    }
+
+    return true;
+  });
 
   async function onSubmit(formData: FormData) {
     const payload = {
@@ -336,7 +343,11 @@ function RecurringDialog({
                 <Label htmlFor={`${formId}-account`} className={recurringFieldLabelClassName}>
                   Conta de origem
                 </Label>
-                <Select name="accountId" defaultValue={template?.accountId ?? accounts[0]?.id}>
+                <Select
+                  key={`${template?.id ?? "new"}-account-${selectedType}`}
+                  name="accountId"
+                  defaultValue={template?.accountId ?? filteredAccounts[0]?.id}
+                >
                   <SelectTrigger
                     id={`${formId}-account`}
                     className={recurringSelectTriggerClassName}
@@ -344,7 +355,7 @@ function RecurringDialog({
                     <SelectValue placeholder="Selecione a conta" />
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
-                    {accounts.map((account) => (
+                    {filteredAccounts.map((account) => (
                       <SelectItem
                         key={account.id}
                         value={account.id}

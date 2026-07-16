@@ -43,6 +43,8 @@ export type DailyProjection = {
   incomeCents: number;
   expenseCents: number;
   investmentCents: number;
+  investmentContributionCents: number;
+  investmentWithdrawalCents: number;
   creditCardCents: number;
   transferInCents: number;
   transferOutCents: number;

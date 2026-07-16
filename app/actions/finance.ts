@@ -10,8 +10,11 @@ import {
   updateCategory,
 } from "@/lib/server/categories";
 import {
+  configureInvestmentPortfolio,
   createInvestmentContribution,
-  saveInvestmentPortfolio,
+  createInvestmentWithdrawal,
+  reconcileInvestmentBalance,
+  updateInvestmentSettings,
 } from "@/lib/server/investments";
 import {
   createRecurringTemplate,
@@ -145,10 +148,26 @@ export async function generateRecurringTransactionsAction(month: string) {
   return result;
 }
 
-export async function saveInvestmentPortfolioAction(
-  input: Parameters<typeof saveInvestmentPortfolio>[0]
+export async function configureInvestmentPortfolioAction(
+  input: Parameters<typeof configureInvestmentPortfolio>[0]
 ) {
-  const result = await saveInvestmentPortfolio(input);
+  const result = await configureInvestmentPortfolio(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function updateInvestmentSettingsAction(
+  input: Parameters<typeof updateInvestmentSettings>[0]
+) {
+  const result = await updateInvestmentSettings(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function reconcileInvestmentBalanceAction(
+  input: Parameters<typeof reconcileInvestmentBalance>[0]
+) {
+  const result = await reconcileInvestmentBalance(input);
   revalidateFinanceViews();
   return result;
 }
@@ -157,6 +176,14 @@ export async function createInvestmentContributionAction(
   input: Parameters<typeof createInvestmentContribution>[0]
 ) {
   const result = await createInvestmentContribution(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function createInvestmentWithdrawalAction(
+  input: Parameters<typeof createInvestmentWithdrawal>[0]
+) {
+  const result = await createInvestmentWithdrawal(input);
   revalidateFinanceViews();
   return result;
 }

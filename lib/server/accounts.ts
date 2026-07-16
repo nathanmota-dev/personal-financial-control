@@ -113,6 +113,9 @@ export async function getAccountDetails(id: string, database?: AppDb) {
   const postedInvestmentContributionCents = ledgerEntries
     .filter((entry) => entry.type === "investment_contribution")
     .reduce((total, entry) => total + entry.amountCents, 0);
+  const postedInvestmentWithdrawalCents = ledgerEntries
+    .filter((entry) => entry.type === "investment_withdrawal")
+    .reduce((total, entry) => total + entry.amountCents, 0);
   const outgoingTransferCents = outgoingTransferRows.reduce(
     (total, entry) => total + entry.amountCents,
     0
@@ -127,6 +130,7 @@ export async function getAccountDetails(id: string, database?: AppDb) {
     postedIncomeCents,
     postedExpenseCents,
     postedInvestmentContributionCents,
+    postedInvestmentWithdrawalCents,
     outgoingTransferCents,
     incomingTransferCents,
   });
@@ -138,6 +142,7 @@ export async function getAccountDetails(id: string, database?: AppDb) {
       postedIncomeCents,
       postedExpenseCents,
       postedInvestmentContributionCents,
+      postedInvestmentWithdrawalCents,
       outgoingTransferCents,
       incomingTransferCents,
     },

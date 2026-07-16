@@ -58,6 +58,8 @@ export default async function DashboardPage({
         fixedExpenseCents: 0,
         variableExpenseCents: 0,
         investmentContributionCents: 0,
+        investmentWithdrawalCents: 0,
+        netInvestmentFlowCents: 0,
         netResultCents: 0,
       },
       accountBalances: [],
@@ -70,6 +72,8 @@ export default async function DashboardPage({
         fixedExpenseCents: 0,
         variableExpenseCents: 0,
         investmentContributionCents: 0,
+        investmentWithdrawalCents: 0,
+        netInvestmentFlowCents: 0,
         netResultCents: 0,
       },
       accountBalances: [],
@@ -115,11 +119,11 @@ export default async function DashboardPage({
           description="Saídas discricionárias no período."
         />
         <MetricCard
-          label="Investimentos"
-          value={formatCurrency(resolved.dashboard.totals.investmentContributionCents)}
+          label="Investimentos líquidos"
+          value={formatCurrency(resolved.dashboard.totals.netInvestmentFlowCents)}
           icon={<PiggyBank className="size-4" />}
           accent="text-teal-300"
-          description="Aportes separados para a carteira."
+          description="Aportes menos resgates no mês."
         />
         <MetricCard
           label="Saldo livre"
@@ -135,7 +139,7 @@ export default async function DashboardPage({
           month: item.competenceMonth.slice(5),
           income: item.totals.incomeCents / 100,
           expenses: (item.totals.fixedExpenseCents + item.totals.variableExpenseCents) / 100,
-          investments: item.totals.investmentContributionCents / 100,
+          investments: item.totals.netInvestmentFlowCents / 100,
           net: item.totals.netResultCents / 100,
         }))}
         categorySpending={resolved.categorySpending}
@@ -215,15 +219,21 @@ export default async function DashboardPage({
               {resolved.dashboard.investmentProjection ? (
                 <>
                   <p>
-                    Saldo atual:{" "}
+                    Saldo estimado hoje:{" "}
                     <span className="font-semibold text-white">
                       {formatCurrency(resolved.dashboard.investmentProjection.currentBalanceCents)}
                     </span>
                   </p>
                   <p>
-                    Aporte padrão:{" "}
+                    Rendimento estimado:{" "}
                     <span className="font-semibold text-white">
-                      {formatCurrency(resolved.dashboard.investmentProjection.monthlyContributionCents)}
+                      {formatCurrency(resolved.dashboard.investmentProjection.estimatedInterestCents)}
+                    </span>
+                  </p>
+                  <p>
+                    Desde o checkpoint:{" "}
+                    <span className="font-semibold text-white">
+                      {formatDateLabel(resolved.dashboard.investmentProjection.checkpointDate)}
                     </span>
                   </p>
                   <p>
@@ -232,6 +242,14 @@ export default async function DashboardPage({
                       {(resolved.dashboard.investmentProjection.expectedMonthlyRateBps / 100).toFixed(2)}%
                     </span>
                   </p>
+                  {resolved.dashboard.investmentProjection.nextContributionDate ? (
+                    <p>
+                      Próximo aporte previsto:{" "}
+                      <span className="font-semibold text-white">
+                        {formatDateLabel(resolved.dashboard.investmentProjection.nextContributionDate)}
+                      </span>
+                    </p>
+                  ) : null}
                 </>
               ) : (
                 <p>A carteira ainda não foi configurada.</p>

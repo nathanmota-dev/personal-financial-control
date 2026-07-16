@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 
 import type {
+  AccountType,
   CategoryGroup,
   RecurringStatus,
-  TransactionType,
+  RecurringTransactionType,
 } from "@/lib/db/schema";
 
 export type RecurringTab = "recurring" | "category" | "calendar";
@@ -11,6 +12,7 @@ export type RecurringTab = "recurring" | "category" | "calendar";
 export type RecurringAccountOption = {
   id: string;
   name: string;
+  type: AccountType;
 };
 
 export type RecurringCategoryOption = {
@@ -23,7 +25,7 @@ export type RecurringTemplateRow = {
   id: string;
   accountId: string;
   categoryId: string;
-  type: TransactionType;
+  type: RecurringTransactionType;
   status: RecurringStatus;
   amountCents: number;
   dayOfMonth: number;
@@ -70,7 +72,7 @@ export type RecurringCalendarEvent = {
   date: Date;
   description: string;
   amountCents: number;
-  type: TransactionType;
+  type: RecurringTransactionType;
   accountName: string;
   categoryName: string;
   isGenerated: boolean;

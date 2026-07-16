@@ -100,6 +100,51 @@ describe("dashboard", () => {
     expect(comparison.left.totals.netResultCents).toBe(125000);
   });
 
+  it("reports investment withdrawals as positive cash flow and net investment movement", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Main", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const category = await createCategory({ name: "Brokerage", group: "investment" }, db);
+
+    await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: category.id,
+        type: "investment_contribution",
+        status: "posted",
+        amountCents: 50000,
+        transactionDate: "2026-07-05",
+        competenceMonth: "2026-07",
+        description: "Aporte",
+      },
+      db
+    );
+    await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: category.id,
+        type: "investment_withdrawal",
+        status: "posted",
+        amountCents: 20000,
+        transactionDate: "2026-07-10",
+        competenceMonth: "2026-07",
+        description: "Resgate",
+      },
+      db
+    );
+
+    const dashboard = await getMonthlyDashboard("2026-07", db);
+
+    expect(dashboard.totals.investmentContributionCents).toBe(50000);
+    expect(dashboard.totals.investmentWithdrawalCents).toBe(20000);
+    expect(dashboard.totals.netInvestmentFlowCents).toBe(30000);
+    expect(dashboard.totals.netResultCents).toBe(-30000);
+  });
+
   it("includes credit card installments in monthly totals and expense feeds", async () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);

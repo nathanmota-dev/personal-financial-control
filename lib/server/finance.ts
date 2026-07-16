@@ -45,6 +45,7 @@ export function calculateNetBalance({
   postedIncomeCents,
   postedExpenseCents,
   postedInvestmentContributionCents,
+  postedInvestmentWithdrawalCents = 0,
   outgoingTransferCents,
   incomingTransferCents,
 }: {
@@ -52,6 +53,7 @@ export function calculateNetBalance({
   postedIncomeCents: number;
   postedExpenseCents: number;
   postedInvestmentContributionCents: number;
+  postedInvestmentWithdrawalCents?: number;
   outgoingTransferCents: number;
   incomingTransferCents: number;
 }) {
@@ -59,7 +61,8 @@ export function calculateNetBalance({
     initialBalanceCents +
     postedIncomeCents -
     postedExpenseCents -
-    postedInvestmentContributionCents -
+    postedInvestmentContributionCents +
+    postedInvestmentWithdrawalCents -
     outgoingTransferCents +
     incomingTransferCents
   );

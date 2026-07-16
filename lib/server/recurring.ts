@@ -41,6 +41,35 @@ async function validateRecurringDependencies(
 
   invariant(!account.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived account.");
   invariant(!category.isArchived, "CATEGORY_ARCHIVED", "Cannot use an archived category.");
+
+  if (input.type === "income") {
+    invariant(
+      category.group === "income",
+      "CATEGORY_TYPE_MISMATCH",
+      "Income recurring entries require an income category."
+    );
+  }
+
+  if (input.type === "expense") {
+    invariant(
+      category.group === "fixed_expense" || category.group === "variable_expense",
+      "CATEGORY_TYPE_MISMATCH",
+      "Expense recurring entries require an expense category."
+    );
+  }
+
+  if (input.type === "investment_contribution") {
+    invariant(
+      category.group === "investment",
+      "CATEGORY_TYPE_MISMATCH",
+      "Investment recurring entries require an investment category."
+    );
+    invariant(
+      account.type === "checking" || account.type === "savings" || account.type === "cash",
+      "INVALID_INVESTMENT_ACCOUNT",
+      "Investment recurring entries require a checking, savings, or cash account."
+    );
+  }
 }
 
 export async function createRecurringTemplate(

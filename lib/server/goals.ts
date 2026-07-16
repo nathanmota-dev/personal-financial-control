@@ -1,8 +1,9 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import { getDatabase } from "@/lib/db";
+import { getInvestmentProjection } from "@/lib/server/investments";
 import {
   accounts,
   allocationTypes,
@@ -23,7 +24,6 @@ import {
   normalizeDate,
   serializeTimestamps,
 } from "@/lib/server/finance";
-import { getInvestmentProjection } from "@/lib/server/investments";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 
@@ -239,28 +239,9 @@ async function getGoalAllocations(goalId: string, database: DbContext) {
 }
 
 async function getInvestmentBalanceCents(database: DbContext) {
-  const [portfolio, unincorporatedContributions] = await Promise.all([
-    database.query.investmentPortfolio.findFirst(),
-    database.query.transactions.findMany({
-      where: and(
-        eq(transactions.type, "investment_contribution"),
-        eq(transactions.status, "posted"),
-        eq(transactions.isIncludedInInvestmentBalance, false)
-      ),
-    }),
-  ]);
+  const investmentProjection = await getInvestmentProjection(database);
 
-  if (!portfolio) {
-    return 0;
-  }
-
-  return (
-    portfolio.currentBalanceCents +
-    unincorporatedContributions.reduce(
-      (total, contribution) => total + contribution.amountCents,
-      0
-    )
-  );
+  return investmentProjection?.currentBalanceCents ?? 0;
 }
 
 async function getReserveSnapshot(database: DbContext) {
@@ -782,7 +763,7 @@ export async function createGoalContribution(
         competenceMonth: values.transactionDate.slice(0, 7),
         description: `Aporte para ${goal.name}`,
         notes: normalizeNotes(values.notes) ?? `Meta: ${goal.name}`,
-        isIncludedInInvestmentBalance: false,
+        isIncludedInInvestmentCheckpoint: false,
         updatedAt: timestamp,
       })
       .returning();

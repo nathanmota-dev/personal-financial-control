@@ -292,4 +292,37 @@ describe("projected balance", () => {
     expect(projection.daily.find((day) => day.date === "2026-07-03")?.status).toBe("negative");
   });
 
+  it("treats investment withdrawals as positive cash events", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const checking = await createProjectionAccount(db);
+    const investment = await createCategory({ name: "Brokerage", group: "investment" }, db);
+
+    await createTransaction(
+      {
+        accountId: checking.id,
+        categoryId: investment.id,
+        type: "investment_withdrawal",
+        status: "pending",
+        amountCents: 25000,
+        transactionDate: "2026-07-10",
+        competenceMonth: "2026-07",
+        description: "Resgate",
+      },
+      db
+    );
+
+    const projection = await getProjectedBalance(
+      buildProjectedBalanceRequest({ endDate: "2026-07-12" }),
+      db
+    );
+
+    expect(projection.daily.find((day) => day.date === "2026-07-10")).toMatchObject({
+      investmentCents: -25000,
+      investmentWithdrawalCents: 25000,
+      projectedBalanceCents: 125000,
+    });
+  });
+
 });

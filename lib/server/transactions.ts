@@ -12,7 +12,12 @@ import { getCategoryById } from "@/lib/server/categories";
 const transactionSchema = z.object({
   accountId: z.string().uuid(),
   categoryId: z.string().uuid(),
-  type: z.enum(["income", "expense", "investment_contribution"]),
+  type: z.enum([
+    "income",
+    "expense",
+    "investment_contribution",
+    "investment_withdrawal",
+  ]),
   status: z.enum(["pending", "posted", "cancelled"]).default("posted"),
   amountCents: z.number().int().positive(),
   transactionDate: z.string(),
@@ -58,11 +63,19 @@ async function validateTransactionDependencies(
     );
   }
 
-  if (input.type === "investment_contribution") {
+  if (
+    input.type === "investment_contribution" ||
+    input.type === "investment_withdrawal"
+  ) {
     invariant(
       category.group === "investment",
       "CATEGORY_TYPE_MISMATCH",
-      "Investment contribution transactions require an investment category."
+      "Investment movements require an investment category."
+    );
+    invariant(
+      account.type === "checking" || account.type === "savings" || account.type === "cash",
+      "INVALID_INVESTMENT_ACCOUNT",
+      "Investment movements require a checking, savings, or cash account."
     );
   }
 }
@@ -77,12 +90,18 @@ export async function createTransaction(
   values.transactionDate = normalizeDate(values.transactionDate);
 
   await validateTransactionDependencies(values, db);
+  const isInvestmentMovement = isInvestmentMovementType(values.type);
+  const portfolio = isInvestmentMovement
+    ? await db.query.investmentPortfolio.findFirst()
+    : null;
 
   const [transaction] = await db
     .insert(transactions)
     .values({
       ...values,
-      isIncludedInInvestmentBalance: values.type !== "investment_contribution",
+      isIncludedInInvestmentCheckpoint: isInvestmentMovement
+        ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
+        : true,
       updatedAt: currentTimestamp(),
     })
     .returning();
@@ -159,12 +178,13 @@ export async function updateTransaction(
 
   await validateTransactionDependencies(values, db);
 
-  const isIncludedInInvestmentBalance =
-    values.type === "investment_contribution"
-      ? existing.type === "investment_contribution"
-        ? existing.isIncludedInInvestmentBalance
-        : false
-      : true;
+  const isInvestmentMovement = isInvestmentMovementType(values.type);
+  const portfolio = isInvestmentMovement
+    ? await db.query.investmentPortfolio.findFirst()
+    : null;
+  const isIncludedInInvestmentCheckpoint = isInvestmentMovement
+    ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
+    : true;
 
   const [transaction] = await db
     .update(transactions)
@@ -172,13 +192,19 @@ export async function updateTransaction(
       ...rawValues,
       competenceMonth: values.competenceMonth,
       transactionDate: values.transactionDate,
-      isIncludedInInvestmentBalance,
+      isIncludedInInvestmentCheckpoint,
       updatedAt: currentTimestamp(),
     })
     .where(eq(transactions.id, id))
     .returning();
 
   return serializeTimestamps(transaction);
+}
+
+function isInvestmentMovementType(
+  type: "income" | "expense" | "investment_contribution" | "investment_withdrawal"
+) {
+  return type === "investment_contribution" || type === "investment_withdrawal";
 }
 
 export async function deleteTransaction(id: string, database?: AppDb) {

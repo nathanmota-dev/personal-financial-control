@@ -104,4 +104,34 @@ describe("accounts", () => {
     expect(cashDetails.currentBalanceCents).toBe(115000);
     expect(savingsDetails.currentBalanceCents).toBe(5000);
   });
+
+  it("credits posted investment withdrawals to the destination account", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const cash = await createAccount(
+      { name: "Cash", type: "cash", initialBalanceCents: 100000 },
+      db
+    );
+    const investment = await createCategory({ name: "Brokerage", group: "investment" }, db);
+
+    await createTransaction(
+      {
+        accountId: cash.id,
+        categoryId: investment.id,
+        type: "investment_withdrawal",
+        status: "posted",
+        amountCents: 25000,
+        transactionDate: "2026-07-10",
+        competenceMonth: "2026-07",
+        description: "Resgate para compra",
+      },
+      db
+    );
+
+    const details = await getAccountDetails(cash.id, db);
+
+    expect(details.currentBalanceCents).toBe(125000);
+    expect(details.metrics.postedInvestmentWithdrawalCents).toBe(25000);
+  });
 });

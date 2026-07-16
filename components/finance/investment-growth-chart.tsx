@@ -15,6 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { InvestmentGrowthSummaryMetric } from "@/components/finance/investment-growth-summary-metric";
+import type { InvestmentGrowthChartProps } from "@/lib/interfaces/investments";
 import { formatCurrency, formatMonthLabel, formatRateFromBps } from "@/lib/finance-ui";
 import { buildInvestmentGrowthSeries } from "@/lib/investment-projection";
 
@@ -25,28 +27,19 @@ const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 1,
 });
 
-type InvestmentGrowthChartProps = {
-  currentBalanceCents: number;
-  monthlyContributionCents: number;
-  expectedMonthlyRateBps: number;
-  referenceDate: string;
-  months: number;
-  periodLabel: string;
-};
-
 export function InvestmentGrowthChart({
   currentBalanceCents,
-  monthlyContributionCents,
   expectedMonthlyRateBps,
   referenceDate,
+  movements,
   months,
   periodLabel,
 }: InvestmentGrowthChartProps) {
   const data = buildInvestmentGrowthSeries({
     currentBalanceCents,
-    monthlyContributionCents,
     expectedMonthlyRateBps,
     referenceDate,
+    movements,
     months,
   }).map((point) => ({
     ...point,
@@ -72,24 +65,24 @@ export function InvestmentGrowthChart({
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h3 className="font-heading text-lg font-semibold text-slate-100">
-            Capital aportado x juros
+            Saldo estimado e movimentações
           </h3>
           <p className="mt-1 text-sm text-slate-400">
-            Composição até {periodLabel} com taxa de {formatRateFromBps(expectedMonthlyRateBps)}.
+            Composição até {periodLabel} com taxa de {formatRateFromBps(expectedMonthlyRateBps)} e os lançamentos previstos.
           </p>
         </div>
         <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[420px]">
-          <SummaryMetric
-            label="Capital"
+          <InvestmentGrowthSummaryMetric
+            label="Saldo + movimentos"
             value={formatCurrency(finalPrincipalCents)}
             tone="cyan"
           />
-          <SummaryMetric
-            label="Juros"
+          <InvestmentGrowthSummaryMetric
+            label="Rendimento"
             value={formatCurrency(finalInterestCents)}
             tone="amber"
           />
-          <SummaryMetric
+          <InvestmentGrowthSummaryMetric
             label="Peso dos juros"
             value={interestShare}
             tone="emerald"
@@ -100,8 +93,8 @@ export function InvestmentGrowthChart({
       <ChartContainer
         className="h-[460px] w-full"
         config={{
-          principal: { label: "Capital aportado", color: "#38bdf8" },
-          interest: { label: "Juros acumulados", color: "#f59e0b" },
+          principal: { label: "Saldo + movimentos", color: "#38bdf8" },
+          interest: { label: "Rendimento estimado", color: "#f59e0b" },
         }}
       >
         <AreaChart data={data} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
@@ -136,7 +129,7 @@ export function InvestmentGrowthChart({
           <Area
             type="monotone"
             dataKey="principal"
-            name="Capital aportado"
+            name="Saldo + movimentos"
             stackId="growth"
             fill="var(--color-principal)"
             fillOpacity={0.34}
@@ -146,7 +139,7 @@ export function InvestmentGrowthChart({
           <Area
             type="monotone"
             dataKey="interest"
-            name="Juros acumulados"
+            name="Rendimento estimado"
             stackId="growth"
             fill="var(--color-interest)"
             fillOpacity={0.42}
@@ -155,29 +148,6 @@ export function InvestmentGrowthChart({
           />
         </AreaChart>
       </ChartContainer>
-    </div>
-  );
-}
-
-function SummaryMetric({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone: "cyan" | "amber" | "emerald";
-}) {
-  const tones = {
-    cyan: "border-cyan-400/20 bg-cyan-400/10 text-cyan-200",
-    amber: "border-amber-300/20 bg-amber-300/10 text-amber-200",
-    emerald: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
-  } as const;
-
-  return (
-    <div className={`rounded-2xl border px-3 py-2 ${tones[tone]}`}>
-      <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-75">{label}</p>
-      <p className="mt-1 font-heading text-lg font-semibold tracking-tight">{value}</p>
     </div>
   );
 }

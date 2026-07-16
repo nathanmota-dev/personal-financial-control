@@ -82,7 +82,13 @@ function sumEvents(events: ProjectionEvent[]) {
       }
 
       if (event.type === "investment") {
-        totals.investmentCents += event.amountCents;
+        if (event.metadata?.direction === "withdrawal") {
+          totals.investmentWithdrawalCents += event.amountCents;
+          totals.investmentCents -= event.amountCents;
+        } else {
+          totals.investmentContributionCents += event.amountCents;
+          totals.investmentCents += event.amountCents;
+        }
       }
 
       if (event.type === "credit_card") {
@@ -104,6 +110,8 @@ function sumEvents(events: ProjectionEvent[]) {
       incomeCents: 0,
       expenseCents: 0,
       investmentCents: 0,
+      investmentContributionCents: 0,
+      investmentWithdrawalCents: 0,
       creditCardCents: 0,
       transferInCents: 0,
       transferOutCents: 0,
@@ -229,6 +237,8 @@ export function calculateDailyProjection(
       incomeCents: totals.incomeCents,
       expenseCents: totals.expenseCents,
       investmentCents: totals.investmentCents,
+      investmentContributionCents: totals.investmentContributionCents,
+      investmentWithdrawalCents: totals.investmentWithdrawalCents,
       creditCardCents: totals.creditCardCents,
       transferInCents: totals.transferInCents,
       transferOutCents: totals.transferOutCents,

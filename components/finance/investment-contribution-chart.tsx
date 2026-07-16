@@ -1,10 +1,10 @@
 "use client";
 
 import { Area, Bar, CartesianGrid, ComposedChart, XAxis, YAxis } from "recharts";
-import { Plus, WalletCards } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, WalletCards } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { InvestmentHistoryMetric } from "@/components/finance/investment-history-metric";
 import {
   ChartContainer,
   ChartLegend,
@@ -12,6 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import type { InvestmentContributionChartProps } from "@/lib/interfaces/investments";
 import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
 
 const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -21,30 +22,17 @@ const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 1,
 });
 
-type ContributionHistory = {
-  totalContributionCents: number;
-  points: Array<{
-    month: string;
-    monthlyContributionCents: number;
-    cumulativeContributionCents: number;
-  }>;
-};
-
 export function InvestmentContributionChart({
   history,
-  canRegisterContribution,
-  onRegisterContribution,
-}: {
-  history: ContributionHistory;
-  canRegisterContribution: boolean;
-  onRegisterContribution: () => void;
-}) {
+}: InvestmentContributionChartProps) {
   const data = history.points.map((point) => ({
     ...point,
     monthlyContribution: point.monthlyContributionCents / 100,
-    cumulativeContribution: point.cumulativeContributionCents / 100,
+    monthlyWithdrawal: point.monthlyWithdrawalCents / 100,
+    cumulativeNetMovement: point.cumulativeNetMovementCents / 100,
   }));
   const latestPoint = history.points.at(-1);
+  const netMovementCents = history.totalContributionCents - history.totalWithdrawalCents;
 
   return (
     <Card className="h-full overflow-hidden rounded-[1.75rem] border-slate-800 bg-slate-950/75 shadow-[0_24px_80px_rgba(2,6,23,0.28)]">
@@ -54,39 +42,39 @@ export function InvestmentContributionChart({
             <div className="mb-2 flex items-center gap-2 text-cyan-300">
               <WalletCards className="size-4" />
               <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
-                Capital em movimento
+                Movimentações reais
               </span>
             </div>
             <h2 className="font-heading text-xl font-semibold text-slate-100">
-              Aportes realizados
+              Aportes e resgates
             </h2>
             <p className="mt-1 text-sm leading-6 text-slate-400">
-              Valores mensais e acumulados, sem incluir juros ou valorização.
+              Histórico dos lançamentos realizados, sem misturar rendimento estimado.
             </p>
           </div>
-          <Button
-            type="button"
-            disabled={!canRegisterContribution}
-            onClick={onRegisterContribution}
-            className="shrink-0"
-          >
-            <Plus className="size-4" />
-            Registrar aporte
-          </Button>
+          <div className="flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/8 px-3 py-2 text-xs text-cyan-100">
+            <ArrowUpFromLine className="size-3.5" />
+            <span>Ligado a Lançamentos</span>
+          </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-5">
-        <div className="mb-5 grid gap-3 sm:grid-cols-2">
-          <HistoryMetric
+        <div className="mb-5 grid gap-3 sm:grid-cols-3">
+          <InvestmentHistoryMetric
             label="Total aportado"
             value={formatCurrency(history.totalContributionCents)}
             tone="cyan"
           />
-          <HistoryMetric
-            label="Último mês"
-            value={formatCurrency(latestPoint?.monthlyContributionCents ?? 0)}
+          <InvestmentHistoryMetric
+            label="Total resgatado"
+            value={formatCurrency(history.totalWithdrawalCents)}
             detail={latestPoint ? formatMonthLabel(latestPoint.month) : "Sem registros"}
+            tone="amber"
+          />
+          <InvestmentHistoryMetric
+            label="Movimentação líquida"
+            value={formatCurrency(netMovementCents)}
             tone="sky"
           />
         </div>
@@ -95,15 +83,16 @@ export function InvestmentContributionChart({
           <ChartContainer
             className="h-[330px] w-full"
             config={{
-              monthlyContribution: { label: "Aporte mensal", color: "#38bdf8" },
-              cumulativeContribution: { label: "Aportes acumulados", color: "#22d3ee" },
+              monthlyContribution: { label: "Aportes", color: "#38bdf8" },
+              monthlyWithdrawal: { label: "Resgates", color: "#f59e0b" },
+              cumulativeNetMovement: { label: "Movimentação líquida", color: "#22d3ee" },
             }}
           >
             <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
               <defs>
-                <linearGradient id="investmentContributionGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-cumulativeContribution)" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="var(--color-cumulativeContribution)" stopOpacity={0.02} />
+                <linearGradient id="investmentMovementGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -136,18 +125,26 @@ export function InvestmentContributionChart({
               <ChartLegend content={<ChartLegendContent className="text-slate-300" />} />
               <Bar
                 dataKey="monthlyContribution"
-                name="Aporte mensal"
+                name="Aportes"
                 fill="var(--color-monthlyContribution)"
                 fillOpacity={0.72}
                 radius={[6, 6, 2, 2]}
-                maxBarSize={34}
+                maxBarSize={28}
+              />
+              <Bar
+                dataKey="monthlyWithdrawal"
+                name="Resgates"
+                fill="var(--color-monthlyWithdrawal)"
+                fillOpacity={0.72}
+                radius={[6, 6, 2, 2]}
+                maxBarSize={28}
               />
               <Area
                 type="monotone"
-                dataKey="cumulativeContribution"
-                name="Aportes acumulados"
-                fill="url(#investmentContributionGradient)"
-                stroke="var(--color-cumulativeContribution)"
+                dataKey="cumulativeNetMovement"
+                name="Movimentação líquida"
+                fill="url(#investmentMovementGradient)"
+                stroke="var(--color-cumulativeNetMovement)"
                 strokeWidth={2.5}
               />
             </ComposedChart>
@@ -155,48 +152,17 @@ export function InvestmentContributionChart({
         ) : (
           <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-slate-700 bg-slate-900/35 px-6 text-center">
             <div className="rounded-full border border-cyan-400/15 bg-cyan-400/10 p-3 text-cyan-300">
-              <WalletCards className="size-6" />
+              <ArrowDownToLine className="size-6" />
             </div>
             <p className="mt-4 font-heading text-lg font-semibold text-slate-100">
-              Nenhum aporte realizado
+              Nenhuma movimentação realizada
             </p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-slate-400">
-              Registre o primeiro aporte para acompanhar a evolução mensal do capital investido.
+              Cadastre aportes ou resgates na tela de Lançamentos para acompanhar o capital em movimento.
             </p>
           </div>
         )}
-
-        {!canRegisterContribution ? (
-          <p className="mt-4 text-xs leading-5 text-amber-200/80">
-            Cadastre uma carteira, uma conta de origem e uma categoria de investimento para registrar aportes.
-          </p>
-        ) : null}
       </CardContent>
     </Card>
-  );
-}
-
-function HistoryMetric({
-  label,
-  value,
-  detail,
-  tone,
-}: {
-  label: string;
-  value: string;
-  detail?: string;
-  tone: "cyan" | "sky";
-}) {
-  const styles = {
-    cyan: "border-cyan-400/15 bg-cyan-400/8 text-cyan-200",
-    sky: "border-sky-400/15 bg-sky-400/8 text-sky-200",
-  } as const;
-
-  return (
-    <div className={`rounded-2xl border px-4 py-3 ${styles[tone]}`}>
-      <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-70">{label}</p>
-      <p className="mt-1 font-heading text-xl font-semibold tracking-tight">{value}</p>
-      {detail ? <p className="mt-1 text-xs opacity-65">{detail}</p> : null}
-    </div>
   );
 }

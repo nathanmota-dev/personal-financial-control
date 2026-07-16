@@ -50,7 +50,7 @@ export function DayDetailSheet({ day, onOpenChange }: DayDetailSheetProps) {
                   tone="rose"
                 />
                 <DetailMetric
-                  label="Investimentos"
+                  label="Investimentos líquidos"
                   value={formatCurrency(day.investmentCents)}
                   tone="sky"
                 />

@@ -60,7 +60,10 @@ export default async function TransactionsPage({
   } catch {}
 
   const filteredTransactions =
-    type === "income" || type === "expense" || type === "investment_contribution"
+    type === "income" ||
+    type === "expense" ||
+    type === "investment_contribution" ||
+    type === "investment_withdrawal"
       ? (data?.transactions ?? []).filter((item) => item.type === type)
       : (data?.transactions ?? []);
 

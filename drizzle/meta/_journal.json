@@ -29,6 +29,13 @@
       "when": 1783619773776,
       "tag": "0003_groovy_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784200000000,
+      "tag": "0004_estimated_investment_balance",
+      "breakpoints": true
     }
   ]
 }
