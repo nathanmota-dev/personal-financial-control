@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Check, SlidersHorizontal } from "lucide-react";
+import { ptBR } from "date-fns/locale";
+import { CalendarDays, Check, SlidersHorizontal } from "lucide-react";
 
 import type {
   FilterFieldProps,
@@ -12,8 +13,10 @@ import type {
 import { financeIconClassName } from "@/components/finance/finance-styles";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -25,6 +28,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   accountTypeLabels,
   centsToMoneyInput,
+  formatDateLabel,
   moneyInputToCents,
 } from "@/lib/finance-ui";
 import type { ProjectedBalancePeriod } from "@/lib/interfaces/projected-balance";
@@ -51,6 +55,7 @@ export function ProjectionFilters({
   const [reserveInput, setReserveInput] = useState(
     centsToMoneyInput(filters.minimumReserveCents)
   );
+  const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const selectedAccountId = filters.accountId;
   const creditDisabled = Boolean(selectedAccountId) || creditAccounts.length === 0;
@@ -146,12 +151,41 @@ export function ProjectionFilters({
           </FilterField>
 
           <FilterField label="Data inicial">
-            <Input
-              type="date"
-              value={filters.startDate}
-              onChange={(event) => updateFilters({ startDate: event.target.value })}
-              className={filterInputClassName}
-            />
+            <Popover open={isStartDatePickerOpen} onOpenChange={setIsStartDatePickerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    filterInputClassName,
+                    "w-full justify-between px-4 text-left"
+                  )}
+                  aria-label={`Selecionar data inicial: ${formatDateLabel(filters.startDate)}`}
+                >
+                  <span>{formatDateLabel(filters.startDate)}</span>
+                  <CalendarDays className="size-4 text-slate-400" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+              >
+                <Calendar
+                  mode="single"
+                  selected={parseDateInputValue(filters.startDate)}
+                  onSelect={(date) => {
+                    if (!date) {
+                      return;
+                    }
+
+                    updateFilters({ startDate: formatDateInputValue(date) });
+                    setIsStartDatePickerOpen(false);
+                  }}
+                  locale={ptBR}
+                  className="text-slate-100"
+                />
+              </PopoverContent>
+            </Popover>
           </FilterField>
 
           {filters.period === "custom" ? (
@@ -296,4 +330,15 @@ function ToggleFilter({
       />
     </div>
   );
+}
+
+function parseDateInputValue(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatDateInputValue(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
 }
