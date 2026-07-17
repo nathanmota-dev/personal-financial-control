@@ -7,7 +7,7 @@ export const financeMetricClassName =
 export const financeItemClassName =
   "rounded-2xl border border-slate-800 bg-slate-900/35";
 
-export const financeHeaderClassName = "border-b border-slate-800 pb-5";
+export const financeHeaderClassName = "border-b border-slate-800 pt-6 pb-5";
 
 export const financeChartSurfaceClassName =
   "rounded-2xl border border-slate-800 bg-slate-950/45 p-3";

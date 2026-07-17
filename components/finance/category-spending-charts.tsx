@@ -46,7 +46,7 @@ export function CategorySpendingCharts({
         <CardContent className="p-5">
           {hasCategoryData ? (
             <ChartContainer
-              className={cn(financeChartSurfaceClassName, "h-[220px] w-full")}
+              className={cn(financeChartSurfaceClassName, "h-[220px] w-full border-0")}
               config={{
                 amount: { label: "Valor", color: "#14b8a6" },
               }}
@@ -106,7 +106,7 @@ export function CategorySpendingCharts({
         <CardContent className="p-5">
           {hasCategoryData ? (
             <ChartContainer
-              className={cn(financeChartSurfaceClassName, "h-[220px] w-full")}
+              className={cn(financeChartSurfaceClassName, "h-[220px] w-full border-0")}
               config={{
                 a: { label: "1", color: "#38bdf8" },
                 b: { label: "2", color: "#f97316" },

@@ -33,7 +33,7 @@ export function DashboardCharts({
         </CardHeader>
         <CardContent className="p-5">
           <ChartContainer
-            className={cn(financeChartSurfaceClassName, "h-[320px] w-full")}
+            className={cn(financeChartSurfaceClassName, "h-[320px] w-full border-0")}
             config={{
               income: { label: "Receitas", color: "#0f766e" },
               expenses: { label: "Despesas", color: "#be123c" },
