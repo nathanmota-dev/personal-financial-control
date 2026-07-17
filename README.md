@@ -105,6 +105,7 @@ PORT=3008 ./open-app.sh
 - `DATABASE_URL`: URL do banco selecionado. No Docker, o Compose injeta `file:/app/.local/personal-finance.db` automaticamente;
 - `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`: conexão com Turso quando `DATABASE_URL` não estiver definida;
 - `DATA_ENCRYPTION_KEY`: chave base64 de 32 bytes usada para proteger os dados financeiros;
+- `DEMO_MODE`: use `true`, `1`, `yes` ou `on` para carregar um portfólio simulado em memória. O padrão é `false`; alterações feitas no demo são temporárias e não exigem banco ou chave financeira reais;
 - `BROWSER_BIN`: executável usado pelo launcher do Linux.
 
 Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; trocá-la impede a leitura desses dados.

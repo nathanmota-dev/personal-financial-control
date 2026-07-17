@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { transfers } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, normalizeDate, serializeTimestamps } from "@/lib/server/finance";
@@ -16,12 +16,12 @@ const transferSchema = z.object({
   description: z.string().trim().min(1),
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 export async function createTransfer(input: z.input<typeof transferSchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = transferSchema.parse(input);
 
   values.transferDate = normalizeDate(values.transferDate);
@@ -56,7 +56,7 @@ export async function listTransfers(
   filters: { competenceMonth?: string; accountId?: string } = {},
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const rows = await db.query.transfers.findMany({
     where: (table, { and, or, eq: equals }) =>
       and(

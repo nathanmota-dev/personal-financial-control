@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import {
   accounts,
@@ -26,6 +26,7 @@ import {
 } from "@/lib/server/finance";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
+import { getFinanceToday } from "@/lib/server/runtime";
 
 type AppDbTransaction = Parameters<Parameters<AppDb["transaction"]>[0]>[0];
 type DbContext = AppDb | AppDbTransaction;
@@ -95,12 +96,12 @@ const goalContributionSchema = z.object({
   notes: nullableTextSchema,
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return getFinanceToday();
 }
 
 function normalizeNullableMonth(value: string | null | undefined) {
@@ -145,7 +146,7 @@ function getRemainingMonths(targetDate: string | null) {
   }
 
   const [targetYear, targetMonth] = targetDate.split("-").map(Number);
-  const now = new Date();
+  const now = new Date(`${getFinanceToday()}T00:00:00.000Z`);
   const currentIndex = now.getUTCFullYear() * 12 + now.getUTCMonth();
   const targetIndex = targetYear * 12 + targetMonth - 1;
 
@@ -349,7 +350,7 @@ function buildMonthlyEvolution(
 
   const months = [...totalsByMonth.keys()].sort();
   const firstMonthIndex = monthToIndex(months[0]);
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  const currentMonth = getFinanceToday().slice(0, 7);
   const lastMonthIndex = Math.max(
     monthToIndex(months[months.length - 1]),
     monthToIndex(currentMonth)
@@ -378,7 +379,7 @@ function buildMonthlyEvolution(
 }
 
 export async function getGoalsDashboard(database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const [investmentProjection, goalRows, allocationRows, accountRows, categoryRows] =
     await Promise.all([
       getInvestmentProjection(db),
@@ -494,11 +495,13 @@ export async function getGoalsDashboard(database?: AppDb) {
 }
 
 export async function getGoalDetails(id: string, database?: AppDb) {
-  return getGoalDetailsInDb(id, resolveDb(database));
+  const db = await resolveDb(database);
+
+  return getGoalDetailsInDb(id, db);
 }
 
 export async function listGoalAllocations(goalId: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getGoalRowById(goalId, db);
   const allocations = await getGoalAllocations(goalId, db);
 
@@ -506,7 +509,7 @@ export async function listGoalAllocations(goalId: string, database?: AppDb) {
 }
 
 export async function createGoal(input: z.input<typeof createGoalSchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = createGoalSchema.parse(input);
   const initialAllocationCents = values.initialAllocationCents;
   const initialAllocationDate = normalizeDate(values.initialAllocationDate ?? todayIso());
@@ -558,7 +561,7 @@ export async function createGoal(input: z.input<typeof createGoalSchema>, databa
 }
 
 export async function updateGoal(input: z.input<typeof updateGoalSchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { id, ...values } = updateGoalSchema.parse(input);
   await getGoalRowById(id, db);
 
@@ -619,7 +622,7 @@ export async function updateGoal(input: z.input<typeof updateGoalSchema>, databa
 }
 
 export async function archiveGoal(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getGoalRowById(id, db);
   await db
     .update(financialGoals)
@@ -636,7 +639,7 @@ export async function allocateGoalFunds(
   input: z.input<typeof allocationSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = allocationSchema.parse(input);
   values.occurredOn = normalizeDate(values.occurredOn);
 
@@ -671,7 +674,7 @@ export async function releaseGoalFunds(
   input: z.input<typeof allocationSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = allocationSchema.parse(input);
   values.occurredOn = normalizeDate(values.occurredOn);
 
@@ -711,7 +714,7 @@ export async function createGoalContribution(
   input: z.input<typeof goalContributionSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = goalContributionSchema.parse(input);
   values.transactionDate = normalizeDate(values.transactionDate);
 

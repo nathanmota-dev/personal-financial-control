@@ -1,13 +1,13 @@
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { listCreditCardExpenseEntries } from "@/lib/server/credit-card";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import { listAccounts } from "@/lib/server/accounts";
 import { listTransactions } from "@/lib/server/transactions";
 import { normalizeCompetenceMonth } from "@/lib/server/finance";
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 function buildExpenseEntries(
@@ -49,7 +49,7 @@ function buildExpenseEntries(
 }
 
 export async function getMonthlyDashboard(month: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const competenceMonth = normalizeCompetenceMonth(month);
   const [transactionRows, accountRows, investmentProjection, creditCardExpenses] = await Promise.all([
     listTransactions({ competenceMonth }, db),
@@ -122,7 +122,7 @@ export async function getMonthlyEvolution(
   months: string[],
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   return Promise.all(months.map((month) => getMonthlyDashboard(month, db)));
 }
 
@@ -130,7 +130,7 @@ export async function getCategorySpendingReport(
   competenceMonth: string,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const [rows, creditCardExpenses] = await Promise.all([
     listTransactions({ competenceMonth }, db),
     listCreditCardExpenseEntries(competenceMonth, db),
@@ -159,7 +159,7 @@ export async function getMonthlyExpenseFeed(
   competenceMonth: string,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const [rows, creditCardExpenses] = await Promise.all([
     listTransactions({ competenceMonth }, db),
     listCreditCardExpenseEntries(competenceMonth, db),
@@ -173,7 +173,7 @@ export async function compareMonths(
   rightMonth: string,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const [left, right] = await Promise.all([
     getMonthlyDashboard(leftMonth, db),
     getMonthlyDashboard(rightMonth, db),

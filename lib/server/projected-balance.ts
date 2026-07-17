@@ -2,7 +2,7 @@ import { and, eq, gte, inArray, isNull, lt, lte, or } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import {
   recurringTemplates,
   transactions,
@@ -28,8 +28,8 @@ import { normalizeDate } from "@/lib/server/finance";
 const uuidSchema = z.string().uuid();
 const projectableAccountTypes = new Set<string>(["checking", "savings", "cash"]);
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 function formatLocalDate(date: Date) {
@@ -801,7 +801,7 @@ export async function getProjectedBalance(
   request: ProjectedBalanceRequest,
   database?: AppDb
 ): Promise<ProjectedBalanceResult> {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { selectedAccounts, selectedCreditAccounts } = await resolveProjectionAccounts(
     db,
     request.accountIds,

@@ -2,7 +2,7 @@ import { and, eq, gte, isNull, lte, or } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { recurringTemplates, transactions } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, serializeTimestamps } from "@/lib/server/finance";
@@ -26,8 +26,8 @@ const updateRecurringTemplateSchema = recurringTemplateSchema.partial().extend({
   id: z.string().uuid(),
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 async function validateRecurringDependencies(
@@ -76,7 +76,7 @@ export async function createRecurringTemplate(
   input: z.input<typeof recurringTemplateSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = recurringTemplateSchema.parse(input);
   values.startMonth = normalizeCompetenceMonth(values.startMonth);
   values.endMonth = values.endMonth ? normalizeCompetenceMonth(values.endMonth) : undefined;
@@ -94,7 +94,7 @@ export async function createRecurringTemplate(
 }
 
 export async function listRecurringTemplates(database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const rows = await db.query.recurringTemplates.findMany({
     with: {
       account: true,
@@ -111,7 +111,7 @@ export async function listRecurringTemplates(database?: AppDb) {
 }
 
 export async function getRecurringTemplateById(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const template = await db.query.recurringTemplates.findFirst({
     where: eq(recurringTemplates.id, id),
   });
@@ -125,7 +125,7 @@ export async function updateRecurringTemplate(
   input: z.input<typeof updateRecurringTemplateSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { id, ...rawValues } = updateRecurringTemplateSchema.parse(input);
   const existing = await getRecurringTemplateById(id, db);
   const values = {
@@ -153,7 +153,7 @@ export async function updateRecurringTemplate(
 }
 
 export async function pauseRecurringTemplate(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getRecurringTemplateById(id, db);
 
   const [template] = await db
@@ -173,7 +173,7 @@ export async function endRecurringTemplate(
   endMonth: string,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getRecurringTemplateById(id, db);
 
   const [template] = await db
@@ -217,7 +217,7 @@ async function markTemplateGenerated(
 }
 
 export async function generateRecurringTransactions(month: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const competenceMonth = normalizeCompetenceMonth(month);
 
   const templates = await db.query.recurringTemplates.findMany({

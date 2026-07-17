@@ -18,7 +18,6 @@ import {
   formatCurrency,
   formatDateLabel,
   formatMonthLabel,
-  getDefaultMonth,
   isValidMonth,
 } from "@/lib/finance-ui";
 import type { DashboardPageProps, MetricCardProps } from "@/lib/interfaces/dashboard";
@@ -28,6 +27,7 @@ import {
   getMonthlyExpenseFeed,
   getMonthlyEvolution,
 } from "@/lib/server/dashboard";
+import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 import { cn } from "@/lib/utils";
 
 export default async function DashboardPage({
@@ -35,7 +35,7 @@ export default async function DashboardPage({
 }: DashboardPageProps) {
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
-  const month = isValidMonth(monthParam) ? monthParam : getDefaultMonth();
+  const month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();
   let data:
     | {
         dashboard: Awaited<ReturnType<typeof getMonthlyDashboard>>;

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { categories, creditCardCharges, recurringTemplates, transactions } from "@/lib/db/schema";
 import { DomainError, invariant } from "@/lib/server/errors";
 import { currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
@@ -16,12 +16,12 @@ const updateCategorySchema = categorySchema.partial().extend({
   id: z.string().uuid(),
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 export async function createCategory(input: z.input<typeof categorySchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = categorySchema.parse(input);
 
   const [category] = await db
@@ -39,7 +39,7 @@ export async function listCategories(
   options?: { includeArchived?: boolean },
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const rows = await db.query.categories.findMany({
     where: options?.includeArchived ? undefined : eq(categories.isArchived, false),
     orderBy: (table, { asc }) => [asc(table.name)],
@@ -49,7 +49,7 @@ export async function listCategories(
 }
 
 export async function getCategoryById(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const category = await db.query.categories.findFirst({
     where: eq(categories.id, id),
   });
@@ -60,7 +60,7 @@ export async function getCategoryById(id: string, database?: AppDb) {
 }
 
 export async function updateCategory(input: z.input<typeof updateCategorySchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { id, ...values } = updateCategorySchema.parse(input);
   await getCategoryById(id, db);
 
@@ -77,7 +77,7 @@ export async function updateCategory(input: z.input<typeof updateCategorySchema>
 }
 
 export async function archiveCategory(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getCategoryById(id, db);
 
   const [category] = await db
@@ -93,7 +93,7 @@ export async function archiveCategory(id: string, database?: AppDb) {
 }
 
 export async function deleteCategory(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getCategoryById(id, db);
 
   const usage = await db.query.transactions.findFirst({

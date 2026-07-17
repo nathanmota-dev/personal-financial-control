@@ -1,7 +1,8 @@
 import { CreditCardView } from "@/components/finance/credit-card-view";
-import { getDefaultMonth, isValidMonth } from "@/lib/finance-ui";
+import { isValidMonth } from "@/lib/finance-ui";
 import { listCategories } from "@/lib/server/categories";
 import { getCreditCardOverview } from "@/lib/server/credit-card";
+import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 
 export default async function CreditCardPage({
   searchParams,
@@ -10,7 +11,7 @@ export default async function CreditCardPage({
 }) {
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
-  const month = isValidMonth(monthParam) ? monthParam : getDefaultMonth();
+  const month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();
 
   let data:
     | {

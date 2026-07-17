@@ -8,6 +8,7 @@ import {
   ChartNoAxesCombined,
   ChevronRight,
   CreditCard,
+  FlaskConical,
   Menu,
   PiggyBank,
   ReceiptText,
@@ -39,7 +40,13 @@ const navigation = [
   { href: "/settings", label: "Configurações", icon: Settings2 },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  demoMode,
+}: {
+  children: React.ReactNode;
+  demoMode: boolean;
+}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -56,7 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(37,99,235,0.18),_transparent_20%),linear-gradient(180deg,_#030712_0%,_#071428_48%,_#081a34_100%)] text-slate-100">
-      <RecurringAutoGenerator />
+      <RecurringAutoGenerator demoMode={demoMode} />
       <div className="mx-auto flex min-h-screen max-w-[1600px] gap-6 p-4 md:p-6">
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[2rem] border border-sky-900/40 bg-[linear-gradient(180deg,_rgba(2,6,23,0.95)_0%,_rgba(5,22,53,0.96)_100%)] px-6 py-7 text-white shadow-[0_24px_80px_rgba(2,6,23,0.55)]">
@@ -150,7 +157,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Drawer>
           </header>
 
-          <main className="flex-1">{children}</main>
+          <main className="flex-1">
+            {demoMode ? (
+              <div className="mb-6 flex flex-col gap-2 rounded-[1.5rem] border border-amber-400/25 bg-amber-400/10 px-5 py-4 text-amber-100 shadow-[0_18px_50px_rgba(2,6,23,0.2)] sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">
+                    <FlaskConical className="size-3.5" />
+                    Demo Mode
+                  </span>
+                  <p className="text-sm text-amber-100/80">
+                    Dados simulados para apresentação do produto.
+                  </p>
+                </div>
+                <p className="text-xs text-amber-100/60 sm:text-right">
+                  Alterações são temporárias nesta instância.
+                </p>
+              </div>
+            ) : null}
+            {children}
+          </main>
         </div>
       </div>
     </div>

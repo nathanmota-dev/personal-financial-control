@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { accounts, transactions, transfers } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import { calculateNetBalance, currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
@@ -21,8 +21,8 @@ const updateAccountSchema = createAccountSchema.partial().extend({
   id: z.string().uuid(),
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 function normalizeAccountValues(
@@ -50,7 +50,7 @@ function normalizeAccountValues(
 }
 
 export async function createAccount(input: z.input<typeof createAccountSchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = normalizeAccountValues(createAccountSchema.parse(input));
 
   const [account] = await db
@@ -68,7 +68,7 @@ export async function listAccounts(
   options?: { includeArchived?: boolean },
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const rows = await db.query.accounts.findMany({
     where: options?.includeArchived ? undefined : eq(accounts.isArchived, false),
     orderBy: (table, { asc }) => [asc(table.name)],
@@ -78,7 +78,7 @@ export async function listAccounts(
 }
 
 export async function getAccountById(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const account = await db.query.accounts.findFirst({
     where: eq(accounts.id, id),
   });
@@ -89,7 +89,7 @@ export async function getAccountById(id: string, database?: AppDb) {
 }
 
 export async function getAccountDetails(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const account = await getAccountById(id, db);
 
   const ledgerEntries = await db.query.transactions.findMany({
@@ -150,7 +150,7 @@ export async function getAccountDetails(id: string, database?: AppDb) {
 }
 
 export async function updateAccount(input: z.input<typeof updateAccountSchema>, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { id, ...values } = updateAccountSchema.parse(input);
   const existing = await getAccountById(id, db);
   const normalized = normalizeAccountValues({
@@ -174,7 +174,7 @@ export async function updateAccount(input: z.input<typeof updateAccountSchema>, 
 }
 
 export async function archiveAccount(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getAccountById(id, db);
 
   const [account] = await db

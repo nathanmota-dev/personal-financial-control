@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { generateRecurringTransactionsAction } from "@/app/actions/finance";
+import { DEMO_REFERENCE_MONTH } from "@/lib/demo/constants";
 import {
   extractErrorMessage,
   formatMonthLabel,
@@ -15,12 +16,16 @@ import {
 const autoGeneratePaths = new Set(["/dashboard", "/transactions", "/recurring"]);
 const pendingMonths = new Set<string>();
 
-export function RecurringAutoGenerator() {
+export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const monthParam = searchParams.get("month");
-  const month = isValidMonth(monthParam) ? monthParam : getDefaultMonth();
+  const month = isValidMonth(monthParam)
+    ? monthParam
+    : demoMode
+      ? DEMO_REFERENCE_MONTH
+      : getDefaultMonth();
 
   useEffect(() => {
     if (!autoGeneratePaths.has(pathname) || pendingMonths.has(month)) {

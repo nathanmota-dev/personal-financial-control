@@ -1,10 +1,11 @@
 import { RecurringView } from "@/components/finance/recurring-view";
-import { getDefaultMonth, isValidMonth } from "@/lib/finance-ui";
+import { isValidMonth } from "@/lib/finance-ui";
 import type { RecurringViewProps } from "@/lib/interfaces/recurring";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 import { getCategorySpendingReport } from "@/lib/server/dashboard";
 import { listRecurringTemplates } from "@/lib/server/recurring";
+import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 
 export default async function RecurringPage({
   searchParams,
@@ -14,7 +15,7 @@ export default async function RecurringPage({
   const params = await searchParams;
   const month = isValidMonth(typeof params.month === "string" ? params.month : undefined)
     ? (params.month as string)
-    : getDefaultMonth();
+    : getFinanceDefaultMonth();
   let data: Pick<
     RecurringViewProps,
     "accounts" | "categories" | "categorySpending" | "templates"

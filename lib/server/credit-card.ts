@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { creditCardCharges, creditCardInstallments } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import {
@@ -48,8 +48,8 @@ export type CreditCardExpenseEntry = {
   installmentCount?: number;
 };
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 function shiftMonth(value: string, delta: number) {
@@ -114,7 +114,7 @@ export async function createCreditCardCharge(
   input: z.input<typeof createCreditCardChargeSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = createCreditCardChargeSchema.parse(input);
   values.purchaseDate = normalizeDate(values.purchaseDate);
 
@@ -165,7 +165,7 @@ export async function listCreditCardExpenseEntries(
   database?: AppDb,
   options?: { accountId?: string }
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const normalizedMonth = normalizeCompetenceMonth(invoiceMonth);
 
   const [installmentRows, legacyTransactions] = await Promise.all([
@@ -232,7 +232,7 @@ export async function listCreditCardExpenseEntries(
 }
 
 export async function getCreditCardOverview(invoiceMonth: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const normalizedMonth = normalizeCompetenceMonth(invoiceMonth);
   const creditAccounts = (await listAccounts(undefined, db)).filter(
     (account) => account.type === "credit"

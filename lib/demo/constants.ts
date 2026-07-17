@@ -1,0 +1,2 @@
+export const DEMO_REFERENCE_DATE = "2026-07-16";
+export const DEMO_REFERENCE_MONTH = DEMO_REFERENCE_DATE.slice(0, 7);

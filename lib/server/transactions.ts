@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { transactions } from "@/lib/db/schema";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, normalizeDate, serializeTimestamps } from "@/lib/server/finance";
@@ -31,8 +31,8 @@ const updateTransactionSchema = transactionSchema.partial().extend({
   id: z.string().uuid(),
 });
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 async function validateTransactionDependencies(
@@ -84,7 +84,7 @@ export async function createTransaction(
   input: z.input<typeof transactionSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = transactionSchema.parse(input);
   values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
   values.transactionDate = normalizeDate(values.transactionDate);
@@ -118,7 +118,7 @@ export async function listTransactions(
   } = {},
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const where = and(
     filters.competenceMonth
       ? eq(transactions.competenceMonth, normalizeCompetenceMonth(filters.competenceMonth))
@@ -148,7 +148,7 @@ export async function listTransactions(
 }
 
 export async function getTransactionById(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const transaction = await db.query.transactions.findFirst({
     where: eq(transactions.id, id),
   });
@@ -162,7 +162,7 @@ export async function updateTransaction(
   input: z.input<typeof updateTransactionSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const { id, ...rawValues } = updateTransactionSchema.parse(input);
   const existing = await getTransactionById(id, db);
 
@@ -208,7 +208,7 @@ function isInvestmentMovementType(
 }
 
 export async function deleteTransaction(id: string, database?: AppDb) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   await getTransactionById(id, db);
   await db.delete(transactions).where(eq(transactions.id, id));
 }

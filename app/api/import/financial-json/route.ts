@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { accounts, categories, transactions } from "@/lib/db/schema";
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const payload = importPayloadSchema.parse(body);
-    const db = getDatabase();
+    const db = await getFinanceDatabase();
 
     let account = await db.query.accounts.findFirst({
       where: eq(accounts.name, payload.context.accountName),

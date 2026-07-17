@@ -11,6 +11,7 @@ const AUTH_TAG_LENGTH = 16;
 const KEY_LENGTH = 32;
 const INTEGER_PATTERN = /^-?(?:0|[1-9]\d*)$/;
 const BASE64_PATTERN = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+let ephemeralDemoKey: Buffer | undefined;
 
 function encode(value: Buffer) {
   return value.toString("base64url");
@@ -40,6 +41,15 @@ export function getEncryptionKey() {
   const encodedKey = process.env.DATA_ENCRYPTION_KEY;
 
   if (!encodedKey) {
+    const demoMode = ["true", "1", "yes", "on"].includes(
+      process.env.DEMO_MODE?.trim().toLowerCase() ?? ""
+    );
+
+    if (demoMode) {
+      ephemeralDemoKey ??= randomBytes(KEY_LENGTH);
+      return ephemeralDemoKey;
+    }
+
     throw new Error("DATA_ENCRYPTION_KEY is required to access monetary data.");
   }
 

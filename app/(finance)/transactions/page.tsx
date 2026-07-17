@@ -1,9 +1,10 @@
 import { TransactionsView } from "@/components/finance/transactions-view";
-import { getDefaultMonth, isValidMonth } from "@/lib/finance-ui";
+import { isValidMonth } from "@/lib/finance-ui";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 import { listTransactions } from "@/lib/server/transactions";
 import { listTransfers } from "@/lib/server/transfers";
+import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 
 export default async function TransactionsPage({
   searchParams,
@@ -13,7 +14,7 @@ export default async function TransactionsPage({
   const params = await searchParams;
   const month = isValidMonth(typeof params.month === "string" ? params.month : undefined)
     ? (params.month as string)
-    : getDefaultMonth();
+    : getFinanceDefaultMonth();
   const accountId = typeof params.accountId === "string" ? params.accountId : undefined;
   const categoryId = typeof params.categoryId === "string" ? params.categoryId : undefined;
   const status = typeof params.status === "string" ? params.status : undefined;

@@ -2,7 +2,7 @@ import { and, eq, gte, inArray, isNull, lte, or } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
-import { getDatabase } from "@/lib/db";
+import { getFinanceDatabase } from "@/lib/db";
 import { investmentPortfolio, recurringTemplates, transactions } from "@/lib/db/schema";
 import {
   calculateInvestmentBalance,
@@ -14,6 +14,7 @@ import { getCategoryById } from "@/lib/server/categories";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeDate, serializeTimestamps } from "@/lib/server/finance";
 import { createTransaction } from "@/lib/server/transactions";
+import { getFinanceToday } from "@/lib/server/runtime";
 
 const portfolioSchema = z.object({
   checkpointBalanceCents: z.number().int().nonnegative(),
@@ -39,22 +40,22 @@ const investmentContributionSchema = z.object({
 
 const investmentWithdrawalSchema = investmentContributionSchema;
 
-function resolveDb(database?: AppDb) {
-  return database ?? getDatabase();
+async function resolveDb(database?: AppDb) {
+  return database ?? getFinanceDatabase();
 }
 
 type AppDbTransaction = Parameters<Parameters<AppDb["transaction"]>[0]>[0];
 type InvestmentDb = AppDb | AppDbTransaction;
 
-function resolveReadDb(database?: InvestmentDb): InvestmentDb {
-  return database ?? getDatabase();
+async function resolveReadDb(database?: InvestmentDb): Promise<InvestmentDb> {
+  return database ?? getFinanceDatabase();
 }
 
 export async function configureInvestmentPortfolio(
   input: z.input<typeof portfolioSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = portfolioSchema.parse(input);
   values.checkpointDate = normalizeDate(values.checkpointDate);
   validateCheckpointDate(values.checkpointDate);
@@ -98,7 +99,7 @@ export async function updateInvestmentSettings(
   input: z.input<typeof investmentSettingsSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = investmentSettingsSchema.parse(input);
   const existing = await db.query.investmentPortfolio.findFirst();
 
@@ -120,7 +121,7 @@ export async function reconcileInvestmentBalance(
   input: z.input<typeof checkpointSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = checkpointSchema.parse(input);
   values.checkpointDate = normalizeDate(values.checkpointDate);
   validateCheckpointDate(values.checkpointDate);
@@ -153,7 +154,7 @@ export async function reconcileInvestmentBalance(
 }
 
 export async function getInvestmentPortfolio(database?: InvestmentDb) {
-  const db = resolveReadDb(database);
+  const db = await resolveReadDb(database);
   const portfolio = await db.query.investmentPortfolio.findFirst();
 
   return portfolio ? serializeTimestamps(portfolio) : null;
@@ -163,7 +164,7 @@ export async function createInvestmentContribution(
   input: z.input<typeof investmentContributionSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = investmentContributionSchema.parse(input);
   values.transactionDate = normalizeDate(values.transactionDate);
 
@@ -185,7 +186,7 @@ export async function createInvestmentWithdrawal(
   input: z.input<typeof investmentWithdrawalSchema>,
   database?: AppDb
 ) {
-  const db = resolveDb(database);
+  const db = await resolveDb(database);
   const values = investmentWithdrawalSchema.parse(input);
   values.transactionDate = normalizeDate(values.transactionDate);
 
@@ -204,8 +205,8 @@ export async function createInvestmentWithdrawal(
 }
 
 export async function getInvestmentContributionHistory(database?: InvestmentDb) {
-  const db = resolveReadDb(database);
-  const asOfDate = todayDate();
+  const db = await resolveReadDb(database);
+  const asOfDate = getFinanceToday();
   const rows = await db.query.transactions.findMany({
     where: and(
       inArray(transactions.type, ["investment_contribution", "investment_withdrawal"]),
@@ -279,8 +280,8 @@ export async function getInvestmentProjection(
   database?: InvestmentDb,
   options?: { asOfDate?: string }
 ) {
-  const db = resolveReadDb(database);
-  const asOfDate = normalizeDate(options?.asOfDate ?? todayDate());
+  const db = await resolveReadDb(database);
+  const asOfDate = normalizeDate(options?.asOfDate ?? getFinanceToday());
   const portfolio = await db.query.investmentPortfolio.findFirst();
 
   if (!portfolio) {
@@ -541,11 +542,7 @@ function indexToMonth(index: number) {
 }
 
 function todayDate() {
-  const date = new Date();
-
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-    date.getDate()
-  ).padStart(2, "0")}`;
+  return getFinanceToday();
 }
 
 function validateCheckpointDate(value: string) {

@@ -10,6 +10,7 @@ import {
   getProjectedBalance,
   parseProjectedBalanceSearchParams,
 } from "@/lib/server/projected-balance";
+import { getFinanceToday } from "@/lib/server/runtime";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type AccountRow = Awaited<ReturnType<typeof listAccounts>>[number];
@@ -26,12 +27,18 @@ export default async function ProjectedBalancePage({
 
   const params = await searchParams;
   const urlSearchParams = toURLSearchParams(params);
-  const defaultRequest = parseProjectedBalanceSearchParams(new URLSearchParams());
+  const defaultRequest = parseProjectedBalanceSearchParams(
+    new URLSearchParams(),
+    new Date(`${getFinanceToday()}T00:00:00.000Z`)
+  );
   let request: ProjectedBalanceRequest = defaultRequest;
   let loadError: string | undefined;
 
   try {
-    request = parseProjectedBalanceSearchParams(urlSearchParams);
+    request = parseProjectedBalanceSearchParams(
+      urlSearchParams,
+      new Date(`${getFinanceToday()}T00:00:00.000Z`)
+    );
   } catch (error) {
     loadError = getProjectionErrorMessage(error);
   }
