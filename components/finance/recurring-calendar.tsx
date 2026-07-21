@@ -11,6 +11,7 @@ import {
 
 import { RecurringCalendarEventItem } from "@/components/finance/recurring-calendar-event";
 import { RecurringCalendarNav } from "@/components/finance/recurring-calendar-nav";
+import { financeMonthlyCalendarClassName } from "@/components/finance/finance-styles";
 import type { RecurringCalendarEvent, RecurringCalendarProps } from "@/lib/interfaces/recurring";
 import {
   buildRecurringCalendarEvents,
@@ -29,7 +30,7 @@ export function RecurringCalendar({
   const events = buildRecurringCalendarEvents(visibleMonth, templates);
 
   return (
-    <div className="recurring-calendar overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950/75 shadow-[0_24px_80px_rgba(2,6,23,0.35)]">
+    <div className={`recurring-calendar ${financeMonthlyCalendarClassName}`}>
       <MonthlyCalendar
         currentMonth={currentMonth}
         onCurrentMonthChange={setCurrentMonth}

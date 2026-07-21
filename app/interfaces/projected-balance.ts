@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import type {
   DailyProjection,
   ProjectionEvent,
+  ProjectionCalendarDay,
+  ProjectionSimulation,
   ProjectionStatus,
   ProjectionSummary,
   ProjectionSummaryAlert,
@@ -78,15 +80,53 @@ export type ProjectedBalanceChartProps = {
 
 export type DailyProjectionTableProps = {
   daily: DailyProjection[];
+  onSelectDay: (day: DailyProjection) => void;
+};
+
+export type ProjectedBalanceCalendarProps = {
+  daily: DailyProjection[];
+  onSelectDay: (day: DailyProjection) => void;
+};
+
+export type ProjectionCalendarNavProps = {
+  firstMonth: string;
+  lastMonth: string;
+};
+
+export type ProjectionCalendarDayItemProps = {
+  calendarDay: ProjectionCalendarDay;
+  onSelectDay: (day: DailyProjection) => void;
+};
+
+export type DailyProjectionExplorerProps = {
+  daily: DailyProjection[];
+  onRemoveSimulation: (simulationId: string) => void;
 };
 
 export type DayDetailSheetProps = {
   day: DailyProjection | null;
   onOpenChange: (open: boolean) => void;
+  onRemoveSimulation?: (simulationId: string) => void;
 };
 
 export type EventRowProps = {
   event: ProjectionEvent;
+  onRemoveSimulation?: (simulationId: string) => void;
+};
+
+export type ProjectionSimulationPanelProps = {
+  accounts: ProjectedBalanceAccountOption[];
+  filters: ProjectedBalanceFilterState;
+  simulations: ProjectionSimulation[];
+  onAddSimulation: (simulation: ProjectionSimulation) => void;
+  onRemoveSimulation: (simulationId: string) => void;
+  onClearSimulations: () => void;
+};
+
+export type ProjectionSimulationDialogProps = {
+  accounts: ProjectedBalanceAccountOption[];
+  filters: ProjectedBalanceFilterState;
+  onAddSimulation: (simulation: ProjectionSimulation) => void;
 };
 
 export type MetricCardTone = "cyan" | "emerald" | "sky" | "amber" | "rose";

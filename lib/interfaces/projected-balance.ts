@@ -13,7 +13,8 @@ export type ProjectionEventSource =
   | "recurring"
   | "credit_card"
   | "investment"
-  | "transfer";
+  | "transfer"
+  | "simulation";
 
 export type ProjectionEventType =
   | "income"
@@ -35,6 +36,20 @@ export type ProjectionEvent = {
   accountId?: string;
   categoryId?: string;
   metadata?: ProjectionEventMetadata;
+};
+
+export type ProjectionSimulation = {
+  id: string;
+  accountId: string;
+  accountName: string;
+  date: string;
+  description: string;
+  amountCents: number;
+};
+
+export type ProjectionCalendarDay = {
+  date: Date;
+  day: DailyProjection | null;
 };
 
 export type DailyProjection = {

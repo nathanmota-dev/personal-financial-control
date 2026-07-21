@@ -29,6 +29,7 @@ export const eventSourceLabels: Record<ProjectionEvent["source"], string> = {
   credit_card: "Cartão",
   investment: "Investimento",
   transfer: "Transferência",
+  simulation: "Simulação",
 };
 
 export const eventTypeLabels: Record<ProjectionEvent["type"], string> = {

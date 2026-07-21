@@ -242,7 +242,7 @@ describe("projected balance", () => {
     });
   });
 
-  it("marks warning and negative days and clamps daily availability to zero", async () => {
+  it("marks warning and negative days and exposes signed daily availability", async () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);
 
@@ -287,7 +287,7 @@ describe("projected balance", () => {
     expect(projection.summary.status).toBe("negative");
     expect(projection.summary.firstWarningDate).toBe("2026-07-02");
     expect(projection.summary.firstNegativeDate).toBe("2026-07-03");
-    expect(projection.summary.availablePerDayCents).toBe(0);
+    expect(projection.summary.availablePerDayCents).toBe(-12000);
     expect(projection.daily.find((day) => day.date === "2026-07-02")?.status).toBe("warning");
     expect(projection.daily.find((day) => day.date === "2026-07-03")?.status).toBe("negative");
   });

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Landmark } from "lucide-react";
 
@@ -8,13 +9,16 @@ import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { ErrorPanel } from "@/components/finance/error-panel";
 import { PageHeader } from "@/components/finance/page-header";
 import { ProjectedBalanceChart } from "@/components/finance/projected-balance-components/chart";
-import { DailyProjectionTable } from "@/components/finance/projected-balance-components/daily-projection-table";
+import { DailyProjectionExplorer } from "@/components/finance/projected-balance-components/daily-projection-explorer";
 import { ProjectionFilters } from "@/components/finance/projected-balance-components/filters";
+import { ProjectionSimulationPanel } from "@/components/finance/projected-balance-components/simulation-panel";
 import {
   ProjectionAlerts,
   ProjectionSummaryCards,
 } from "@/components/finance/projected-balance-components/summary";
 import { Button } from "@/components/ui/button";
+import type { ProjectionSimulation } from "@/lib/interfaces/projected-balance";
+import { recalculateProjectionWithSimulations } from "@/lib/projected-balance";
 
 export function ProjectedBalanceView({
   projection,
@@ -23,8 +27,34 @@ export function ProjectedBalanceView({
   filters,
   loadError,
 }: ProjectedBalanceViewProps) {
+  const [simulations, setSimulations] = useState<ProjectionSimulation[]>([]);
   const selectedAccount = accounts.find((account) => account.id === filters.accountId);
   const hasProjectableAccounts = accounts.length > 0;
+  const visibleProjection = useMemo(() => {
+    if (!projection) {
+      return null;
+    }
+
+    const applicableSimulations = simulations.filter(
+      (simulation) => !filters.accountId || simulation.accountId === filters.accountId
+    );
+
+    return recalculateProjectionWithSimulations(projection, applicableSimulations);
+  }, [filters.accountId, projection, simulations]);
+
+  function addSimulation(simulation: ProjectionSimulation) {
+    setSimulations((current) => [...current, simulation]);
+  }
+
+  function removeSimulation(simulationId: string) {
+    setSimulations((current) =>
+      current.filter((simulation) => simulation.id !== simulationId)
+    );
+  }
+
+  function clearSimulations() {
+    setSimulations([]);
+  }
 
   return (
     <div className="space-y-6">
@@ -57,19 +87,30 @@ export function ProjectedBalanceView({
 
           {loadError ? (
             <ErrorPanel title="Filtros inválidos" message={loadError} />
-          ) : projection ? (
-            projection.daily.length ? (
+          ) : visibleProjection ? (
+            visibleProjection.daily.length ? (
               <>
                 <ProjectionSummaryCards
-                  summary={projection.summary}
+                  summary={visibleProjection.summary}
                   selectedAccountName={selectedAccount?.name}
                 />
-                <ProjectionAlerts alerts={projection.summary.alerts} />
-                <ProjectedBalanceChart
-                  daily={projection.daily}
-                  minimumReserveCents={projection.summary.minimumReserveCents}
+                <ProjectionAlerts alerts={visibleProjection.summary.alerts} />
+                <ProjectionSimulationPanel
+                  accounts={accounts}
+                  filters={filters}
+                  simulations={simulations}
+                  onAddSimulation={addSimulation}
+                  onRemoveSimulation={removeSimulation}
+                  onClearSimulations={clearSimulations}
                 />
-                <DailyProjectionTable daily={projection.daily} />
+                <ProjectedBalanceChart
+                  daily={visibleProjection.daily}
+                  minimumReserveCents={visibleProjection.summary.minimumReserveCents}
+                />
+                <DailyProjectionExplorer
+                  daily={visibleProjection.daily}
+                  onRemoveSimulation={removeSimulation}
+                />
               </>
             ) : (
               <FinanceEmptyState

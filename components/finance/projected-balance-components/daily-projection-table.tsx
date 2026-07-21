@@ -1,13 +1,8 @@
-"use client";
-
-import { useState } from "react";
-
 import type {
   DailyProjectionTableProps,
   MobileDayMetricProps,
 } from "@/app/interfaces/projected-balance";
 import { financeItemClassName } from "@/components/finance/finance-styles";
-import { DayDetailSheet } from "@/components/finance/projected-balance-components/day-detail-sheet";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,19 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
-import type { DailyProjection } from "@/lib/interfaces/projected-balance";
 import { cn } from "@/lib/utils";
 
-export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
-  const [selectedDay, setSelectedDay] = useState<DailyProjection | null>(null);
-
-  function openDay(day: DailyProjection) {
-    setSelectedDay(day);
-  }
-
+export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
   return (
-    <>
-      <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
         <CardHeader>
           <CardTitle>Projeção por dia</CardTitle>
         </CardHeader>
@@ -56,10 +43,10 @@ export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
                     key={day.date}
                     role="button"
                     tabIndex={0}
-                    onClick={() => openDay(day)}
+                    onClick={() => onSelectDay(day)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter" || event.key === " ") {
-                        openDay(day);
+                        onSelectDay(day);
                       }
                     }}
                     className="cursor-pointer border-slate-800 hover:bg-slate-900/80"
@@ -104,7 +91,7 @@ export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
               <button
                 key={day.date}
                 type="button"
-                onClick={() => openDay(day)}
+                onClick={() => onSelectDay(day)}
                 className="rounded-2xl border border-slate-800 p-4 text-left transition hover:bg-slate-900/70"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -145,9 +132,6 @@ export function DailyProjectionTable({ daily }: DailyProjectionTableProps) {
           </div>
         </CardContent>
       </Card>
-
-      <DayDetailSheet day={selectedDay} onOpenChange={(open) => !open && setSelectedDay(null)} />
-    </>
   );
 }
 

@@ -3,6 +3,7 @@ import type {
   ProjectionCalculationInput,
   ProjectionCalculationResult,
   ProjectionEvent,
+  ProjectionSimulation,
   ProjectionStatus,
   ProjectionSummaryAlert,
   ProjectedBalancePeriod,
@@ -244,7 +245,7 @@ export function calculateDailyProjection(
       transferOutCents: totals.transferOutCents,
       netChangeCents: totals.netChangeCents,
       projectedBalanceCents: balance,
-      availablePerDayCents: Math.max(0, Math.floor(safeAvailableCents / remainingDays)),
+      availablePerDayCents: Math.floor(safeAvailableCents / remainingDays),
       status: resolveStatus(balance, input.minimumReserveCents),
       events: dayEvents,
     });
@@ -261,4 +262,42 @@ export function calculateDailyProjection(
     }),
     daily,
   };
+}
+
+export function createProjectionSimulationEvent(
+  simulation: ProjectionSimulation
+): ProjectionEvent {
+  return {
+    id: `simulation:${simulation.id}`,
+    source: "simulation",
+    type: "expense",
+    description: simulation.description,
+    amountCents: simulation.amountCents,
+    netImpactCents: -simulation.amountCents,
+    date: simulation.date,
+    accountId: simulation.accountId,
+    metadata: {
+      simulationId: simulation.id,
+      accountName: simulation.accountName,
+      categoryName: "Simulação",
+    },
+  };
+}
+
+export function recalculateProjectionWithSimulations(
+  projection: ProjectionCalculationResult,
+  simulations: ProjectionSimulation[]
+): ProjectionCalculationResult {
+  const baseEvents = projection.daily.flatMap((day) => day.events);
+
+  return calculateDailyProjection({
+    startDate: projection.summary.startDate,
+    endDate: projection.summary.endDate,
+    initialBalanceCents: projection.summary.initialBalanceCents,
+    minimumReserveCents: projection.summary.minimumReserveCents,
+    events: [
+      ...baseEvents,
+      ...simulations.map(createProjectionSimulationEvent),
+    ],
+  });
 }

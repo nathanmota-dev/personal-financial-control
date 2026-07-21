@@ -14,3 +14,6 @@ export const financeChartSurfaceClassName =
 
 export const financeIconClassName =
   "inline-flex rounded-full border border-slate-700 bg-slate-900 p-2";
+
+export const financeMonthlyCalendarClassName =
+  "finance-monthly-calendar overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950/75 shadow-[0_24px_80px_rgba(2,6,23,0.35)]";

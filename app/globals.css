@@ -116,40 +116,51 @@
   }
 }
 
-.recurring-calendar .rc-bg-white {
+.recurring-calendar .rc-bg-white,
+.finance-monthly-calendar .rc-bg-white {
   background-color: rgba(2, 6, 23, 0.72);
 }
 
 .recurring-calendar .rc-border-l-2,
 .recurring-calendar .rc-border-t-2,
 .recurring-calendar .rc-border-r-2,
-.recurring-calendar .rc-border-b-2 {
+.recurring-calendar .rc-border-b-2,
+.finance-monthly-calendar .rc-border-l-2,
+.finance-monthly-calendar .rc-border-t-2,
+.finance-monthly-calendar .rc-border-r-2,
+.finance-monthly-calendar .rc-border-b-2 {
   border-color: rgba(30, 41, 59, 0.82);
   border-width: 1px;
 }
 
-.recurring-calendar .rc-font-bold {
+.recurring-calendar .rc-font-bold,
+.finance-monthly-calendar .rc-font-bold {
   color: rgb(226, 232, 240);
 }
 
-.recurring-calendar .rc-text-gray-500 {
+.recurring-calendar .rc-text-gray-500,
+.finance-monthly-calendar .rc-text-gray-500 {
   color: rgb(100, 116, 139);
 }
 
-.recurring-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+.recurring-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+.finance-monthly-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
   border-color: rgba(30, 41, 59, 0.72);
 }
 
-.recurring-calendar .rc-overflow-y-auto {
+.recurring-calendar .rc-overflow-y-auto,
+.finance-monthly-calendar .rc-overflow-y-auto {
   scrollbar-color: rgba(71, 85, 105, 0.7) transparent;
   scrollbar-width: thin;
 }
 
-.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar {
+.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar,
+.finance-monthly-calendar .rc-overflow-y-auto::-webkit-scrollbar {
   width: 5px;
 }
 
-.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb {
+.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb,
+.finance-monthly-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: rgba(71, 85, 105, 0.7);
 }
