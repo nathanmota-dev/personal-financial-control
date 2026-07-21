@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
@@ -15,8 +15,14 @@ import { createTestDatabase } from "@/tests/helpers/database";
 
 const cleanups: Array<() => Promise<void>> = [];
 
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date("2026-07-16T12:00:00.000Z"));
+});
+
 afterEach(async () => {
   await Promise.all(cleanups.splice(0).map((cleanup) => cleanup()));
+  vi.useRealTimers();
 });
 
 describe("goals", () => {

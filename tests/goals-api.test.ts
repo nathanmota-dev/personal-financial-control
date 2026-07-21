@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { configureInvestmentPortfolio } from "@/lib/server/investments";
 import { createTestDatabase } from "@/tests/helpers/database";
@@ -10,6 +10,11 @@ vi.mock("next/cache", () => ({
 const cleanups: Array<() => Promise<void>> = [];
 const originalDatabaseUrl = process.env.DATABASE_URL;
 const originalToken = process.env.TOKEN;
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date("2026-07-16T12:00:00.000Z"));
+});
 
 afterEach(async () => {
   await Promise.all(cleanups.splice(0).map((cleanup) => cleanup()));
@@ -27,6 +32,7 @@ afterEach(async () => {
   }
 
   vi.resetModules();
+  vi.useRealTimers();
 });
 
 async function loadGoalsRoute(databaseUrl: string) {
