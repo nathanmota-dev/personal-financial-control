@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 APPLICATIONS_DIR="$DATA_HOME/applications"
 DESKTOP_SOURCE="$SCRIPT_DIR/personal-financial-control.desktop"
