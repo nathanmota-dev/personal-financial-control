@@ -1,6 +1,8 @@
 import type {
   AccountType,
   CategoryGroup,
+  InvestmentAssetClass,
+  InvestmentInstrumentType,
   RecurringStatus,
   TransactionStatus,
   TransactionType,
@@ -59,6 +61,30 @@ export const recurringStatusLabels: Record<RecurringStatus, string> = {
   active: "Ativa",
   paused: "Pausada",
   ended: "Encerrada",
+};
+
+export const investmentAssetClassLabels: Record<InvestmentAssetClass, string> = {
+  fixed_income: "Renda fixa",
+  equities: "Ações",
+  funds: "Fundos",
+  real_estate: "Fundos imobiliários",
+  crypto: "Cripto",
+  cash: "Caixa",
+  other: "Outros",
+};
+
+export const investmentInstrumentTypeLabels: Record<InvestmentInstrumentType, string> = {
+  treasury: "Tesouro direto",
+  cdb: "CDB",
+  lci_lca: "LCI / LCA",
+  debenture: "Debênture",
+  stock: "Ação",
+  etf: "ETF",
+  investment_fund: "Fundo de investimento",
+  real_estate_fund: "Fundo imobiliário",
+  crypto_asset: "Ativo cripto",
+  cash: "Caixa",
+  other: "Outro",
 };
 
 export function formatCurrency(cents: number) {

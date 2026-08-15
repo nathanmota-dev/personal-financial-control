@@ -18,7 +18,13 @@ function encode(value: Buffer) {
 }
 
 function decode(value: string) {
-  return Buffer.from(value, "base64url");
+  const decoded = Buffer.from(value, "base64url");
+
+  if (decoded.toString("base64url") !== value) {
+    throw new Error("Encrypted monetary value is malformed.");
+  }
+
+  return decoded;
 }
 
 export function parseEncryptionKey(encodedKey: string) {

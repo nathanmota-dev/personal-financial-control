@@ -5,6 +5,9 @@ import type {
   creditCardInstallments,
   financialGoalAllocations,
   financialGoals,
+  investmentHoldings,
+  investmentPurposeAllocations,
+  investmentPurposes,
   investmentPortfolio,
   recurringTemplates,
   transactions,
@@ -20,6 +23,9 @@ export type DemoFixture = {
   creditCardCharges: Array<typeof creditCardCharges.$inferInsert>;
   creditCardInstallments: Array<typeof creditCardInstallments.$inferInsert>;
   investmentPortfolio: Array<typeof investmentPortfolio.$inferInsert>;
+  investmentHoldings: Array<typeof investmentHoldings.$inferInsert>;
+  investmentPurposes: Array<typeof investmentPurposes.$inferInsert>;
+  investmentPurposeAllocations: Array<typeof investmentPurposeAllocations.$inferInsert>;
   financialGoals: Array<typeof financialGoals.$inferInsert>;
   financialGoalAllocations: Array<typeof financialGoalAllocations.$inferInsert>;
 };

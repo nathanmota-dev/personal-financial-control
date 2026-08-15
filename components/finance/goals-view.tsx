@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   CalendarClock,
+  ArrowRight,
   Flag,
   PiggyBank,
   Plus,
@@ -299,12 +301,20 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
         <PageHeader
           eyebrow="Metas"
           title="Metas e planos futuros"
-          description="Separe o que já está investido por finalidade e mantenha a reserva financeira livre visível antes de assumir novos compromissos."
+          description="Planeje objetivos futuros, prazos e aportes. A classificação do patrimônio que já existe fica na Carteira atual."
           actions={
-            <Button type="button" disabled={isMutating} onClick={openCreateGoal}>
-              <Plus className="size-4" />
-              Nova meta
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild type="button" variant="outline">
+                <Link href="/investments/portfolio">
+                  Carteira atual
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button type="button" disabled={isMutating} onClick={openCreateGoal}>
+                <Plus className="size-4" />
+                Nova meta
+              </Button>
+            </div>
           }
         />
 

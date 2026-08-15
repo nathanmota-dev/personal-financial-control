@@ -17,6 +17,16 @@ import {
   updateInvestmentSettings,
 } from "@/lib/server/investments";
 import {
+  archiveInvestmentHolding,
+  archiveInvestmentPurpose,
+  createInvestmentHolding,
+  createInvestmentPurpose,
+  deleteInvestmentPurposeAllocation,
+  updateInvestmentHolding,
+  updateInvestmentPurpose,
+  upsertInvestmentPurposeAllocation,
+} from "@/lib/server/investment-portfolio";
+import {
   createRecurringTemplate,
   endRecurringTemplate,
   generateRecurringTransactions,
@@ -35,6 +45,7 @@ function revalidateFinanceViews() {
     "/recurring",
     "/projected-balance",
     "/investments",
+    "/investments/portfolio",
     "/goals",
     "/credit-card",
   ].forEach((path) => {
@@ -184,6 +195,66 @@ export async function createInvestmentWithdrawalAction(
   input: Parameters<typeof createInvestmentWithdrawal>[0]
 ) {
   const result = await createInvestmentWithdrawal(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function createInvestmentHoldingAction(
+  input: Parameters<typeof createInvestmentHolding>[0]
+) {
+  const result = await createInvestmentHolding(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function updateInvestmentHoldingAction(
+  input: Parameters<typeof updateInvestmentHolding>[0]
+) {
+  const result = await updateInvestmentHolding(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function archiveInvestmentHoldingAction(id: string) {
+  const result = await archiveInvestmentHolding(id);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function createInvestmentPurposeAction(
+  input: Parameters<typeof createInvestmentPurpose>[0]
+) {
+  const result = await createInvestmentPurpose(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function updateInvestmentPurposeAction(
+  input: Parameters<typeof updateInvestmentPurpose>[0]
+) {
+  const result = await updateInvestmentPurpose(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function archiveInvestmentPurposeAction(id: string) {
+  const result = await archiveInvestmentPurpose(id);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function upsertInvestmentPurposeAllocationAction(
+  input: Parameters<typeof upsertInvestmentPurposeAllocation>[0]
+) {
+  const result = await upsertInvestmentPurposeAllocation(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function deleteInvestmentPurposeAllocationAction(
+  input: Parameters<typeof deleteInvestmentPurposeAllocation>[0]
+) {
+  const result = await deleteInvestmentPurposeAllocation(input);
   revalidateFinanceViews();
   return result;
 }

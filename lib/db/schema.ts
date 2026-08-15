@@ -66,6 +66,30 @@ export const allocationTypes = [
   "correction",
 ] as const;
 
+export const investmentAssetClasses = [
+  "fixed_income",
+  "equities",
+  "funds",
+  "real_estate",
+  "crypto",
+  "cash",
+  "other",
+] as const;
+
+export const investmentInstrumentTypes = [
+  "treasury",
+  "cdb",
+  "lci_lca",
+  "debenture",
+  "stock",
+  "etf",
+  "investment_fund",
+  "real_estate_fund",
+  "crypto_asset",
+  "cash",
+  "other",
+] as const;
+
 function timestampColumns() {
   return {
     createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -311,6 +335,96 @@ export const investmentPortfolio = sqliteTable(
   ]
 );
 
+export const investmentHoldings = sqliteTable(
+  "investment_holdings",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    ticker: text("ticker"),
+    institutionName: text("institution_name"),
+    assetClass: text("asset_class", { enum: investmentAssetClasses }).notNull(),
+    instrumentType: text("instrument_type", { enum: investmentInstrumentTypes }).notNull(),
+    currentValueCents: encryptedMoneyColumn(
+      "current_value_cents",
+      "investment_holdings.current_value_cents"
+    ).notNull(),
+    valueAsOf: text("value_as_of").notNull(),
+    notes: text("notes"),
+    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_holdings_class_idx").on(table.assetClass),
+    index("investment_holdings_archived_idx").on(table.isArchived),
+    check(
+      "investment_holdings_current_value_cents_encrypted",
+      sql`typeof(${table.currentValueCents}) = 'text' AND ${table.currentValueCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
+export const investmentPurposes = sqliteTable(
+  "investment_purposes",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    targetAmountCents: encryptedMoneyColumn(
+      "target_amount_cents",
+      "investment_purposes.target_amount_cents"
+    ),
+    color: text("color").notNull().default("#22d3ee"),
+    notes: text("notes"),
+    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_purposes_archived_idx").on(table.isArchived),
+    check(
+      "investment_purposes_target_amount_cents_encrypted",
+      sql`${table.targetAmountCents} IS NULL OR (typeof(${table.targetAmountCents}) = 'text' AND ${table.targetAmountCents} LIKE 'pfc:v1:%')`
+    ),
+  ]
+);
+
+export const investmentPurposeAllocations = sqliteTable(
+  "investment_purpose_allocations",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    holdingId: text("holding_id")
+      .notNull()
+      .references(() => investmentHoldings.id, { onDelete: "restrict" }),
+    purposeId: text("purpose_id")
+      .notNull()
+      .references(() => investmentPurposes.id, { onDelete: "restrict" }),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "investment_purpose_allocations.amount_cents"
+    ).notNull(),
+    allocatedOn: text("allocated_on").notNull(),
+    notes: text("notes"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_purpose_allocations_holding_idx").on(table.holdingId),
+    index("investment_purpose_allocations_purpose_idx").on(table.purposeId),
+    index("investment_purpose_allocations_allocated_idx").on(table.allocatedOn),
+    uniqueIndex("investment_purpose_allocations_holding_purpose_unique").on(
+      table.holdingId,
+      table.purposeId
+    ),
+    check(
+      "investment_purpose_allocations_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
 export const financialGoals = sqliteTable(
   "financial_goals",
   {
@@ -414,6 +528,28 @@ export const financialGoalsRelations = relations(financialGoals, ({ many }) => (
   allocations: many(financialGoalAllocations),
 }));
 
+export const investmentHoldingsRelations = relations(investmentHoldings, ({ many }) => ({
+  allocations: many(investmentPurposeAllocations),
+}));
+
+export const investmentPurposesRelations = relations(investmentPurposes, ({ many }) => ({
+  allocations: many(investmentPurposeAllocations),
+}));
+
+export const investmentPurposeAllocationsRelations = relations(
+  investmentPurposeAllocations,
+  ({ one }) => ({
+    holding: one(investmentHoldings, {
+      fields: [investmentPurposeAllocations.holdingId],
+      references: [investmentHoldings.id],
+    }),
+    purpose: one(investmentPurposes, {
+      fields: [investmentPurposeAllocations.purposeId],
+      references: [investmentPurposes.id],
+    }),
+  })
+);
+
 export const financialGoalAllocationsRelations = relations(
   financialGoalAllocations,
   ({ one }) => ({
@@ -487,3 +623,5 @@ export type RecurringStatus = (typeof recurringStatuses)[number];
 export type GoalCategory = (typeof goalCategories)[number];
 export type GoalStatus = (typeof goalStatuses)[number];
 export type AllocationType = (typeof allocationTypes)[number];
+export type InvestmentAssetClass = (typeof investmentAssetClasses)[number];
+export type InvestmentInstrumentType = (typeof investmentInstrumentTypes)[number];

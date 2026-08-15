@@ -9,6 +9,7 @@ import {
   getInvestmentContributionHistory,
   getInvestmentProjection,
 } from "@/lib/server/investments";
+import { getInvestmentPortfolioDashboard } from "@/lib/server/investment-portfolio";
 import { getProjectedBalance, parseProjectedBalanceSearchParams } from "@/lib/server/projected-balance";
 import { listRecurringTemplates } from "@/lib/server/recurring";
 import { createTransaction, listTransactions } from "@/lib/server/transactions";
@@ -32,7 +33,7 @@ describe("demo mode", () => {
   });
 
   it("loads every finance domain from the in-memory fixture", async () => {
-    const [accounts, categories, transactions, transfers, recurring, dashboard, spending, creditCard, investments, history, goals] =
+    const [accounts, categories, transactions, transfers, recurring, dashboard, spending, creditCard, investments, history, goals, portfolioDashboard] =
       await Promise.all([
         listAccounts(),
         listCategories(),
@@ -45,6 +46,7 @@ describe("demo mode", () => {
         getInvestmentProjection(),
         getInvestmentContributionHistory(),
         getGoalsDashboard(),
+        getInvestmentPortfolioDashboard(),
       ]);
 
     expect(accounts).toHaveLength(5);
@@ -59,6 +61,9 @@ describe("demo mode", () => {
     expect(history.points.length).toBeGreaterThan(0);
     expect(goals.goals.length).toBe(3);
     expect(goals.archivedGoals.length).toBe(1);
+    expect(portfolioDashboard.holdings).toHaveLength(3);
+    expect(portfolioDashboard.purposes).toHaveLength(2);
+    expect(portfolioDashboard.holdings.find((holding) => holding.ticker === "BOVA11")?.allocationCount).toBe(2);
   });
 
   it("calculates a projected balance and keeps mutations in memory", async () => {

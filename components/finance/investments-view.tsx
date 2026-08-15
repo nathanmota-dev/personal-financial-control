@@ -106,6 +106,12 @@ export function InvestmentsView({
         description="Acompanhe o saldo estimado, confira o valor real quando necessário e projete o crescimento com base nos lançamentos da sua vida financeira."
         actions={
           <div className="flex flex-wrap gap-2">
+            <Button asChild>
+              <Link href="/investments/portfolio">
+                Carteira atual
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
             <Button asChild variant="outline">
               <Link href="/transactions?type=investment_contribution">
                 Ver aportes

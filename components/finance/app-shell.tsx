@@ -1,22 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import {
-  ArrowLeftRight,
-  ChartLine,
-  ChartNoAxesCombined,
-  ChevronRight,
-  CreditCard,
   FlaskConical,
   Menu,
-  PiggyBank,
-  ReceiptText,
-  Repeat,
-  Settings2,
-  Target,
 } from "lucide-react";
 
+import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,18 +16,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
-
-const navigation = [
-  { href: "/dashboard", label: "Dashboard", icon: ChartNoAxesCombined },
-  { href: "/transactions", label: "Lançamentos", icon: ReceiptText },
-  { href: "/credit-card", label: "Cartão", icon: CreditCard },
-  { href: "/recurring", label: "Recorrentes", icon: Repeat },
-  { href: "/projected-balance", label: "Saldo Projetado", icon: ChartLine },
-  { href: "/investments", label: "Investimentos", icon: PiggyBank },
-  { href: "/goals", label: "Metas", icon: Target },
-  { href: "/settings", label: "Configurações", icon: Settings2 },
-];
 
 export function AppShell({
   children,
@@ -47,20 +24,6 @@ export function AppShell({
   children: React.ReactNode;
   demoMode: boolean;
 }) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  function buildNavigationHref(targetPath: string) {
-    const params = new URLSearchParams();
-    const month = searchParams.get("month");
-
-    if (month && ["/dashboard", "/transactions", "/credit-card", "/recurring"].includes(targetPath)) {
-      params.set("month", month);
-    }
-
-    return params.size ? `${targetPath}?${params.toString()}` : targetPath;
-  }
-
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(37,99,235,0.18),_transparent_20%),linear-gradient(180deg,_#030712_0%,_#071428_48%,_#081a34_100%)] text-slate-100">
       <RecurringAutoGenerator demoMode={demoMode} />
@@ -78,31 +41,7 @@ export function AppShell({
               </div>
             </div>
 
-            <nav className="mt-10 space-y-2">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                const active = pathname === item.href;
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={buildNavigationHref(item.href)}
-                    className={cn(
-                      "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
-                      active
-                        ? "border-cyan-200/70 bg-cyan-300 text-slate-950 shadow-lg"
-                        : "border-slate-800/60 text-slate-300 hover:border-sky-400/30 hover:bg-sky-400/10 hover:text-white"
-                    )}
-                  >
-                    <span className="flex items-center gap-3">
-                      <Icon className="size-4" />
-                      {item.label}
-                    </span>
-                    <ChevronRight className="size-4 opacity-60" />
-                  </Link>
-                );
-              })}
-            </nav>
+            <SidebarNavigation />
           </div>
         </aside>
 
@@ -128,31 +67,7 @@ export function AppShell({
                     Selecione a área do app financeiro.
                   </DrawerDescription>
                 </DrawerHeader>
-                <nav className="space-y-2 p-4">
-                  {navigation.map((item) => {
-                    const Icon = item.icon;
-                    const active = pathname === item.href;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={buildNavigationHref(item.href)}
-                        className={cn(
-                          "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
-                          active
-                            ? "border-cyan-200/70 bg-cyan-300 text-slate-950"
-                            : "border-slate-800/60 text-slate-200 hover:border-sky-400/30 hover:bg-sky-400/10 hover:text-white"
-                        )}
-                      >
-                        <span className="flex items-center gap-3">
-                          <Icon className="size-4" />
-                          {item.label}
-                        </span>
-                        <ArrowLeftRight className="size-4 opacity-0" />
-                      </Link>
-                    );
-                  })}
-                </nav>
+                <SidebarNavigation mobile />
               </DrawerContent>
             </Drawer>
           </header>

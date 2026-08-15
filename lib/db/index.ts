@@ -15,6 +15,9 @@ import {
   creditCardInstallments,
   financialGoalAllocations,
   financialGoals,
+  investmentHoldings,
+  investmentPurposeAllocations,
+  investmentPurposes,
   investmentPortfolio,
   recurringTemplates,
   transactions,
@@ -85,6 +88,11 @@ async function initializeDemoDatabase() {
         .insert(creditCardInstallments)
         .values(demoFixture.creditCardInstallments);
       await transaction.insert(investmentPortfolio).values(demoFixture.investmentPortfolio);
+      await transaction.insert(investmentHoldings).values(demoFixture.investmentHoldings);
+      await transaction.insert(investmentPurposes).values(demoFixture.investmentPurposes);
+      await transaction
+        .insert(investmentPurposeAllocations)
+        .values(demoFixture.investmentPurposeAllocations);
       await transaction.insert(financialGoals).values(demoFixture.financialGoals);
       await transaction
         .insert(financialGoalAllocations)
