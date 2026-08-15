@@ -41,6 +41,7 @@ import type {
 } from "@/lib/interfaces/investment-portfolio";
 import {
   centsToMoneyInput,
+  defaultInvestmentPurposeColor,
   extractErrorMessage,
   moneyInputToCents,
 } from "@/lib/finance-ui";
@@ -155,19 +156,25 @@ export function InvestmentPortfolioView({ dashboard }: InvestmentPortfolioViewPr
     const allocatedElsewhereCents = selectedHoldingAllocations
       .filter((allocation) => allocation.id !== existingAllocation?.id)
       .reduce((total, allocation) => total + allocation.amountCents, 0);
+    const availableCents = Math.max(
+      (selectedHolding?.currentValueCents ?? firstHolding.currentValueCents) -
+        allocatedElsewhereCents,
+      0
+    );
+    const allocationAmountCents =
+      existingAllocation && existingAllocation.amountCents > 0
+        ? existingAllocation.amountCents
+        : availableCents;
 
     setAllocationForm({
       holdingId: existingAllocation?.holdingId ?? firstHolding.id,
       purposeId: existingAllocation?.purposeId ?? firstPurpose.id,
-      amount: existingAllocation ? centsToMoneyInput(existingAllocation.amountCents) : "",
+      amount: allocationAmountCents > 0 ? centsToMoneyInput(allocationAmountCents) : "",
       allocatedOn: existingAllocation?.allocatedOn ?? todayDate(),
       notes: existingAllocation?.notes ?? "",
     });
     setAllocationDialog(existingAllocation ? { existingAllocation } : {});
-    setAllocationAvailableCents(
-      (selectedHolding?.currentValueCents ?? firstHolding.currentValueCents) -
-        allocatedElsewhereCents
-    );
+    setAllocationAvailableCents(availableCents);
   }
 
   function openExistingAllocation(
@@ -184,9 +191,9 @@ export function InvestmentPortfolioView({ dashboard }: InvestmentPortfolioViewPr
   const [allocationAvailableCents, setAllocationAvailableCents] = useState(0);
 
   function updateAllocationSelection(value: string) {
-    setAllocationForm((current) => ({ ...current, holdingId: value }));
     const holding = dashboard.holdings.find((item) => item.id === value);
     if (!holding) {
+      setAllocationForm((current) => ({ ...current, holdingId: value, amount: "" }));
       setAllocationAvailableCents(0);
       return;
     }
@@ -195,7 +202,13 @@ export function InvestmentPortfolioView({ dashboard }: InvestmentPortfolioViewPr
       (total, allocation) => total + allocation.amountCents,
       0
     );
-    setAllocationAvailableCents(holding.currentValueCents - allocatedCents);
+    const availableCents = Math.max(holding.currentValueCents - allocatedCents, 0);
+    setAllocationForm((current) => ({
+      ...current,
+      holdingId: value,
+      amount: availableCents > 0 ? centsToMoneyInput(availableCents) : "",
+    }));
+    setAllocationAvailableCents(availableCents);
   }
 
   async function submitHolding() {
@@ -276,10 +289,17 @@ export function InvestmentPortfolioView({ dashboard }: InvestmentPortfolioViewPr
     }
 
     try {
+      const amountCents = moneyInputToCents(allocationForm.amount);
+
+      if (amountCents <= 0) {
+        toast.error("Informe um valor alocado maior que zero.");
+        return;
+      }
+
       await upsertInvestmentPurposeAllocationAction({
         holdingId: allocationForm.holdingId,
         purposeId: allocationForm.purposeId,
-        amountCents: moneyInputToCents(allocationForm.amount),
+        amountCents,
         allocatedOn: allocationForm.allocatedOn,
         notes: allocationForm.notes || null,
       });
@@ -462,7 +482,7 @@ function emptyPurposeForm(): PurposeFormState {
   return {
     name: "",
     targetAmount: "",
-    color: "#22d3ee",
+    color: defaultInvestmentPurposeColor,
     notes: "",
   };
 }

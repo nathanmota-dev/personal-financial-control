@@ -289,6 +289,18 @@ describe("investment portfolio classification", () => {
         {
           holdingId: holding.id,
           purposeId: purpose.id,
+          amountCents: 0,
+          allocatedOn: "2026-07-16",
+        },
+        db
+      )
+    ).rejects.toMatchObject({ code: "ALLOCATION_AMOUNT_REQUIRED" });
+
+    await expect(
+      upsertInvestmentPurposeAllocation(
+        {
+          holdingId: holding.id,
+          purposeId: purpose.id,
           amountCents: 100001,
           allocatedOn: "2026-07-16",
         },

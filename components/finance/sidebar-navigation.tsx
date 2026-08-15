@@ -89,7 +89,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
             </Link>
 
             {item.children ? (
-              <div className="ml-5 space-y-1 border-l border-slate-800/90 pl-3">
+              <div className="relative ml-5 space-y-1 pl-3 before:pointer-events-none before:absolute before:-top-1.5 before:bottom-4 before:left-0 before:border-l before:border-slate-800/90 before:content-['']">
                 {item.children.map((child) => {
                   const childActive = pathname === child.href;
 
@@ -98,7 +98,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
                       key={child.href}
                       href={buildNavigationHref(child.href)}
                       className={cn(
-                        "flex items-center justify-between rounded-xl px-3 py-2 text-xs transition",
+                        "relative flex items-center justify-between rounded-xl px-3 py-2 text-xs transition before:pointer-events-none before:absolute before:-left-3 before:top-0 before:h-1/2 before:w-3 before:rounded-bl-xl before:border-b before:border-l before:border-slate-800/90 before:content-['']",
                         childActive
                           ? "bg-cyan-300/12 font-semibold text-cyan-200"
                           : "text-slate-500 hover:bg-sky-400/8 hover:text-slate-200"

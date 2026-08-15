@@ -104,6 +104,7 @@ export function AllocationDialog({
                 }
                 placeholder="0,00"
                 inputMode="decimal"
+                required
               />
             </PortfolioField>
             <PortfolioField label="Data da alocação" htmlFor="allocation-date">

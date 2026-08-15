@@ -345,6 +345,12 @@ export async function upsertInvestmentPurposeAllocation(
   const db = await resolveDb(database);
   const values = investmentPurposeAllocationSchema.parse(input);
 
+  invariant(
+    values.amountCents > 0,
+    "ALLOCATION_AMOUNT_REQUIRED",
+    "Informe um valor alocado maior que zero."
+  );
+
   return db.transaction(async (transaction) => {
     const [holding, purpose, existing] = await Promise.all([
       transaction.query.investmentHoldings.findFirst({

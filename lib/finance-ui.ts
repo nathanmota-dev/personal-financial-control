@@ -87,6 +87,19 @@ export const investmentInstrumentTypeLabels: Record<InvestmentInstrumentType, st
   other: "Outro",
 };
 
+export const investmentPurposeColorOptions = {
+  cyan: { value: "#22d3ee", label: "Ciano" },
+  sky: { value: "#38bdf8", label: "Azul céu" },
+  blue: { value: "#3b82f6", label: "Azul" },
+  violet: { value: "#a78bfa", label: "Violeta" },
+  pink: { value: "#f472b6", label: "Rosa" },
+  amber: { value: "#f59e0b", label: "Âmbar" },
+  emerald: { value: "#34d399", label: "Esmeralda" },
+  teal: { value: "#2dd4bf", label: "Turquesa" },
+} as const;
+
+export const defaultInvestmentPurposeColor = investmentPurposeColorOptions.cyan.value;
+
 export function formatCurrency(cents: number) {
   return currencyFormatter.format(cents / 100);
 }

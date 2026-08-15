@@ -9,11 +9,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import type { PurposeDialogProps } from "@/lib/interfaces/investment-portfolio";
 import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
+import { investmentPurposeColorOptions } from "@/lib/finance-ui";
 
 export function PurposeDialog({
   state,
@@ -41,7 +48,7 @@ export function PurposeDialog({
             onSubmit();
           }}
         >
-          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_96px]">
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_160px]">
             <PortfolioField label="Nome" htmlFor="purpose-name">
               <Input
                 id="purpose-name"
@@ -51,18 +58,33 @@ export function PurposeDialog({
                 autoFocus
               />
             </PortfolioField>
-            <div className="grid gap-2">
-              <Label htmlFor="purpose-color" className="text-slate-300">
-                Cor
-              </Label>
-              <Input
-                id="purpose-color"
-                type="color"
+            <PortfolioField label="Cor" htmlFor="purpose-color">
+              <Select
                 value={form.color}
-                onChange={(event) => setForm((current) => ({ ...current, color: event.target.value }))}
-                className="h-9 cursor-pointer p-1"
-              />
-            </div>
+                onValueChange={(value) => setForm((current) => ({ ...current, color: value }))}
+              >
+                <SelectTrigger
+                  id="purpose-color"
+                  className="w-full border-slate-700 bg-slate-900/60"
+                >
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent className="border-slate-800 bg-slate-950 text-slate-100">
+                  {Object.entries(investmentPurposeColorOptions).map(([key, option]) => (
+                    <SelectItem key={key} value={option.value}>
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="size-3.5 rounded-full border border-white/20"
+                          style={{ backgroundColor: option.value }}
+                          aria-hidden="true"
+                        />
+                        {option.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </PortfolioField>
           </div>
 
           <PortfolioField label="Alvo opcional (R$)" htmlFor="purpose-target">
