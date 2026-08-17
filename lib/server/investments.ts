@@ -4,6 +4,13 @@ import { z } from "zod";
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { investmentPortfolio, recurringTemplates, transactions } from "@/lib/db/schema";
+import { investmentReductionSelectionSchema } from "@/lib/server/investment-reconciliation";
+import {
+  applyInvestmentReductionInExistingTransaction,
+  getInvestmentReductionSources,
+} from "@/lib/server/investment-reconciliation";
+
+export { getInvestmentReductionSources } from "@/lib/server/investment-reconciliation";
 import {
   calculateInvestmentBalance,
   type InvestmentMovement,
@@ -29,6 +36,8 @@ const investmentSettingsSchema = z.object({
 const checkpointSchema = z.object({
   checkpointBalanceCents: z.number().int().nonnegative(),
   checkpointDate: z.string(),
+  sourceSelections: z.array(investmentReductionSelectionSchema).optional(),
+  sources: z.array(investmentReductionSelectionSchema).optional(),
 });
 
 const investmentContributionSchema = z.object({
@@ -38,7 +47,10 @@ const investmentContributionSchema = z.object({
   transactionDate: z.string(),
 });
 
-const investmentWithdrawalSchema = investmentContributionSchema;
+const investmentWithdrawalSchema = investmentContributionSchema.extend({
+  sourceSelections: z.array(investmentReductionSelectionSchema).optional(),
+  sources: z.array(investmentReductionSelectionSchema).optional(),
+});
 
 async function resolveDb(database?: AppDb) {
   return database ?? getFinanceDatabase();
@@ -136,6 +148,23 @@ export async function reconcileInvestmentBalance(
       "The new checkpoint date cannot be before the current checkpoint."
     );
 
+    const currentBalance = await getInvestmentReductionSources(transaction, {
+      asOfDate: getFinanceToday(),
+    });
+    const reductionCents = Math.max(
+      currentBalance.currentBalanceCents - values.checkpointBalanceCents,
+      0
+    );
+
+    if (reductionCents > 0) {
+      await applyInvestmentReductionInExistingTransaction(transaction, {
+        amountCents: reductionCents,
+        eventType: "reconciliation",
+        occurredOn: values.checkpointDate,
+        sourceSelections: values.sourceSelections ?? values.sources,
+      });
+    }
+
     const timestamp = currentTimestamp();
     const [updated] = await transaction
       .update(investmentPortfolio)
@@ -199,6 +228,7 @@ export async function createInvestmentWithdrawal(
       type: "investment_withdrawal",
       status: "posted",
       description: "Resgate de investimento",
+      sourceSelections: values.sourceSelections ?? values.sources,
     },
     db
   );

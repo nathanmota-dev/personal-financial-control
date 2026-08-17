@@ -7,9 +7,11 @@ import { toast } from "sonner";
 
 import {
   configureInvestmentPortfolioAction,
+  getInvestmentReductionSourcesAction,
   reconcileInvestmentBalanceAction,
   updateInvestmentSettingsAction,
 } from "@/app/actions/finance";
+import { InvestmentReductionDialog } from "@/components/finance/investment-reduction-dialog";
 import { financeIconClassName } from "@/components/finance/finance-styles";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +25,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InvestmentField } from "@/components/finance/investment-field";
 import type { InvestmentPortfolioSettingsProps } from "@/lib/interfaces/investments";
+import type {
+  InvestmentReductionSelection,
+  InvestmentReductionSource,
+} from "@/lib/interfaces/investment-reconciliation";
 import {
   centsToMoneyInput,
   extractErrorMessage,
@@ -48,6 +54,13 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
   const [reconciledDate, setReconciledDate] = useState(
     projection?.asOfDate ?? todayDate()
   );
+  const [isReductionOpen, setIsReductionOpen] = useState(false);
+  const [reductionSources, setReductionSources] = useState<InvestmentReductionSource[]>([]);
+  const [pendingReconciliation, setPendingReconciliation] = useState<{
+    checkpointBalanceCents: number;
+    checkpointDate: string;
+    amountCents: number;
+  } | null>(null);
 
   async function onConfigure() {
     try {
@@ -76,13 +89,60 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
   }
 
   async function onReconcile() {
+    if (!projection) {
+      return;
+    }
+
     try {
-      await reconcileInvestmentBalanceAction({
-        checkpointBalanceCents: moneyInputToCents(reconciledBalance),
-        checkpointDate: reconciledDate,
-      });
+      const checkpointBalanceCents = moneyInputToCents(reconciledBalance);
+
+      if (checkpointBalanceCents < projection.currentBalanceCents) {
+        const amountCents = projection.currentBalanceCents - checkpointBalanceCents;
+        const sourceResult = await getInvestmentReductionSourcesAction();
+        setReductionSources(sourceResult.sources);
+        setPendingReconciliation({
+          checkpointBalanceCents,
+          checkpointDate: reconciledDate,
+          amountCents,
+        });
+        setIsReconcileOpen(false);
+        setIsReductionOpen(true);
+        return;
+      }
+
+      await saveReconciliation({ checkpointBalanceCents, checkpointDate: reconciledDate });
       toast.success("Saldo real conferido e novo checkpoint criado.");
       setIsReconcileOpen(false);
+      setPendingReconciliation(null);
+      router.refresh();
+    } catch (error) {
+      toast.error(extractErrorMessage(error));
+    }
+  }
+
+  async function saveReconciliation(input: {
+    checkpointBalanceCents: number;
+    checkpointDate: string;
+    sourceSelections?: InvestmentReductionSelection[];
+  }) {
+    await reconcileInvestmentBalanceAction(input);
+  }
+
+  async function confirmReduction(selections: InvestmentReductionSelection[]) {
+    if (!pendingReconciliation) {
+      return;
+    }
+
+    try {
+      await saveReconciliation({
+        checkpointBalanceCents: pendingReconciliation.checkpointBalanceCents,
+        checkpointDate: pendingReconciliation.checkpointDate,
+        sourceSelections: selections,
+      });
+      toast.success("Saldo conferido e fontes da redução atualizadas.");
+      setIsReductionOpen(false);
+      setPendingReconciliation(null);
+      setReductionSources([]);
       router.refresh();
     } catch (error) {
       toast.error(extractErrorMessage(error));
@@ -238,6 +298,24 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <InvestmentReductionDialog
+        key={`investment-reduction-${isReductionOpen}-${pendingReconciliation?.amountCents ?? "none"}-${pendingReconciliation?.checkpointDate ?? "none"}`}
+        open={isReductionOpen}
+        title="De onde saiu a diferença?"
+        description="A conferência reduziu o saldo global. Escolha manualmente quais ativos e caixinhas acompanharam essa queda."
+        amountCents={pendingReconciliation?.amountCents ?? 0}
+        sources={reductionSources}
+        isPending={isPending}
+        onOpenChange={setIsReductionOpen}
+        onCancel={() => {
+          setIsReductionOpen(false);
+          setPendingReconciliation(null);
+          setReductionSources([]);
+        }}
+        onConfirm={(selections) => startTransition(() => void confirmReduction(selections))}
+        confirmLabel="Confirmar conferência"
+        footerNote="Nenhuma fonte é escolhida automaticamente; a confirmação salva somente a distribuição exibida."
+      />
     </>
   );
 }

@@ -4,10 +4,14 @@ import { z } from "zod";
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { transactions } from "@/lib/db/schema";
+import { investmentReductionSelectionSchema } from "@/lib/server/investment-reconciliation";
+import {
+  applyInvestmentReductionInExistingTransaction,
+  reverseInvestmentReductionForTransaction,
+} from "@/lib/server/investment-reconciliation";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, normalizeDate, serializeTimestamps } from "@/lib/server/finance";
-import { getAccountById } from "@/lib/server/accounts";
-import { getCategoryById } from "@/lib/server/categories";
+import { getFinanceToday } from "@/lib/server/runtime";
 
 const transactionSchema = z.object({
   accountId: z.string().uuid(),
@@ -25,24 +29,31 @@ const transactionSchema = z.object({
   description: z.string().trim().min(1),
   notes: z.string().trim().optional(),
   recurringTemplateId: z.string().uuid().optional(),
+  sourceSelections: z.array(investmentReductionSelectionSchema).optional(),
+  sources: z.array(investmentReductionSelectionSchema).optional(),
 });
 
 const updateTransactionSchema = transactionSchema.partial().extend({
   id: z.string().uuid(),
 });
 
-async function resolveDb(database?: AppDb) {
+async function resolveDb(database?: TransactionDb) {
   return database ?? getFinanceDatabase();
 }
 
+type TransactionDb = AppDb | Parameters<Parameters<AppDb["transaction"]>[0]>[0];
+
 async function validateTransactionDependencies(
   input: z.infer<typeof transactionSchema>,
-  database: AppDb
+  database: TransactionDb
 ) {
   const [account, category] = await Promise.all([
-    getAccountById(input.accountId, database),
-    getCategoryById(input.categoryId, database),
+    database.query.accounts.findFirst({ where: (table, { eq }) => eq(table.id, input.accountId) }),
+    database.query.categories.findFirst({ where: (table, { eq }) => eq(table.id, input.categoryId) }),
   ]);
+
+  invariant(account, "ACCOUNT_NOT_FOUND", "Account does not exist.", 404);
+  invariant(category, "CATEGORY_NOT_FOUND", "Category does not exist.", 404);
 
   invariant(!account.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived account.");
   invariant(!category.isArchived, "CATEGORY_ARCHIVED", "Cannot use an archived category.");
@@ -89,24 +100,48 @@ export async function createTransaction(
   values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
   values.transactionDate = normalizeDate(values.transactionDate);
 
-  await validateTransactionDependencies(values, db);
-  const isInvestmentMovement = isInvestmentMovementType(values.type);
-  const portfolio = isInvestmentMovement
-    ? await db.query.investmentPortfolio.findFirst()
-    : null;
+  return db.transaction(async (transactionDb) => {
+    await validateTransactionDependencies(values, transactionDb);
+    const isInvestmentMovement = isInvestmentMovementType(values.type);
+    const portfolio = isInvestmentMovement
+      ? await transactionDb.query.investmentPortfolio.findFirst()
+      : null;
+    const isIncludedInInvestmentCheckpoint = isInvestmentMovement
+      ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
+      : true;
+    const {
+      sourceSelections,
+      sources,
+      ...transactionValues
+    } = values;
 
-  const [transaction] = await db
-    .insert(transactions)
-    .values({
-      ...values,
-      isIncludedInInvestmentCheckpoint: isInvestmentMovement
-        ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
-        : true,
-      updatedAt: currentTimestamp(),
-    })
-    .returning();
+    const [created] = await transactionDb
+      .insert(transactions)
+      .values({
+        ...transactionValues,
+        isIncludedInInvestmentCheckpoint,
+        updatedAt: currentTimestamp(),
+      })
+      .returning();
+    invariant(created, "TRANSACTION_CREATE_FAILED", "Transaction could not be created.", 500);
 
-  return serializeTimestamps(transaction);
+    if (
+      isEffectiveInvestmentWithdrawal({
+        ...values,
+        isIncludedInInvestmentCheckpoint,
+      })
+    ) {
+      await applyInvestmentReductionInExistingTransaction(transactionDb, {
+        amountCents: values.amountCents,
+        eventType: "withdrawal",
+        transactionId: created.id,
+        occurredOn: values.transactionDate,
+        sourceSelections: sourceSelections ?? sources,
+      });
+    }
+
+    return serializeTimestamps(created);
+  });
 }
 
 export async function listTransactions(
@@ -147,7 +182,7 @@ export async function listTransactions(
   }));
 }
 
-export async function getTransactionById(id: string, database?: AppDb) {
+export async function getTransactionById(id: string, database?: TransactionDb) {
   const db = await resolveDb(database);
   const transaction = await db.query.transactions.findFirst({
     where: eq(transactions.id, id),
@@ -164,41 +199,67 @@ export async function updateTransaction(
 ) {
   const db = await resolveDb(database);
   const { id, ...rawValues } = updateTransactionSchema.parse(input);
-  const existing = await getTransactionById(id, db);
 
-  const values = {
-    ...existing,
-    ...rawValues,
-    notes: rawValues.notes ?? existing.notes ?? undefined,
-    recurringTemplateId:
-      rawValues.recurringTemplateId ?? existing.recurringTemplateId ?? undefined,
-  };
-  values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
-  values.transactionDate = normalizeDate(values.transactionDate);
-
-  await validateTransactionDependencies(values, db);
-
-  const isInvestmentMovement = isInvestmentMovementType(values.type);
-  const portfolio = isInvestmentMovement
-    ? await db.query.investmentPortfolio.findFirst()
-    : null;
-  const isIncludedInInvestmentCheckpoint = isInvestmentMovement
-    ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
-    : true;
-
-  const [transaction] = await db
-    .update(transactions)
-    .set({
+  return db.transaction(async (transactionDb) => {
+    const existing = await getTransactionById(id, transactionDb);
+    const values = {
+      ...existing,
       ...rawValues,
-      competenceMonth: values.competenceMonth,
-      transactionDate: values.transactionDate,
-      isIncludedInInvestmentCheckpoint,
-      updatedAt: currentTimestamp(),
-    })
-    .where(eq(transactions.id, id))
-    .returning();
+      notes: rawValues.notes ?? existing.notes ?? undefined,
+      recurringTemplateId:
+        rawValues.recurringTemplateId ?? existing.recurringTemplateId ?? undefined,
+    };
+    values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
+    values.transactionDate = normalizeDate(values.transactionDate);
 
-  return serializeTimestamps(transaction);
+    const isInvestmentMovement = isInvestmentMovementType(values.type);
+    const portfolio = isInvestmentMovement
+      ? await transactionDb.query.investmentPortfolio.findFirst()
+      : null;
+    const isIncludedInInvestmentCheckpoint = isInvestmentMovement
+      ? Boolean(portfolio && values.transactionDate <= portfolio.checkpointDate)
+      : true;
+
+    if (isEffectiveInvestmentWithdrawal(existing)) {
+      await reverseInvestmentReductionForTransaction(id, transactionDb);
+    }
+
+    await validateTransactionDependencies(values, transactionDb);
+    const {
+      sourceSelections,
+      sources,
+      ...transactionValues
+    } = rawValues;
+    const [updated] = await transactionDb
+      .update(transactions)
+      .set({
+        ...transactionValues,
+        competenceMonth: values.competenceMonth,
+        transactionDate: values.transactionDate,
+        isIncludedInInvestmentCheckpoint,
+        updatedAt: currentTimestamp(),
+      })
+      .where(eq(transactions.id, id))
+      .returning();
+    invariant(updated, "TRANSACTION_UPDATE_FAILED", "Transaction could not be updated.", 500);
+
+    if (
+      isEffectiveInvestmentWithdrawal({
+        ...values,
+        isIncludedInInvestmentCheckpoint,
+      })
+    ) {
+      await applyInvestmentReductionInExistingTransaction(transactionDb, {
+        amountCents: values.amountCents,
+        eventType: "withdrawal",
+        transactionId: updated.id,
+        occurredOn: values.transactionDate,
+        sourceSelections: sourceSelections ?? sources,
+      });
+    }
+
+    return serializeTimestamps(updated);
+  });
 }
 
 function isInvestmentMovementType(
@@ -207,8 +268,30 @@ function isInvestmentMovementType(
   return type === "investment_contribution" || type === "investment_withdrawal";
 }
 
+function isEffectiveInvestmentWithdrawal(
+  value: {
+    type: "income" | "expense" | "investment_contribution" | "investment_withdrawal";
+    status: "pending" | "posted" | "cancelled";
+    transactionDate: string;
+    isIncludedInInvestmentCheckpoint?: boolean;
+  }
+) {
+  return (
+    value.type === "investment_withdrawal" &&
+    value.status === "posted" &&
+    value.transactionDate <= getFinanceToday() &&
+    value.isIncludedInInvestmentCheckpoint !== true
+  );
+}
+
 export async function deleteTransaction(id: string, database?: AppDb) {
   const db = await resolveDb(database);
-  await getTransactionById(id, db);
-  await db.delete(transactions).where(eq(transactions.id, id));
+
+  await db.transaction(async (transactionDb) => {
+    const existing = await getTransactionById(id, transactionDb);
+    if (isEffectiveInvestmentWithdrawal(existing)) {
+      await reverseInvestmentReductionForTransaction(id, transactionDb);
+    }
+    await transactionDb.delete(transactions).where(eq(transactions.id, id));
+  });
 }

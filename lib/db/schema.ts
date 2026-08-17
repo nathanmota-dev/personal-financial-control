@@ -66,6 +66,16 @@ export const allocationTypes = [
   "correction",
 ] as const;
 
+export const investmentReductionEventTypes = ["withdrawal", "reconciliation"] as const;
+
+export const investmentReductionSourceTypes = [
+  "allocation",
+  "holding_free",
+  "not_registered",
+] as const;
+
+export const investmentReductionStatuses = ["active", "reversed"] as const;
+
 export const investmentAssetClasses = [
   "fixed_income",
   "equities",
@@ -425,6 +435,73 @@ export const investmentPurposeAllocations = sqliteTable(
   ]
 );
 
+export const investmentReductionEvents = sqliteTable(
+  "investment_reduction_events",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    type: text("type", { enum: investmentReductionEventTypes }).notNull(),
+    status: text("status", { enum: investmentReductionStatuses }).notNull().default("active"),
+    transactionId: text("transaction_id").references(() => transactions.id, {
+      onDelete: "set null",
+    }),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "investment_reduction_events.amount_cents"
+    ).notNull(),
+    occurredOn: text("occurred_on").notNull(),
+    reversedAt: integer("reversed_at", { mode: "timestamp_ms" }),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_reduction_events_transaction_idx").on(table.transactionId),
+    index("investment_reduction_events_status_idx").on(table.status),
+    index("investment_reduction_events_occurred_idx").on(table.occurredOn),
+    check(
+      "investment_reduction_events_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
+export const investmentReductionSources = sqliteTable(
+  "investment_reduction_sources",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => investmentReductionEvents.id, { onDelete: "cascade" }),
+    sourceType: text("source_type", { enum: investmentReductionSourceTypes }).notNull(),
+    holdingId: text("holding_id").references(() => investmentHoldings.id, {
+      onDelete: "set null",
+    }),
+    purposeId: text("purpose_id").references(() => investmentPurposes.id, {
+      onDelete: "set null",
+    }),
+    allocationId: text("allocation_id").references(() => investmentPurposeAllocations.id, {
+      onDelete: "set null",
+    }),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "investment_reduction_sources.amount_cents"
+    ).notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_reduction_sources_event_idx").on(table.eventId),
+    index("investment_reduction_sources_holding_idx").on(table.holdingId),
+    index("investment_reduction_sources_purpose_idx").on(table.purposeId),
+    index("investment_reduction_sources_allocation_idx").on(table.allocationId),
+    check(
+      "investment_reduction_sources_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
 export const financialGoals = sqliteTable(
   "financial_goals",
   {
@@ -550,6 +627,39 @@ export const investmentPurposeAllocationsRelations = relations(
   })
 );
 
+export const investmentReductionEventsRelations = relations(
+  investmentReductionEvents,
+  ({ one, many }) => ({
+    transaction: one(transactions, {
+      fields: [investmentReductionEvents.transactionId],
+      references: [transactions.id],
+    }),
+    sources: many(investmentReductionSources),
+  })
+);
+
+export const investmentReductionSourcesRelations = relations(
+  investmentReductionSources,
+  ({ one }) => ({
+    event: one(investmentReductionEvents, {
+      fields: [investmentReductionSources.eventId],
+      references: [investmentReductionEvents.id],
+    }),
+    holding: one(investmentHoldings, {
+      fields: [investmentReductionSources.holdingId],
+      references: [investmentHoldings.id],
+    }),
+    purpose: one(investmentPurposes, {
+      fields: [investmentReductionSources.purposeId],
+      references: [investmentPurposes.id],
+    }),
+    allocation: one(investmentPurposeAllocations, {
+      fields: [investmentReductionSources.allocationId],
+      references: [investmentPurposeAllocations.id],
+    }),
+  })
+);
+
 export const financialGoalAllocationsRelations = relations(
   financialGoalAllocations,
   ({ one }) => ({
@@ -618,6 +728,9 @@ export type AccountType = (typeof accountTypes)[number];
 export type CategoryGroup = (typeof categoryGroups)[number];
 export type TransactionType = (typeof transactionTypes)[number];
 export type RecurringTransactionType = (typeof recurringTransactionTypes)[number];
+export type InvestmentReductionEventType = (typeof investmentReductionEventTypes)[number];
+export type InvestmentReductionSourceType = (typeof investmentReductionSourceTypes)[number];
+export type InvestmentReductionStatus = (typeof investmentReductionStatuses)[number];
 export type TransactionStatus = (typeof transactionStatuses)[number];
 export type RecurringStatus = (typeof recurringStatuses)[number];
 export type GoalCategory = (typeof goalCategories)[number];

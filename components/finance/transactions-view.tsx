@@ -9,9 +9,11 @@ import {
   createTransactionAction,
   createTransferAction,
   deleteTransactionAction,
+  getInvestmentReductionSourcesAction,
   updateTransactionAction,
 } from "@/app/actions/finance";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
+import { InvestmentReductionDialog } from "@/components/finance/investment-reduction-dialog";
 import { PageHeader } from "@/components/finance/page-header";
 import {
   CategorySetupDialog,
@@ -60,6 +62,11 @@ import {
   transactionStatusLabels,
   transactionTypeLabels,
 } from "@/lib/finance-ui";
+import type {
+  InvestmentReductionSelection,
+  InvestmentReductionSource,
+} from "@/lib/interfaces/investment-reconciliation";
+import type { TransactionMutationPayload } from "@/lib/interfaces/transactions";
 import { cn } from "@/lib/utils";
 
 type AccountOption = {
@@ -544,6 +551,11 @@ function TransactionDialog({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
+  const [isReductionOpen, setIsReductionOpen] = useState(false);
+  const [reductionSources, setReductionSources] = useState<InvestmentReductionSource[]>([]);
+  const [reductionAmountCents, setReductionAmountCents] = useState(0);
+  const [previousSelections, setPreviousSelections] = useState<InvestmentReductionSelection[]>([]);
+  const [pendingPayload, setPendingPayload] = useState<TransactionMutationPayload | null>(null);
   const [selectedType, setSelectedType] = useState<TransactionRow["type"]>(transaction?.type ?? "expense");
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
@@ -569,11 +581,11 @@ function TransactionDialog({
   });
 
   async function onSubmit(formData: FormData) {
-    const payload = {
+    const payload: TransactionMutationPayload = {
       accountId: String(formData.get("accountId")),
       categoryId: String(formData.get("categoryId")),
-      type: String(formData.get("type")) as TransactionRow["type"],
-      status: String(formData.get("status")) as TransactionRow["status"],
+      type: String(formData.get("type")) as TransactionMutationPayload["type"],
+      status: String(formData.get("status")) as TransactionMutationPayload["status"],
       amountCents: moneyInputToCents(String(formData.get("amount"))),
       transactionDate: String(formData.get("transactionDate")),
       competenceMonth: String(formData.get("competenceMonth")),
@@ -582,22 +594,66 @@ function TransactionDialog({
     };
 
     try {
-      if (transaction) {
-        await updateTransactionAction({ id: transaction.id, ...payload });
-        toast.success("Lançamento atualizado.");
-      } else {
-        await createTransactionAction(payload);
-        toast.success("Lançamento criado.");
+      if (needsInvestmentReductionConfirmation(payload)) {
+        const sourceResult = await getInvestmentReductionSourcesAction({
+          transactionId: transaction?.id,
+        });
+
+        if (
+          sourceResult.sources.length > 0 &&
+          (!sourceResult.checkpointDate || payload.transactionDate > sourceResult.checkpointDate)
+        ) {
+          setReductionSources(sourceResult.sources);
+          setReductionAmountCents(payload.amountCents);
+          setPreviousSelections(sourceResult.previousSelections);
+          setPendingPayload(payload);
+          setIsReductionOpen(true);
+          return;
+        }
       }
-      setOpen(false);
-      router.refresh();
+
+      await persistTransaction(payload);
+    } catch (error) {
+      toast.error(extractErrorMessage(error));
+    }
+  }
+
+  async function persistTransaction(
+    payload: TransactionMutationPayload,
+    sourceSelections?: InvestmentReductionSelection[]
+  ) {
+    const nextPayload = sourceSelections ? { ...payload, sourceSelections } : payload;
+
+    if (transaction) {
+      await updateTransactionAction({ id: transaction.id, ...nextPayload });
+      toast.success("Lançamento atualizado.");
+    } else {
+      await createTransactionAction(nextPayload);
+      toast.success("Lançamento criado.");
+    }
+    setIsReductionOpen(false);
+    setPendingPayload(null);
+    setReductionSources([]);
+    setPreviousSelections([]);
+    setOpen(false);
+    router.refresh();
+  }
+
+  async function confirmReduction(selections: InvestmentReductionSelection[]) {
+    if (!pendingPayload) {
+      return;
+    }
+
+    try {
+      await persistTransaction(pendingPayload, selections);
     } catch (error) {
       toast.error(extractErrorMessage(error));
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button>
@@ -681,8 +737,45 @@ function TransactionDialog({
           />
         )}
       </DialogContent>
-    </Dialog>
+      </Dialog>
+      <InvestmentReductionDialog
+      key={`transaction-reduction-${isReductionOpen}-${transaction?.id ?? "new"}-${reductionAmountCents}-${previousSelections.map((selection) => `${selection.sourceId}:${selection.amountCents}`).join("|")}`}
+      open={isReductionOpen}
+      title={transaction ? "Redistribuir a origem do resgate" : "De onde saiu o resgate?"}
+      description="Selecione os ativos, saldos livres ou patrimônio não cadastrado que deram origem a este resgate."
+      amountCents={reductionAmountCents}
+      sources={reductionSources}
+      initialSelections={previousSelections}
+      isPending={isPending}
+      onOpenChange={setIsReductionOpen}
+      onCancel={() => {
+        setIsReductionOpen(false);
+        setPendingPayload(null);
+        setReductionSources([]);
+        setPreviousSelections([]);
+      }}
+      onConfirm={(selections) => startTransition(() => void confirmReduction(selections))}
+      confirmLabel={transaction ? "Salvar resgate" : "Criar resgate"}
+      footerNote="A seleção fica registrada para que uma futura edição ou exclusão restaure os valores corretos."
+      />
+    </>
   );
+}
+
+function needsInvestmentReductionConfirmation(payload: TransactionMutationPayload) {
+  return (
+    payload.type === "investment_withdrawal" &&
+    payload.status === "posted" &&
+    payload.transactionDate <= todayDate()
+  );
+}
+
+function todayDate() {
+  const date = new Date();
+
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
 }
 
 function TransferDialog({

@@ -1,6 +1,7 @@
 import { createClient } from "@libsql/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { AppDb } from "@/lib/db";
 import {
   archiveInvestmentHolding,
   archiveInvestmentPurpose,
@@ -11,7 +12,13 @@ import {
   updateInvestmentHolding,
   upsertInvestmentPurposeAllocation,
 } from "@/lib/server/investment-portfolio";
-import { getInvestmentPortfolio } from "@/lib/server/investments";
+import {
+  configureInvestmentPortfolio,
+  getInvestmentPortfolio,
+  getInvestmentProjection,
+  reconcileInvestmentBalance,
+} from "@/lib/server/investments";
+import { getInvestmentReductionSources } from "@/lib/server/investment-reconciliation";
 import { createTestDatabase } from "@/tests/helpers/database";
 
 const cleanups: Array<() => Promise<void>> = [];
@@ -324,4 +331,188 @@ describe("investment portfolio classification", () => {
 
     expect((await db.query.investmentHoldings.findMany()).at(0)?.isArchived).toBe(true);
   });
+
+  it("reconciles a lower global balance through the selected holding allocation", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    await reconcileBasePortfolio(db, 300000);
+    const holding = await createInvestmentHolding(
+      {
+        name: "CDB Reserva",
+        assetClass: "fixed_income",
+        instrumentType: "cdb",
+        currentValueCents: 300000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const purpose = await createInvestmentPurpose({ name: "Reserva" }, db);
+    const allocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: holding.id,
+        purposeId: purpose.id,
+        amountCents: 300000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+
+    await reconcileInvestmentBalance(
+      {
+        checkpointBalanceCents: 280000,
+        checkpointDate: "2026-07-16",
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 20000 }],
+      },
+      db
+    );
+
+    const dashboard = await getInvestmentPortfolioDashboard(db);
+    const projection = await getInvestmentProjection(db, { asOfDate: "2026-07-16" });
+
+    expect(projection?.currentBalanceCents).toBe(280000);
+    expect(dashboard.holdings[0]).toMatchObject({ currentValueCents: 280000, allocatedCents: 280000 });
+    expect(dashboard.allocations[0]).toMatchObject({ amountCents: 280000 });
+    expect(dashboard.overAllocatedCents).toBe(0);
+    expect((await db.query.investmentReductionEvents.findMany())).toHaveLength(1);
+  });
+
+  it("splits a reduction across allocations and rejects incomplete distributions atomically", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    await reconcileBasePortfolio(db, 200000);
+    const firstHolding = await createInvestmentHolding(
+      {
+        name: "CDB um",
+        assetClass: "fixed_income",
+        instrumentType: "cdb",
+        currentValueCents: 100000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const secondHolding = await createInvestmentHolding(
+      {
+        name: "CDB dois",
+        assetClass: "fixed_income",
+        instrumentType: "cdb",
+        currentValueCents: 100000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const firstPurpose = await createInvestmentPurpose({ name: "Reserva um" }, db);
+    const secondPurpose = await createInvestmentPurpose({ name: "Reserva dois" }, db);
+    const firstAllocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: firstHolding.id,
+        purposeId: firstPurpose.id,
+        amountCents: 100000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+    const secondAllocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: secondHolding.id,
+        purposeId: secondPurpose.id,
+        amountCents: 100000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+
+    await expect(
+      reconcileInvestmentBalance(
+        {
+          checkpointBalanceCents: 180000,
+          checkpointDate: "2026-07-16",
+          sourceSelections: [{
+            sourceId: `allocation:${firstAllocation.id}`,
+            amountCents: 9000,
+          }],
+        },
+        db
+      )
+    ).rejects.toMatchObject({ code: "INVESTMENT_REDUCTION_DOES_NOT_CLOSE" });
+
+    expect((await getInvestmentProjection(db, { asOfDate: "2026-07-16" }))?.currentBalanceCents).toBe(200000);
+    expect((await getInvestmentPortfolioDashboard(db)).totalAllocatedCents).toBe(200000);
+
+    await reconcileInvestmentBalance(
+      {
+        checkpointBalanceCents: 180000,
+        checkpointDate: "2026-07-16",
+        sourceSelections: [
+          { sourceId: `allocation:${firstAllocation.id}`, amountCents: 10000 },
+          { sourceId: `allocation:${secondAllocation.id}`, amountCents: 10000 },
+        ],
+      },
+      db
+    );
+
+    const dashboard = await getInvestmentPortfolioDashboard(db);
+    expect(dashboard.totalAllocatedCents).toBe(180000);
+    expect(dashboard.holdings.every((holding) => holding.allocatedCents <= holding.currentValueCents)).toBe(true);
+  });
+
+  it("offers free holding balance and unregistered wealth as explicit sources", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    await reconcileBasePortfolio(db, 200000);
+    const holding = await createInvestmentHolding(
+      {
+        name: "Saldo livre",
+        assetClass: "cash",
+        instrumentType: "cash",
+        currentValueCents: 150000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+
+    const sources = await getInvestmentReductionSources(db);
+    expect(sources.sources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ sourceType: "holding_free" }),
+        expect.objectContaining({ sourceType: "not_registered" }),
+      ])
+    );
+    const freeSource = sources.sources.find((source) => source.id === `holding:${holding.id}`);
+    const unregisteredSource = sources.sources.find((source) => source.sourceType === "not_registered");
+    expect(freeSource?.availableCents).toBe(150000);
+    expect(unregisteredSource?.availableCents).toBe(50000);
+
+    await reconcileInvestmentBalance(
+      {
+        checkpointBalanceCents: 50000,
+        checkpointDate: "2026-07-16",
+        sourceSelections: [
+          { sourceId: `holding:${holding.id}`, amountCents: 100000 },
+          { sourceId: "not-registered", amountCents: 50000 },
+        ],
+      },
+      db
+    );
+
+    const dashboard = await getInvestmentPortfolioDashboard(db);
+    expect(dashboard.globalBalanceCents).toBe(50000);
+    expect(dashboard.holdings[0]?.currentValueCents).toBe(50000);
+  });
 });
+
+async function reconcileBasePortfolio(
+  database: AppDb,
+  balanceCents: number
+) {
+  await configureInvestmentPortfolio(
+    {
+      checkpointBalanceCents: balanceCents,
+      expectedMonthlyRateBps: 0,
+      checkpointDate: "2026-07-16",
+    },
+    database
+  );
+}

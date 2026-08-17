@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
@@ -9,6 +9,8 @@ import {
   investmentInstrumentTypes,
   investmentPurposeAllocations,
   investmentPurposes,
+  investmentReductionEvents,
+  investmentReductionSources,
 } from "@/lib/db/schema";
 import {
   investmentAssetClassLabels,
@@ -111,6 +113,45 @@ function serializeAllocation(row: AllocationRow) {
 
 function sumAllocationAmounts(rows: AllocationRow[]) {
   return rows.reduce((total, row) => total + row.amountCents, 0);
+}
+
+async function assertNoActiveReductionSource(
+  transaction: PortfolioDb,
+  filter: {
+    holdingId?: string;
+    purposeId?: string;
+    allocationId?: string;
+  }
+) {
+  const sources = await transaction.query.investmentReductionSources.findMany({
+    where: and(
+      filter.holdingId ? eq(investmentReductionSources.holdingId, filter.holdingId) : undefined,
+      filter.purposeId ? eq(investmentReductionSources.purposeId, filter.purposeId) : undefined,
+      filter.allocationId
+        ? eq(investmentReductionSources.allocationId, filter.allocationId)
+        : undefined
+    ),
+  });
+
+  if (!sources.length) {
+    return;
+  }
+
+  const activeEvent = await transaction.query.investmentReductionEvents.findFirst({
+    where: and(
+      eq(investmentReductionEvents.status, "active"),
+      inArray(
+        investmentReductionEvents.id,
+        sources.map((source) => source.eventId)
+      )
+    ),
+  });
+
+  invariant(
+    !activeEvent,
+    "INVESTMENT_SOURCE_IN_ACTIVE_REDUCTION",
+    "This investment source is part of an active reduction and cannot be archived or deleted yet."
+  );
 }
 
 function buildPercentage(amountCents: number, denominatorCents: number) {
@@ -232,6 +273,7 @@ export async function archiveInvestmentHolding(id: string, database?: AppDb) {
     const allocations = await transaction.query.investmentPurposeAllocations.findMany({
       where: eq(investmentPurposeAllocations.holdingId, id),
     });
+    await assertNoActiveReductionSource(transaction, { holdingId: id });
     invariant(
       allocations.length === 0,
       "HOLDING_ARCHIVE_REQUIRES_NO_ALLOCATIONS",
@@ -320,6 +362,7 @@ export async function archiveInvestmentPurpose(id: string, database?: AppDb) {
     const allocations = await transaction.query.investmentPurposeAllocations.findMany({
       where: eq(investmentPurposeAllocations.purposeId, id),
     });
+    await assertNoActiveReductionSource(transaction, { purposeId: id });
     invariant(
       sumAllocationAmounts(allocations) === 0,
       "PURPOSE_ARCHIVE_REQUIRES_ZERO_BALANCE",
@@ -448,6 +491,7 @@ export async function deleteInvestmentPurposeAllocation(
     });
 
     invariant(existing, "INVESTMENT_ALLOCATION_NOT_FOUND", "Investment purpose allocation does not exist.", 404);
+    await assertNoActiveReductionSource(transaction, { allocationId: existing.id });
 
     const [deleted] = await transaction
       .delete(investmentPurposeAllocations)

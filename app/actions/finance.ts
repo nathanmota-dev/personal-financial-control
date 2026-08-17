@@ -17,6 +17,10 @@ import {
   updateInvestmentSettings,
 } from "@/lib/server/investments";
 import {
+  applyInvestmentReduction,
+  getInvestmentReductionSources,
+} from "@/lib/server/investment-reconciliation";
+import {
   archiveInvestmentHolding,
   archiveInvestmentPurpose,
   createInvestmentHolding,
@@ -179,6 +183,20 @@ export async function reconcileInvestmentBalanceAction(
   input: Parameters<typeof reconcileInvestmentBalance>[0]
 ) {
   const result = await reconcileInvestmentBalance(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function getInvestmentReductionSourcesAction(
+  input?: Parameters<typeof getInvestmentReductionSources>[1]
+) {
+  return getInvestmentReductionSources(undefined, input);
+}
+
+export async function applyInvestmentReductionAction(
+  input: Parameters<typeof applyInvestmentReduction>[0]
+) {
+  const result = await applyInvestmentReduction(input);
   revalidateFinanceViews();
   return result;
 }
