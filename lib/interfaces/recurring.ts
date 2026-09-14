@@ -59,13 +59,13 @@ export type RecurringDialogProps = {
   trigger?: ReactNode;
 };
 
+export type RecurringDeleteMode = "keep_history" | "delete_history";
+
 export type RecurringActionButtonProps = {
   id: string;
 };
 
-export type EndRecurringButtonProps = RecurringActionButtonProps & {
-  month: string;
-};
+export type RecurringDeleteDialogProps = RecurringActionButtonProps;
 
 export type RecurringCalendarEvent = {
   id: string;

@@ -375,7 +375,7 @@ function mapTransactionToEvent(
       netImpactCents: transaction.amountCents,
       date: transaction.transactionDate,
       accountId: transaction.accountId,
-      categoryId: transaction.categoryId,
+      ...(transaction.categoryId ? { categoryId: transaction.categoryId } : {}),
       metadata: {
         status: transaction.status,
         competenceMonth: transaction.competenceMonth,
@@ -395,7 +395,7 @@ function mapTransactionToEvent(
       netImpactCents: -transaction.amountCents,
       date: transaction.transactionDate,
       accountId: transaction.accountId,
-      categoryId: transaction.categoryId,
+      ...(transaction.categoryId ? { categoryId: transaction.categoryId } : {}),
       metadata: {
         status: transaction.status,
         direction: "contribution",
@@ -416,7 +416,7 @@ function mapTransactionToEvent(
       netImpactCents: transaction.amountCents,
       date: transaction.transactionDate,
       accountId: transaction.accountId,
-      categoryId: transaction.categoryId,
+      ...(transaction.categoryId ? { categoryId: transaction.categoryId } : {}),
       metadata: {
         status: transaction.status,
         direction: "withdrawal",
@@ -436,7 +436,7 @@ function mapTransactionToEvent(
     netImpactCents: -transaction.amountCents,
     date: transaction.transactionDate,
     accountId: transaction.accountId,
-    categoryId: transaction.categoryId,
+    ...(transaction.categoryId ? { categoryId: transaction.categoryId } : {}),
     metadata: {
       status: transaction.status,
       competenceMonth: transaction.competenceMonth,

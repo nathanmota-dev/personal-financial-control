@@ -1,4 +1,5 @@
-import { PiggyBank, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import Link from "next/link";
+import { CircleAlert, PiggyBank, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 import { DashboardActions } from "@/components/finance/dashboard-actions";
 import { DashboardCharts } from "@/components/finance/dashboard-charts";
@@ -63,6 +64,7 @@ export default async function DashboardPage({
         incomeCents: 0,
         fixedExpenseCents: 0,
         variableExpenseCents: 0,
+        uncategorizedExpenseCents: 0,
         investmentContributionCents: 0,
         investmentWithdrawalCents: 0,
         netInvestmentFlowCents: 0,
@@ -77,6 +79,7 @@ export default async function DashboardPage({
         incomeCents: 0,
         fixedExpenseCents: 0,
         variableExpenseCents: 0,
+        uncategorizedExpenseCents: 0,
         investmentContributionCents: 0,
         investmentWithdrawalCents: 0,
         netInvestmentFlowCents: 0,
@@ -140,11 +143,39 @@ export default async function DashboardPage({
         />
       </section>
 
+      {resolved.dashboard.totals.uncategorizedExpenseCents > 0 ? (
+        <Card className="overflow-hidden rounded-[1.75rem] border-amber-300/20 bg-amber-300/[0.06] shadow-[0_24px_80px_rgba(120,53,15,0.14)]">
+          <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-amber-300/20 bg-amber-300/10 text-amber-200">
+                <CircleAlert className="size-5" />
+              </div>
+              <div>
+                <p className="font-heading text-lg font-semibold text-amber-100">Há despesas sem categoria</p>
+                <p className="mt-1 text-sm leading-6 text-amber-100/70">
+                  {formatCurrency(resolved.dashboard.totals.uncategorizedExpenseCents)} em despesas ainda aguardam organização. Elas já reduzem o saldo livre.
+                </p>
+              </div>
+            </div>
+            <Link
+              href={`/transactions?month=${month}&uncategorized=true`}
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-amber-200/25 bg-amber-200/10 px-4 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-200/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/40"
+            >
+              Categorizar agora
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({
           month: item.competenceMonth.slice(5),
           income: item.totals.incomeCents / 100,
-          expenses: (item.totals.fixedExpenseCents + item.totals.variableExpenseCents) / 100,
+          expenses:
+            (item.totals.fixedExpenseCents +
+              item.totals.variableExpenseCents +
+              item.totals.uncategorizedExpenseCents) /
+            100,
           investments: item.totals.netInvestmentFlowCents / 100,
           net: item.totals.netResultCents / 100,
         }))}

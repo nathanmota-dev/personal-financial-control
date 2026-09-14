@@ -20,6 +20,53 @@ afterEach(async () => {
 });
 
 describe("dashboard", () => {
+  it("counts uncategorized expenses in the net result but not category reports", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Main", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const food = await createCategory({ name: "Food", group: "variable_expense" }, db);
+
+    await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: food.id,
+        type: "expense",
+        amountCents: 30000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-03",
+        description: "Food",
+      },
+      db
+    );
+    await createTransaction(
+      {
+        accountId: account.id,
+        type: "expense",
+        amountCents: 12000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-04",
+        description: "Unknown expense",
+      },
+      db
+    );
+
+    const dashboard = await getMonthlyDashboard("2026-05", db);
+    const report = await getCategorySpendingReport("2026-05", db);
+    const evolution = await getMonthlyEvolution(["2026-05"], db);
+
+    expect(dashboard.totals.uncategorizedExpenseCents).toBe(12000);
+    expect(dashboard.totals.variableExpenseCents).toBe(30000);
+    expect(dashboard.totals.netResultCents).toBe(-42000);
+    expect(evolution[0]?.totals.uncategorizedExpenseCents).toBe(12000);
+    expect(report).toEqual([{ categoryId: food.id, categoryName: "Food", amountCents: 30000 }]);
+  });
+
   it("aggregates monthly totals and reports", async () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);

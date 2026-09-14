@@ -81,6 +81,9 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
   const variableExpenseCents = expenseEntries
     .filter((row) => row.category?.group === "variable_expense")
     .reduce((total, row) => total + row.amountCents, 0);
+  const uncategorizedExpenseCents = expenseEntries
+    .filter((row) => !row.category)
+    .reduce((total, row) => total + row.amountCents, 0);
   const investmentContributionCents = activeTransactions
     .filter((row) => row.type === "investment_contribution")
     .reduce((total, row) => total + row.amountCents, 0);
@@ -94,6 +97,7 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
       incomeCents,
       fixedExpenseCents,
       variableExpenseCents,
+      uncategorizedExpenseCents,
       investmentContributionCents,
       investmentWithdrawalCents,
       netInvestmentFlowCents: investmentContributionCents - investmentWithdrawalCents,
@@ -101,6 +105,7 @@ export async function getMonthlyDashboard(month: string, database?: AppDb) {
         incomeCents -
         fixedExpenseCents -
         variableExpenseCents -
+        uncategorizedExpenseCents -
         investmentContributionCents +
         investmentWithdrawalCents,
     },

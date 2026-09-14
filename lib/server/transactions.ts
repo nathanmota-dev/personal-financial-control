@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
@@ -15,7 +15,7 @@ import { getFinanceToday } from "@/lib/server/runtime";
 
 const transactionSchema = z.object({
   accountId: z.string().uuid(),
-  categoryId: z.string().uuid(),
+  categoryId: z.string().uuid().nullable().optional(),
   type: z.enum([
     "income",
     "expense",
@@ -41,21 +41,34 @@ async function resolveDb(database?: TransactionDb) {
   return database ?? getFinanceDatabase();
 }
 
-type TransactionDb = AppDb | Parameters<Parameters<AppDb["transaction"]>[0]>[0];
+export type TransactionDb = AppDb | Parameters<Parameters<AppDb["transaction"]>[0]>[0];
+type TransactionDbTransaction = Parameters<Parameters<AppDb["transaction"]>[0]>[0];
 
 async function validateTransactionDependencies(
   input: z.infer<typeof transactionSchema>,
   database: TransactionDb
 ) {
+  const categoryId = input.categoryId;
   const [account, category] = await Promise.all([
     database.query.accounts.findFirst({ where: (table, { eq }) => eq(table.id, input.accountId) }),
-    database.query.categories.findFirst({ where: (table, { eq }) => eq(table.id, input.categoryId) }),
+    categoryId
+      ? database.query.categories.findFirst({ where: (table, { eq }) => eq(table.id, categoryId) })
+      : Promise.resolve(null),
   ]);
 
   invariant(account, "ACCOUNT_NOT_FOUND", "Account does not exist.", 404);
-  invariant(category, "CATEGORY_NOT_FOUND", "Category does not exist.", 404);
 
   invariant(!account.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived account.");
+  if (!input.categoryId) {
+    invariant(
+      input.type !== "investment_contribution" && input.type !== "investment_withdrawal",
+      "CATEGORY_REQUIRED",
+      "Investment movements require a category."
+    );
+    return;
+  }
+
+  invariant(category, "CATEGORY_NOT_FOUND", "Category does not exist.", 404);
   invariant(!category.isArchived, "CATEGORY_ARCHIVED", "Cannot use an archived category.");
 
   if (input.type === "income") {
@@ -119,6 +132,7 @@ export async function createTransaction(
       .insert(transactions)
       .values({
         ...transactionValues,
+        categoryId: values.categoryId ?? null,
         isIncludedInInvestmentCheckpoint,
         updatedAt: currentTimestamp(),
       })
@@ -149,6 +163,7 @@ export async function listTransactions(
     competenceMonth?: string;
     accountId?: string;
     categoryId?: string;
+    uncategorized?: boolean;
     status?: "pending" | "posted" | "cancelled";
   } = {},
   database?: AppDb
@@ -159,7 +174,11 @@ export async function listTransactions(
       ? eq(transactions.competenceMonth, normalizeCompetenceMonth(filters.competenceMonth))
       : undefined,
     filters.accountId ? eq(transactions.accountId, filters.accountId) : undefined,
-    filters.categoryId ? eq(transactions.categoryId, filters.categoryId) : undefined,
+    filters.uncategorized
+      ? isNull(transactions.categoryId)
+      : filters.categoryId
+        ? eq(transactions.categoryId, filters.categoryId)
+        : undefined,
     filters.status ? eq(transactions.status, filters.status) : undefined
   );
 
@@ -202,12 +221,24 @@ export async function updateTransaction(
 
   return db.transaction(async (transactionDb) => {
     const existing = await getTransactionById(id, transactionDb);
+    const {
+      categoryId: requestedCategoryId,
+      notes: requestedNotes,
+      recurringTemplateId: requestedRecurringTemplateId,
+      sourceSelections,
+      sources,
+      ...transactionValues
+    } = rawValues;
     const values = {
       ...existing,
-      ...rawValues,
-      notes: rawValues.notes ?? existing.notes ?? undefined,
+      ...transactionValues,
+      categoryId:
+        requestedCategoryId === undefined ? existing.categoryId : requestedCategoryId,
+      notes: requestedNotes === undefined ? existing.notes ?? undefined : requestedNotes,
       recurringTemplateId:
-        rawValues.recurringTemplateId ?? existing.recurringTemplateId ?? undefined,
+        requestedRecurringTemplateId === undefined
+          ? existing.recurringTemplateId ?? undefined
+          : requestedRecurringTemplateId,
     };
     values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
     values.transactionDate = normalizeDate(values.transactionDate);
@@ -225,15 +256,13 @@ export async function updateTransaction(
     }
 
     await validateTransactionDependencies(values, transactionDb);
-    const {
-      sourceSelections,
-      sources,
-      ...transactionValues
-    } = rawValues;
     const [updated] = await transactionDb
       .update(transactions)
       .set({
         ...transactionValues,
+        categoryId: values.categoryId ?? null,
+        notes: values.notes,
+        recurringTemplateId: values.recurringTemplateId,
         competenceMonth: values.competenceMonth,
         transactionDate: values.transactionDate,
         isIncludedInInvestmentCheckpoint,
@@ -287,11 +316,16 @@ function isEffectiveInvestmentWithdrawal(
 export async function deleteTransaction(id: string, database?: AppDb) {
   const db = await resolveDb(database);
 
-  await db.transaction(async (transactionDb) => {
-    const existing = await getTransactionById(id, transactionDb);
-    if (isEffectiveInvestmentWithdrawal(existing)) {
-      await reverseInvestmentReductionForTransaction(id, transactionDb);
-    }
-    await transactionDb.delete(transactions).where(eq(transactions.id, id));
-  });
+  await db.transaction((transactionDb) => deleteTransactionInTransaction(id, transactionDb));
+}
+
+export async function deleteTransactionInTransaction(
+  id: string,
+  database: TransactionDbTransaction
+) {
+  const existing = await getTransactionById(id, database);
+  if (isEffectiveInvestmentWithdrawal(existing)) {
+    await reverseInvestmentReductionForTransaction(id, database);
+  }
+  await database.delete(transactions).where(eq(transactions.id, id));
 }

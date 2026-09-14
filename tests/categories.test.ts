@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
-import { createCategory, deleteCategory } from "@/lib/server/categories";
+import { createCategory, deleteCategory, listCategories } from "@/lib/server/categories";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createTransaction } from "@/lib/server/transactions";
 import { createTestDatabase } from "@/tests/helpers/database";
@@ -13,6 +13,28 @@ afterEach(async () => {
 });
 
 describe("categories", () => {
+  it("includes the standard categories and provisions them idempotently", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const categories = await listCategories({}, db);
+    expect(categories).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: "Salário", group: "income" }),
+        expect.objectContaining({ name: "Moradia", group: "fixed_expense" }),
+        expect.objectContaining({ name: "Contas da casa", group: "fixed_expense" }),
+        expect.objectContaining({ name: "Alimentação", group: "variable_expense" }),
+        expect.objectContaining({ name: "Transporte", group: "variable_expense" }),
+        expect.objectContaining({ name: "Investimentos", group: "investment" }),
+        expect.objectContaining({ name: "Outros", group: "variable_expense" }),
+      ])
+    );
+
+    const first = await createCategory({ name: "Outros", group: "variable_expense" }, db);
+    const second = await createCategory({ name: "Outros", group: "variable_expense" }, db);
+    expect(second.id).toBe(first.id);
+  });
+
   it("prevents deleting categories that are already in use", async () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);

@@ -1,16 +1,8 @@
+import { defaultCategories } from "@/lib/category-defaults";
 import { getDatabase } from "@/lib/db";
 import { getServerEnv } from "@/lib/env";
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory, listCategories } from "@/lib/server/categories";
-
-const defaultCategories = [
-  { name: "Salary", group: "income" as const },
-  { name: "Housing", group: "fixed_expense" as const },
-  { name: "Utilities", group: "fixed_expense" as const },
-  { name: "Food", group: "variable_expense" as const },
-  { name: "Transport", group: "variable_expense" as const },
-  { name: "Brokerage Contribution", group: "investment" as const },
-];
 
 async function main() {
   if (getServerEnv().DEMO_MODE) {

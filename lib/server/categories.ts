@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
+import { defaultCategories } from "@/lib/category-defaults";
 import { categories, creditCardCharges, recurringTemplates, transactions } from "@/lib/db/schema";
 import { DomainError, invariant } from "@/lib/server/errors";
 import { currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
@@ -23,6 +24,19 @@ async function resolveDb(database?: AppDb) {
 export async function createCategory(input: z.input<typeof categorySchema>, database?: AppDb) {
   const db = await resolveDb(database);
   const values = categorySchema.parse(input);
+
+  // The default-category migration is intentionally idempotent. Treat a
+  // repeated request for the same name and group the same way so callers can
+  // safely provision the defaults in an already-migrated database.
+  const existing = await db.query.categories.findFirst({
+    where: eq(categories.name, values.name),
+  });
+  const isDefaultCategory = defaultCategories.some(
+    (category) => category.name === values.name && category.group === values.group
+  );
+  if (isDefaultCategory && existing?.group === values.group) {
+    return serializeTimestamps(existing);
+  }
 
   const [category] = await db
     .insert(categories)

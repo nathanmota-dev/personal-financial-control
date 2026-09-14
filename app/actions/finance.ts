@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { ZodError } from "zod";
 
+import type { FinanceActionResult } from "@/lib/interfaces/finance-actions";
 import { archiveAccount, createAccount, updateAccount } from "@/lib/server/accounts";
 import {
   archiveCategory,
@@ -32,7 +34,7 @@ import {
 } from "@/lib/server/investment-portfolio";
 import {
   createRecurringTemplate,
-  endRecurringTemplate,
+  deleteRecurringTemplate,
   generateRecurringTransactions,
   pauseRecurringTemplate,
   updateRecurringTemplate,
@@ -40,6 +42,7 @@ import {
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createTransaction, deleteTransaction, updateTransaction } from "@/lib/server/transactions";
 import { createTransfer } from "@/lib/server/transfers";
+import { DomainError } from "@/lib/server/errors";
 
 function revalidateFinanceViews() {
   [
@@ -55,6 +58,62 @@ function revalidateFinanceViews() {
   ].forEach((path) => {
     revalidatePath(path);
   });
+}
+
+function validationError(error: ZodError) {
+  const issue = error.issues[0];
+  const rawField = issue?.path[0];
+  const field = typeof rawField === "string" ? rawField : undefined;
+
+  if (field === "name" || field === "description") {
+    return {
+      code: "INVALID_NAME",
+      message: "Informe um nome ou descrição.",
+      field: field === "description" ? "name" : field,
+    };
+  }
+
+  if (field === "amountCents") {
+    return {
+      code: "INVALID_AMOUNT",
+      message: "Informe um valor maior que zero.",
+      field,
+    };
+  }
+
+  return {
+    code: "VALIDATION_ERROR",
+    message: issue?.message ?? "Confira os dados informados.",
+    field,
+  };
+}
+
+function actionError(error: unknown) {
+  if (error instanceof DomainError) {
+    return {
+      code: error.code,
+      message: error.message,
+    };
+  }
+
+  if (error instanceof ZodError) {
+    return validationError(error);
+  }
+
+  return {
+    code: "FINANCE_ACTION_FAILED",
+    message: "Não foi possível concluir esta operação.",
+  };
+}
+
+async function runFinanceAction<T>(operation: () => Promise<T>): Promise<FinanceActionResult<T>> {
+  try {
+    const data = await operation();
+    revalidateFinanceViews();
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: actionError(error) };
+  }
 }
 
 export async function createAccountAction(input: Parameters<typeof createAccount>[0]) {
@@ -99,20 +158,18 @@ export async function deleteCategoryAction(id: string) {
 }
 
 export async function createTransactionAction(input: Parameters<typeof createTransaction>[0]) {
-  const result = await createTransaction(input);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => createTransaction(input));
 }
 
 export async function updateTransactionAction(input: Parameters<typeof updateTransaction>[0]) {
-  const result = await updateTransaction(input);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => updateTransaction(input));
 }
 
 export async function deleteTransactionAction(id: string) {
-  await deleteTransaction(id);
-  revalidateFinanceViews();
+  return runFinanceAction(async () => {
+    await deleteTransaction(id);
+    return null;
+  });
 }
 
 export async function createTransferAction(input: Parameters<typeof createTransfer>[0]) {
@@ -132,35 +189,31 @@ export async function createCreditCardChargeAction(
 export async function createRecurringTemplateAction(
   input: Parameters<typeof createRecurringTemplate>[0]
 ) {
-  const result = await createRecurringTemplate(input);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => createRecurringTemplate(input));
 }
 
 export async function updateRecurringTemplateAction(
   input: Parameters<typeof updateRecurringTemplate>[0]
 ) {
-  const result = await updateRecurringTemplate(input);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => updateRecurringTemplate(input));
 }
 
 export async function pauseRecurringTemplateAction(id: string) {
-  const result = await pauseRecurringTemplate(id);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => pauseRecurringTemplate(id));
 }
 
-export async function endRecurringTemplateAction(id: string, endMonth: string) {
-  const result = await endRecurringTemplate(id, endMonth);
-  revalidateFinanceViews();
-  return result;
+export async function deleteRecurringTemplateAction(
+  id: string,
+  mode: Parameters<typeof deleteRecurringTemplate>[1]
+) {
+  return runFinanceAction(async () => {
+    await deleteRecurringTemplate(id, mode);
+    return null;
+  });
 }
 
 export async function generateRecurringTransactionsAction(month: string) {
-  const result = await generateRecurringTransactions(month);
-  revalidateFinanceViews();
-  return result;
+  return runFinanceAction(() => generateRecurringTransactions(month));
 }
 
 export async function configureInvestmentPortfolioAction(

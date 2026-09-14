@@ -193,7 +193,6 @@ export const transactions = sqliteTable(
       .notNull()
       .references(() => accounts.id, { onDelete: "restrict" }),
     categoryId: text("category_id")
-      .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
     recurringTemplateId: text("recurring_template_id").references(
       () => recurringTemplates.id,

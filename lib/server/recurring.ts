@@ -3,14 +3,20 @@ import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
-import { recurringTemplates, transactions } from "@/lib/db/schema";
+import { accounts, categories, recurringTemplates, transactions } from "@/lib/db/schema";
+import {
+  getDefaultCategoryForRecurringType,
+  isRecurringCategoryCompatible,
+  recurringDefaultCategoryNames,
+} from "@/lib/category-defaults";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp, normalizeCompetenceMonth, serializeTimestamps } from "@/lib/server/finance";
-import { createTransaction } from "@/lib/server/transactions";
-import { getAccountById } from "@/lib/server/accounts";
-import { getCategoryById } from "@/lib/server/categories";
+import {
+  createTransaction,
+  deleteTransactionInTransaction,
+} from "@/lib/server/transactions";
 
-const recurringTemplateSchema = z.object({
+const recurringTemplateFields = z.object({
   accountId: z.string().uuid(),
   categoryId: z.string().uuid(),
   type: z.enum(["income", "expense", "investment_contribution"]),
@@ -18,26 +24,51 @@ const recurringTemplateSchema = z.object({
   amountCents: z.number().int().positive(),
   dayOfMonth: z.number().int().min(1).max(31),
   startMonth: z.string(),
-  endMonth: z.string().optional(),
-  description: z.string().trim().min(1),
+  endMonth: z.string().nullable().optional(),
+  description: z.string().trim().min(1).optional(),
+  name: z.string().trim().min(1).optional(),
 });
 
-const updateRecurringTemplateSchema = recurringTemplateSchema.partial().extend({
+const recurringTemplateSchema = recurringTemplateFields.superRefine((value, context) => {
+  if (!value.description && !value.name) {
+    context.addIssue({
+      code: "custom",
+      path: ["name"],
+      message: "Informe um nome para a recorrência.",
+    });
+  }
+});
+
+const updateRecurringTemplateSchema = recurringTemplateFields.partial().extend({
   id: z.string().uuid(),
 });
+const recurringDeleteModeSchema = z.enum(["keep_history", "delete_history"]);
 
-async function resolveDb(database?: AppDb) {
+function resolveDb(database?: AppDb): Promise<AppDb>;
+function resolveDb(database?: RecurringDb): Promise<RecurringDb>;
+async function resolveDb(database?: RecurringDb) {
   return database ?? getFinanceDatabase();
 }
 
+type RecurringDb = AppDb | Parameters<Parameters<AppDb["transaction"]>[0]>[0];
+
 async function validateRecurringDependencies(
   input: z.infer<typeof recurringTemplateSchema>,
-  database: AppDb
+  database: RecurringDb,
+  replaceIncompatibleCategory = false
 ) {
-  const [account, category] = await Promise.all([
-    getAccountById(input.accountId, database),
-    getCategoryById(input.categoryId, database),
+  const [account, existingCategory] = await Promise.all([
+    database.query.accounts.findFirst({ where: eq(accounts.id, input.accountId) }),
+    database.query.categories.findFirst({ where: eq(categories.id, input.categoryId) }),
   ]);
+  invariant(account, "ACCOUNT_NOT_FOUND", "Account does not exist.", 404);
+  invariant(existingCategory, "CATEGORY_NOT_FOUND", "Category does not exist.", 404);
+  let category = existingCategory;
+
+  if (!isRecurringCategoryCompatible(category.group, input.type) && replaceIncompatibleCategory) {
+    const defaultCategory = await findDefaultCategory(input.type, database);
+    category = defaultCategory;
+  }
 
   invariant(!account.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived account.");
   invariant(!category.isArchived, "CATEGORY_ARCHIVED", "Cannot use an archived category.");
@@ -70,6 +101,30 @@ async function validateRecurringDependencies(
       "Investment recurring entries require a checking, savings, or cash account."
     );
   }
+
+  return category;
+}
+
+async function findDefaultCategory(
+  type: z.infer<typeof recurringTemplateFields>['type'],
+  database: RecurringDb
+) {
+  const defaultCategory = getDefaultCategoryForRecurringType(type);
+  const category = await database.query.categories.findFirst({
+    where: and(
+      eq(categories.name, recurringDefaultCategoryNames[type]),
+      eq(categories.group, defaultCategory.group),
+      eq(categories.isArchived, false)
+    ),
+  });
+
+  invariant(
+    category,
+    "DEFAULT_CATEGORY_NOT_FOUND",
+    `The default category ${recurringDefaultCategoryNames[type]} does not exist.`
+  );
+
+  return category;
 }
 
 export async function createRecurringTemplate(
@@ -77,7 +132,15 @@ export async function createRecurringTemplate(
   database?: AppDb
 ) {
   const db = await resolveDb(database);
-  const values = recurringTemplateSchema.parse(input);
+  const parsedValues = recurringTemplateSchema.parse(input);
+  const { name, description: parsedDescription, ...rawValues } = parsedValues;
+  const description = name ?? parsedDescription;
+  invariant(description, "RECURRING_NAME_REQUIRED", "Informe um nome para a recorrência.");
+  const values = {
+    ...rawValues,
+    description,
+    endMonth: rawValues.endMonth ?? undefined,
+  };
   values.startMonth = normalizeCompetenceMonth(values.startMonth);
   values.endMonth = values.endMonth ? normalizeCompetenceMonth(values.endMonth) : undefined;
   await validateRecurringDependencies(values, db);
@@ -110,7 +173,7 @@ export async function listRecurringTemplates(database?: AppDb) {
   }));
 }
 
-export async function getRecurringTemplateById(id: string, database?: AppDb) {
+export async function getRecurringTemplateById(id: string, database?: RecurringDb) {
   const db = await resolveDb(database);
   const template = await db.query.recurringTemplates.findFirst({
     where: eq(recurringTemplates.id, id),
@@ -126,30 +189,70 @@ export async function updateRecurringTemplate(
   database?: AppDb
 ) {
   const db = await resolveDb(database);
-  const { id, ...rawValues } = updateRecurringTemplateSchema.parse(input);
+  const { id, ...parsedValues } = updateRecurringTemplateSchema.parse(input);
   const existing = await getRecurringTemplateById(id, db);
+  const hasEndMonth = Object.prototype.hasOwnProperty.call(parsedValues, "endMonth");
+  const {
+    name,
+    description: requestedDescription,
+    endMonth: requestedEndMonth,
+    ...rawValues
+  } = parsedValues;
+  const resolvedEndMonth = hasEndMonth ? requestedEndMonth : existing.endMonth;
   const values = {
     ...existing,
     ...rawValues,
-    endMonth: rawValues.endMonth ?? existing.endMonth ?? undefined,
+    description: name ?? requestedDescription ?? existing.description,
+    endMonth: resolvedEndMonth ?? null,
   };
 
   values.startMonth = normalizeCompetenceMonth(values.startMonth);
-  values.endMonth = values.endMonth ? normalizeCompetenceMonth(values.endMonth) : undefined;
-  await validateRecurringDependencies(values, db);
+  values.endMonth = values.endMonth ? normalizeCompetenceMonth(values.endMonth) : null;
+  const category = await validateRecurringDependencies(values, db, true);
 
   const [template] = await db
     .update(recurringTemplates)
     .set({
       ...rawValues,
+      categoryId: category.id,
+      description: values.description,
       startMonth: values.startMonth,
-      endMonth: values.endMonth,
+      endMonth: values.endMonth ?? null,
       updatedAt: currentTimestamp(),
     })
     .where(eq(recurringTemplates.id, id))
     .returning();
 
   return serializeTimestamps(template);
+}
+
+export async function deleteRecurringTemplate(
+  id: string,
+  mode: z.input<typeof recurringDeleteModeSchema>,
+  database?: AppDb
+) {
+  const parsedMode = recurringDeleteModeSchema.parse(mode);
+  const db = await resolveDb(database);
+
+  await db.transaction(async (transactionDb) => {
+    await getRecurringTemplateById(id, transactionDb);
+
+    if (parsedMode === "delete_history") {
+      const generatedTransactions = await transactionDb.query.transactions.findMany({
+        where: eq(transactions.recurringTemplateId, id),
+      });
+      for (const transaction of generatedTransactions) {
+        await deleteTransactionInTransaction(transaction.id, transactionDb);
+      }
+    } else {
+      await transactionDb
+        .update(transactions)
+        .set({ recurringTemplateId: null, updatedAt: currentTimestamp() })
+        .where(eq(transactions.recurringTemplateId, id));
+    }
+
+    await transactionDb.delete(recurringTemplates).where(eq(recurringTemplates.id, id));
+  });
 }
 
 export async function pauseRecurringTemplate(id: string, database?: AppDb) {
@@ -200,7 +303,7 @@ function buildTransactionDate(month: string, dayOfMonth: number) {
 async function markTemplateGenerated(
   template: typeof recurringTemplates.$inferSelect,
   competenceMonth: string,
-  database: AppDb
+  database: RecurringDb
 ) {
   const lastGeneratedMonth =
     !template.lastGeneratedMonth || template.lastGeneratedMonth < competenceMonth

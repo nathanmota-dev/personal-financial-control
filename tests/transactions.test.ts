@@ -30,6 +30,86 @@ afterEach(async () => {
 });
 
 describe("transactions", () => {
+  it("allows ordinary income and expenses without a category and supports clearing one later", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Checking", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const category = await createCategory({ name: "Groceries", group: "variable_expense" }, db);
+
+    const uncategorized = await createTransaction(
+      {
+        accountId: account.id,
+        type: "expense",
+        amountCents: 10000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-05",
+        description: "Market",
+      },
+      db
+    );
+    const categorized = await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: category.id,
+        type: "expense",
+        amountCents: 7000,
+        status: "posted",
+        competenceMonth: "2026-05",
+        transactionDate: "2026-05-06",
+        description: "Bakery",
+      },
+      db
+    );
+
+    expect(uncategorized.categoryId).toBeNull();
+    expect((await listTransactions({ uncategorized: true }, db)).map((row) => row.id)).toEqual([
+      uncategorized.id,
+    ]);
+
+    const preserved = await updateTransaction(
+      { id: categorized.id, description: "Bakery updated" },
+      db
+    );
+    expect(preserved.categoryId).toBe(category.id);
+
+    const cleared = await updateTransaction({ id: categorized.id, categoryId: null }, db);
+    expect(cleared.categoryId).toBeNull();
+    expect((await listTransactions({ uncategorized: true }, db)).map((row) => row.id)).toEqual([
+      categorized.id,
+      uncategorized.id,
+    ]);
+  });
+
+  it("requires a category for investment movements", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Investment account", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+
+    await expect(
+      createTransaction(
+        {
+          accountId: account.id,
+          type: "investment_contribution",
+          amountCents: 10000,
+          status: "posted",
+          competenceMonth: "2026-05",
+          transactionDate: "2026-05-05",
+          description: "Contribution",
+        },
+        db
+      )
+    ).rejects.toMatchObject({ code: "CATEGORY_REQUIRED" });
+  });
+
   it("filters transactions by month, account, category, and status", async () => {
     const { db, cleanup } = await createTestDatabase();
     cleanups.push(cleanup);

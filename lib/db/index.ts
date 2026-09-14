@@ -78,7 +78,10 @@ async function initializeDemoDatabase() {
     });
 
     await database.transaction(async (transaction) => {
-      await transaction.insert(categories).values(demoFixture.categories);
+      await transaction
+        .insert(categories)
+        .values(demoFixture.categories)
+        .onConflictDoNothing();
       await transaction.insert(accounts).values(demoFixture.accounts);
       await transaction.insert(recurringTemplates).values(demoFixture.recurringTemplates);
       await transaction.insert(transactions).values(demoFixture.transactions);

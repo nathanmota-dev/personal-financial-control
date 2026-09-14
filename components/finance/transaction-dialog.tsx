@@ -1,0 +1,400 @@
+"use client";
+
+import { useId, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  createTransactionAction,
+  getInvestmentReductionSourcesAction,
+  updateTransactionAction,
+} from "@/app/actions/finance";
+import { isTransactionCategoryCompatible } from "@/lib/category-defaults";
+import { InvestmentReductionDialog } from "@/components/finance/investment-reduction-dialog";
+import { SetupCallout } from "@/components/finance/setup-dialogs";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type {
+  TransactionAccountOption,
+  TransactionCategoryOption,
+  TransactionDialogProps,
+  TransactionMutationPayload,
+  TransactionRow,
+} from "@/lib/interfaces/transactions";
+import type {
+  InvestmentReductionSelection,
+  InvestmentReductionSource,
+} from "@/lib/interfaces/investment-reconciliation";
+import {
+  centsToMoneyInput,
+  formatMoneyInput,
+  moneyInputToCents,
+  transactionTypeLabels,
+} from "@/lib/finance-ui";
+import { cn } from "@/lib/utils";
+
+const NO_CATEGORY_VALUE = "__no-category__";
+const fieldClassName =
+  "h-11 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+const selectClassName =
+  "h-11 w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] outline-none transition-colors focus:border-cyan-400/70 focus:ring-2 focus:ring-cyan-400/20";
+const labelClassName = "text-xs uppercase tracking-[0.16em] text-slate-400";
+
+function compatibleCategories(
+  categories: TransactionCategoryOption[],
+  type: TransactionRow["type"]
+) {
+  return categories.filter((category) => isTransactionCategoryCompatible(category.group, type));
+}
+
+function categoryValue(
+  categories: TransactionCategoryOption[],
+  type: TransactionRow["type"],
+  currentCategoryId?: string | null
+) {
+  const category = categories.find(
+    (option) => option.id === currentCategoryId && isTransactionCategoryCompatible(option.group, type)
+  );
+
+  if (category) {
+    return category.id;
+  }
+
+  return type === "income" || type === "expense"
+    ? NO_CATEGORY_VALUE
+    : compatibleCategories(categories, type)[0]?.id ?? NO_CATEGORY_VALUE;
+}
+
+function accountValue(
+  accounts: TransactionAccountOption[],
+  type: TransactionRow["type"],
+  currentAccountId?: string
+) {
+  const available = investmentType(type)
+    ? accounts.filter((account) =>
+        account.type === "checking" || account.type === "savings" || account.type === "cash"
+      )
+    : accounts;
+
+  return available.find((account) => account.id === currentAccountId)?.id ?? available[0]?.id ?? "";
+}
+
+function investmentType(type: TransactionRow["type"]) {
+  return type === "investment_contribution" || type === "investment_withdrawal";
+}
+
+export function TransactionDialog({
+  accounts,
+  categories,
+  month,
+  transaction,
+  trigger,
+}: TransactionDialogProps) {
+  const router = useRouter();
+  const formId = useId();
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [formError, setFormError] = useState<string | null>(null);
+  const initialType = transaction?.type ?? "expense";
+  const [selectedType, setSelectedType] = useState<TransactionRow["type"]>(initialType);
+  const [selectedAccountId, setSelectedAccountId] = useState(() =>
+    accountValue(accounts, initialType, transaction?.accountId)
+  );
+  const [selectedCategoryId, setSelectedCategoryId] = useState(() =>
+    categoryValue(categories, initialType, transaction?.categoryId)
+  );
+  const [isReductionOpen, setIsReductionOpen] = useState(false);
+  const [reductionSources, setReductionSources] = useState<InvestmentReductionSource[]>([]);
+  const [reductionAmountCents, setReductionAmountCents] = useState(0);
+  const [previousSelections, setPreviousSelections] = useState<InvestmentReductionSelection[]>([]);
+  const [pendingPayload, setPendingPayload] = useState<TransactionMutationPayload | null>(null);
+
+  function resetFormState() {
+    const type = transaction?.type ?? "expense";
+    setSelectedType(type);
+    setSelectedAccountId(accountValue(accounts, type, transaction?.accountId));
+    setSelectedCategoryId(categoryValue(categories, type, transaction?.categoryId));
+    setFormError(null);
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (nextOpen) {
+      resetFormState();
+    }
+  }
+
+  function handleTypeChange(value: string) {
+    const nextType = value as TransactionRow["type"];
+    setSelectedType(nextType);
+    setSelectedAccountId(accountValue(accounts, nextType, selectedAccountId));
+    const currentCategoryId = selectedCategoryId === NO_CATEGORY_VALUE ? null : selectedCategoryId;
+    setSelectedCategoryId(categoryValue(categories, nextType, currentCategoryId));
+  }
+
+  async function onSubmit(formData: FormData) {
+    setFormError(null);
+    const accountId = String(formData.get("accountId") ?? "").trim();
+    const categoryValueFromForm = String(formData.get("categoryId") ?? "").trim();
+    const categoryId = categoryValueFromForm && categoryValueFromForm !== NO_CATEGORY_VALUE
+      ? categoryValueFromForm
+      : null;
+    const description = String(formData.get("description") ?? "").trim();
+    const rawAmount = String(formData.get("amount") ?? "").trim();
+    const type = String(formData.get("type")) as TransactionMutationPayload["type"];
+    const status = String(formData.get("status")) as TransactionMutationPayload["status"];
+    const transactionDate = String(formData.get("transactionDate") ?? "");
+    const competenceMonth = String(formData.get("competenceMonth") ?? "");
+
+    if (!accountId) {
+      showError("Selecione uma conta para o lançamento.");
+      return;
+    }
+
+    if (!description) {
+      showError("Informe uma descrição para o lançamento.");
+      return;
+    }
+
+    let amountCents: number;
+    try {
+      amountCents = moneyInputToCents(rawAmount);
+    } catch {
+      showError("Informe um valor monetário válido.");
+      return;
+    }
+
+    if (amountCents <= 0) {
+      showError("Informe um valor maior que zero.");
+      return;
+    }
+
+    if (!transactionDate || !competenceMonth) {
+      showError("Informe a data e a competência do lançamento.");
+      return;
+    }
+
+    if (investmentType(type) && !categoryId) {
+      showError("Aportes e resgates exigem uma categoria.");
+      return;
+    }
+
+    const payload: TransactionMutationPayload = {
+      accountId,
+      categoryId,
+      type,
+      status,
+      amountCents,
+      transactionDate,
+      competenceMonth,
+      description,
+      notes: String(formData.get("notes") ?? ""),
+    };
+
+    try {
+      if (needsInvestmentReductionConfirmation(payload)) {
+        const sourceResult = await getInvestmentReductionSourcesAction({ transactionId: transaction?.id });
+
+        if (
+          sourceResult.sources.length > 0 &&
+          (!sourceResult.checkpointDate || payload.transactionDate > sourceResult.checkpointDate)
+        ) {
+          setReductionSources(sourceResult.sources);
+          setReductionAmountCents(payload.amountCents);
+          setPreviousSelections(sourceResult.previousSelections);
+          setPendingPayload(payload);
+          setIsReductionOpen(true);
+          return;
+        }
+      }
+
+      await persistTransaction(payload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Não foi possível salvar o lançamento.";
+      showError(message);
+    }
+  }
+
+  function showError(message: string) {
+    setFormError(message);
+    toast.error(message);
+  }
+
+  async function persistTransaction(
+    payload: TransactionMutationPayload,
+    sourceSelections?: InvestmentReductionSelection[]
+  ) {
+    const nextPayload = sourceSelections ? { ...payload, sourceSelections } : payload;
+    const result = transaction
+      ? await updateTransactionAction({ id: transaction.id, ...nextPayload })
+      : await createTransactionAction(nextPayload);
+
+    if (!result.ok) {
+      showError(result.error.message);
+      return;
+    }
+
+    toast.success(transaction ? "Lançamento atualizado." : "Lançamento criado.");
+    clearReductionState();
+    setOpen(false);
+    router.refresh();
+  }
+
+  async function confirmReduction(selections: InvestmentReductionSelection[]) {
+    if (!pendingPayload) {
+      return;
+    }
+
+    try {
+      await persistTransaction(pendingPayload, selections);
+    } catch (error) {
+      showError(error instanceof Error ? error.message : "Não foi possível salvar o lançamento.");
+    }
+  }
+
+  function clearReductionState() {
+    setIsReductionOpen(false);
+    setPendingPayload(null);
+    setReductionSources([]);
+    setPreviousSelections([]);
+  }
+
+  const filteredCategories = compatibleCategories(categories, selectedType);
+  const filteredAccounts = investmentType(selectedType)
+    ? accounts.filter((account) =>
+        account.type === "checking" || account.type === "savings" || account.type === "cash"
+      )
+    : accounts;
+  const categoryRequired = investmentType(selectedType);
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          {trigger ?? (
+            <Button>
+              <Plus className="size-4" />
+              Novo lançamento
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-slate-800 bg-slate-950/95 sm:max-w-2xl">
+          <DialogHeader className="border-b border-slate-800 pb-5">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-cyan-300">Registro manual</p>
+            <DialogTitle className="text-2xl text-slate-50">
+              {transaction ? "Editar lançamento" : "Novo lançamento"}
+            </DialogTitle>
+            <DialogDescription>
+              Receitas e despesas podem ficar sem categoria agora e ser organizadas depois. Aportes e resgates continuam exigindo categoria.
+            </DialogDescription>
+          </DialogHeader>
+          {accounts.length ? (
+            <form
+              key={`${transaction?.id ?? "new"}-${open}`}
+              action={(formData) => startTransition(() => void onSubmit(formData))}
+              className="grid gap-5"
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-type`} className={labelClassName}>Tipo</Label>
+                  <select id={`${formId}-type`} name="type" value={selectedType} onChange={(event) => handleTypeChange(event.target.value)} className={selectClassName}>
+                    {Object.entries(transactionTypeLabels).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-status`} className={labelClassName}>Status</Label>
+                  <select id={`${formId}-status`} name="status" defaultValue={transaction?.status ?? "posted"} className={selectClassName}>
+                    <option value="pending">Pendente</option>
+                    <option value="posted">Lançado</option>
+                    <option value="cancelled">Cancelado</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-account`} className={labelClassName}>Conta</Label>
+                  <select id={`${formId}-account`} name="accountId" value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)} className={selectClassName} required>
+                    {filteredAccounts.map((account) => <option key={account.id} value={account.id}>{account.name}</option>)}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-category`} className={labelClassName}>Categoria</Label>
+                  <select id={`${formId}-category`} name="categoryId" value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)} className={selectClassName} required={categoryRequired}>
+                    {!categoryRequired ? <option value={NO_CATEGORY_VALUE}>Sem categoria</option> : null}
+                    {!filteredCategories.length && categoryRequired ? <option value={NO_CATEGORY_VALUE}>Nenhuma categoria compatível</option> : null}
+                    {filteredCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                  </select>
+                  <p className="text-xs text-slate-500">
+                    {categoryRequired ? "Obrigatória para movimentações de investimento." : "Opcional; você pode categorizar depois."}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-amount`} className={labelClassName}>Valor</Label>
+                  <Input id={`${formId}-amount`} name="amount" inputMode="decimal" defaultValue={transaction ? centsToMoneyInput(transaction.amountCents) : ""} onBlur={(event) => { event.currentTarget.value = formatMoneyInput(event.currentTarget.value); }} placeholder="0,00" className={cn(fieldClassName, "font-mono")} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-date`} className={labelClassName}>Data</Label>
+                  <Input id={`${formId}-date`} name="transactionDate" type="date" defaultValue={transaction?.transactionDate ?? `${month}-01`} className={fieldClassName} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-competence`} className={labelClassName}>Competência</Label>
+                  <Input id={`${formId}-competence`} name="competenceMonth" type="month" defaultValue={transaction?.competenceMonth ?? month} className={fieldClassName} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`${formId}-description`} className={labelClassName}>Descrição</Label>
+                  <Input id={`${formId}-description`} name="description" defaultValue={transaction?.description ?? ""} placeholder="Ex.: mercado, salário ou assinatura" className={fieldClassName} required />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`${formId}-notes`} className={labelClassName}>Observações <span className="normal-case tracking-normal text-slate-600">(opcional)</span></Label>
+                <Textarea id={`${formId}-notes`} name="notes" defaultValue={transaction?.notes ?? ""} placeholder="Contexto adicional para este lançamento" className="min-h-20 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20" />
+              </div>
+              {formError ? <p className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-4 py-3 text-sm text-rose-200" role="alert">{formError}</p> : null}
+              <DialogFooter>
+                <Button type="submit" disabled={isPending} className="min-w-40">{isPending ? "Salvando..." : transaction ? "Salvar alterações" : "Criar lançamento"}</Button>
+              </DialogFooter>
+            </form>
+          ) : (
+            <SetupCallout title="Sem contas cadastradas" description="Crie pelo menos uma conta antes de registrar uma movimentação." />
+          )}
+        </DialogContent>
+      </Dialog>
+      <InvestmentReductionDialog
+        key={`transaction-reduction-${isReductionOpen}-${transaction?.id ?? "new"}-${reductionAmountCents}-${previousSelections.map((selection) => `${selection.sourceId}:${selection.amountCents}`).join("|")}`}
+        open={isReductionOpen}
+        title={transaction ? "Redistribuir a origem do resgate" : "De onde saiu o resgate?"}
+        description="Selecione os ativos, saldos livres ou patrimônio não cadastrado que deram origem a este resgate."
+        amountCents={reductionAmountCents}
+        sources={reductionSources}
+        initialSelections={previousSelections}
+        isPending={isPending}
+        onOpenChange={setIsReductionOpen}
+        onCancel={clearReductionState}
+        onConfirm={(selections) => startTransition(() => void confirmReduction(selections))}
+        confirmLabel={transaction ? "Salvar resgate" : "Criar resgate"}
+        footerNote="A seleção fica registrada para que uma futura edição ou exclusão restaure os valores corretos."
+      />
+    </>
+  );
+}
+
+function needsInvestmentReductionConfirmation(payload: TransactionMutationPayload) {
+  return payload.type === "investment_withdrawal" && payload.status === "posted" && payload.transactionDate <= todayDate();
+}
+
+function todayDate() {
+  const date = new Date();
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}

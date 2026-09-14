@@ -1,3 +1,4 @@
+import { defaultCategoryIds } from "@/lib/category-defaults";
 import type { DemoFixture } from "@/lib/demo/contracts";
 
 const id = (prefix: string, value: number) =>
@@ -12,16 +13,18 @@ const accountIds = {
 } as const;
 
 const categoryIds = {
-  salary: id("b0000000-0000-4000-8000", 1),
-  rent: id("b0000000-0000-4000-8000", 2),
-  utilities: id("b0000000-0000-4000-8000", 3),
+  salary: defaultCategoryIds.salary,
+  rent: defaultCategoryIds.housing,
+  utilities: defaultCategoryIds.householdBills,
   groceries: id("b0000000-0000-4000-8000", 4),
   restaurants: id("b0000000-0000-4000-8000", 5),
-  transport: id("b0000000-0000-4000-8000", 6),
+  transport: defaultCategoryIds.transport,
   health: id("b0000000-0000-4000-8000", 7),
   leisure: id("b0000000-0000-4000-8000", 8),
   education: id("b0000000-0000-4000-8000", 9),
-  investments: id("b0000000-0000-4000-8000", 10),
+  investments: defaultCategoryIds.investments,
+  other: defaultCategoryIds.other,
+  food: defaultCategoryIds.food,
 } as const;
 
 const recurringIds = {
@@ -209,6 +212,7 @@ export const demoFixture: DemoFixture = {
     { id: categoryIds.salary, name: "Salário", group: "income" },
     { id: categoryIds.rent, name: "Moradia", group: "fixed_expense" },
     { id: categoryIds.utilities, name: "Contas da casa", group: "fixed_expense" },
+    { id: categoryIds.food, name: "Alimentação", group: "variable_expense" },
     { id: categoryIds.groceries, name: "Mercado", group: "variable_expense" },
     { id: categoryIds.restaurants, name: "Restaurantes", group: "variable_expense" },
     { id: categoryIds.transport, name: "Transporte", group: "variable_expense" },
@@ -216,6 +220,7 @@ export const demoFixture: DemoFixture = {
     { id: categoryIds.leisure, name: "Lazer", group: "variable_expense" },
     { id: categoryIds.education, name: "Educação", group: "variable_expense" },
     { id: categoryIds.investments, name: "Investimentos", group: "investment" },
+    { id: categoryIds.other, name: "Outros", group: "variable_expense" },
   ],
   accounts: [
     {

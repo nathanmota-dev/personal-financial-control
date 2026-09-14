@@ -35,13 +35,18 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
     pendingMonths.add(month);
 
     generateRecurringTransactionsAction(month)
-      .then((created) => {
-        if (!created.length) {
+      .then((result) => {
+        if (!result.ok) {
+          toast.error(result.error.message);
+          return;
+        }
+
+        if (!result.data.length) {
           return;
         }
 
         toast.success(
-          `${created.length} ${created.length === 1 ? "recorrência gerada" : "recorrências geradas"} para ${formatMonthLabel(month)}.`
+          `${result.data.length} ${result.data.length === 1 ? "recorrência gerada" : "recorrências geradas"} para ${formatMonthLabel(month)}.`
         );
         router.refresh();
       })

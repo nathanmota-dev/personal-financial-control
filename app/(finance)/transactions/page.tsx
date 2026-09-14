@@ -17,6 +17,7 @@ export default async function TransactionsPage({
     : getFinanceDefaultMonth();
   const accountId = typeof params.accountId === "string" ? params.accountId : undefined;
   const categoryId = typeof params.categoryId === "string" ? params.categoryId : undefined;
+  const uncategorized = params.uncategorized === "true";
   const status = typeof params.status === "string" ? params.status : undefined;
   const type = typeof params.type === "string" ? params.type : undefined;
   const section = typeof params.section === "string" ? params.section : "transactions";
@@ -39,7 +40,8 @@ export default async function TransactionsPage({
       listTransactions({
         competenceMonth: month,
         accountId: resolvedAccountId,
-        categoryId,
+        categoryId: uncategorized ? undefined : categoryId,
+        uncategorized,
         status:
           status === "pending" || status === "posted" || status === "cancelled"
             ? status
@@ -77,7 +79,8 @@ export default async function TransactionsPage({
       filters={{
         month,
         accountId: data?.accounts.some((account) => account.id === accountId) ? accountId : undefined,
-        categoryId,
+        categoryId: uncategorized ? undefined : categoryId,
+        uncategorized,
         status,
         type,
         section,
