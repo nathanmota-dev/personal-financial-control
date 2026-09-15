@@ -13,7 +13,6 @@ import {
   isRecurringCategoryCompatible,
   recurringDefaultCategoryNames,
 } from "@/lib/category-defaults";
-import { RecurringMonthPicker } from "@/components/finance/recurring-month-picker";
 import { SetupCallout } from "@/components/finance/setup-dialogs";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MonthPickerField } from "@/components/ui/month-picker-field";
 import {
   Select,
   SelectContent,
@@ -382,11 +382,12 @@ export function RecurringDialog({
 
               <div className="space-y-2">
                 <Label htmlFor={`${formId}-start-month`} className={recurringFieldLabelClassName}>Mês de início</Label>
-                <RecurringMonthPicker
+                <MonthPickerField
                   id={`${formId}-start-month`}
                   name="startMonth"
-                  month={startMonth}
+                  value={startMonth}
                   placeholder="Selecione o mês de início"
+                  required
                   onMonthChange={(nextMonth) => { if (nextMonth) setStartMonth(nextMonth); }}
                 />
               </div>
@@ -395,10 +396,10 @@ export function RecurringDialog({
                 <Label htmlFor={`${formId}-end-month`} className={recurringFieldLabelClassName}>
                   Mês de encerramento <span className="normal-case tracking-normal text-slate-600">(opcional)</span>
                 </Label>
-                <RecurringMonthPicker
+                <MonthPickerField
                   id={`${formId}-end-month`}
                   name="endMonth"
-                  month={endMonth}
+                  value={endMonth}
                   placeholder="Sem fim"
                   clearable
                   onMonthChange={setEndMonth}

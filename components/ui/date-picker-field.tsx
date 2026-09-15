@@ -1,72 +1,60 @@
 "use client";
 
 import { useState } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { CalendarDays, X } from "lucide-react";
 
-import type { MonthPickerFieldProps } from "@/lib/interfaces/date-pickers";
-import { formatMonthLabel } from "@/lib/finance-ui";
+import type { DatePickerFieldProps } from "@/lib/interfaces/date-pickers";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-import { Button } from "./button";
-import { MonthPicker } from "./monthpicker";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-
-const MONTH_LABELS = [
-  "Jan",
-  "Fev",
-  "Mar",
-  "Abr",
-  "Mai",
-  "Jun",
-  "Jul",
-  "Ago",
-  "Set",
-  "Out",
-  "Nov",
-  "Dez",
-] as const;
-
-function parseMonthValue(month?: string) {
-  if (!month) {
+function parseDateValue(value?: string) {
+  if (!value) {
     return undefined;
   }
 
-  const [year, monthNumber] = month.split("-").map(Number);
-  if (!year || !monthNumber) {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) {
     return undefined;
   }
 
-  return new Date(year, monthNumber - 1, 1);
+  return new Date(year, month - 1, day);
 }
 
-function buildMonthValue(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+function buildDateValue(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-export function MonthPickerField({
+function dateLabel(value?: string) {
+  const date = parseDateValue(value);
+  return date ? format(date, "PPP", { locale: ptBR }) : undefined;
+}
+
+export function DatePickerField({
   id,
   name,
   value,
-  month,
-  placeholder = "Selecione o mês",
+  placeholder = "Selecione a data",
   clearable = false,
   required = false,
-  onMonthChange,
+  onDateChange,
   className,
   align = "start",
-}: MonthPickerFieldProps) {
-  const initialValue = value ?? month;
-  const isControlled = onMonthChange !== undefined;
+}: DatePickerFieldProps) {
+  const isControlled = onDateChange !== undefined;
   const [open, setOpen] = useState(false);
-  const [internalValue, setInternalValue] = useState(initialValue);
-  const selectedValue = isControlled ? value ?? month : internalValue;
+  const [internalValue, setInternalValue] = useState(value);
+  const selectedValue = isControlled ? value : internalValue;
 
-  function handleMonthSelect(date: Date) {
-    const nextValue = buildMonthValue(date);
+  function handleDateSelect(date: Date | undefined) {
+    const nextValue = date ? buildDateValue(date) : undefined;
     if (!isControlled) {
       setInternalValue(nextValue);
     }
-    onMonthChange?.(nextValue);
+    onDateChange?.(nextValue);
     setOpen(false);
   }
 
@@ -74,10 +62,10 @@ export function MonthPickerField({
     if (!isControlled) {
       setInternalValue(undefined);
     }
-    onMonthChange?.(undefined);
+    onDateChange?.(undefined);
   }
 
-  const label = selectedValue ? formatMonthLabel(selectedValue) : undefined;
+  const label = dateLabel(selectedValue);
 
   return (
     <div className="flex min-w-0 gap-2">
@@ -107,19 +95,12 @@ export function MonthPickerField({
           align={align}
           className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
         >
-          <MonthPicker
-            selectedMonth={parseMonthValue(selectedValue)}
-            onMonthSelect={handleMonthSelect}
-            callbacks={{
-              monthLabel: (selectedMonth) => MONTH_LABELS[selectedMonth.number],
-            }}
-            variant={{
-              calendar: {
-                main: "ghost",
-                selected: "secondary",
-              },
-              chevrons: "ghost",
-            }}
+          <Calendar
+            mode="single"
+            selected={parseDateValue(selectedValue)}
+            onSelect={handleDateSelect}
+            locale={ptBR}
+            initialFocus
             className="text-slate-100"
           />
         </PopoverContent>
@@ -129,7 +110,7 @@ export function MonthPickerField({
           type="button"
           variant="outline"
           size="icon-sm"
-          aria-label="Remover mês"
+          aria-label="Remover data"
           className="border-slate-700 bg-slate-950/80 text-slate-400 hover:bg-slate-900 hover:text-slate-100"
           onClick={handleClear}
         >

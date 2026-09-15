@@ -64,6 +64,13 @@
       "when": 1788000000000,
       "tag": "0008_optional_transaction_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789000000000,
+      "tag": "0009_transaction_funding_links",
+      "breakpoints": true
     }
   ]
 }

@@ -76,6 +76,8 @@ export const investmentReductionSourceTypes = [
 
 export const investmentReductionStatuses = ["active", "reversed"] as const;
 
+export const transactionFundingLinkTypes = ["investment_funded_expense"] as const;
+
 export const investmentAssetClasses = [
   "fixed_income",
   "equities",
@@ -224,6 +226,28 @@ export const transactions = sqliteTable(
       "transactions_amount_cents_encrypted",
       sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
     ),
+  ]
+);
+
+export const transactionFundingLinks = sqliteTable(
+  "transaction_funding_links",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    expenseTransactionId: text("expense_transaction_id")
+      .notNull()
+      .references(() => transactions.id, { onDelete: "cascade" }),
+    withdrawalTransactionId: text("withdrawal_transaction_id")
+      .notNull()
+      .references(() => transactions.id, { onDelete: "cascade" }),
+    type: text("type", { enum: transactionFundingLinkTypes }).notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("transaction_funding_links_expense_unique").on(table.expenseTransactionId),
+    uniqueIndex("transaction_funding_links_withdrawal_unique").on(table.withdrawalTransactionId),
+    index("transaction_funding_links_type_idx").on(table.type),
   ]
 );
 
@@ -598,7 +622,33 @@ export const transactionsRelations = relations(transactions, ({ one, many }) => 
     references: [recurringTemplates.id],
   }),
   goalAllocations: many(financialGoalAllocations),
+  fundingLinkAsExpense: one(transactionFundingLinks, {
+    relationName: "funding_expense_transaction",
+    fields: [transactions.id],
+    references: [transactionFundingLinks.expenseTransactionId],
+  }),
+  fundingLinkAsWithdrawal: one(transactionFundingLinks, {
+    relationName: "funding_withdrawal_transaction",
+    fields: [transactions.id],
+    references: [transactionFundingLinks.withdrawalTransactionId],
+  }),
 }));
+
+export const transactionFundingLinksRelations = relations(
+  transactionFundingLinks,
+  ({ one }) => ({
+    expenseTransaction: one(transactions, {
+      relationName: "funding_expense_transaction",
+      fields: [transactionFundingLinks.expenseTransactionId],
+      references: [transactions.id],
+    }),
+    withdrawalTransaction: one(transactions, {
+      relationName: "funding_withdrawal_transaction",
+      fields: [transactionFundingLinks.withdrawalTransactionId],
+      references: [transactions.id],
+    }),
+  })
+);
 
 export const financialGoalsRelations = relations(financialGoals, ({ many }) => ({
   allocations: many(financialGoalAllocations),
@@ -730,6 +780,7 @@ export type RecurringTransactionType = (typeof recurringTransactionTypes)[number
 export type InvestmentReductionEventType = (typeof investmentReductionEventTypes)[number];
 export type InvestmentReductionSourceType = (typeof investmentReductionSourceTypes)[number];
 export type InvestmentReductionStatus = (typeof investmentReductionStatuses)[number];
+export type TransactionFundingLinkType = (typeof transactionFundingLinkTypes)[number];
 export type TransactionStatus = (typeof transactionStatuses)[number];
 export type RecurringStatus = (typeof recurringStatuses)[number];
 export type GoalCategory = (typeof goalCategories)[number];

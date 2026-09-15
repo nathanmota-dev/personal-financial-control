@@ -124,14 +124,26 @@ export function TransactionsView({
                               <div>
                                 <p className="font-medium text-slate-100">{transaction.description}</p>
                                 {transaction.notes ? <p className="text-xs text-slate-400">{transaction.notes}</p> : null}
+                                {transaction.isGeneratedByFunding ? (
+                                  <p className="mt-1 text-xs font-medium text-amber-300">Resgate automático</p>
+                                ) : transaction.fundingSource === "investments" ? (
+                                  <p className="mt-1 text-xs font-medium text-cyan-300">Pago com investimentos</p>
+                                ) : null}
                               </div>
                             </TableCell>
                             <TableCell>{transaction.account?.name ?? "-"}</TableCell>
                             <TableCell>{transaction.category?.name ?? "Sem categoria"}</TableCell>
                             <TableCell>
-                              <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>
-                                {transactionTypeLabels[transaction.type]}
-                              </Badge>
+                              <div className="flex flex-wrap gap-2">
+                                <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>
+                                  {transactionTypeLabels[transaction.type]}
+                                </Badge>
+                                {transaction.isGeneratedByFunding ? (
+                                  <Badge className="bg-amber-400/10 text-amber-200 ring-1 ring-amber-300/20">Automático</Badge>
+                                ) : transaction.fundingSource === "investments" ? (
+                                  <Badge className="bg-cyan-400/10 text-cyan-200 ring-1 ring-cyan-300/20">Investimentos</Badge>
+                                ) : null}
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Badge className={cn("ring-1", getStatusTone(transaction.status))}>
@@ -140,20 +152,24 @@ export function TransactionsView({
                             </TableCell>
                             <TableCell className="text-right font-semibold">{formatCurrency(transaction.amountCents)}</TableCell>
                             <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <TransactionDialog
-                                  accounts={accounts}
-                                  categories={categories}
-                                  month={filters.month}
-                                  transaction={transaction}
-                                  trigger={
-                                    <Button variant="outline" size="icon-sm" aria-label="Editar lançamento">
-                                      <Pencil className="size-4" />
-                                    </Button>
-                                  }
-                                />
-                                <DeleteTransactionDialog id={transaction.id} />
-                              </div>
+                              {transaction.isGeneratedByFunding ? (
+                                <span className="text-xs text-slate-500">Gerenciado pela despesa</span>
+                              ) : (
+                                <div className="flex justify-end gap-2">
+                                  <TransactionDialog
+                                    accounts={accounts}
+                                    categories={categories}
+                                    month={filters.month}
+                                    transaction={transaction}
+                                    trigger={
+                                      <Button variant="outline" size="icon-sm" aria-label="Editar lançamento">
+                                        <Pencil className="size-4" />
+                                      </Button>
+                                    }
+                                  />
+                                  <DeleteTransactionDialog id={transaction.id} />
+                                </div>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -170,24 +186,38 @@ export function TransactionsView({
                             <p className="text-sm text-slate-400">
                               {formatDateLabel(transaction.transactionDate)} • {transaction.account?.name ?? "-"}
                             </p>
+                            {transaction.isGeneratedByFunding ? (
+                              <p className="mt-1 text-xs font-medium text-amber-300">Resgate automático</p>
+                            ) : transaction.fundingSource === "investments" ? (
+                              <p className="mt-1 text-xs font-medium text-cyan-300">Pago com investimentos</p>
+                            ) : null}
                           </div>
                           <p className="font-semibold text-slate-100">{formatCurrency(transaction.amountCents)}</p>
                         </div>
                         <p className="mt-2 text-xs text-slate-500">{transaction.category?.name ?? "Sem categoria"}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>{transactionTypeLabels[transaction.type]}</Badge>
+                          {transaction.isGeneratedByFunding ? (
+                            <Badge className="bg-amber-400/10 text-amber-200 ring-1 ring-amber-300/20">Automático</Badge>
+                          ) : transaction.fundingSource === "investments" ? (
+                            <Badge className="bg-cyan-400/10 text-cyan-200 ring-1 ring-cyan-300/20">Investimentos</Badge>
+                          ) : null}
                           <Badge className={cn("ring-1", getStatusTone(transaction.status))}>{transactionStatusLabels[transaction.status]}</Badge>
                         </div>
-                        <div className="mt-4 flex gap-2">
-                          <TransactionDialog
-                            accounts={accounts}
-                            categories={categories}
-                            month={filters.month}
-                            transaction={transaction}
-                            trigger={<Button variant="outline" className="flex-1">Editar</Button>}
-                          />
-                          <DeleteTransactionDialog id={transaction.id} />
-                        </div>
+                        {transaction.isGeneratedByFunding ? (
+                          <p className="mt-4 text-xs text-slate-500">Gerenciado pela despesa vinculada</p>
+                        ) : (
+                          <div className="mt-4 flex gap-2">
+                            <TransactionDialog
+                              accounts={accounts}
+                              categories={categories}
+                              month={filters.month}
+                              transaction={transaction}
+                              trigger={<Button variant="outline" className="flex-1">Editar</Button>}
+                            />
+                            <DeleteTransactionDialog id={transaction.id} />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

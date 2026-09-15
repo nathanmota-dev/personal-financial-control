@@ -19,7 +19,7 @@ export function DashboardActions({ month }: { month: string }) {
     <>
       <MonthPickerField
         month={month}
-        onMonthChange={updateMonth}
+        onMonthChange={(nextMonth) => { if (nextMonth) updateMonth(nextMonth); }}
         className="w-full sm:w-[240px]"
       />
       <AccountSetupDialog />

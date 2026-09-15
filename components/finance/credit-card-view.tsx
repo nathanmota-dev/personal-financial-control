@@ -443,7 +443,7 @@ function CreditCardActions({
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <MonthPickerField month={month} onMonthChange={updateMonth} className="w-full sm:w-[240px]" />
+      <MonthPickerField month={month} onMonthChange={(nextMonth) => { if (nextMonth) updateMonth(nextMonth); }} className="w-full sm:w-[240px]" />
       <CreditCardPurchaseDialog
         accountId={accountId}
         categories={categories}
@@ -464,7 +464,7 @@ function MonthOnlyAction({ month }: { month: string }) {
     router.replace(`${pathname}?${params.toString()}`);
   }
 
-  return <MonthPickerField month={month} onMonthChange={updateMonth} className="w-full sm:w-[240px]" />;
+  return <MonthPickerField month={month} onMonthChange={(nextMonth) => { if (nextMonth) updateMonth(nextMonth); }} className="w-full sm:w-[240px]" />;
 }
 
 function CreditCardPurchaseDialog({

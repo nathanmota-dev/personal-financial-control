@@ -92,9 +92,11 @@ export function GoalFormDialog({
               <Label className="text-slate-200">Prazo</Label>
               <MonthPickerField
                 month={form.targetDate}
-                onMonthChange={(targetDate) =>
-                  setForm((state) => ({ ...state, targetDate }))
-                }
+                onMonthChange={(targetDate) => {
+                  if (targetDate) {
+                    setForm((state) => ({ ...state, targetDate }));
+                  }
+                }}
                 className="w-full"
               />
             </div>

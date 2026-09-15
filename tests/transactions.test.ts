@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createAccount } from "@/lib/server/accounts";
-import { createCategory } from "@/lib/server/categories";
+import { createAccount, getAccountDetails } from "@/lib/server/accounts";
+import { createCategory, listCategories } from "@/lib/server/categories";
 import {
   createTransaction,
   deleteTransaction,
@@ -311,5 +311,255 @@ describe("transactions", () => {
 
     expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(50000);
     expect((await listTransactions({}, db))[0]?.status).toBe("pending");
+  });
+
+  it("creates an investment-funded expense as an atomic pair and exposes its link", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Conta principal", type: "checking", initialBalanceCents: 100000 },
+      db
+    );
+    const expenseCategory = await createCategory({ name: "Mercado", group: "variable_expense" }, db);
+    const categories = await listCategories({}, db);
+    const investments = categories.find((category) => category.name === "Investimentos");
+    const holding = await createInvestmentHolding(
+      {
+        name: "CDB liquidez",
+        assetClass: "fixed_income",
+        instrumentType: "cdb",
+        currentValueCents: 80000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const purpose = await createInvestmentPurpose({ name: "Reserva" }, db);
+    const allocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: holding.id,
+        purposeId: purpose.id,
+        amountCents: 80000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+    await configureInvestmentPortfolio(
+      {
+        checkpointBalanceCents: 80000,
+        expectedMonthlyRateBps: 0,
+        checkpointDate: "2026-07-01",
+      },
+      db
+    );
+
+    const expense = await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: expenseCategory.id,
+        type: "expense",
+        status: "posted",
+        amountCents: 25000,
+        transactionDate: "2026-07-10",
+        competenceMonth: "2026-07",
+        description: "Mercado extra",
+        fundingSource: "investments",
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 25000 }],
+      },
+      db
+    );
+
+    const rows = await listTransactions({}, db);
+    const withdrawal = rows.find((row) => row.type === "investment_withdrawal");
+    const listedExpense = rows.find((row) => row.id === expense.id);
+    const accountDetails = await getAccountDetails(account.id, db);
+    const dashboard = await getInvestmentPortfolioDashboard(db);
+
+    expect(investments?.id).toBeDefined();
+    expect(rows).toHaveLength(2);
+    expect(listedExpense).toMatchObject({
+      fundingSource: "investments",
+      isGeneratedByFunding: false,
+      fundingLink: {
+        expenseTransactionId: expense.id,
+        type: "investment_funded_expense",
+      },
+    });
+    expect(withdrawal).toMatchObject({
+      fundingSource: "investments",
+      isGeneratedByFunding: true,
+      description: "Resgate automático: Mercado extra",
+      fundingLink: {
+        expenseTransactionId: expense.id,
+        withdrawalTransactionId: withdrawal?.id,
+      },
+    });
+    expect(accountDetails.currentBalanceCents).toBe(100000);
+    expect(dashboard.holdings[0]?.currentValueCents).toBe(55000);
+    expect(dashboard.allocations[0]?.amountCents).toBe(55000);
+    expect((await db.query.transactionFundingLinks.findMany())).toHaveLength(1);
+  });
+
+  it("updates, switches, and deletes an investment-funded expense as one operation", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Conta principal", type: "checking", initialBalanceCents: 100000 },
+      db
+    );
+    const expenseCategory = await createCategory({ name: "Viagem", group: "variable_expense" }, db);
+    const holding = await createInvestmentHolding(
+      {
+        name: "Fundo",
+        assetClass: "funds",
+        instrumentType: "investment_fund",
+        currentValueCents: 80000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const purpose = await createInvestmentPurpose({ name: "Reserva" }, db);
+    const allocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: holding.id,
+        purposeId: purpose.id,
+        amountCents: 80000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+    await configureInvestmentPortfolio(
+      {
+        checkpointBalanceCents: 80000,
+        expectedMonthlyRateBps: 0,
+        checkpointDate: "2026-07-01",
+      },
+      db
+    );
+
+    const expense = await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: expenseCategory.id,
+        type: "expense",
+        status: "posted",
+        amountCents: 20000,
+        transactionDate: "2026-07-10",
+        competenceMonth: "2026-07",
+        description: "Viagem",
+        fundingSource: "investments",
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 20000 }],
+      },
+      db
+    );
+
+    await updateTransaction(
+      {
+        id: expense.id,
+        description: "Viagem paga",
+        amountCents: 30000,
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 30000 }],
+      },
+      db
+    );
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(50000);
+    expect((await getAccountDetails(account.id, db)).currentBalanceCents).toBe(100000);
+
+    await updateTransaction({ id: expense.id, fundingSource: "account" }, db);
+    expect((await db.query.transactionFundingLinks.findMany())).toHaveLength(0);
+    expect((await listTransactions({}, db))).toHaveLength(1);
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(80000);
+    expect((await getAccountDetails(account.id, db)).currentBalanceCents).toBe(70000);
+
+    await updateTransaction(
+      {
+        id: expense.id,
+        fundingSource: "investments",
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 30000 }],
+      },
+      db
+    );
+    expect((await listTransactions({}, db))).toHaveLength(2);
+    expect((await getAccountDetails(account.id, db)).currentBalanceCents).toBe(100000);
+
+    const withdrawal = (await listTransactions({}, db)).find(
+      (row) => row.type === "investment_withdrawal"
+    );
+    await expect(updateTransaction({ id: withdrawal!.id, description: "Tentativa" }, db)).rejects.toMatchObject({
+      code: "MANAGED_TRANSACTION",
+    });
+
+    await deleteTransaction(expense.id, db);
+    expect(await listTransactions({}, db)).toHaveLength(0);
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(80000);
+    expect((await getAccountDetails(account.id, db)).currentBalanceCents).toBe(100000);
+  });
+
+  it("keeps a pending investment-funded pair untouched until it becomes effective", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Conta futura", type: "savings", initialBalanceCents: 100000 },
+      db
+    );
+    const expenseCategory = await createCategory({ name: "Curso", group: "fixed_expense" }, db);
+    const holding = await createInvestmentHolding(
+      {
+        name: "Tesouro",
+        assetClass: "fixed_income",
+        instrumentType: "treasury",
+        currentValueCents: 80000,
+        valueAsOf: "2026-07-16",
+      },
+      db
+    );
+    const purpose = await createInvestmentPurpose({ name: "Futuro" }, db);
+    const allocation = await upsertInvestmentPurposeAllocation(
+      {
+        holdingId: holding.id,
+        purposeId: purpose.id,
+        amountCents: 80000,
+        allocatedOn: "2026-07-16",
+      },
+      db
+    );
+    await configureInvestmentPortfolio(
+      {
+        checkpointBalanceCents: 80000,
+        expectedMonthlyRateBps: 0,
+        checkpointDate: "2026-07-01",
+      },
+      db
+    );
+
+    const expense = await createTransaction(
+      {
+        accountId: account.id,
+        categoryId: expenseCategory.id,
+        type: "expense",
+        status: "pending",
+        amountCents: 15000,
+        transactionDate: "2026-07-20",
+        competenceMonth: "2026-07",
+        description: "Curso futuro",
+        fundingSource: "investments",
+      },
+      db
+    );
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(80000);
+
+    await updateTransaction(
+      {
+        id: expense.id,
+        status: "posted",
+        transactionDate: "2026-07-16",
+        sourceSelections: [{ sourceId: `allocation:${allocation.id}`, amountCents: 15000 }],
+      },
+      db
+    );
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(65000);
+    expect((await getAccountDetails(account.id, db)).currentBalanceCents).toBe(100000);
   });
 });

@@ -5,7 +5,13 @@ import type {
   TransactionType,
 } from "@/lib/db/schema";
 import type { InvestmentReductionSelection } from "@/lib/interfaces/investment-reconciliation";
+import type {
+  TransactionFundingLink,
+  TransactionFundingSource,
+} from "@/lib/interfaces/transaction-funding";
 import type { ReactNode } from "react";
+
+export type { TransactionFundingLink, TransactionFundingSource } from "@/lib/interfaces/transaction-funding";
 
 export type TransactionMutationPayload = {
   accountId: string;
@@ -17,6 +23,7 @@ export type TransactionMutationPayload = {
   competenceMonth: string;
   description: string;
   notes: string;
+  fundingSource?: TransactionFundingSource;
   sourceSelections?: InvestmentReductionSelection[];
 };
 
@@ -37,6 +44,7 @@ export type TransactionRow = {
   id: string;
   accountId: string;
   categoryId: string | null;
+  recurringTemplateId: string | null;
   type: TransactionType;
   status: TransactionStatus;
   amountCents: number;
@@ -44,6 +52,9 @@ export type TransactionRow = {
   competenceMonth: string;
   description: string;
   notes?: string | null;
+  fundingSource: TransactionFundingSource;
+  fundingLink: TransactionFundingLink | null;
+  isGeneratedByFunding: boolean;
   account: { id: string; name: string } | null;
   category: { id: string; name: string; group: CategoryGroup } | null;
 };
