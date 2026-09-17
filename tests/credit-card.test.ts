@@ -1,8 +1,19 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createAccount } from "@/lib/server/accounts";
+import { createAccount, getAccountDetails } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
-import { getCreditCardOverview, createCreditCardCharge } from "@/lib/server/credit-card";
+import {
+  createCreditCardCharge,
+  deleteCreditCardCharge,
+  getCreditCardCharge,
+  getCreditCardOverview,
+  updateCreditCardCharge,
+} from "@/lib/server/credit-card";
+import {
+  createCreditCardBillPayment,
+  getCreditCardBill,
+  upsertCreditCardBill,
+} from "@/lib/server/credit-card-bills";
 import { createTransaction } from "@/lib/server/transactions";
 import { createTestDatabase } from "@/tests/helpers/database";
 
@@ -169,5 +180,135 @@ describe("credit card", () => {
     ]);
     expect(overview.invoice.futureInstallments).toHaveLength(2);
     expect(overview.invoice.futureInstallments[0]?.installments[0]?.invoiceMonth).toBe("2026-06");
+  });
+
+  it("supports idempotent creation, update, and deletion of purchases", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const card = await createAccount(
+      {
+        name: "CRUD Card",
+        type: "credit",
+        initialBalanceCents: 0,
+        creditClosingDay: 4,
+        creditDueDay: 10,
+      },
+      db
+    );
+    const category = await createCategory({ name: "CRUD Category", group: "variable_expense" }, db);
+
+    const input = {
+      accountId: card.id,
+      categoryId: category.id,
+      description: "Imported purchase",
+      purchaseDate: "2026-05-05",
+      totalAmountCents: 1000,
+      installmentCount: 2,
+      importFingerprint: "itau:crud:imported-purchase",
+    };
+    const created = await createCreditCardCharge(input, db);
+    const repeated = await createCreditCardCharge(input, db);
+
+    expect(repeated.id).toBe(created.id);
+    expect((await getCreditCardCharge(created.id, db)).installments).toHaveLength(2);
+
+    const updated = await updateCreditCardCharge(
+      {
+        id: created.id,
+        totalAmountCents: 1500,
+        installmentCount: 3,
+        description: "Updated purchase",
+      },
+      db
+    );
+
+    expect(updated.description).toBe("Updated purchase");
+    expect(updated.installments).toHaveLength(3);
+    expect(updated.installments.reduce((total, item) => total + item.amountCents, 0)).toBe(1500);
+
+    await deleteCreditCardCharge(created.id, db);
+    await expect(getCreditCardCharge(created.id, db)).rejects.toMatchObject({
+      code: "CREDIT_CARD_CHARGE_NOT_FOUND",
+    });
+  });
+
+  it("registers a payment, marks the bill paid, and prevents duplicate payments", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const card = await createAccount(
+      {
+        name: "Paid Card",
+        type: "credit",
+        initialBalanceCents: 0,
+        creditClosingDay: 4,
+        creditDueDay: 10,
+      },
+      db
+    );
+    const checking = await createAccount(
+      { name: "Payment Checking", type: "checking", initialBalanceCents: 20000 },
+      db
+    );
+    const category = await createCategory({ name: "Paid Category", group: "variable_expense" }, db);
+
+    const charge = await createCreditCardCharge(
+      {
+        accountId: card.id,
+        categoryId: category.id,
+        description: "Paid purchase",
+        purchaseDate: "2026-05-03",
+        totalAmountCents: 10000,
+        installmentCount: 1,
+      },
+      db
+    );
+    await upsertCreditCardBill(
+      {
+        accountId: card.id,
+        invoiceMonth: "2026-05",
+        dueDate: "2026-05-10",
+        statementTotalCents: 10000,
+        currentChargesTotalCents: 10000,
+      },
+      db
+    );
+
+    const payment = await createCreditCardBillPayment(
+      {
+        accountId: card.id,
+        invoiceMonth: "2026-05",
+        paymentAccountId: checking.id,
+        amountCents: 10000,
+        paymentDate: "2026-05-10",
+        idempotencyKey: "itau:2026-05:settlement",
+      },
+      db
+    );
+    const repeated = await createCreditCardBillPayment(
+      {
+        accountId: card.id,
+        invoiceMonth: "2026-05",
+        paymentAccountId: checking.id,
+        amountCents: 10000,
+        paymentDate: "2026-05-10",
+        idempotencyKey: "itau:2026-05:settlement",
+      },
+      db
+    );
+
+    expect(payment.idempotent).toBe(false);
+    expect(repeated.idempotent).toBe(true);
+    expect((await getCreditCardBill(card.id, "2026-05", db))?.status).toBe("paid");
+    expect((await getCreditCardBill(card.id, "2026-05", db))?.payments).toHaveLength(1);
+    expect((await getAccountDetails(checking.id, db)).currentBalanceCents).toBe(10000);
+
+    await expect(
+      updateCreditCardCharge({ id: charge.id, description: "Cannot edit paid purchase" }, db)
+    ).rejects.toMatchObject({ code: "CREDIT_CARD_CHARGE_BILL_PAID" });
+    await expect(deleteCreditCardCharge(charge.id, db)).rejects.toMatchObject({
+      code: "CREDIT_CARD_CHARGE_BILL_PAID",
+    });
   });
 });

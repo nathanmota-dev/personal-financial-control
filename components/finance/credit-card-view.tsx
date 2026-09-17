@@ -1,139 +1,39 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
+import type { ReactNode } from "react";
 
-import { createCreditCardChargeAction } from "@/app/actions/finance";
 import { CreditBudgetSummary } from "@/components/finance/credit-budget-summary";
+import { CreditCardChargeActions } from "@/components/finance/credit-card-charge-actions";
+import { CreditCardPurchaseDialog } from "@/components/finance/credit-card-purchase-dialog";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import {
   AccountSetupDialog,
   CategorySetupDialog,
-  SetupCallout,
 } from "@/components/finance/setup-dialogs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  extractErrorMessage,
   formatCurrency,
   formatDateLabel,
   formatMonthLabel,
-  moneyInputToCents,
 } from "@/lib/finance-ui";
+import type {
+  CreditCardCategoryOption,
+  CreditCardOverview,
+} from "@/lib/interfaces/credit-card";
 import { cn } from "@/lib/utils";
-
-type CategoryOption = {
-  id: string;
-  name: string;
-  group: "income" | "fixed_expense" | "variable_expense" | "investment";
-};
-
-type CreditCardOverview =
-  | {
-      state: "no_account";
-      month: string;
-    }
-  | {
-      state: "multiple_accounts";
-      month: string;
-      accounts: Array<{
-        id: string;
-        name: string;
-        creditClosingDay: number | null;
-        creditDueDay: number;
-      }>;
-    }
-  | {
-      state: "ready";
-      month: string;
-      needsConfiguration: boolean;
-      account: {
-        id: string;
-        name: string;
-        type: "checking" | "savings" | "cash" | "credit" | "investment";
-        initialBalanceCents: number;
-        creditClosingDay: number | null;
-        creditDueDay: number;
-      };
-      budgetSummary: {
-        incomeCents: number;
-        nonCardExpenseCents: number;
-        investmentContributionCents: number;
-        investmentWithdrawalCents: number;
-        availableForInvoiceCents: number;
-        invoiceTotalCents: number;
-        remainingAfterInvoiceCents: number;
-      };
-      invoice: {
-        totalAmountCents: number;
-        purchaseCount: number;
-        entries: Array<{
-          id: string;
-          source: "installment" | "legacy_transaction";
-          amountCents: number;
-          description: string;
-          expenseDate: string;
-          purchaseDate: string;
-          notes?: string | null;
-          installmentNumber?: number;
-          installmentCount?: number;
-          category: {
-            id: string;
-            name: string;
-            group: string;
-          } | null;
-        }>;
-        categoryTotals: Array<{
-          categoryId: string;
-          categoryName: string;
-          amountCents: number;
-          group: string;
-        }>;
-        futureInstallments: Array<{
-          id: string;
-          description: string;
-          purchaseDate: string;
-          totalAmountCents: number;
-          installmentCount: number;
-          remainingAmountCents: number;
-          category: {
-            id: string;
-            name: string;
-            group: string;
-          } | null;
-          installments: Array<{
-            id: string;
-            installmentNumber: number;
-            amountCents: number;
-            invoiceMonth: string;
-          }>;
-        }>;
-      };
-    };
 
 export function CreditCardView({
   overview,
   categories,
 }: {
   overview: CreditCardOverview;
-  categories: CategoryOption[];
+  categories: CreditCardCategoryOption[];
 }) {
   const expenseCategories = categories.filter(
     (category) =>
@@ -246,11 +146,17 @@ export function CreditCardView({
           <CardHeader>
             <CardTitle>Fatura do mês</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
+          <CardContent className="grid gap-4 md:grid-cols-4">
             <InvoiceMetric
               label="Valor total"
               value={formatCurrency(overview.invoice.totalAmountCents)}
               accent="text-cyan-300"
+            />
+            <InvoiceMetric
+              label="Status"
+              value={overview.invoice.bill?.status === "paid" ? "Paga" : "Em aberto"}
+              accent={overview.invoice.bill?.status === "paid" ? "text-emerald-300" : "text-amber-300"}
+              secondary={overview.invoice.bill?.paidAt ? `Paga em ${formatDateLabel(overview.invoice.bill.paidAt)}` : undefined}
             />
             <InvoiceMetric
               label="Compras lançadas"
@@ -311,7 +217,11 @@ export function CreditCardView({
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium text-slate-100">{entry.description}</p>
-                      {entry.installmentNumber && entry.installmentCount ? (
+                      {entry.kind === "adjustment" ? (
+                        <Badge variant="outline" className="border-rose-400/30 text-rose-300">
+                          Estorno
+                        </Badge>
+                      ) : entry.installmentNumber && entry.installmentCount ? (
                         <Badge variant="outline">
                           {entry.installmentNumber}/{entry.installmentCount}
                         </Badge>
@@ -327,7 +237,27 @@ export function CreditCardView({
                       <p className="mt-2 text-xs leading-5 text-slate-500">{entry.notes}</p>
                     ) : null}
                   </div>
-                  <p className="font-semibold text-cyan-300">{formatCurrency(entry.amountCents)}</p>
+                  <div className="flex items-center justify-between gap-3 md:flex-col md:items-end">
+                    <p className="font-semibold text-cyan-300">{formatCurrency(entry.amountCents)}</p>
+                    {entry.chargeId && entry.totalAmountCents ? (
+                      <CreditCardChargeActions
+                        accountId={overview.account.id}
+                        categories={expenseCategories}
+                        month={overview.month}
+                        charge={{
+                          id: entry.chargeId,
+                          accountId: overview.account.id,
+                          categoryId: entry.category?.id ?? "",
+                          description: entry.description,
+                          notes: entry.notes,
+                          purchaseDate: entry.purchaseDate,
+                          totalAmountCents: entry.totalAmountCents,
+                          installmentCount: entry.installmentCount ?? 1,
+                          kind: entry.kind,
+                        }}
+                      />
+                    ) : null}
+                  </div>
                 </div>
               ))
             ) : (
@@ -386,13 +316,31 @@ export function CreditCardView({
                       {formatDateLabel(charge.purchaseDate)}
                     </p>
                   </div>
-                  <div className="text-left md:text-right">
-                    <p className="font-semibold text-cyan-300">
-                      {formatCurrency(charge.remainingAmountCents)}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      Restante de {charge.installments.length} parcela(s)
-                    </p>
+                  <div className="flex items-center gap-3 text-left md:text-right">
+                    <div>
+                      <p className="font-semibold text-cyan-300">
+                        {formatCurrency(charge.remainingAmountCents)}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Restante de {charge.installments.length} parcela(s)
+                      </p>
+                    </div>
+                    <CreditCardChargeActions
+                      accountId={overview.account.id}
+                      categories={expenseCategories}
+                      month={overview.month}
+                      charge={{
+                        id: charge.id,
+                        accountId: overview.account.id,
+                        categoryId: charge.categoryId,
+                        description: charge.description,
+                        notes: charge.notes,
+                        purchaseDate: charge.purchaseDate,
+                        totalAmountCents: charge.totalAmountCents,
+                        installmentCount: charge.installmentCount,
+                        kind: charge.kind,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -429,7 +377,7 @@ function CreditCardActions({
 }: {
   month: string;
   accountId: string;
-  categories: CategoryOption[];
+  categories: CreditCardCategoryOption[];
   canCreatePurchase: boolean;
 }) {
   const pathname = usePathname();
@@ -467,104 +415,6 @@ function MonthOnlyAction({ month }: { month: string }) {
   return <MonthPickerField month={month} onMonthChange={(nextMonth) => { if (nextMonth) updateMonth(nextMonth); }} className="w-full sm:w-[240px]" />;
 }
 
-function CreditCardPurchaseDialog({
-  accountId,
-  categories,
-  month,
-  disabled,
-}: {
-  accountId: string;
-  categories: CategoryOption[];
-  month: string;
-  disabled?: boolean;
-}) {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
-  async function onSubmit(formData: FormData) {
-    try {
-      await createCreditCardChargeAction({
-        accountId,
-        categoryId: String(formData.get("categoryId")),
-        description: String(formData.get("description")),
-        notes: String(formData.get("notes") ?? ""),
-        purchaseDate: String(formData.get("purchaseDate")),
-        totalAmountCents: moneyInputToCents(String(formData.get("amount"))),
-        installmentCount: Number(formData.get("installmentCount")),
-      });
-
-      toast.success("Compra do cartão criada.");
-      setOpen(false);
-      router.refresh();
-    } catch (error) {
-      toast.error(extractErrorMessage(error));
-    }
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button disabled={disabled}>
-          <Plus className="size-4" />
-          Nova compra
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Nova compra no cartão</DialogTitle>
-          <DialogDescription>
-            O fechamento do cartão decide automaticamente em qual fatura a compra entra.
-          </DialogDescription>
-        </DialogHeader>
-        {categories.length ? (
-          <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <select
-                name="categoryId"
-                defaultValue={categories[0]?.id}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <Input name="purchaseDate" type="date" defaultValue={`${month}-01`} />
-              <Input name="amount" placeholder="0,00" />
-              <Input
-                name="installmentCount"
-                type="number"
-                min="1"
-                max="60"
-                defaultValue="1"
-                placeholder="Quantidade de parcelas"
-              />
-              <Input
-                name="description"
-                className="md:col-span-2"
-                placeholder="Descrição da compra"
-              />
-            </div>
-            <Textarea name="notes" defaultValue="" placeholder="Observações" />
-            <DialogFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending ? "Salvando..." : "Criar compra"}
-              </Button>
-            </DialogFooter>
-          </form>
-        ) : (
-          <SetupCallout
-            title="Sem categorias de despesa"
-            description="Crie uma categoria de gasto fixo ou variável antes de lançar compras no cartão."
-          />
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function InvoiceMetric({
   label,
   value,
@@ -592,7 +442,7 @@ function InlineSetupCard({
 }: {
   title: string;
   description: string;
-  action: React.ReactNode;
+  action: ReactNode;
 }) {
   return (
     <Card className="rounded-[1.75rem] border-sky-900/60 bg-sky-950/30">

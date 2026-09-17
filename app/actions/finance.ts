@@ -39,7 +39,11 @@ import {
   pauseRecurringTemplate,
   updateRecurringTemplate,
 } from "@/lib/server/recurring";
-import { createCreditCardCharge } from "@/lib/server/credit-card";
+import {
+  createCreditCardCharge,
+  deleteCreditCardCharge,
+  updateCreditCardCharge,
+} from "@/lib/server/credit-card";
 import { createTransaction, deleteTransaction, updateTransaction } from "@/lib/server/transactions";
 import { createTransfer } from "@/lib/server/transfers";
 import { DomainError } from "@/lib/server/errors";
@@ -184,6 +188,19 @@ export async function createCreditCardChargeAction(
   const result = await createCreditCardCharge(input);
   revalidateFinanceViews();
   return result;
+}
+
+export async function updateCreditCardChargeAction(
+  input: Parameters<typeof updateCreditCardCharge>[0]
+) {
+  const result = await updateCreditCardCharge(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function deleteCreditCardChargeAction(id: string) {
+  await deleteCreditCardCharge(id);
+  revalidateFinanceViews();
 }
 
 export async function createRecurringTemplateAction(

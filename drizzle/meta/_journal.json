@@ -71,6 +71,20 @@
       "when": 1789000000000,
       "tag": "0009_transaction_funding_links",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789700000000,
+      "tag": "0010_credit_card_billing",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789700001000,
+      "tag": "0011_credit_card_charge_kinds",
+      "breakpoints": true
     }
   ]
 }

@@ -44,6 +44,16 @@ export const transactionStatuses = [
   "cancelled",
 ] as const;
 
+export const creditCardBillStatuses = ["open", "paid"] as const;
+
+export const creditCardBillPaymentKinds = [
+  "pre_statement",
+  "settlement",
+  "unlinked",
+] as const;
+
+export const creditCardChargeKinds = ["purchase", "adjustment"] as const;
+
 export const recurringStatuses = ["active", "paused", "ended"] as const;
 
 export const goalCategories = [
@@ -300,7 +310,9 @@ export const creditCardCharges = sqliteTable(
       "credit_card_charges.total_amount_cents"
     ).notNull(),
     installmentCount: integer("installment_count").notNull(),
+    kind: text("kind", { enum: creditCardChargeKinds }).notNull().default("purchase"),
     firstInvoiceMonth: text("first_invoice_month").notNull(),
+    importFingerprint: text("import_fingerprint"),
     ...timestampColumns(),
   },
   (table) => [
@@ -308,9 +320,106 @@ export const creditCardCharges = sqliteTable(
     index("credit_card_charges_category_idx").on(table.categoryId),
     index("credit_card_charges_purchase_date_idx").on(table.purchaseDate),
     index("credit_card_charges_first_invoice_idx").on(table.firstInvoiceMonth),
+    uniqueIndex("credit_card_charges_import_fingerprint_unique").on(table.importFingerprint),
     check(
       "credit_card_charges_total_amount_cents_encrypted",
       sql`typeof(${table.totalAmountCents}) = 'text' AND ${table.totalAmountCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
+export const creditCardBills = sqliteTable(
+  "credit_card_bills",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    accountId: text("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "restrict" }),
+    invoiceMonth: text("invoice_month").notNull(),
+    dueDate: text("due_date").notNull(),
+    statementTotalCents: encryptedMoneyColumn(
+      "statement_total_cents",
+      "credit_card_bills.statement_total_cents"
+    ).notNull(),
+    currentChargesTotalCents: encryptedMoneyColumn(
+      "current_charges_total_cents",
+      "credit_card_bills.current_charges_total_cents"
+    ).notNull(),
+    priorBalanceCents: encryptedMoneyColumn(
+      "prior_balance_cents",
+      "credit_card_bills.prior_balance_cents"
+    ).notNull(),
+    preStatementPaymentsCents: encryptedMoneyColumn(
+      "pre_statement_payments_cents",
+      "credit_card_bills.pre_statement_payments_cents"
+    ).notNull(),
+    ignoredAmountCents: encryptedMoneyColumn(
+      "ignored_amount_cents",
+      "credit_card_bills.ignored_amount_cents"
+    ).notNull(),
+    status: text("status", { enum: creditCardBillStatuses }).notNull().default("open"),
+    paidAt: text("paid_at"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("credit_card_bills_account_month_unique").on(
+      table.accountId,
+      table.invoiceMonth
+    ),
+    index("credit_card_bills_account_idx").on(table.accountId),
+    index("credit_card_bills_status_idx").on(table.status),
+    check(
+      "credit_card_bills_statement_total_cents_encrypted",
+      sql`typeof(${table.statementTotalCents}) = 'text' AND ${table.statementTotalCents} LIKE 'pfc:v1:%'`
+    ),
+    check(
+      "credit_card_bills_current_charges_total_cents_encrypted",
+      sql`typeof(${table.currentChargesTotalCents}) = 'text' AND ${table.currentChargesTotalCents} LIKE 'pfc:v1:%'`
+    ),
+    check(
+      "credit_card_bills_prior_balance_cents_encrypted",
+      sql`typeof(${table.priorBalanceCents}) = 'text' AND ${table.priorBalanceCents} LIKE 'pfc:v1:%'`
+    ),
+    check(
+      "credit_card_bills_pre_statement_payments_cents_encrypted",
+      sql`typeof(${table.preStatementPaymentsCents}) = 'text' AND ${table.preStatementPaymentsCents} LIKE 'pfc:v1:%'`
+    ),
+    check(
+      "credit_card_bills_ignored_amount_cents_encrypted",
+      sql`typeof(${table.ignoredAmountCents}) = 'text' AND ${table.ignoredAmountCents} LIKE 'pfc:v1:%'`
+    ),
+  ]
+);
+
+export const creditCardBillPayments = sqliteTable(
+  "credit_card_bill_payments",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    billId: text("bill_id").references(() => creditCardBills.id, { onDelete: "set null" }),
+    transactionId: text("transaction_id")
+      .notNull()
+      .references(() => transactions.id, { onDelete: "cascade" }),
+    paymentDate: text("payment_date").notNull(),
+    amountCents: encryptedMoneyColumn(
+      "amount_cents",
+      "credit_card_bill_payments.amount_cents"
+    ).notNull(),
+    kind: text("kind", { enum: creditCardBillPaymentKinds }).notNull(),
+    idempotencyKey: text("idempotency_key").notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("credit_card_bill_payments_transaction_unique").on(table.transactionId),
+    uniqueIndex("credit_card_bill_payments_idempotency_unique").on(table.idempotencyKey),
+    index("credit_card_bill_payments_bill_idx").on(table.billId),
+    index("credit_card_bill_payments_date_idx").on(table.paymentDate),
+    check(
+      "credit_card_bill_payments_amount_cents_encrypted",
+      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
     ),
   ]
 );
@@ -763,6 +872,28 @@ export const creditCardChargesRelations = relations(creditCardCharges, ({ one, m
   installments: many(creditCardInstallments),
 }));
 
+export const creditCardBillsRelations = relations(creditCardBills, ({ one, many }) => ({
+  account: one(accounts, {
+    fields: [creditCardBills.accountId],
+    references: [accounts.id],
+  }),
+  payments: many(creditCardBillPayments),
+}));
+
+export const creditCardBillPaymentsRelations = relations(
+  creditCardBillPayments,
+  ({ one }) => ({
+    bill: one(creditCardBills, {
+      fields: [creditCardBillPayments.billId],
+      references: [creditCardBills.id],
+    }),
+    transaction: one(transactions, {
+      fields: [creditCardBillPayments.transactionId],
+      references: [transactions.id],
+    }),
+  })
+);
+
 export const creditCardInstallmentsRelations = relations(
   creditCardInstallments,
   ({ one }) => ({
@@ -782,6 +913,9 @@ export type InvestmentReductionSourceType = (typeof investmentReductionSourceTyp
 export type InvestmentReductionStatus = (typeof investmentReductionStatuses)[number];
 export type TransactionFundingLinkType = (typeof transactionFundingLinkTypes)[number];
 export type TransactionStatus = (typeof transactionStatuses)[number];
+export type CreditCardBillStatus = (typeof creditCardBillStatuses)[number];
+export type CreditCardBillPaymentKind = (typeof creditCardBillPaymentKinds)[number];
+export type CreditCardChargeKind = (typeof creditCardChargeKinds)[number];
 export type RecurringStatus = (typeof recurringStatuses)[number];
 export type GoalCategory = (typeof goalCategories)[number];
 export type GoalStatus = (typeof goalStatuses)[number];
