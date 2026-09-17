@@ -116,7 +116,7 @@ export function AccountSetupDialog({
             name="type"
             value={selectedAccountType}
             onChange={(event) => setSelectedAccountType(event.target.value as AccountRow["type"])}
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
+            className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
           >
             {Object.entries(accountTypeLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -213,7 +213,7 @@ export function CategorySetupDialog({
           <select
             name="group"
             defaultValue={category?.group ?? "variable_expense"}
-            className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
+            className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
           >
             {Object.entries(categoryGroupLabels).map(([value, label]) => (
               <option key={value} value={value}>
@@ -240,9 +240,9 @@ export function SetupCallout({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-sky-900/60 bg-sky-950/40 p-4 text-sm text-slate-300">
-      <p className="font-medium text-slate-100">{title}</p>
-      <p className="mt-1 leading-6 text-slate-400">{description}</p>
+    <div className="rounded-2xl border border-brand/60 bg-brand/40 p-4 text-sm text-content">
+      <p className="font-medium text-content-strong">{title}</p>
+      <p className="mt-1 leading-6 text-content">{description}</p>
       <div className="mt-4 flex flex-wrap gap-2">
         <AccountSetupDialog
           trigger={

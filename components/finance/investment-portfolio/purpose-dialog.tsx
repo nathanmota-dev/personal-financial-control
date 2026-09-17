@@ -32,10 +32,10 @@ export function PurposeDialog({
 }: PurposeDialogProps) {
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-lg">
+      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{state?.mode === "edit" ? "Editar caixinha" : "Nova caixinha"}</DialogTitle>
-          <DialogDescription className="leading-6 text-slate-400">
+          <DialogDescription className="leading-6 text-content">
             Caixinhas representam finalidades patrimoniais. Para prazos e aportes futuros, use
             Metas.
           </DialogDescription>
@@ -65,11 +65,11 @@ export function PurposeDialog({
               >
                 <SelectTrigger
                   id="purpose-color"
-                  className="w-full border-slate-700 bg-slate-900/60"
+                  className="w-full border-input bg-surface-raised/60"
                 >
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-800 bg-slate-950 text-slate-100">
+                <SelectContent className="border-border bg-surface text-content-strong">
                   {Object.entries(investmentPurposeColorOptions).map(([key, option]) => (
                     <SelectItem key={key} value={option.value}>
                       <span className="flex items-center gap-2">

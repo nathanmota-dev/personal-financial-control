@@ -46,14 +46,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const recurringFieldClassName =
-  "h-11 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+  "h-11 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const recurringSelectTriggerClassName =
-  "h-11 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20 data-[state=open]:border-slate-600 data-[state=open]:bg-slate-900";
+  "h-11 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
 const recurringSelectContentClassName =
-  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
 const recurringSelectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
-const recurringFieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-slate-400";
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
+const recurringFieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-content";
 
 function compatibleCategories(
   categories: RecurringDialogProps["categories"],
@@ -225,12 +225,12 @@ export function RecurringDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-slate-800 bg-slate-950/95 sm:max-w-2xl">
-        <DialogHeader className="border-b border-slate-800 pb-5">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-cyan-300">
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-surface/95 sm:max-w-2xl">
+        <DialogHeader className="border-b border-border pb-5">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-brand">
             Agenda financeira
           </p>
-          <DialogTitle className="text-2xl text-slate-50">
+          <DialogTitle className="text-2xl text-content-strong">
             {template ? "Editar recorrência" : "Nova recorrência"}
           </DialogTitle>
           <DialogDescription>
@@ -243,7 +243,7 @@ export function RecurringDialog({
             action={(formData) => startTransition(() => void onSubmit(formData))}
             className="grid gap-5"
           >
-            <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-4 shadow-[inset_0_1px_0_rgba(103,232,249,0.08)]">
+            <div className="rounded-2xl border border-brand/20 bg-brand/[0.06] p-4 shadow-[inset_0_1px_0_rgb(var(--brand-rgb) / .08)]">
               <Label htmlFor={`${formId}-name`} className={recurringFieldLabelClassName}>
                 Nome da recorrência
               </Label>
@@ -254,9 +254,9 @@ export function RecurringDialog({
                 required
                 defaultValue={template?.description ?? ""}
                 placeholder="Ex.: aluguel, academia ou salário"
-                className={cn(recurringFieldClassName, "mt-2 h-12 border-cyan-400/30 bg-slate-950/70 text-base")}
+                className={cn(recurringFieldClassName, "mt-2 h-12 border-brand/30 bg-surface/70 text-base")}
               />
-              <p className="mt-2 text-xs leading-5 text-slate-500">
+              <p className="mt-2 text-xs leading-5 text-content-strong0">
                 Este nome identifica a regra e os lançamentos gerados por ela.
               </p>
             </div>
@@ -285,7 +285,7 @@ export function RecurringDialog({
                 {template?.status === "ended" ? (
                   <>
                     <input type="hidden" name="status" value="ended" />
-                    <div className={cn(recurringFieldClassName, "flex items-center px-4 text-slate-400")}>
+                    <div className={cn(recurringFieldClassName, "flex items-center px-4 text-content")}>
                       Encerrada (registro antigo)
                     </div>
                   </>
@@ -340,7 +340,7 @@ export function RecurringDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-content-strong0">
                   {selectedType === "income" ? "Receitas começam em Salário." : selectedType === "investment_contribution" ? "Aportes começam em Investimentos." : "Despesas começam em Outros."}
                 </p>
               </div>
@@ -348,7 +348,7 @@ export function RecurringDialog({
               <div className="space-y-2">
                 <Label htmlFor={`${formId}-amount`} className={recurringFieldLabelClassName}>Valor da recorrência</Label>
                 <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-semibold text-slate-400">R$</span>
+                  <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-semibold text-content">R$</span>
                   <Input
                     id={`${formId}-amount`}
                     name="amount"
@@ -377,7 +377,7 @@ export function RecurringDialog({
                   placeholder="Ex.: 5"
                   className={recurringFieldClassName}
                 />
-                <p className="text-xs text-slate-500">Em meses menores, usamos o último dia disponível.</p>
+                <p className="text-xs text-content-strong0">Em meses menores, usamos o último dia disponível.</p>
               </div>
 
               <div className="space-y-2">
@@ -394,7 +394,7 @@ export function RecurringDialog({
 
               <div className="space-y-2">
                 <Label htmlFor={`${formId}-end-month`} className={recurringFieldLabelClassName}>
-                  Mês de encerramento <span className="normal-case tracking-normal text-slate-600">(opcional)</span>
+                  Mês de encerramento <span className="normal-case tracking-normal text-content-subtle">(opcional)</span>
                 </Label>
                 <MonthPickerField
                   id={`${formId}-end-month`}
@@ -407,7 +407,7 @@ export function RecurringDialog({
               </div>
             </div>
 
-            {formError ? <p className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-4 py-3 text-sm text-rose-200" role="alert">{formError}</p> : null}
+            {formError ? <p className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">{formError}</p> : null}
 
             <DialogFooter>
               <Button type="submit" disabled={isPending} className="min-w-40">

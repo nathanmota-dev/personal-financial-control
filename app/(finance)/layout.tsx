@@ -10,7 +10,7 @@ export default async function FinanceLayout({ children }: { children: React.Reac
 
   return (
     <Suspense
-      fallback={<div className="min-h-screen bg-slate-950 text-slate-100">{children}</div>}
+      fallback={<div className="min-h-screen bg-surface text-content-strong">{children}</div>}
     >
       <AppShell demoMode={demoMode}>{children}</AppShell>
     </Suspense>

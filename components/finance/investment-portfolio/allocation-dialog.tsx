@@ -38,10 +38,10 @@ export function AllocationDialog({
 }: AllocationDialogProps) {
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-slate-800 bg-slate-950 text-slate-100 sm:max-w-xl">
+      <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-border bg-surface text-content-strong sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isExisting ? "Editar alocação" : "Alocar ativo"}</DialogTitle>
-          <DialogDescription className="leading-6 text-slate-400">
+          <DialogDescription className="leading-6 text-content">
             Divida uma posição entre finalidades sem alterar o valor do ativo, os aportes ou as
             transações da conta.
           </DialogDescription>
@@ -60,10 +60,10 @@ export function AllocationDialog({
               onValueChange={onHoldingChange}
               disabled={isExisting}
             >
-              <SelectTrigger id="allocation-holding" className="w-full border-slate-700 bg-slate-900/60">
+              <SelectTrigger id="allocation-holding" className="w-full border-input bg-surface-raised/60">
                 <SelectValue placeholder="Selecione um ativo" />
               </SelectTrigger>
-              <SelectContent className="border-slate-800 bg-slate-950 text-slate-100">
+              <SelectContent className="border-border bg-surface text-content-strong">
                 {holdings.map((holding) => (
                   <SelectItem key={holding.id} value={holding.id}>
                     {holding.name} · {formatCurrency(holding.currentValueCents)}
@@ -81,10 +81,10 @@ export function AllocationDialog({
               }
               disabled={isExisting}
             >
-              <SelectTrigger id="allocation-purpose" className="w-full border-slate-700 bg-slate-900/60">
+              <SelectTrigger id="allocation-purpose" className="w-full border-input bg-surface-raised/60">
                 <SelectValue placeholder="Selecione uma finalidade" />
               </SelectTrigger>
-              <SelectContent className="border-slate-800 bg-slate-950 text-slate-100">
+              <SelectContent className="border-border bg-surface text-content-strong">
                 {purposes.map((purpose) => (
                   <SelectItem key={purpose.id} value={purpose.id}>
                     {purpose.name}
@@ -119,14 +119,14 @@ export function AllocationDialog({
             </PortfolioField>
           </div>
 
-          <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.06] px-4 py-3 text-sm">
+          <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-sm">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-400">Valor ainda livre neste ativo</span>
-              <strong className="font-heading text-lg text-cyan-200">
+              <span className="text-content">Valor ainda livre neste ativo</span>
+              <strong className="font-heading text-lg text-brand">
                 {formatCurrency(Math.max(availableCents, 0))}
               </strong>
             </div>
-            <p className="mt-1 text-xs leading-5 text-slate-500">
+            <p className="mt-1 text-xs leading-5 text-content-strong0">
               O valor disponível considera as outras caixinhas deste ativo.
             </p>
           </div>

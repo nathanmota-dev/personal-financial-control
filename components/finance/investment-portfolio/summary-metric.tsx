@@ -4,23 +4,23 @@ import { cn } from "@/lib/utils";
 
 export function SummaryMetric({ label, value, detail, icon, tone }: SummaryMetricProps) {
   const toneClassName = {
-    cyan: "border-cyan-400/15 bg-cyan-400/8 text-cyan-200",
-    sky: "border-sky-400/15 bg-sky-400/8 text-sky-200",
-    teal: "border-teal-400/15 bg-teal-400/8 text-teal-200",
-    amber: "border-amber-400/15 bg-amber-400/8 text-amber-200",
+    cyan: "border-brand/15 bg-brand/8 text-brand",
+    sky: "border-brand/15 bg-brand/8 text-brand",
+    teal: "border-warning/15 bg-warning/8 text-warning",
+    amber: "border-warning/15 bg-warning/8 text-warning",
   }[tone];
 
   return (
-    <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.5rem] border-border bg-surface/75">
       <CardContent className="space-y-3 pt-4">
         <div className={cn("inline-flex rounded-full border p-2", toneClassName)}>{icon}</div>
         <div>
-          <p className="text-sm text-slate-400">{label}</p>
-          <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-slate-100">
+          <p className="text-sm text-content">{label}</p>
+          <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-content-strong">
             {value}
           </p>
         </div>
-        <p className="text-sm leading-6 text-slate-400">{detail}</p>
+        <p className="text-sm leading-6 text-content">{detail}</p>
       </CardContent>
     </Card>
   );

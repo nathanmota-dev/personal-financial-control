@@ -12,7 +12,7 @@ export function InvestmentField({
 }: InvestmentFieldProps) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-slate-200">
+      <Label htmlFor={id} className="text-content-strong">
         {label}
       </Label>
       <Input

@@ -41,6 +41,22 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-content: var(--content);
+  --color-content-strong: var(--content-strong);
+  --color-content-muted: var(--content-muted);
+  --color-content-subtle: var(--content-subtle);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -58,29 +74,64 @@
     "IBM Plex Mono", "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
   --font-heading:
     "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Georgia", serif;
-  --background: oklch(0.17 0.03 255);
+  /* Application palette: change these values to retheme the whole interface. */
+  --brand: oklch(0.72 0.12 225);
+  --brand-soft: oklch(0.3 0.05 225);
+  --brand-strong: oklch(0.62 0.16 235);
+  --surface: oklch(0.17 0.03 255);
+  --surface-raised: oklch(0.2 0.03 252);
+  --surface-elevated: oklch(0.25 0.03 252);
+  --content: oklch(0.73 0.02 240);
+  --content-strong: oklch(0.86 0.01 240);
+  --content-muted: oklch(0.58 0.02 240);
+  --content-subtle: oklch(0.46 0.02 240);
+  --success: oklch(0.76 0.14 171);
+  --success-soft: oklch(0.3 0.06 171);
+  --warning: oklch(0.8 0.15 85);
+  --warning-soft: oklch(0.35 0.06 75);
+  --danger: oklch(0.72 0.16 20);
+  --danger-soft: oklch(0.34 0.08 20);
+  --surface-rgb: 2 6 23;
+  --surface-raised-rgb: 15 23 42;
+  --surface-border-rgb: 30 41 59;
+  --brand-rgb: 56 189 248;
+  --brand-deep-rgb: 37 99 235;
+  --content-rgb: 148 163 184;
+  --content-strong-rgb: 226 232 240;
+  --content-muted-rgb: 100 116 139;
+  --content-subtle-rgb: 71 85 105;
+  --success-rgb: 20 184 166;
+  --warning-rgb: 120 53 15;
+  --chart-brand: var(--brand);
+  --chart-success: var(--success);
+  --chart-warning: var(--warning);
+  --chart-danger: var(--danger);
+  --chart-neutral: var(--content-muted);
+  --app-shell-gradient: radial-gradient(circle at top left, rgb(var(--brand-rgb) / 0.16), transparent 24%), radial-gradient(circle at bottom right, rgb(var(--brand-deep-rgb) / 0.18), transparent 20%), linear-gradient(180deg, var(--surface) 0%, oklch(0.2 0.04 250) 48%, oklch(0.24 0.05 245) 100%);
+  --sidebar-shell-gradient: linear-gradient(180deg, rgb(var(--surface-rgb) / 0.95) 0%, oklch(0.24 0.06 245 / 0.96) 100%);
+  --background: var(--surface);
   --foreground: oklch(0.96 0.01 240);
-  --card: oklch(0.22 0.03 252);
+  --card: var(--surface-raised);
   --card-foreground: oklch(0.96 0.01 240);
-  --popover: oklch(0.2 0.03 252);
+  --popover: var(--surface-raised);
   --popover-foreground: oklch(0.96 0.01 240);
-  --primary: oklch(0.72 0.12 225);
+  --primary: var(--brand);
   --primary-foreground: oklch(0.16 0.03 252);
-  --secondary: oklch(0.28 0.03 252);
+  --secondary: var(--surface-elevated);
   --secondary-foreground: oklch(0.96 0.01 240);
-  --muted: oklch(0.25 0.03 252);
-  --muted-foreground: oklch(0.73 0.02 240);
-  --accent: oklch(0.3 0.05 225);
+  --muted: var(--surface-elevated);
+  --muted-foreground: var(--content);
+  --accent: var(--brand-soft);
   --accent-foreground: oklch(0.97 0.01 240);
-  --destructive: oklch(0.6 0.19 25);
+  --destructive: var(--danger);
   --border: oklch(0.31 0.03 252);
   --input: oklch(0.31 0.03 252);
-  --ring: oklch(0.65 0.1 220);
-  --chart-1: oklch(0.73 0.12 220);
-  --chart-2: oklch(0.66 0.11 196);
-  --chart-3: oklch(0.61 0.09 250);
-  --chart-4: oklch(0.55 0.08 235);
-  --chart-5: oklch(0.8 0.1 180);
+  --ring: var(--brand-strong);
+  --chart-1: var(--brand);
+  --chart-2: var(--success);
+  --chart-3: var(--brand-strong);
+  --chart-4: var(--brand-soft);
+  --chart-5: var(--warning);
   --radius: 0.9rem;
   --sidebar: oklch(0.18 0.03 247.86);
   --sidebar-foreground: oklch(0.98 0.004 95.1);
@@ -106,7 +157,7 @@
     @apply font-sans;
   }
   ::selection {
-    @apply bg-sky-400/40 text-slate-50;
+    @apply bg-brand/40 text-content-strong;
   }
 }
 
@@ -114,11 +165,19 @@
   .font-heading {
     font-family: var(--font-heading), serif;
   }
+
+  .bg-app-shell {
+    background: var(--app-shell-gradient);
+  }
+
+  .bg-sidebar-shell {
+    background: var(--sidebar-shell-gradient);
+  }
 }
 
-.recurring-calendar .rc-bg-white,
-.finance-monthly-calendar .rc-bg-white {
-  background-color: rgba(2, 6, 23, 0.72);
+.recurring-calendar .rc-bg-content-strong,
+.finance-monthly-calendar .rc-bg-content-strong {
+  background-color: rgb(var(--surface-rgb) / .72);
 }
 
 .recurring-calendar .rc-border-l-2,
@@ -129,28 +188,28 @@
 .finance-monthly-calendar .rc-border-t-2,
 .finance-monthly-calendar .rc-border-r-2,
 .finance-monthly-calendar .rc-border-b-2 {
-  border-color: rgba(30, 41, 59, 0.82);
+  border-color: rgb(var(--surface-border-rgb) / .82);
   border-width: 1px;
 }
 
 .recurring-calendar .rc-font-bold,
 .finance-monthly-calendar .rc-font-bold {
-  color: rgb(226, 232, 240);
+  color: rgb(var(--content-strong-rgb));
 }
 
-.recurring-calendar .rc-text-gray-500,
-.finance-monthly-calendar .rc-text-gray-500 {
-  color: rgb(100, 116, 139);
+.recurring-calendar .rc-text-content-muted,
+.finance-monthly-calendar .rc-text-content-muted {
+  color: rgb(var(--content-muted-rgb));
 }
 
 .recurring-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]),
 .finance-monthly-calendar .rc-divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(30, 41, 59, 0.72);
+  border-color: rgb(var(--surface-border-rgb) / .72);
 }
 
 .recurring-calendar .rc-overflow-y-auto,
 .finance-monthly-calendar .rc-overflow-y-auto {
-  scrollbar-color: rgba(71, 85, 105, 0.7) transparent;
+  scrollbar-color: rgb(var(--content-subtle-rgb) / .7) transparent;
   scrollbar-width: thin;
 }
 
@@ -162,5 +221,5 @@
 .recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb,
 .finance-monthly-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(71, 85, 105, 0.7);
+  background: rgb(var(--content-subtle-rgb) / .7);
 }

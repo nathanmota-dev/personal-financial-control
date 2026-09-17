@@ -72,8 +72,8 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
               className={cn(
                 "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
                 parentActive
-                  ? "border-cyan-200/70 bg-cyan-300 text-slate-950 shadow-lg"
-                  : "border-slate-800/60 text-slate-300 hover:border-sky-400/30 hover:bg-sky-400/10 hover:text-white"
+                  ? "border-brand/70 bg-brand text-background shadow-lg"
+                  : "border-border/60 text-content hover:border-brand/30 hover:bg-brand/10 hover:text-content-strong"
               )}
             >
               <span className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
             </Link>
 
             {item.children ? (
-              <div className="relative ml-5 space-y-1 pl-3 before:pointer-events-none before:absolute before:-top-1.5 before:bottom-4 before:left-0 before:border-l before:border-slate-800/90 before:content-['']">
+              <div className="relative ml-5 space-y-1 pl-3 before:pointer-events-none before:absolute before:-top-1.5 before:bottom-4 before:left-0 before:border-l before:border-border/90 before:content-['']">
                 {item.children.map((child) => {
                   const childActive = pathname === child.href;
 
@@ -98,10 +98,10 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
                       key={child.href}
                       href={buildNavigationHref(child.href)}
                       className={cn(
-                        "relative flex items-center justify-between rounded-xl px-3 py-2 text-xs transition before:pointer-events-none before:absolute before:-left-3 before:top-0 before:h-1/2 before:w-3 before:rounded-bl-xl before:border-b before:border-l before:border-slate-800/90 before:content-['']",
+                        "relative flex items-center justify-between rounded-xl px-3 py-2 text-xs transition before:pointer-events-none before:absolute before:-left-3 before:top-0 before:h-1/2 before:w-3 before:rounded-bl-xl before:border-b before:border-l before:border-border/90 before:content-['']",
                         childActive
-                          ? "bg-cyan-300/12 font-semibold text-cyan-200"
-                          : "text-slate-500 hover:bg-sky-400/8 hover:text-slate-200"
+                          ? "bg-brand/12 font-semibold text-brand"
+                          : "text-content-strong0 hover:bg-brand/8 hover:text-content-strong"
                       )}
                     >
                       <span>{child.label}</span>

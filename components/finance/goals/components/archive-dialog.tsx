@@ -20,14 +20,14 @@ export function ArchiveDialog({
 }: ArchiveDialogProps) {
   return (
     <Dialog open={Boolean(goal)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-md">
+      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Arquivar meta</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-content">
             {goal?.name ?? "Meta"}
           </DialogDescription>
         </DialogHeader>
-        <p className="text-sm leading-6 text-slate-300">
+        <p className="text-sm leading-6 text-content">
           A meta sai dos cards e gráficos principais. O histórico permanece
           preservado para consulta.
         </p>

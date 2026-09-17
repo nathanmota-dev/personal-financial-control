@@ -70,15 +70,15 @@ export function InvestmentReductionDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[min(92vh,760px)] overflow-hidden border-cyan-400/15 bg-slate-950 text-slate-100 shadow-[0_30px_100px_rgba(2,6,23,0.72)] sm:max-w-2xl">
+      <DialogContent className="max-h-[min(92vh,760px)] overflow-hidden border-brand/15 bg-surface text-content-strong shadow-[0_30px_100px_rgb(var(--surface-rgb) / .72)] sm:max-w-2xl">
         <DialogHeader className="pr-8">
           <div className="flex items-start gap-3">
-            <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200">
+            <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand">
               <ArrowDownRight className="size-5" />
             </div>
             <div>
-              <DialogTitle className="text-xl tracking-tight text-slate-50">{title}</DialogTitle>
-              <DialogDescription className="mt-2 leading-6 text-slate-400">
+              <DialogTitle className="text-xl tracking-tight text-content-strong">{title}</DialogTitle>
+              <DialogDescription className="mt-2 leading-6 text-content">
                 {description}
               </DialogDescription>
             </div>
@@ -86,18 +86,18 @@ export function InvestmentReductionDialog({
         </DialogHeader>
 
         <div className="grid min-h-0 gap-4 overflow-y-auto pr-1">
-          <div className="grid gap-3 rounded-[1.4rem] border border-cyan-300/15 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.14),transparent_55%),rgba(15,23,42,0.72)] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div className="grid gap-3 rounded-[1.4rem] border border-brand/15 bg-[radial-gradient(circle_at_top_right,rgb(var(--brand-rgb) / .14),transparent_55%),rgb(var(--surface-raised-rgb) / .72)] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
             <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-cyan-200/70">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-brand/70">
                 Redução a distribuir
               </p>
-              <p className="mt-1 font-heading text-3xl font-semibold tracking-tight text-cyan-200">
+              <p className="mt-1 font-heading text-3xl font-semibold tracking-tight text-brand">
                 {formatCurrency(amountCents)}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-700/80 bg-slate-950/60 px-3 py-2 text-right">
-              <p className="text-xs text-slate-500">Selecionado</p>
-              <p className="mt-1 font-semibold text-slate-100">{formatCurrency(selectedCents)}</p>
+            <div className="rounded-xl border border-input/80 bg-surface/60 px-3 py-2 text-right">
+              <p className="text-xs text-content-strong0">Selecionado</p>
+              <p className="mt-1 font-semibold text-content-strong">{formatCurrency(selectedCents)}</p>
             </div>
           </div>
 
@@ -105,8 +105,8 @@ export function InvestmentReductionDialog({
             groupedSources.map((group) => (
               <section key={group.label} className="space-y-2">
                 <div className="flex items-center gap-2 px-1">
-                  <Layers3 className="size-4 text-slate-500" />
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  <Layers3 className="size-4 text-content-strong0" />
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-content">
                     {group.label}
                   </h3>
                 </div>
@@ -121,25 +121,25 @@ export function InvestmentReductionDialog({
                         className={cn(
                           "grid gap-3 rounded-2xl border px-3 py-3 transition-colors sm:grid-cols-[minmax(0,1fr)_150px] sm:items-center",
                           selectedSourceCents > 0 && !exceedsAvailable
-                            ? "border-cyan-300/30 bg-cyan-300/[0.07]"
-                            : "border-slate-800 bg-slate-900/50",
-                          exceedsAvailable && "border-rose-400/40 bg-rose-400/[0.06]"
+                            ? "border-brand/30 bg-brand/[0.07]"
+                            : "border-border bg-surface-raised/50",
+                          exceedsAvailable && "border-danger/40 bg-danger/[0.06]"
                         )}
                       >
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="truncate font-medium text-slate-100">{source.label}</p>
+                            <p className="truncate font-medium text-content-strong">{source.label}</p>
                             {selectedSourceCents > 0 && !exceedsAvailable ? (
-                              <Check className="size-4 shrink-0 text-cyan-300" />
+                              <Check className="size-4 shrink-0 text-brand" />
                             ) : null}
                           </div>
-                          <p className="mt-1 text-xs leading-5 text-slate-500">{source.description}</p>
-                          <p className="mt-1 text-xs text-slate-400">
+                          <p className="mt-1 text-xs leading-5 text-content-strong0">{source.description}</p>
+                          <p className="mt-1 text-xs text-content">
                             Disponível: {formatCurrency(source.availableCents)}
                           </p>
                         </div>
                         <div className="space-y-1.5">
-                          <Label htmlFor={`reduction-${source.id}`} className="text-xs text-slate-400">
+                          <Label htmlFor={`reduction-${source.id}`} className="text-xs text-content">
                             Quanto reduzir
                           </Label>
                           <Input
@@ -149,10 +149,10 @@ export function InvestmentReductionDialog({
                             onChange={(event) => changeAmount(source, event.target.value)}
                             placeholder="0,00"
                             aria-invalid={exceedsAvailable}
-                            className="h-10 border-slate-700 bg-slate-950/80 text-right text-slate-100 placeholder:text-slate-600"
+                            className="h-10 border-input bg-surface/80 text-right text-content-strong placeholder:text-content-subtle"
                           />
                           {exceedsAvailable ? (
-                            <p className="text-right text-[0.68rem] text-rose-300">Acima do disponível</p>
+                            <p className="text-right text-[0.68rem] text-danger">Acima do disponível</p>
                           ) : null}
                         </div>
                       </div>
@@ -162,7 +162,7 @@ export function InvestmentReductionDialog({
               </section>
             ))
           ) : (
-            <div className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.07] p-4 text-sm leading-6 text-amber-100">
+            <div className="rounded-2xl border border-warning/20 bg-warning/[0.07] p-4 text-sm leading-6 text-warning">
               Não há uma fonte cadastrada para esta redução. Atualize o patrimônio ou escolha o
               patrimônio não cadastrado quando essa opção estiver disponível.
             </div>
@@ -172,16 +172,16 @@ export function InvestmentReductionDialog({
             className={cn(
               "flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm",
               isClosed
-                ? "border-emerald-300/20 bg-emerald-300/[0.06] text-emerald-100"
+                ? "border-warning/20 bg-warning/[0.06] text-warning"
                 : remainingCents > 0
-                  ? "border-amber-300/20 bg-amber-300/[0.06] text-amber-100"
-                  : "border-rose-300/20 bg-rose-300/[0.06] text-rose-100"
+                  ? "border-warning/20 bg-warning/[0.06] text-warning"
+                  : "border-danger/20 bg-danger/[0.06] text-danger"
             )}
           >
             {isClosed ? (
-              <CircleDollarSign className="mt-0.5 size-4 shrink-0 text-emerald-300" />
+              <CircleDollarSign className="mt-0.5 size-4 shrink-0 text-warning" />
             ) : (
-              <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />
+              <ShieldAlert className="mt-0.5 size-4 shrink-0 text-warning" />
             )}
             <div>
               <p className="font-medium">
@@ -196,7 +196,7 @@ export function InvestmentReductionDialog({
           </div>
         </div>
 
-        <DialogFooter className="border-t border-slate-800/80 pt-4">
+        <DialogFooter className="border-t border-border/80 pt-4">
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isPending}>
             Cancelar
           </Button>

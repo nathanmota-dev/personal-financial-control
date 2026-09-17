@@ -60,7 +60,7 @@ export function RecurringView({
         <RecurringSegmentedControl />
 
         <TabsContent value="recurring" className="mt-0">
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+          <Card className="rounded-[1.75rem] border-border bg-surface/75">
             <CardHeader>
               <CardTitle>Recorrências cadastradas</CardTitle>
             </CardHeader>
@@ -71,7 +71,7 @@ export function RecurringView({
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                       <div className="space-y-3">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-heading text-xl font-semibold text-slate-100">
+                          <h3 className="font-heading text-xl font-semibold text-content-strong">
                             {template.description}
                           </h3>
                           <Badge className={cn("ring-1", getStatusTone(template.status))}>
@@ -79,7 +79,7 @@ export function RecurringView({
                           </Badge>
                           <Badge variant="outline">{transactionTypeLabels[template.type]}</Badge>
                         </div>
-                        <div className={cn(financeItemClassName, "grid gap-2 p-3 text-sm text-slate-400 md:grid-cols-2")}>
+                        <div className={cn(financeItemClassName, "grid gap-2 p-3 text-sm text-content md:grid-cols-2")}>
                           <p>Conta: {template.account?.name ?? "-"}</p>
                           <p>Categoria: {template.category?.name ?? "-"}</p>
                           <p>Valor: {formatCurrency(template.amountCents)}</p>
@@ -87,7 +87,7 @@ export function RecurringView({
                           <p>Início: {formatMonthLabel(template.startMonth)}</p>
                           <p>Fim: {template.endMonth ? formatMonthLabel(template.endMonth) : "Sem fim"}</p>
                         </div>
-                        <p className="rounded-xl border border-slate-800 bg-slate-950/30 px-3 py-2 text-sm leading-6 text-slate-400">
+                        <p className="rounded-xl border border-border bg-surface/30 px-3 py-2 text-sm leading-6 text-content">
                           {template.lastGeneratedMonth === month
                             ? `Já gerou lançamento em ${formatMonthLabel(month)}.`
                             : "Ainda não há geração para a competência em foco."}
@@ -103,7 +103,7 @@ export function RecurringView({
                           trigger={
                             <button
                               type="button"
-                              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-700 bg-transparent px-3 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-900 hover:text-slate-50 focus-visible:ring-2 focus-visible:ring-cyan-400/40 focus-visible:outline-none"
+                              className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-input bg-transparent px-3 text-sm font-medium text-content-strong transition-colors hover:bg-surface-raised hover:text-content-strong focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:outline-none"
                             >
                               <Pencil className="size-4" />
                               Editar

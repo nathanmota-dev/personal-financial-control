@@ -63,13 +63,13 @@ export function InvestmentGrowthChart({
   }
 
   return (
-    <div className="rounded-[1.75rem] border border-slate-800 bg-slate-950/75 p-5 shadow-[0_24px_80px_rgba(2,6,23,0.35)]">
+    <div className="rounded-[1.75rem] border border-border bg-surface/75 p-5 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .35)]">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 className="font-heading text-lg font-semibold text-slate-100">
+          <h3 className="font-heading text-lg font-semibold text-content-strong">
             Saldo estimado e movimentações
           </h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-content">
             Composição até {periodLabel} com taxa de {formatRateFromBps(expectedMonthlyRateBps)} e os lançamentos previstos.
           </p>
         </div>
@@ -95,8 +95,8 @@ export function InvestmentGrowthChart({
       <ChartContainer
         className={cn(financeChartSurfaceClassName, "h-[460px] w-full")}
         config={{
-          principal: { label: "Saldo + movimentos", color: "#38bdf8" },
-          interest: { label: "Rendimento estimado", color: "#f59e0b" },
+          principal: { label: "Saldo + movimentos", color: "var(--chart-brand)" },
+          interest: { label: "Rendimento estimado", color: "var(--chart-warning)" },
         }}
       >
         <AreaChart data={data} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
@@ -127,7 +127,7 @@ export function InvestmentGrowthChart({
               />
             }
           />
-          <ChartLegend content={<ChartLegendContent className="text-slate-300" />} />
+          <ChartLegend content={<ChartLegendContent className="text-content" />} />
           <Area
             type="monotone"
             dataKey="principal"

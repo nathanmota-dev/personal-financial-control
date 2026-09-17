@@ -63,10 +63,10 @@ export function TransferDialog({ accounts, month }: TransferDialogProps) {
         </DialogHeader>
         {canTransfer ? (
           <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
-            <select name="fromAccountId" defaultValue={accounts[0]?.id} className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100">
+            <select name="fromAccountId" defaultValue={accounts[0]?.id} className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong">
               {accounts.map((account) => <option key={account.id} value={account.id}>Saída: {account.name}</option>)}
             </select>
-            <select name="toAccountId" defaultValue={accounts[1]?.id ?? accounts[0]?.id} className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100">
+            <select name="toAccountId" defaultValue={accounts[1]?.id ?? accounts[0]?.id} className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong">
               {accounts.map((account) => <option key={account.id} value={account.id}>Entrada: {account.name}</option>)}
             </select>
             <Input name="amount" placeholder="0,00" required />

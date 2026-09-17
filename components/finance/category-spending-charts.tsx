@@ -38,17 +38,17 @@ export function CategorySpendingCharts({
     <div className={cn("grid gap-6", className)}>
       <Card className={cn(financePanelClassName, "gap-0 py-0")}>
         <CardHeader className={financeHeaderClassName}>
-          <CardTitle className="text-lg font-semibold text-slate-100">
+          <CardTitle className="text-lg font-semibold text-content-strong">
             Gastos por categoria
           </CardTitle>
-          <p className="text-sm text-slate-400">Peso relativo das despesas no mês.</p>
+          <p className="text-sm text-content">Peso relativo das despesas no mês.</p>
         </CardHeader>
         <CardContent className="p-5">
           {hasCategoryData ? (
             <ChartContainer
               className={cn(financeChartSurfaceClassName, "h-[220px] w-full border-0")}
               config={{
-                amount: { label: "Valor", color: "#14b8a6" },
+                amount: { label: "Valor", color: "var(--chart-success)" },
               }}
             >
               <BarChart
@@ -64,10 +64,10 @@ export function CategorySpendingCharts({
                   axisLine={false}
                   tickLine={false}
                   width={112}
-                  tick={{ fill: "#94a3b8", fontSize: 12 }}
+                  tick={{ fill: "var(--chart-neutral)", fontSize: 12 }}
                 />
                 <ChartTooltip
-                  cursor={{ fill: "rgba(20, 184, 166, 0.08)" }}
+                  cursor={{ fill: "rgb(var(--success-rgb) / .08)" }}
                   content={
                     <ChartTooltipContent
                       formatter={(value, _name, item) => (
@@ -89,7 +89,7 @@ export function CategorySpendingCharts({
               </BarChart>
             </ChartContainer>
           ) : (
-            <div className="flex h-[220px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/45 px-6 text-center text-sm text-slate-400">
+            <div className="flex h-[220px] items-center justify-center rounded-2xl border border-dashed border-border bg-surface/45 px-6 text-center text-sm text-content">
               Nenhuma despesa categorizada encontrada para este mês.
             </div>
           )}
@@ -98,22 +98,22 @@ export function CategorySpendingCharts({
 
       <Card className={cn(financePanelClassName, "gap-0 py-0")}>
         <CardHeader className={financeHeaderClassName}>
-          <CardTitle className="text-lg font-semibold text-slate-100">
+          <CardTitle className="text-lg font-semibold text-content-strong">
             Distribuição das despesas
           </CardTitle>
-          <p className="text-sm text-slate-400">Leitura rápida das categorias dominantes.</p>
+          <p className="text-sm text-content">Leitura rápida das categorias dominantes.</p>
         </CardHeader>
         <CardContent className="p-5">
           {hasCategoryData ? (
             <ChartContainer
               className={cn(financeChartSurfaceClassName, "h-[220px] w-full border-0")}
               config={{
-                a: { label: "1", color: "#38bdf8" },
-                b: { label: "2", color: "#f97316" },
-                c: { label: "3", color: "#14b8a6" },
-                d: { label: "4", color: "#f43f5e" },
-                e: { label: "5", color: "#eab308" },
-                f: { label: "6", color: "#a78bfa" },
+                a: { label: "1", color: "var(--chart-brand)" },
+                b: { label: "2", color: "var(--chart-warning)" },
+                c: { label: "3", color: "var(--chart-success)" },
+                d: { label: "4", color: "var(--chart-danger)" },
+                e: { label: "5", color: "var(--chart-warning)" },
+                f: { label: "6", color: "var(--chart-brand)" },
               }}
             >
               <PieChart>
@@ -146,7 +146,7 @@ export function CategorySpendingCharts({
               </PieChart>
             </ChartContainer>
           ) : (
-            <div className="flex h-[220px] items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/45 px-6 text-center text-sm text-slate-400">
+            <div className="flex h-[220px] items-center justify-center rounded-2xl border border-dashed border-border bg-surface/45 px-6 text-center text-sm text-content">
               Adicione despesas com categoria para liberar a distribuição visual.
             </div>
           )}

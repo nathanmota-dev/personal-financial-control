@@ -24,7 +24,7 @@ export function IconButton({
           size="icon-sm"
           disabled={disabled}
           onClick={onClick}
-          className="border-slate-700 bg-slate-950/70 text-slate-200 hover:bg-slate-900"
+          className="border-input bg-surface/70 text-content-strong hover:bg-surface-raised"
         >
           {children}
         </Button>

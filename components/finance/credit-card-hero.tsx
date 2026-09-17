@@ -16,23 +16,23 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
     : `dia ${overview.account.creditDueDay}`;
 
   return (
-    <section className="relative isolate overflow-hidden rounded-[2rem] border border-slate-800/90 bg-[#0d1523] shadow-[0_28px_90px_rgba(2,6,23,0.42)]">
-      <div className="pointer-events-none absolute -right-24 -top-36 -z-10 size-[28rem] rounded-full bg-sky-500/12 blur-3xl" />
+    <section className="relative isolate overflow-hidden rounded-[2rem] border border-border/90 bg-surface-raised shadow-[0_28px_90px_rgb(var(--surface-rgb) / .42)]">
+      <div className="pointer-events-none absolute -right-24 -top-36 -z-10 size-[28rem] rounded-full bg-brand/12 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-48 left-1/3 -z-10 size-[24rem] rounded-full bg-indigo-500/10 blur-3xl" />
-      <div className="border-b border-slate-800/90 px-5 py-5 sm:px-7 sm:py-6">
+      <div className="border-b border-border/90 px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-2xl border border-sky-300/20 bg-sky-400/10 text-sky-300 shadow-[0_0_30px_rgba(56,189,248,0.12)]">
+            <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand shadow-[0_0_30px_rgb(var(--brand-rgb) / .12)]">
               <CreditCard className="size-6" strokeWidth={1.7} />
             </div>
             <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-sky-300/80">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-brand/80">
                 Fatura selecionada · {formatCreditCardMonth(overview.month)}
               </p>
-              <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-slate-50 sm:text-3xl">
+              <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-content-strong sm:text-3xl">
                 {overview.account.name}
               </h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-content">
                 Fecha dia {overview.account.creditClosingDay ?? "—"} · vence dia {overview.account.creditDueDay}
               </p>
             </div>
@@ -42,8 +42,8 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
             className={cn(
               "w-fit rounded-full px-3 py-1 text-xs",
               isPaid
-                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                : "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                ? "border-warning/30 bg-warning/10 text-warning"
+                : "border-warning/30 bg-warning/10 text-warning"
             )}
           >
             <CheckCircle2 className="mr-1 size-3.5" />
@@ -54,17 +54,17 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
 
       <div className="grid gap-8 px-5 py-7 sm:px-7 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
         <div>
-          <p className="text-sm text-slate-400">Valor total da fatura</p>
-          <p className="mt-2 font-heading text-5xl font-semibold tracking-[-0.055em] text-slate-50 sm:text-6xl">
+          <p className="text-sm text-content">Valor total da fatura</p>
+          <p className="mt-2 font-heading text-5xl font-semibold tracking-[-0.055em] text-content-strong sm:text-6xl">
             {formatCurrency(overview.invoice.totalAmountCents)}
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-400">
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-content">
             <span className="inline-flex items-center gap-2">
-              <CalendarClock className="size-4 text-sky-300" />
+              <CalendarClock className="size-4 text-brand" />
               {isPaid ? paidLabel : `Vence em ${dueLabel}`}
             </span>
             <span className="inline-flex items-center gap-2">
-              <ReceiptText className="size-4 text-sky-300" />
+              <ReceiptText className="size-4 text-brand" />
               {overview.invoice.purchaseCount} {overview.invoice.purchaseCount === 1 ? "compra" : "compras"}
             </span>
           </div>
@@ -89,10 +89,10 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
 
 function HeroDetail({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
-    <div className="rounded-2xl border border-slate-700/70 bg-slate-950/35 px-4 py-3.5">
-      <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{label}</p>
-      <p className="mt-1 font-heading text-2xl font-semibold text-sky-200">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{detail}</p>
+    <div className="rounded-2xl border border-input/70 bg-surface/35 px-4 py-3.5">
+      <p className="text-xs uppercase tracking-[0.16em] text-content-strong0">{label}</p>
+      <p className="mt-1 font-heading text-2xl font-semibold text-brand">{value}</p>
+      <p className="mt-1 text-xs text-content-strong0">{detail}</p>
     </div>
   );
 }

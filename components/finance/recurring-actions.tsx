@@ -107,10 +107,10 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
           Excluir
         </Button>
       </DialogTrigger>
-      <DialogContent className="border-slate-800 bg-slate-950/95 sm:max-w-lg">
+      <DialogContent className="border-border bg-surface/95 sm:max-w-lg">
         <DialogHeader>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-rose-300">Ação definitiva</p>
-          <DialogTitle className="text-2xl text-slate-50">Excluir recorrência?</DialogTitle>
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-danger">Ação definitiva</p>
+          <DialogTitle className="text-2xl text-content-strong">Excluir recorrência?</DialogTitle>
           <DialogDescription>
             Escolha o que fazer com os lançamentos que foram gerados por esta regra. Lançamentos manuais nunca entram nesta exclusão.
           </DialogDescription>
@@ -121,16 +121,16 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
             type="button"
             variant="outline"
             disabled={isPending}
-            className="h-auto items-start justify-between gap-4 rounded-2xl border-slate-700 bg-slate-900/55 px-4 py-4 text-left whitespace-normal hover:border-cyan-400/40 hover:bg-cyan-400/[0.06]"
+            className="h-auto items-start justify-between gap-4 rounded-2xl border-input bg-surface-raised/55 px-4 py-4 text-left whitespace-normal hover:border-brand/40 hover:bg-brand/[0.06]"
             onClick={() => deleteWithMode("keep_history")}
           >
             <span>
-              <span className="block font-semibold text-slate-100">Manter histórico</span>
-              <span className="mt-1 block text-xs font-normal leading-5 text-slate-400">
+              <span className="block font-semibold text-content-strong">Manter histórico</span>
+              <span className="mt-1 block text-xs font-normal leading-5 text-content">
                 Remove somente a regra e preserva os lançamentos já gerados.
               </span>
             </span>
-            <span className="shrink-0 text-xs font-medium text-cyan-300">Recomendado</span>
+            <span className="shrink-0 text-xs font-medium text-brand">Recomendado</span>
           </Button>
           <Button
             type="button"
@@ -141,7 +141,7 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
           >
             <span>
               <span className="block font-semibold">Excluir histórico</span>
-              <span className="mt-1 block text-xs font-normal leading-5 text-rose-100/80">
+              <span className="mt-1 block text-xs font-normal leading-5 text-danger/80">
                 Remove a regra e todos os lançamentos vinculados a ela.
               </span>
             </span>

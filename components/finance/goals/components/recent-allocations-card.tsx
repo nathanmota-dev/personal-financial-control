@@ -16,10 +16,10 @@ import type { RecentAllocationsCardProps } from "../goals-types";
 
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-border bg-surface/75">
       <CardHeader>
         <CardTitle>Histórico recente</CardTitle>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-content">
           Últimos movimentos vinculados às metas atuais.
         </p>
       </CardHeader>
@@ -27,20 +27,20 @@ export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps)
         {dashboard.recentAllocations.length ? (
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-transparent">
-                <TableHead className="text-slate-400">Meta</TableHead>
-                <TableHead className="text-slate-400">Tipo</TableHead>
-                <TableHead className="text-slate-400">Data</TableHead>
-                <TableHead className="text-right text-slate-400">Valor</TableHead>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-content">Meta</TableHead>
+                <TableHead className="text-content">Tipo</TableHead>
+                <TableHead className="text-content">Data</TableHead>
+                <TableHead className="text-right text-content">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {dashboard.recentAllocations.map((allocation) => (
                 <TableRow
                   key={allocation.id}
-                  className="border-slate-800 hover:bg-slate-900/50"
+                  className="border-border hover:bg-surface-raised/50"
                 >
-                  <TableCell className="text-slate-100">
+                  <TableCell className="text-content-strong">
                     <span className="inline-flex items-center gap-2">
                       <span
                         className="size-2.5 rounded-full"
@@ -49,16 +49,16 @@ export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps)
                       {allocation.goalName}
                     </span>
                   </TableCell>
-                  <TableCell className="text-slate-300">
+                  <TableCell className="text-content">
                     {ALLOCATION_TYPE_LABELS[allocation.type]}
                   </TableCell>
-                  <TableCell className="text-slate-300">
+                  <TableCell className="text-content">
                     {formatDateLabel(allocation.occurredOn)}
                   </TableCell>
                   <TableCell
                     className={cn(
                       "text-right font-medium",
-                      allocation.amountCents >= 0 ? "text-cyan-200" : "text-rose-200"
+                      allocation.amountCents >= 0 ? "text-brand" : "text-danger"
                     )}
                   >
                     {formatCurrency(allocation.amountCents)}

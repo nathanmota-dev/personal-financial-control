@@ -93,7 +93,7 @@ export function CreditCardPurchaseDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl border-slate-700 bg-slate-950">
+      <DialogContent className="max-w-2xl border-input bg-surface">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Editar compra no cartão" : "Nova compra no cartão"}</DialogTitle>
           <DialogDescription>
@@ -109,7 +109,7 @@ export function CreditCardPurchaseDialog({
               <select
                 name="categoryId"
                 defaultValue={defaultCategoryId}
-                className="h-10 rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100"
+                className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
               >
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
@@ -146,7 +146,7 @@ export function CreditCardPurchaseDialog({
             </DialogFooter>
           </form>
         ) : (
-          <p className="text-sm leading-6 text-slate-400">
+          <p className="text-sm leading-6 text-content">
             Crie uma categoria de gasto fixo ou variável antes de lançar compras no cartão.
           </p>
         )}

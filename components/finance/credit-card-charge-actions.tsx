@@ -58,7 +58,7 @@ export function CreditCardChargeActions({
         aria-label={`Excluir ${charge.description}`}
         disabled={isPending}
         onClick={deleteCharge}
-        className="text-slate-500 hover:bg-rose-500/10 hover:text-rose-300"
+        className="text-content-strong0 hover:bg-danger/10 hover:text-danger"
       >
         <Trash2 className="size-4" />
       </Button>

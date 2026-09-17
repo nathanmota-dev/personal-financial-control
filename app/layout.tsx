@@ -26,7 +26,7 @@ export default function RootLayout({
       <body
         translate="no"
         suppressHydrationWarning
-        className="min-h-full font-sans text-slate-100 notranslate"
+        className="min-h-full font-sans text-content-strong notranslate"
       >
         <Providers>{children}</Providers>
       </body>

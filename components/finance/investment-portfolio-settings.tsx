@@ -151,10 +151,10 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
 
   if (!projection) {
     return (
-      <Card className="h-full rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+      <Card className="h-full rounded-[1.75rem] border-border bg-surface/75">
         <CardHeader>
           <CardTitle>Configurar carteira</CardTitle>
-          <p className="text-sm leading-6 text-slate-400">
+          <p className="text-sm leading-6 text-content">
             Informe o primeiro saldo real. A partir dele, a carteira será atualizada pela taxa
             esperada e pelos lançamentos realizados.
           </p>
@@ -195,32 +195,32 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
 
   return (
     <>
-      <Card className="h-full rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+      <Card className="h-full rounded-[1.75rem] border-border bg-surface/75">
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
               <CardTitle>Premissas e conferência</CardTitle>
-              <p className="mt-2 text-sm leading-6 text-slate-400">
+              <p className="mt-2 text-sm leading-6 text-content">
                 O saldo é estimado diariamente. Use a conferência quando o valor real da corretora
                 divergir da taxa modelada.
               </p>
             </div>
-            <div className={cn(financeIconClassName, "bg-cyan-400/10 text-cyan-300")}>
+            <div className={cn(financeIconClassName, "bg-brand/10 text-brand")}>
               <SlidersHorizontal className="size-5" />
             </div>
           </div>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-3 rounded-2xl border border-slate-800 bg-slate-900/55 p-4 sm:grid-cols-2">
+          <div className="grid gap-3 rounded-2xl border border-border bg-surface-raised/55 p-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Checkpoint</p>
-              <p className="mt-1 font-semibold text-slate-100">
+              <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">Checkpoint</p>
+              <p className="mt-1 font-semibold text-content-strong">
                 {formatCurrency(projection.checkpointBalanceCents)}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Data</p>
-              <p className="mt-1 font-semibold text-slate-100">
+              <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">Data</p>
+              <p className="mt-1 font-semibold text-content-strong">
                 {formatDateLabel(projection.checkpointDate)}
               </p>
             </div>
@@ -232,7 +232,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
             placeholder="1,00"
             onChange={setRate}
           />
-          <p className="text-xs leading-5 text-slate-500">
+          <p className="text-xs leading-5 text-content-strong0">
             A taxa atual é {formatRateFromBps(projection.expectedMonthlyRateBps)} e serve para
             estimar o rendimento entre movimentações.
           </p>
@@ -261,10 +261,10 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
       </Card>
 
       <Dialog open={isReconcileOpen} onOpenChange={setIsReconcileOpen}>
-        <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-lg">
+        <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Conferir saldo real</DialogTitle>
-            <DialogDescription className="leading-6 text-slate-400">
+            <DialogDescription className="leading-6 text-content">
               Use o valor exibido pela corretora. Esse valor passa a ser a nova base para os
               rendimentos futuros e incorpora os movimentos anteriores à data escolhida.
             </DialogDescription>

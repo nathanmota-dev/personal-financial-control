@@ -41,10 +41,10 @@ export function GoalFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-2xl">
+      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{isCreate ? "Nova meta" : "Editar meta"}</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-content">
             Defina o alvo, prazo e quanto da carteira já deve ficar separado.
           </DialogDescription>
         </DialogHeader>
@@ -89,7 +89,7 @@ export function GoalFormDialog({
               }
             />
             <div className="space-y-2">
-              <Label className="text-slate-200">Prazo</Label>
+              <Label className="text-content-strong">Prazo</Label>
               <MonthPickerField
                 month={form.targetDate}
                 onMonthChange={(targetDate) => {
@@ -151,7 +151,7 @@ export function GoalFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-slate-200">Cor</Label>
+            <Label className="text-content-strong">Cor</Label>
             <div className="flex flex-wrap gap-2">
               {GOAL_COLORS.map((color) => (
                 <button
@@ -161,7 +161,7 @@ export function GoalFormDialog({
                   onClick={() => setForm((state) => ({ ...state, color }))}
                   className={cn(
                     "size-8 rounded-full border-2 transition",
-                    form.color === color ? "border-white" : "border-slate-700"
+                    form.color === color ? "border-white" : "border-input"
                   )}
                   style={{ backgroundColor: color }}
                 />
@@ -170,7 +170,7 @@ export function GoalFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="goal-notes" className="text-slate-200">
+            <Label htmlFor="goal-notes" className="text-content-strong">
               Notas
             </Label>
             <Textarea
@@ -179,7 +179,7 @@ export function GoalFormDialog({
               onChange={(event) =>
                 setForm((state) => ({ ...state, notes: event.target.value }))
               }
-              className="min-h-24 border-slate-700 bg-slate-950/70 text-slate-100"
+              className="min-h-24 border-input bg-surface/70 text-content-strong"
             />
           </div>
 

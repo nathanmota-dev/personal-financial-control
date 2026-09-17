@@ -19,11 +19,11 @@ import type {
 const EMPTY_FILTER_VALUE = "__empty-filter__";
 export const UNCATEGORIZED_FILTER_VALUE = "__uncategorized-filter__";
 const FILTER_SELECT_TRIGGER_CLASSNAME =
-  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-sky-400/70 focus-visible:ring-sky-400/20 data-[state=open]:border-slate-600 data-[state=open]:bg-slate-900";
+  "h-10 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
 const FILTER_SELECT_CONTENT_CLASSNAME =
-  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
 const FILTER_SELECT_ITEM_CLASSNAME =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
 
 export function FilterSelect({
   value,
@@ -92,7 +92,7 @@ export function TransactionFilters({ accounts, categories, filters }: Transactio
     : filters.categoryId;
 
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-border bg-surface/75">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>

@@ -29,14 +29,14 @@ export function DayDetailSheet({
 }: DayDetailSheetProps) {
   return (
     <Sheet open={Boolean(day)} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto border-slate-800 bg-slate-950 text-slate-100 sm:max-w-xl">
+      <SheetContent className="w-full overflow-y-auto border-border bg-surface text-content-strong sm:max-w-xl">
         {day ? (
           <>
-            <SheetHeader className="border-b border-slate-800 px-6 py-5 text-left">
-              <SheetTitle className="text-xl text-slate-100">
+            <SheetHeader className="border-b border-border px-6 py-5 text-left">
+              <SheetTitle className="text-xl text-content-strong">
                 {formatDateLabel(day.date)}
               </SheetTitle>
-              <SheetDescription className="text-slate-400">
+              <SheetDescription className="text-content">
                 Saldo final de {formatCurrency(day.projectedBalanceCents)}.
               </SheetDescription>
             </SheetHeader>
@@ -73,9 +73,9 @@ export function DayDetailSheet({
                 />
               </div>
 
-              <div className="rounded-2xl border border-slate-800 p-4">
+              <div className="rounded-2xl border border-border p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="font-heading text-base font-semibold text-slate-100">
+                  <h3 className="font-heading text-base font-semibold text-content-strong">
                     Eventos do dia
                   </h3>
                   <StatusBadge status={day.status} />
@@ -91,7 +91,7 @@ export function DayDetailSheet({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-content">
                     Nenhum evento altera o saldo nesta data.
                   </p>
                 )}
@@ -120,19 +120,19 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium text-slate-100">{event.description}</p>
+            <p className="font-medium text-content-strong">{event.description}</p>
             <Badge
               variant="outline"
               className={cn(
-                "border-slate-700 text-slate-300",
+                "border-input text-content",
                 event.source === "simulation" &&
-                  "border-amber-300/30 text-amber-200"
+                  "border-warning/30 text-warning"
               )}
             >
               {eventTypeLabels[event.type]}
             </Badge>
           </div>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-content-strong0">
             {eventSourceLabels[event.source]}
             {accountName ? ` · ${accountName}` : ""}
           </p>
@@ -143,7 +143,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
               type="button"
               variant="ghost"
               size="icon-sm"
-              className="text-slate-500 hover:bg-rose-400/10 hover:text-rose-200"
+              className="text-content-strong0 hover:bg-danger/10 hover:text-danger"
               aria-label={`Remover simulação ${event.description}`}
               onClick={() => onRemoveSimulation(simulationId)}
             >
@@ -153,7 +153,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
           <p
             className={cn(
               "font-semibold",
-              isPositive ? "text-emerald-300" : "text-rose-300"
+              isPositive ? "text-warning" : "text-danger"
             )}
           >
             {isPositive ? "+" : "-"}
@@ -167,17 +167,17 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
 
 function DetailMetric({ label, value, tone = "slate" }: DetailMetricProps) {
   const tones = {
-    slate: "text-slate-100",
-    cyan: "text-cyan-300",
-    emerald: "text-emerald-300",
-    sky: "text-sky-300",
-    blue: "text-blue-300",
-    rose: "text-rose-300",
+    slate: "text-content-strong",
+    cyan: "text-brand",
+    emerald: "text-warning",
+    sky: "text-brand",
+    blue: "text-brand",
+    rose: "text-danger",
   } as const;
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{label}</p>
+    <div className="rounded-2xl border border-border bg-surface-raised/50 p-4">
+      <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">{label}</p>
       <p className={cn("mt-2 font-heading text-xl font-semibold", tones[tone])}>
         {value}
       </p>

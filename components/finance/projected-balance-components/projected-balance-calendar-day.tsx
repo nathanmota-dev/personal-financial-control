@@ -6,16 +6,16 @@ import { statusLabels } from "./labels";
 
 const statusTone = {
   safe: {
-    cell: "border-emerald-300/35 bg-emerald-400/[0.10]",
-    value: "text-emerald-100",
+    cell: "border-warning/35 bg-warning/[0.10]",
+    value: "text-warning",
   },
   warning: {
-    cell: "border-amber-300/40 bg-amber-400/[0.12]",
-    value: "text-amber-100",
+    cell: "border-warning/40 bg-warning/[0.12]",
+    value: "text-warning",
   },
   negative: {
-    cell: "border-rose-300/45 bg-rose-500/[0.14]",
-    value: "text-rose-100",
+    cell: "border-danger/45 bg-danger/[0.14]",
+    value: "text-danger",
   },
 } as const;
 
@@ -26,7 +26,7 @@ export function ProjectedBalanceCalendarDay({
   if (!calendarDay.day) {
     return (
       <li className="h-full min-h-24 list-none">
-        <div className="flex h-full min-h-24 items-end rounded-xl border border-transparent px-2 py-1.5 text-[0.62rem] text-slate-700">
+        <div className="flex h-full min-h-24 items-end rounded-xl border border-transparent px-2 py-1.5 text-[0.62rem] text-content-subtle">
           Fora do período
         </div>
       </li>
@@ -41,14 +41,14 @@ export function ProjectedBalanceCalendarDay({
       <button
         type="button"
         className={cn(
-          "flex h-full min-h-24 w-full flex-col rounded-xl border px-2 py-1.5 text-left transition duration-200 focus-visible:border-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/30",
+          "flex h-full min-h-24 w-full flex-col rounded-xl border px-2 py-1.5 text-left transition duration-200 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30",
           tone.cell
         )}
         onClick={() => onSelectDay(day)}
         aria-label={`${formatDateLabel(day.date)}. ${statusLabels[day.status]}. Saldo projetado ${formatCurrency(day.projectedBalanceCents)}. Disponível por dia ${formatCurrency(day.availablePerDayCents)}.`}
       >
         <div className="min-w-0">
-          <p className="truncate text-[0.58rem] uppercase tracking-[0.13em] text-slate-500">
+          <p className="truncate text-[0.58rem] uppercase tracking-[0.13em] text-content-strong0">
             Saldo projetado
           </p>
           <p
@@ -63,11 +63,11 @@ export function ProjectedBalanceCalendarDay({
 
         <div className="mt-auto border-t border-white/[0.07] pt-1.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[0.58rem] text-slate-500">Disponível/dia</span>
+            <span className="text-[0.58rem] text-content-strong0">Disponível/dia</span>
             <span
               className={cn(
                 "font-mono text-[0.64rem] font-semibold tabular-nums",
-                day.availablePerDayCents < 0 ? "text-rose-200" : "text-cyan-200"
+                day.availablePerDayCents < 0 ? "text-danger" : "text-brand"
               )}
             >
               {formatCurrency(day.availablePerDayCents)}

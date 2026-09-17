@@ -110,56 +110,56 @@ export default async function DashboardPage({
           label="Receitas"
           value={formatCurrency(resolved.dashboard.totals.incomeCents)}
           icon={<TrendingUp className="size-4" />}
-          accent="text-cyan-300"
+          accent="text-brand"
           description="Entradas ativas do mês."
         />
         <MetricCard
           label="Gastos fixos"
           value={formatCurrency(resolved.dashboard.totals.fixedExpenseCents)}
           icon={<Wallet className="size-4" />}
-          accent="text-sky-300"
+          accent="text-brand"
           description="Compromissos recorrentes e estruturais."
         />
         <MetricCard
           label="Gastos variáveis"
           value={formatCurrency(resolved.dashboard.totals.variableExpenseCents)}
           icon={<TrendingDown className="size-4" />}
-          accent="text-blue-300"
+          accent="text-brand"
           description="Saídas discricionárias no período."
         />
         <MetricCard
           label="Investimentos líquidos"
           value={formatCurrency(resolved.dashboard.totals.netInvestmentFlowCents)}
           icon={<PiggyBank className="size-4" />}
-          accent="text-teal-300"
+          accent="text-warning"
           description="Aportes menos resgates no mês."
         />
         <MetricCard
           label="Saldo livre"
           value={formatCurrency(resolved.dashboard.totals.netResultCents)}
           icon={<TrendingUp className="size-4" />}
-          accent={resolved.dashboard.totals.netResultCents >= 0 ? "text-cyan-300" : "text-blue-300"}
+          accent={resolved.dashboard.totals.netResultCents >= 0 ? "text-brand" : "text-brand"}
           description="Disponível para gastos livres do mês."
         />
       </section>
 
       {resolved.dashboard.totals.uncategorizedExpenseCents > 0 ? (
-        <Card className="overflow-hidden rounded-[1.75rem] border-amber-300/20 bg-amber-300/[0.06] shadow-[0_24px_80px_rgba(120,53,15,0.14)]">
+        <Card className="overflow-hidden rounded-[1.75rem] border-warning/20 bg-warning/[0.06] shadow-[0_24px_80px_rgb(var(--warning-rgb) / .14)]">
           <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-amber-300/20 bg-amber-300/10 text-amber-200">
+              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-warning/20 bg-warning/10 text-warning">
                 <CircleAlert className="size-5" />
               </div>
               <div>
-                <p className="font-heading text-lg font-semibold text-amber-100">Há despesas sem categoria</p>
-                <p className="mt-1 text-sm leading-6 text-amber-100/70">
+                <p className="font-heading text-lg font-semibold text-warning">Há despesas sem categoria</p>
+                <p className="mt-1 text-sm leading-6 text-warning/70">
                   {formatCurrency(resolved.dashboard.totals.uncategorizedExpenseCents)} em despesas ainda aguardam organização. Elas já reduzem o saldo livre.
                 </p>
               </div>
             </div>
             <Link
               href={`/transactions?month=${month}&uncategorized=true`}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-amber-200/25 bg-amber-200/10 px-4 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-200/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/40"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-warning/25 bg-warning/10 px-4 text-sm font-semibold text-warning transition-colors hover:bg-warning/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40"
             >
               Categorizar agora
             </Link>
@@ -198,19 +198,19 @@ export default async function DashboardPage({
                   )}
                 >
                   <div>
-                    <p className="font-medium text-slate-100">{transaction.description}</p>
-                    <p className="text-sm text-slate-400">
+                    <p className="font-medium text-content-strong">{transaction.description}</p>
+                    <p className="text-sm text-content">
                       {transaction.category?.name ?? "Sem categoria"} •{" "}
                       {formatDateLabel(transaction.expenseDate)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-blue-300">
+                    <p className="font-semibold text-brand">
                       {formatCurrency(transaction.amountCents)}
                     </p>
                     <Badge
                       variant="outline"
-                      className="mt-1 border-slate-700 bg-slate-950/50 text-slate-300"
+                      className="mt-1 border-input bg-surface/50 text-content"
                     >
                       {transaction.account?.name ?? "Conta"}
                     </Badge>
@@ -241,14 +241,14 @@ export default async function DashboardPage({
                   )}
                 >
                   <div>
-                    <p className="font-medium text-slate-100">{account.name}</p>
-                    <p className="text-sm text-slate-400">{accountTypeLabels[account.type]}</p>
+                    <p className="font-medium text-content-strong">{account.name}</p>
+                    <p className="text-sm text-content">{accountTypeLabels[account.type]}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                    <p className="text-xs uppercase tracking-[0.2em] text-content-strong0">
                       {account.metricLabel}
                     </p>
-                    <p className="font-semibold text-cyan-300">
+                    <p className="font-semibold text-brand">
                     {formatCurrency(account.currentBalanceCents)}
                     </p>
                   </div>
@@ -270,8 +270,8 @@ export default async function DashboardPage({
                       "flex items-center justify-between gap-4 px-4 py-3"
                     )}
                   >
-                    <p className="text-slate-400">Saldo estimado hoje</p>
-                    <p className="text-right font-semibold text-cyan-300">
+                    <p className="text-content">Saldo estimado hoje</p>
+                    <p className="text-right font-semibold text-brand">
                       {formatCurrency(resolved.dashboard.investmentProjection.currentBalanceCents)}
                     </p>
                   </div>
@@ -281,8 +281,8 @@ export default async function DashboardPage({
                       "flex items-center justify-between gap-4 px-4 py-3"
                     )}
                   >
-                    <p className="text-slate-400">Rendimento estimado</p>
-                    <p className="text-right font-semibold text-cyan-300">
+                    <p className="text-content">Rendimento estimado</p>
+                    <p className="text-right font-semibold text-brand">
                       {formatCurrency(resolved.dashboard.investmentProjection.estimatedInterestCents)}
                     </p>
                   </div>
@@ -292,8 +292,8 @@ export default async function DashboardPage({
                       "flex items-center justify-between gap-4 px-4 py-3"
                     )}
                   >
-                    <p className="text-slate-400">Desde o checkpoint</p>
-                    <p className="text-right font-semibold text-slate-100">
+                    <p className="text-content">Desde o checkpoint</p>
+                    <p className="text-right font-semibold text-content-strong">
                       {formatDateLabel(resolved.dashboard.investmentProjection.checkpointDate)}
                     </p>
                   </div>
@@ -303,8 +303,8 @@ export default async function DashboardPage({
                       "flex items-center justify-between gap-4 px-4 py-3"
                     )}
                   >
-                    <p className="text-slate-400">Taxa esperada</p>
-                    <p className="text-right font-semibold text-slate-100">
+                    <p className="text-content">Taxa esperada</p>
+                    <p className="text-right font-semibold text-content-strong">
                       {(resolved.dashboard.investmentProjection.expectedMonthlyRateBps / 100).toFixed(2)}%
                     </p>
                   </div>
@@ -315,8 +315,8 @@ export default async function DashboardPage({
                         "flex items-center justify-between gap-4 px-4 py-3"
                       )}
                     >
-                      <p className="text-slate-400">Próximo aporte previsto</p>
-                      <p className="text-right font-semibold text-slate-100">
+                      <p className="text-content">Próximo aporte previsto</p>
+                      <p className="text-right font-semibold text-content-strong">
                         {formatDateLabel(resolved.dashboard.investmentProjection.nextContributionDate)}
                       </p>
                     </div>
@@ -324,7 +324,7 @@ export default async function DashboardPage({
                 </>
               ) : (
                 <div className={cn(financeItemClassName, "px-4 py-3")}>
-                  <p className="text-slate-400">A carteira ainda não foi configurada.</p>
+                  <p className="text-content">A carteira ainda não foi configurada.</p>
                 </div>
               )}
             </CardContent>
@@ -345,14 +345,14 @@ function MetricCard({
   return (
     <Card className={financeMetricClassName}>
       <CardContent className="space-y-3 pt-6">
-        <div className={`inline-flex rounded-full border border-slate-700 bg-slate-900 p-2 ${accent}`}>
+        <div className={`inline-flex rounded-full border border-input bg-surface-raised p-2 ${accent}`}>
           {icon}
         </div>
         <div>
-          <p className="text-sm text-slate-400">{label}</p>
+          <p className="text-sm text-content">{label}</p>
           <p className={`font-heading text-3xl font-semibold tracking-tight ${accent}`}>{value}</p>
         </div>
-        <p className="text-sm leading-6 text-slate-400">{description}</p>
+        <p className="text-sm leading-6 text-content">{description}</p>
       </CardContent>
     </Card>
   );

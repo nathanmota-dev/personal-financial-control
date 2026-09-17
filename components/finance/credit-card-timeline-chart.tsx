@@ -46,7 +46,7 @@ export function CreditCardTimelineChart({ points }: CreditCardTimelineChartProps
   return (
     <ChartContainer
       className={cn("h-[226px] w-full", points.length < 2 && "h-[180px]")}
-      config={{ amount: { label: "Fatura", color: "#3b82f6" } }}
+      config={{ amount: { label: "Fatura", color: "var(--chart-brand)" } }}
     >
       <LineChart data={data} margin={{ top: 22, right: 14, bottom: 4, left: 2 }}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -72,15 +72,15 @@ export function CreditCardTimelineChart({ points }: CreditCardTimelineChartProps
             />
           }
         />
-        <ReferenceLine y={0} stroke="rgba(100, 116, 139, 0.65)" strokeDasharray="4 4" />
+        <ReferenceLine y={0} stroke="rgb(var(--content-muted-rgb) / .65)" strokeDasharray="4 4" />
         <Line
           type="monotone"
           dataKey="amount"
           name="Fatura"
           stroke="var(--color-amount)"
           strokeWidth={2.5}
-          dot={{ r: 4, fill: "#0a111d", stroke: "#3b82f6", strokeWidth: 2 }}
-          activeDot={{ r: 6, fill: "#60a5fa", stroke: "#dbeafe", strokeWidth: 2 }}
+          dot={{ r: 4, fill: "var(--surface);", stroke: "var(--chart-brand)", strokeWidth: 2 }}
+          activeDot={{ r: 6, fill: "var(--brand-strong)", stroke: "var(--content-strong)", strokeWidth: 2 }}
         />
       </LineChart>
     </ChartContainer>

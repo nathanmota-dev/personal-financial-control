@@ -53,7 +53,7 @@ export function ProjectedBalanceChart({
   );
 
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-border bg-surface/75">
       <CardHeader>
         <CardTitle>Evolução diária</CardTitle>
       </CardHeader>
@@ -61,9 +61,9 @@ export function ProjectedBalanceChart({
         <ChartContainer
           className={cn(financeChartSurfaceClassName, "h-[360px] w-full")}
           config={{
-            balance: { label: "Saldo projetado", color: "#22d3ee" },
-            zero: { label: "Zero", color: "#f43f5e" },
-            minimumReserve: { label: "Reserva mínima", color: "#f59e0b" },
+            balance: { label: "Saldo projetado", color: "var(--chart-brand)" },
+            zero: { label: "Zero", color: "var(--chart-danger)" },
+            minimumReserve: { label: "Reserva mínima", color: "var(--chart-warning)" },
           }}
         >
           <LineChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>

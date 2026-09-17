@@ -40,14 +40,14 @@ export function HoldingsTable({
     <Card className={financePanelClassName}>
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-sky-200">
+          <div className="mb-2 flex items-center gap-2 text-brand">
             <Coins className="size-4" />
             <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
               Registro manual
             </span>
           </div>
-          <CardTitle className="text-xl text-slate-100">Posições cadastradas</CardTitle>
-          <p className="mt-1 text-sm leading-6 text-slate-400">
+          <CardTitle className="text-xl text-content-strong">Posições cadastradas</CardTitle>
+          <p className="mt-1 text-sm leading-6 text-content">
             Informe o valor atual de cada posição. Quantidade, preço médio e cotações automáticas
             ficam fora desta primeira versão.
           </p>
@@ -62,24 +62,24 @@ export function HoldingsTable({
         <div className="hidden md:block">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800/80 hover:bg-transparent">
-                <TableHead className="pl-6 text-slate-500">Ativo</TableHead>
-                <TableHead className="text-slate-500">Classe / tipo</TableHead>
-                <TableHead className="text-right text-slate-500">Atual</TableHead>
-                <TableHead className="text-right text-slate-500">Alocado</TableHead>
-                <TableHead className="text-right text-slate-500">Livre</TableHead>
-                <TableHead className="text-slate-500">Valor em</TableHead>
-                <TableHead className="pr-6 text-right text-slate-500">Ações</TableHead>
+              <TableRow className="border-border/80 hover:bg-transparent">
+                <TableHead className="pl-6 text-content-strong0">Ativo</TableHead>
+                <TableHead className="text-content-strong0">Classe / tipo</TableHead>
+                <TableHead className="text-right text-content-strong0">Atual</TableHead>
+                <TableHead className="text-right text-content-strong0">Alocado</TableHead>
+                <TableHead className="text-right text-content-strong0">Livre</TableHead>
+                <TableHead className="text-content-strong0">Valor em</TableHead>
+                <TableHead className="pr-6 text-right text-content-strong0">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {dashboard.holdings.length ? (
                 dashboard.holdings.map((holding) => (
-                  <TableRow key={holding.id} className="border-slate-800/70 hover:bg-slate-900/45">
+                  <TableRow key={holding.id} className="border-border/70 hover:bg-surface-raised/45">
                     <TableCell className="max-w-[230px] pl-6">
                       <div className="min-w-0">
-                        <p className="truncate font-medium text-slate-100">{holding.name}</p>
-                        <p className="mt-1 truncate text-xs text-slate-500">
+                        <p className="truncate font-medium text-content-strong">{holding.name}</p>
+                        <p className="mt-1 truncate text-xs text-content-strong0">
                           {holding.ticker || "Sem ticker"}
                           {holding.institutionName ? " · " + holding.institutionName : ""}
                         </p>
@@ -89,7 +89,7 @@ export function HoldingsTable({
                               <button
                                 key={allocation.id}
                                 type="button"
-                                className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-900 px-2 py-1 text-[0.68rem] text-slate-400 transition hover:border-cyan-300/30 hover:text-cyan-200"
+                                className="inline-flex items-center gap-1 rounded-full border border-input bg-surface-raised px-2 py-1 text-[0.68rem] text-content transition hover:border-brand/30 hover:text-brand"
                                 title="Editar alocação"
                                 onClick={() => onEditAllocation(allocation)}
                               >
@@ -106,24 +106,24 @@ export function HoldingsTable({
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <Badge variant="outline" className="border-cyan-300/20 text-cyan-200">
+                        <Badge variant="outline" className="border-brand/20 text-brand">
                           {investmentAssetClassLabels[holding.assetClass]}
                         </Badge>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-content-strong0">
                           {investmentInstrumentTypeLabels[holding.instrumentType]}
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-slate-100">
+                    <TableCell className="text-right font-medium text-content-strong">
                       {formatCurrency(holding.currentValueCents)}
                     </TableCell>
-                    <TableCell className="text-right text-teal-200">
+                    <TableCell className="text-right text-warning">
                       {formatCurrency(holding.allocatedCents)}
                     </TableCell>
-                    <TableCell className="text-right text-slate-300">
+                    <TableCell className="text-right text-content">
                       {formatCurrency(holding.freeValueCents)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-xs text-slate-400">
+                    <TableCell className="whitespace-nowrap text-xs text-content">
                       {formatDateLabel(holding.valueAsOf)}
                     </TableCell>
                     <TableCell className="pr-6">
@@ -139,11 +139,11 @@ export function HoldingsTable({
               ) : (
                 <TableRow className="hover:bg-transparent">
                   <TableCell colSpan={7} className="px-6 py-12 text-center">
-                    <Coins className="mx-auto size-7 text-slate-600" />
-                    <p className="mt-3 font-heading text-lg font-semibold text-slate-200">
+                    <Coins className="mx-auto size-7 text-content-subtle" />
+                    <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
                       Nenhuma posição cadastrada
                     </p>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-content-strong0">
                       Comece pelo ativo com maior impacto no seu patrimônio.
                     </p>
                   </TableCell>
@@ -156,13 +156,13 @@ export function HoldingsTable({
         <div className="space-y-3 px-4 pb-4 md:hidden">
           {dashboard.holdings.length ? (
             dashboard.holdings.map((holding) => (
-              <article key={holding.id} className="rounded-2xl border border-slate-800 bg-slate-900/45 p-4">
+              <article key={holding.id} className="rounded-2xl border border-border bg-surface-raised/45 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate font-heading text-lg font-semibold text-slate-100">
+                    <p className="truncate font-heading text-lg font-semibold text-content-strong">
                       {holding.name}
                     </p>
-                    <p className="mt-1 truncate text-xs text-slate-500">
+                    <p className="mt-1 truncate text-xs text-content-strong0">
                       {holding.ticker || "Sem ticker"}
                       {holding.institutionName ? " · " + holding.institutionName : ""}
                     </p>
@@ -175,10 +175,10 @@ export function HoldingsTable({
                   />
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-cyan-300/20 text-cyan-200">
+                  <Badge variant="outline" className="border-brand/20 text-brand">
                     {investmentAssetClassLabels[holding.assetClass]}
                   </Badge>
-                  <Badge variant="outline" className="border-slate-700 text-slate-300">
+                  <Badge variant="outline" className="border-input text-content">
                     {investmentInstrumentTypeLabels[holding.instrumentType]}
                   </Badge>
                 </div>
@@ -187,12 +187,12 @@ export function HoldingsTable({
                   <HoldingMetric label="Alocado" value={formatCurrency(holding.allocatedCents)} />
                   <HoldingMetric label="Livre" value={formatCurrency(holding.freeValueCents)} />
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+                <div className="mt-4 flex items-center gap-2 text-xs text-content-strong0">
                   <CalendarDays className="size-3.5" />
                   Valor informado em {formatDateLabel(holding.valueAsOf)}
                 </div>
                 {holding.allocations.length ? (
-                  <div className="mt-3 space-y-1.5 border-t border-slate-800/80 pt-3">
+                  <div className="mt-3 space-y-1.5 border-t border-border/80 pt-3">
                     {holding.allocations.map((allocation) => (
                       <button
                         key={allocation.id}
@@ -201,14 +201,14 @@ export function HoldingsTable({
                         title="Editar alocação"
                         onClick={() => onEditAllocation(allocation)}
                       >
-                        <span className="flex min-w-0 items-center gap-1.5 truncate text-slate-400">
+                        <span className="flex min-w-0 items-center gap-1.5 truncate text-content">
                           <span
                             className="size-1.5 shrink-0 rounded-full"
                             style={{ backgroundColor: allocation.purposeColor }}
                           />
                           {allocation.purposeName}
                         </span>
-                        <span className="shrink-0 text-teal-200">
+                        <span className="shrink-0 text-warning">
                           {formatCurrency(allocation.amountCents)}
                         </span>
                       </button>
@@ -218,9 +218,9 @@ export function HoldingsTable({
               </article>
             ))
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-700 px-5 py-10 text-center">
-              <Coins className="mx-auto size-7 text-slate-600" />
-              <p className="mt-3 font-heading text-lg font-semibold text-slate-200">
+            <div className="rounded-2xl border border-dashed border-input px-5 py-10 text-center">
+              <Coins className="mx-auto size-7 text-content-subtle" />
+              <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
                 Nenhuma posição cadastrada
               </p>
               <Button type="button" variant="outline" className="mt-4" onClick={onCreate}>

@@ -55,15 +55,15 @@ export function ProjectedBalanceCalendar({
 
   return (
     <Card className={financeMonthlyCalendarClassName}>
-      <CardHeader className="border-b border-slate-800 px-4 py-4 sm:px-5">
+      <CardHeader className="border-b border-border px-4 py-4 sm:px-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <CardTitle>Calendário do caixa</CardTitle>
-            <p className="mt-1 text-sm leading-6 text-slate-400">
+            <p className="mt-1 text-sm leading-6 text-content">
               Cada dia mostra o saldo projetado e quanto permanece sustentável para gastar.
             </p>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-content-strong0">
             {formatMonthLabel(firstMonth)} até {formatMonthLabel(lastMonth)}
           </p>
         </div>
@@ -93,20 +93,20 @@ export function ProjectedBalanceCalendar({
         </MonthlyCalendar>
       </CardContent>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-800 px-5 py-3 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-xs text-content-strong0">
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-emerald-300" aria-hidden="true" />
+          <span className="size-1.5 rounded-full bg-warning" aria-hidden="true" />
           Seguro
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-amber-300" aria-hidden="true" />
+          <span className="size-1.5 rounded-full bg-warning" aria-hidden="true" />
           Abaixo da reserva
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-rose-300" aria-hidden="true" />
+          <span className="size-1.5 rounded-full bg-danger" aria-hidden="true" />
           Saldo negativo
         </span>
-        <span className="ml-auto text-slate-600">Selecione um dia para ver os eventos</span>
+        <span className="ml-auto text-content-subtle">Selecione um dia para ver os eventos</span>
       </div>
     </Card>
   );

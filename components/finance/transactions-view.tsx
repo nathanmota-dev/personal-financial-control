@@ -95,7 +95,7 @@ export function TransactionsView({
         </TabsList>
 
         <TabsContent value="transactions">
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+          <Card className="rounded-[1.75rem] border-border bg-surface/75">
             <CardHeader>
               <CardTitle>Lista principal</CardTitle>
             </CardHeader>
@@ -122,12 +122,12 @@ export function TransactionsView({
                             <TableCell>{formatDateLabel(transaction.transactionDate)}</TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium text-slate-100">{transaction.description}</p>
-                                {transaction.notes ? <p className="text-xs text-slate-400">{transaction.notes}</p> : null}
+                                <p className="font-medium text-content-strong">{transaction.description}</p>
+                                {transaction.notes ? <p className="text-xs text-content">{transaction.notes}</p> : null}
                                 {transaction.isGeneratedByFunding ? (
-                                  <p className="mt-1 text-xs font-medium text-amber-300">Resgate automático</p>
+                                  <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
                                 ) : transaction.fundingSource === "investments" ? (
-                                  <p className="mt-1 text-xs font-medium text-cyan-300">Pago com investimentos</p>
+                                  <p className="mt-1 text-xs font-medium text-brand">Pago com investimentos</p>
                                 ) : null}
                               </div>
                             </TableCell>
@@ -139,9 +139,9 @@ export function TransactionsView({
                                   {transactionTypeLabels[transaction.type]}
                                 </Badge>
                                 {transaction.isGeneratedByFunding ? (
-                                  <Badge className="bg-amber-400/10 text-amber-200 ring-1 ring-amber-300/20">Automático</Badge>
+                                  <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
                                 ) : transaction.fundingSource === "investments" ? (
-                                  <Badge className="bg-cyan-400/10 text-cyan-200 ring-1 ring-cyan-300/20">Investimentos</Badge>
+                                  <Badge className="bg-brand/10 text-brand ring-1 ring-brand/20">Investimentos</Badge>
                                 ) : null}
                               </div>
                             </TableCell>
@@ -153,7 +153,7 @@ export function TransactionsView({
                             <TableCell className="text-right font-semibold">{formatCurrency(transaction.amountCents)}</TableCell>
                             <TableCell className="text-right">
                               {transaction.isGeneratedByFunding ? (
-                                <span className="text-xs text-slate-500">Gerenciado pela despesa</span>
+                                <span className="text-xs text-content-strong0">Gerenciado pela despesa</span>
                               ) : (
                                 <div className="flex justify-end gap-2">
                                   <TransactionDialog
@@ -179,33 +179,33 @@ export function TransactionsView({
 
                   <div className="grid gap-3 md:hidden">
                     {transactions.map((transaction) => (
-                      <div key={transaction.id} className="rounded-2xl border border-slate-800 p-4">
+                      <div key={transaction.id} className="rounded-2xl border border-border p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="font-medium text-slate-100">{transaction.description}</p>
-                            <p className="text-sm text-slate-400">
+                            <p className="font-medium text-content-strong">{transaction.description}</p>
+                            <p className="text-sm text-content">
                               {formatDateLabel(transaction.transactionDate)} • {transaction.account?.name ?? "-"}
                             </p>
                             {transaction.isGeneratedByFunding ? (
-                              <p className="mt-1 text-xs font-medium text-amber-300">Resgate automático</p>
+                              <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
                             ) : transaction.fundingSource === "investments" ? (
-                              <p className="mt-1 text-xs font-medium text-cyan-300">Pago com investimentos</p>
+                              <p className="mt-1 text-xs font-medium text-brand">Pago com investimentos</p>
                             ) : null}
                           </div>
-                          <p className="font-semibold text-slate-100">{formatCurrency(transaction.amountCents)}</p>
+                          <p className="font-semibold text-content-strong">{formatCurrency(transaction.amountCents)}</p>
                         </div>
-                        <p className="mt-2 text-xs text-slate-500">{transaction.category?.name ?? "Sem categoria"}</p>
+                        <p className="mt-2 text-xs text-content-strong0">{transaction.category?.name ?? "Sem categoria"}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>{transactionTypeLabels[transaction.type]}</Badge>
                           {transaction.isGeneratedByFunding ? (
-                            <Badge className="bg-amber-400/10 text-amber-200 ring-1 ring-amber-300/20">Automático</Badge>
+                            <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
                           ) : transaction.fundingSource === "investments" ? (
-                            <Badge className="bg-cyan-400/10 text-cyan-200 ring-1 ring-cyan-300/20">Investimentos</Badge>
+                            <Badge className="bg-brand/10 text-brand ring-1 ring-brand/20">Investimentos</Badge>
                           ) : null}
                           <Badge className={cn("ring-1", getStatusTone(transaction.status))}>{transactionStatusLabels[transaction.status]}</Badge>
                         </div>
                         {transaction.isGeneratedByFunding ? (
-                          <p className="mt-4 text-xs text-slate-500">Gerenciado pela despesa vinculada</p>
+                          <p className="mt-4 text-xs text-content-strong0">Gerenciado pela despesa vinculada</p>
                         ) : (
                           <div className="mt-4 flex gap-2">
                             <TransactionDialog
@@ -240,21 +240,21 @@ export function TransactionsView({
         </TabsContent>
 
         <TabsContent value="transfers">
-          <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+          <Card className="rounded-[1.75rem] border-border bg-surface/75">
             <CardHeader>
               <CardTitle>Transferências do mês</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {transfers.length ? (
                 transfers.map((transfer) => (
-                  <div key={transfer.id} className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-800 p-4 md:flex-row md:items-center">
+                  <div key={transfer.id} className="flex flex-col justify-between gap-3 rounded-2xl border border-border p-4 md:flex-row md:items-center">
                     <div>
-                      <p className="font-medium text-slate-100">{transfer.description}</p>
-                      <p className="text-sm text-slate-400">
+                      <p className="font-medium text-content-strong">{transfer.description}</p>
+                      <p className="text-sm text-content">
                         {formatDateLabel(transfer.transferDate)} • {transfer.fromAccount?.name ?? "-"} para {transfer.toAccount?.name ?? "-"}
                       </p>
                     </div>
-                    <p className="font-semibold text-cyan-300">{formatCurrency(transfer.amountCents)}</p>
+                    <p className="font-semibold text-brand">{formatCurrency(transfer.amountCents)}</p>
                   </div>
                 ))
               ) : (

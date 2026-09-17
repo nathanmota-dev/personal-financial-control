@@ -29,10 +29,10 @@ export function AllocationDialog({
 
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-lg">
+      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{isRelease ? "Liberar saldo" : "Alocar saldo"}</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-content">
             {state?.goal.name ?? "Meta"}
           </DialogDescription>
         </DialogHeader>
@@ -62,13 +62,13 @@ export function AllocationDialog({
               setForm((current) => ({ ...current, occurredOn: event.target.value }))
             }
           />
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/50 px-4 py-3 text-sm text-slate-300">
+          <div className="rounded-2xl border border-border bg-surface-raised/50 px-4 py-3 text-sm text-content">
             {isRelease
               ? `Alocado nesta meta: ${formatCurrency(state?.goal.allocatedCents ?? 0)}`
               : `Reserva livre: ${formatCurrency(freeReserveCents)}`}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="goal-allocation-notes" className="text-slate-200">
+            <Label htmlFor="goal-allocation-notes" className="text-content-strong">
               Notas
             </Label>
             <Textarea
@@ -77,7 +77,7 @@ export function AllocationDialog({
               onChange={(event) =>
                 setForm((current) => ({ ...current, notes: event.target.value }))
               }
-              className="min-h-20 border-slate-700 bg-slate-950/70 text-slate-100"
+              className="min-h-20 border-input bg-surface/70 text-content-strong"
             />
           </div>
           <DialogFooter>

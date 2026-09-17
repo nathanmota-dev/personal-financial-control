@@ -31,14 +31,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const fieldClassName =
-  "h-10 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+  "h-10 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const selectTriggerClassName =
-  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+  "h-10 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const selectContentClassName =
-  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
 const selectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
-const fieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-slate-400";
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
+const fieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-content";
 
 export function ProjectionSimulationDialog({
   accounts,
@@ -116,10 +116,10 @@ export function ProjectionSimulationDialog({
           Simular compra
         </Button>
       </DialogTrigger>
-      <DialogContent className="border-slate-800 bg-slate-950/95 text-slate-100 sm:max-w-lg">
+      <DialogContent className="border-border bg-surface/95 text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Simular compra</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-content">
             A compra será aplicada apenas nesta projeção, entre {formatDateLabel(filters.startDate)} e{" "}
             {formatDateLabel(filters.endDate)}.
           </DialogDescription>
@@ -190,7 +190,7 @@ export function ProjectionSimulationDialog({
           </div>
 
           {error ? (
-            <p className="rounded-xl border border-rose-300/25 bg-rose-400/10 px-3 py-2 text-sm text-rose-200">
+            <p className="rounded-xl border border-danger/25 bg-danger/10 px-3 py-2 text-sm text-danger">
               {error}
             </p>
           ) : null}

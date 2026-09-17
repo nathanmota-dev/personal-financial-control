@@ -51,10 +51,10 @@ import { cn } from "@/lib/utils";
 
 const NO_CATEGORY_VALUE = "__no-category__";
 const fieldClassName =
-  "h-11 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+  "h-11 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const selectClassName =
-  "h-11 w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] outline-none transition-colors focus:border-cyan-400/70 focus:ring-2 focus:ring-cyan-400/20";
-const labelClassName = "text-xs uppercase tracking-[0.16em] text-slate-400";
+  "h-11 w-full rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] outline-none transition-colors focus:border-brand/70 focus:ring-2 focus:ring-brand/20";
+const labelClassName = "text-xs uppercase tracking-[0.16em] text-content";
 
 function compatibleCategories(
   categories: TransactionCategoryOption[],
@@ -316,10 +316,10 @@ export function TransactionDialog({
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-slate-800 bg-slate-950/95 sm:max-w-2xl">
-          <DialogHeader className="border-b border-slate-800 pb-5">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-cyan-300">Registro manual</p>
-            <DialogTitle className="text-2xl text-slate-50">
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-surface/95 sm:max-w-2xl">
+          <DialogHeader className="border-b border-border pb-5">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-brand">Registro manual</p>
+            <DialogTitle className="text-2xl text-content-strong">
               {transaction ? "Editar lançamento" : "Novo lançamento"}
             </DialogTitle>
             <DialogDescription>
@@ -357,8 +357,8 @@ export function TransactionDialog({
                         className={cn(
                           "flex cursor-pointer gap-3 rounded-2xl border p-3 transition-colors",
                           fundingSource === "account"
-                            ? "border-cyan-300/35 bg-cyan-300/[0.08]"
-                            : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                            ? "border-brand/35 bg-brand/[0.08]"
+                            : "border-border bg-surface-raised/50 hover:border-input"
                         )}
                       >
                         <input
@@ -367,19 +367,19 @@ export function TransactionDialog({
                           value="account"
                           checked={fundingSource === "account"}
                           onChange={() => setFundingSource("account")}
-                          className="mt-1 accent-cyan-300"
+                          className="mt-1 accent-brand"
                         />
                         <span>
-                          <span className="block text-sm font-medium text-slate-100">Saldo em conta</span>
-                          <span className="mt-1 block text-xs leading-5 text-slate-500">A despesa reduz diretamente o saldo líquido da conta.</span>
+                          <span className="block text-sm font-medium text-content-strong">Saldo em conta</span>
+                          <span className="mt-1 block text-xs leading-5 text-content-strong0">A despesa reduz diretamente o saldo líquido da conta.</span>
                         </span>
                       </label>
                       <label
                         className={cn(
                           "flex cursor-pointer gap-3 rounded-2xl border p-3 transition-colors",
                           fundingSource === "investments"
-                            ? "border-amber-300/35 bg-amber-300/[0.08]"
-                            : "border-slate-800 bg-slate-900/50 hover:border-slate-700"
+                            ? "border-warning/35 bg-warning/[0.08]"
+                            : "border-border bg-surface-raised/50 hover:border-input"
                         )}
                       >
                         <input
@@ -388,11 +388,11 @@ export function TransactionDialog({
                           value="investments"
                           checked={fundingSource === "investments"}
                           onChange={() => setFundingSource("investments")}
-                          className="mt-1 accent-amber-300"
+                          className="mt-1 accent-warning"
                         />
                         <span>
-                          <span className="block text-sm font-medium text-slate-100">Investimentos</span>
-                          <span className="mt-1 block text-xs leading-5 text-slate-500">Cria um resgate automático e registra de quais ativos ele saiu.</span>
+                          <span className="block text-sm font-medium text-content-strong">Investimentos</span>
+                          <span className="mt-1 block text-xs leading-5 text-content-strong0">Cria um resgate automático e registra de quais ativos ele saiu.</span>
                         </span>
                       </label>
                     </div>
@@ -410,7 +410,7 @@ export function TransactionDialog({
                     ))}
                   </select>
                   {isInvestmentExpense ? (
-                    <p className="text-xs text-slate-500">O resgate entra nesta conta e a despesa sai dela, mantendo o efeito líquido zerado.</p>
+                    <p className="text-xs text-content-strong0">O resgate entra nesta conta e a despesa sai dela, mantendo o efeito líquido zerado.</p>
                   ) : null}
                 </div>
                 <div className="space-y-2">
@@ -420,7 +420,7 @@ export function TransactionDialog({
                     {!filteredCategories.length && categoryRequired ? <option value={NO_CATEGORY_VALUE}>Nenhuma categoria compatível</option> : null}
                     {filteredCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                   </select>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-content-strong0">
                     {categoryRequired ? "Obrigatória para movimentações de investimento." : "Opcional; você pode categorizar depois."}
                   </p>
                 </div>
@@ -456,10 +456,10 @@ export function TransactionDialog({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-notes`} className={labelClassName}>Observações <span className="normal-case tracking-normal text-slate-600">(opcional)</span></Label>
-                <Textarea id={`${formId}-notes`} name="notes" defaultValue={transaction?.notes ?? ""} placeholder="Contexto adicional para este lançamento" className="min-h-20 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 placeholder:text-slate-600 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20" />
+                <Label htmlFor={`${formId}-notes`} className={labelClassName}>Observações <span className="normal-case tracking-normal text-content-subtle">(opcional)</span></Label>
+                <Textarea id={`${formId}-notes`} name="notes" defaultValue={transaction?.notes ?? ""} placeholder="Contexto adicional para este lançamento" className="min-h-20 rounded-xl border-input bg-surface/80 text-sm text-content-strong placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20" />
               </div>
-              {formError ? <p className="rounded-xl border border-rose-400/25 bg-rose-400/10 px-4 py-3 text-sm text-rose-200" role="alert">{formError}</p> : null}
+              {formError ? <p className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">{formError}</p> : null}
               <DialogFooter>
                 <Button type="submit" disabled={isPending} className="min-w-40">{isPending ? "Salvando..." : transaction ? "Salvar alterações" : "Criar lançamento"}</Button>
               </DialogFooter>

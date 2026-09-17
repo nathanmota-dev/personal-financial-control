@@ -173,7 +173,7 @@ export function InvestmentsView({
         <Card className={cn(financePanelClassName, "h-full")}>
           <CardHeader>
             <CardTitle>Projeções com seus lançamentos</CardTitle>
-            <p className="text-sm leading-6 text-slate-400">
+            <p className="text-sm leading-6 text-content">
               O cálculo parte do saldo estimado de hoje e inclui recorrências e lançamentos futuros.
             </p>
           </CardHeader>
@@ -182,18 +182,18 @@ export function InvestmentsView({
               cards.map((card) => (
                 <div
                   key={card.months}
-                  className="rounded-[1.5rem] border border-slate-800 bg-slate-900/70 p-4"
+                  className="rounded-[1.5rem] border border-border bg-surface-raised/70 p-4"
                 >
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-content">
                     {card.months} {card.months === 1 ? "mês" : "meses"}
                   </p>
-                  <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
+                  <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-brand">
                     {formatCurrency(card.value ?? 0)}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-slate-400 sm:col-span-2">
+              <p className="text-sm text-content sm:col-span-2">
                 Configure a carteira para visualizar as projeções.
               </p>
             )}
@@ -203,19 +203,19 @@ export function InvestmentsView({
         <Card className={cn(financePanelClassName, "h-full")}>
           <CardHeader>
             <CardTitle>Simular período</CardTitle>
-            <p className="text-sm leading-6 text-slate-300">
+            <p className="text-sm leading-6 text-content">
               Escolha um mês futuro para testar o efeito da taxa e dos movimentos previstos.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm text-slate-100">Data final da simulação</p>
+              <p className="text-sm text-content-strong">Data final da simulação</p>
               <Popover open={isSimulationPickerOpen} onOpenChange={setIsSimulationPickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full justify-between border-slate-700 bg-slate-950/70 text-slate-100 hover:bg-slate-900"
+                    className="w-full justify-between border-input bg-surface/70 text-content-strong hover:bg-surface-raised"
                     disabled={!projection}
                   >
                     <span>
@@ -223,12 +223,12 @@ export function InvestmentsView({
                         ? formatSimulationMonth(selectedSimulationDate)
                         : "Selecione um mês"}
                     </span>
-                    <CalendarDays className="size-4 text-slate-400" />
+                    <CalendarDays className="size-4 text-content" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
-                  className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+                  className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
                 >
                   <MonthPicker
                     selectedMonth={selectedSimulationDate}
@@ -242,7 +242,7 @@ export function InvestmentsView({
                       calendar: { main: "ghost", selected: "secondary" },
                       chevrons: "ghost",
                     }}
-                    className="text-slate-100"
+                    className="text-content-strong"
                   />
                 </PopoverContent>
               </Popover>
@@ -250,24 +250,24 @@ export function InvestmentsView({
 
             {projection ? (
               simulatedMonths && simulatedValue !== null ? (
-                <div className="rounded-[1.5rem] border border-cyan-400/20 bg-slate-950/55 p-5">
-                  <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/80">
+                <div className="rounded-[1.5rem] border border-brand/20 bg-surface/55 p-5">
+                  <p className="text-sm uppercase tracking-[0.24em] text-brand/80">
                     Valor projetado
                   </p>
-                  <p className="mt-3 font-heading text-3xl font-semibold tracking-tight text-cyan-300">
+                  <p className="mt-3 font-heading text-3xl font-semibold tracking-tight text-brand">
                     {formatCurrency(simulatedValue)}
                   </p>
-                  <p className="mt-2 text-sm text-slate-300">
+                  <p className="mt-2 text-sm text-content">
                     Até {selectedSimulationDate ? formatSimulationMonth(selectedSimulationDate) : "o período escolhido"}, com os lançamentos previstos.
                   </p>
                 </div>
               ) : (
-                <p className="text-sm leading-6 text-slate-300">
+                <p className="text-sm leading-6 text-content">
                   Selecione um mês futuro para gerar a projeção personalizada.
                 </p>
               )
             ) : (
-              <p className="text-sm leading-6 text-slate-300">
+              <p className="text-sm leading-6 text-content">
                 Configure a carteira acima para liberar a simulação personalizada.
               </p>
             )}

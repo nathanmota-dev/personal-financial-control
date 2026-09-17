@@ -19,16 +19,16 @@ export function ProjectedBalanceCalendarNav({
   const canGoNext = month < lastMonth;
 
   return (
-    <div className="flex flex-col gap-4 border-b border-slate-800 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+    <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
       <div className="flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10 text-cyan-300">
+        <div className="flex size-10 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
           <CalendarDays className="size-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="font-heading text-lg font-semibold text-slate-100">
+          <p className="font-heading text-lg font-semibold text-content-strong">
             {formatMonthLabel(month)}
           </p>
-          <p className="text-xs text-slate-500">Mapa diário do caixa disponível</p>
+          <p className="text-xs text-content-strong0">Mapa diário do caixa disponível</p>
         </div>
       </div>
 

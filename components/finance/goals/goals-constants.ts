@@ -23,10 +23,10 @@ export const GOAL_STATUS_LABELS: Record<GoalStatus, string> = {
 };
 
 export const GOAL_STATUS_BADGE_CLASSNAMES: Record<GoalStatus, string> = {
-  active: "text-cyan-200",
-  paused: "text-amber-200",
-  completed: "text-teal-200",
-  archived: "text-slate-300",
+  active: "text-brand",
+  paused: "text-warning",
+  completed: "text-warning",
+  archived: "text-content",
 };
 
 export const GOAL_PRIORITY_OPTIONS = [
@@ -44,42 +44,42 @@ export const ALLOCATION_TYPE_LABELS: Record<AllocationType, string> = {
 };
 
 export const GOAL_COLORS = [
-  "#38bdf8",
-  "#14b8a6",
-  "#f59e0b",
-  "#f43f5e",
-  "#a78bfa",
+  "var(--chart-brand)",
+  "var(--chart-success)",
+  "var(--chart-warning)",
+  "var(--chart-danger)",
+  "var(--chart-brand)",
   "#22c55e",
-  "#fb7185",
-  "#eab308",
+  "var(--chart-danger)",
+  "var(--chart-warning)",
 ] as const;
 
 export const SUMMARY_TONE_CLASSNAMES: Record<SummaryTone, string> = {
-  cyan: "border-cyan-400/15 bg-cyan-400/8 text-cyan-200",
-  sky: "border-sky-400/15 bg-sky-400/8 text-sky-200",
-  teal: "border-teal-400/15 bg-teal-400/8 text-teal-200",
-  amber: "border-amber-400/15 bg-amber-400/8 text-amber-200",
+  cyan: "border-brand/15 bg-brand/8 text-brand",
+  sky: "border-brand/15 bg-brand/8 text-brand",
+  teal: "border-warning/15 bg-warning/8 text-warning",
+  amber: "border-warning/15 bg-warning/8 text-warning",
   violet: "border-violet-400/15 bg-violet-400/8 text-violet-200",
-  rose: "border-rose-400/15 bg-rose-400/8 text-rose-200",
+  rose: "border-danger/15 bg-danger/8 text-danger",
 };
 
 export const SELECT_TRIGGER_CLASSNAME =
-  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/70 text-slate-100 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20";
+  "h-10 w-full rounded-xl border-input bg-surface/70 text-content-strong focus-visible:border-brand/70 focus-visible:ring-brand/20";
 
 export const SELECT_CONTENT_CLASSNAME =
-  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
 
 export const SELECT_ITEM_CLASSNAME =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90";
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90";
 
 export const ALLOCATION_BREAKDOWN_CHART_CONFIG = {
-  amount: { label: "Valor", color: "#38bdf8" },
+  amount: { label: "Valor", color: "var(--chart-brand)" },
 };
 
 export const MONTHLY_EVOLUTION_CHART_CONFIG = {
-  allocated: { label: "Alocado", color: "#38bdf8" },
-  released: { label: "Liberado", color: "#fb7185" },
-  cumulative: { label: "Acumulado", color: "#14b8a6" },
+  allocated: { label: "Alocado", color: "var(--chart-brand)" },
+  released: { label: "Liberado", color: "var(--chart-danger)" },
+  cumulative: { label: "Acumulado", color: "var(--chart-success)" },
 };
 
 export const COMPACT_CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {

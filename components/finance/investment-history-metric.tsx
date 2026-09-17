@@ -7,9 +7,9 @@ export function InvestmentHistoryMetric({
   tone,
 }: InvestmentHistoryMetricProps) {
   const styles = {
-    cyan: "border-cyan-400/15 bg-cyan-400/8 text-cyan-200",
-    sky: "border-sky-400/15 bg-sky-400/8 text-sky-200",
-    amber: "border-amber-300/15 bg-amber-300/8 text-amber-200",
+    cyan: "border-brand/15 bg-brand/8 text-brand",
+    sky: "border-brand/15 bg-brand/8 text-brand",
+    amber: "border-warning/15 bg-warning/8 text-warning",
   } as const;
 
   return (

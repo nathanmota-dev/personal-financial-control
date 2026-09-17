@@ -78,12 +78,12 @@ export function formatAlertDetail(alert: ProjectionSummaryAlert) {
 
 export function getStatusTone(status: ProjectionStatus) {
   if (status === "safe") {
-    return "bg-emerald-400/12 text-emerald-200 ring-emerald-300/25";
+    return "bg-warning/12 text-warning ring-warning/25";
   }
 
   if (status === "warning") {
-    return "bg-amber-300/12 text-amber-200 ring-amber-300/25";
+    return "bg-warning/12 text-warning ring-warning/25";
   }
 
-  return "bg-rose-400/12 text-rose-200 ring-rose-300/25";
+  return "bg-danger/12 text-danger ring-danger/25";
 }

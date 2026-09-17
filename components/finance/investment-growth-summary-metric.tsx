@@ -6,9 +6,9 @@ export function InvestmentGrowthSummaryMetric({
   tone,
 }: InvestmentGrowthSummaryMetricProps) {
   const tones = {
-    cyan: "border-cyan-400/20 bg-cyan-400/10 text-cyan-200",
-    amber: "border-amber-300/20 bg-amber-300/10 text-amber-200",
-    emerald: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
+    cyan: "border-brand/20 bg-brand/10 text-brand",
+    amber: "border-warning/20 bg-warning/10 text-warning",
+    emerald: "border-warning/20 bg-warning/10 text-warning",
   } as const;
 
   return (

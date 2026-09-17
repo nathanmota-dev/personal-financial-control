@@ -25,10 +25,10 @@ export function AllocationBreakdownCard({
   const hasData = data.some((item) => item.amount > 0);
 
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-border bg-surface/75">
       <CardHeader>
         <CardTitle>Divisão da carteira</CardTitle>
-        <p className="text-sm text-slate-400">Metas visíveis e reserva livre.</p>
+        <p className="text-sm text-content">Metas visíveis e reserva livre.</p>
       </CardHeader>
       <CardContent>
         {hasData ? (
@@ -66,7 +66,7 @@ export function AllocationBreakdownCard({
             </PieChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[260px] items-center justify-center rounded-[1.5rem] border border-dashed border-slate-800 bg-slate-900/35 px-6 text-center text-sm text-slate-400">
+          <div className="flex min-h-[260px] items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-surface-raised/35 px-6 text-center text-sm text-content">
             Nenhuma alocação disponível para o gráfico.
           </div>
         )}

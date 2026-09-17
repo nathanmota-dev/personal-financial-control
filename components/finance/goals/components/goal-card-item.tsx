@@ -36,7 +36,7 @@ export function GoalCardItem({
 }: GoalCardItemProps) {
   return (
     <Card
-      className="overflow-hidden rounded-[1.5rem] border-slate-800 bg-slate-950/75"
+      className="overflow-hidden rounded-[1.5rem] border-border bg-surface/75"
       style={{ "--goal-color": goal.color } as CSSProperties}
     >
       <CardContent className="space-y-5 pt-5">
@@ -47,23 +47,23 @@ export function GoalCardItem({
                 className="size-2.5 rounded-full"
                 style={{ backgroundColor: goal.color }}
               />
-              <Badge variant="outline" className="border-slate-700 text-slate-200">
+              <Badge variant="outline" className="border-input text-content-strong">
                 {GOAL_CATEGORY_LABELS[goal.category]}
               </Badge>
               <Badge
                 variant="outline"
                 className={cn(
-                  "border-slate-700",
+                  "border-input",
                   GOAL_STATUS_BADGE_CLASSNAMES[goal.status]
                 )}
               >
                 {GOAL_STATUS_LABELS[goal.status]}
               </Badge>
             </div>
-            <h3 className="truncate font-heading text-xl font-semibold text-slate-100">
+            <h3 className="truncate font-heading text-xl font-semibold text-content-strong">
               {goal.name}
             </h3>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-content">
               {formatGoalTargetMonth(goal.targetDate)}
             </p>
           </div>
@@ -93,17 +93,17 @@ export function GoalCardItem({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="text-slate-400">Progresso</span>
-            <span className="font-medium text-slate-100">
+            <span className="text-content">Progresso</span>
+            <span className="font-medium text-content-strong">
               {goal.progressPercentage.toFixed(1).replace(".", ",")}%
             </span>
           </div>
           <Progress
             value={goal.progressPercentage}
-            className="h-2 bg-slate-800 [&_[data-slot=progress-indicator]]:bg-[var(--goal-color)]"
+            className="h-2 bg-surface-elevated [&_[data-slot=progress-indicator]]:bg-[var(--goal-color)]"
           />
           {goal.overfundedCents > 0 ? (
-            <p className="text-xs text-teal-200">
+            <p className="text-xs text-warning">
               Excedente: {formatCurrency(goal.overfundedCents)}
             </p>
           ) : null}
@@ -120,7 +120,7 @@ export function GoalCardItem({
         </div>
 
         {goal.notes ? (
-          <p className="rounded-2xl border border-slate-800 bg-slate-900/50 px-4 py-3 text-sm leading-6 text-slate-300">
+          <p className="rounded-2xl border border-border bg-surface-raised/50 px-4 py-3 text-sm leading-6 text-content">
             {goal.notes}
           </p>
         ) : null}

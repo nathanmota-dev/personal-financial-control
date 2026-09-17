@@ -6,7 +6,7 @@ import type { SummaryCardProps } from "../goals-types";
 
 export function SummaryCard({ label, value, icon, tone }: SummaryCardProps) {
   return (
-    <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.5rem] border-border bg-surface/75">
       <CardContent className="space-y-3 pt-4">
         <div
           className={cn(
@@ -17,8 +17,8 @@ export function SummaryCard({ label, value, icon, tone }: SummaryCardProps) {
           {icon}
         </div>
         <div>
-          <p className="text-sm text-slate-400">{label}</p>
-          <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-slate-100">
+          <p className="text-sm text-content">{label}</p>
+          <p className="mt-1 font-heading text-2xl font-semibold tracking-tight text-content-strong">
             {value}
           </p>
         </div>

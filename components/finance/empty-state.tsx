@@ -18,10 +18,10 @@ export function FinanceEmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <Empty className="rounded-[1.75rem] border border-dashed border-slate-800 bg-slate-950/55 text-slate-100">
+    <Empty className="rounded-[1.75rem] border border-dashed border-border bg-surface/55 text-content-strong">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <WalletCards className="text-sky-300" />
+          <WalletCards className="text-brand" />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>

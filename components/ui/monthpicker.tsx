@@ -69,7 +69,7 @@ function MonthPicker({
     return (
         <div
             className={cn(
-                "min-w-[200px] w-[280px] rounded-[1.5rem] bg-slate-950/95 p-4",
+                "min-w-[200px] w-[280px] rounded-[1.5rem] bg-surface/95 p-4",
                 className
             )}
             {...props}
@@ -107,7 +107,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
     return (
         <>
             <div className="relative flex items-center justify-center px-1 pt-1">
-                <div className="text-sm font-medium text-slate-100">
+                <div className="text-sm font-medium text-content-strong">
                     {callbacks?.yearLabel ? callbacks?.yearLabel(menuYear) : menuYear}
                 </div>
                 <div className="space-x-1 flex items-center">
@@ -119,7 +119,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
                         }}
                         className={cn(
                             buttonVariants({ variant: variant?.chevrons ?? "outline" }),
-                            "absolute left-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-transparent bg-transparent p-0 text-slate-300 shadow-none hover:bg-slate-900 hover:text-slate-100"
+                            "absolute left-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-transparent bg-transparent p-0 text-content shadow-none hover:bg-surface-raised hover:text-content-strong"
                         )}
                     >
                         <ChevronLeft className="opacity-50 h-4 w-4" />
@@ -132,7 +132,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
                         }}
                         className={cn(
                             buttonVariants({ variant: variant?.chevrons ?? "outline" }),
-                            "absolute right-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-transparent bg-transparent p-0 text-slate-300 shadow-none hover:bg-slate-900 hover:text-slate-100"
+                            "absolute right-1 inline-flex h-8 w-8 items-center justify-center rounded-full border-transparent bg-transparent p-0 text-content shadow-none hover:bg-surface-raised hover:text-content-strong"
                         )}
                     >
                         <ChevronRight className="opacity-50 h-4 w-4" />
@@ -164,7 +164,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
                                                 }
                                                 className={cn(
                                                     buttonVariants({ variant: month == m.number && menuYear == year ? variant?.calendar?.selected ?? "default" : variant?.calendar?.main ?? "ghost" }),
-                                                    "h-full w-full rounded-xl p-0 font-normal text-slate-100 aria-selected:opacity-100 hover:bg-slate-900"
+                                                    "h-full w-full rounded-xl p-0 font-normal text-content-strong aria-selected:opacity-100 hover:bg-surface-raised"
                                                 )}
                                             >
                                                 {callbacks?.monthLabel ? callbacks.monthLabel(m) : m.name}

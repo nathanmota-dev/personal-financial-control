@@ -24,7 +24,7 @@ export function SelectField({
 }: SelectFieldProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-slate-200">{label}</Label>
+      <Label className="text-content-strong">{label}</Label>
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
           <SelectValue placeholder="Selecionar" />

@@ -79,12 +79,12 @@ export function SettingsView({
           <div className="grid gap-4 md:grid-cols-2">
             {accounts.length ? (
               accounts.map((account) => (
-                <Card key={account.id} className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+                <Card key={account.id} className="rounded-[1.75rem] border-border bg-surface/75">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <CardTitle>{account.name}</CardTitle>
-                        <p className="mt-1 text-sm text-slate-400">{accountTypeLabels[account.type]}</p>
+                        <p className="mt-1 text-sm text-content">{accountTypeLabels[account.type]}</p>
                       </div>
                       {account.isArchived ? <Badge variant="outline">Arquivada</Badge> : null}
                     </div>
@@ -93,14 +93,14 @@ export function SettingsView({
                     {account.type === "credit" ? (
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className={cn(financeItemClassName, "p-3")}>
-                          <p className="text-slate-400">Fechamento</p>
-                          <p className="mt-1 font-semibold text-slate-100">
+                          <p className="text-content">Fechamento</p>
+                          <p className="mt-1 font-semibold text-content-strong">
                             {account.creditClosingDay ? `Dia ${account.creditClosingDay}` : "Não configurado"}
                           </p>
                         </div>
                         <div className={cn(financeItemClassName, "p-3")}>
-                          <p className="text-slate-400">Vencimento</p>
-                          <p className="mt-1 font-semibold text-cyan-300">
+                          <p className="text-content">Vencimento</p>
+                          <p className="mt-1 font-semibold text-brand">
                             Dia {account.creditDueDay}
                           </p>
                         </div>
@@ -108,14 +108,14 @@ export function SettingsView({
                     ) : (
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className={cn(financeItemClassName, "p-3")}>
-                          <p className="text-slate-400">Saldo inicial</p>
-                          <p className="mt-1 font-semibold text-slate-100">
+                          <p className="text-content">Saldo inicial</p>
+                          <p className="mt-1 font-semibold text-content-strong">
                             {formatCurrency(account.initialBalanceCents)}
                           </p>
                         </div>
                         <div className={cn(financeItemClassName, "p-3")}>
-                          <p className="text-slate-400">Saldo atual</p>
-                          <p className="mt-1 font-semibold text-cyan-300">
+                          <p className="text-content">Saldo atual</p>
+                          <p className="mt-1 font-semibold text-brand">
                             {formatCurrency(account.currentBalanceCents)}
                           </p>
                         </div>
@@ -149,17 +149,17 @@ export function SettingsView({
         <TabsContent value="categories">
           <div className="grid gap-6">
             {Object.entries(categoriesByGroup).map(([group, rows]) => (
-              <Card key={group} className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+              <Card key={group} className="rounded-[1.75rem] border-border bg-surface/75">
                 <CardHeader>
                   <CardTitle>{categoryGroupLabels[group as keyof typeof categoryGroupLabels]}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   {rows.map((category) => (
-                    <div key={category.id} className="rounded-2xl border border-slate-800 p-4">
+                    <div key={category.id} className="rounded-2xl border border-border p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-medium text-slate-100">{category.name}</p>
-                          <p className="text-sm text-slate-400">
+                          <p className="font-medium text-content-strong">{category.name}</p>
+                          <p className="text-sm text-content">
                             {categoryGroupLabels[category.group]}
                           </p>
                         </div>

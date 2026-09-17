@@ -26,19 +26,19 @@ export function DashboardCharts({
     <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
       <Card className={cn(financePanelClassName, "gap-0 py-0")}>
         <CardHeader className={financeHeaderClassName}>
-          <CardTitle className="text-lg font-semibold text-slate-100">
+          <CardTitle className="text-lg font-semibold text-content-strong">
             Evolução mensal
           </CardTitle>
-          <p className="text-sm text-slate-400">Receita, saídas e resultado dos últimos meses.</p>
+          <p className="text-sm text-content">Receita, saídas e resultado dos últimos meses.</p>
         </CardHeader>
         <CardContent className="p-5">
           <ChartContainer
             className={cn(financeChartSurfaceClassName, "h-[320px] w-full border-0")}
             config={{
-              income: { label: "Receitas", color: "#0f766e" },
-              expenses: { label: "Despesas", color: "#be123c" },
-              investments: { label: "Aportes", color: "#0369a1" },
-              net: { label: "Líquido", color: "#1e293b" },
+              income: { label: "Receitas", color: "var(--chart-success)" },
+              expenses: { label: "Despesas", color: "var(--chart-danger)" },
+              investments: { label: "Aportes", color: "var(--chart-brand)" },
+              net: { label: "Líquido", color: "var(--chart-neutral)" },
             }}
           >
             <AreaChart data={evolution}>

@@ -188,30 +188,30 @@ export function extractErrorMessage(error: unknown) {
 
 export function getTransactionTone(type: TransactionType) {
   if (type === "income") {
-    return "bg-emerald-500/12 text-emerald-700 ring-emerald-500/20";
+    return "bg-warning/12 text-warning ring-warning/20";
   }
 
   if (type === "investment_contribution") {
-    return "bg-sky-500/12 text-sky-700 ring-sky-500/20";
+    return "bg-brand/12 text-brand ring-brand/20";
   }
 
   if (type === "investment_withdrawal") {
-    return "bg-amber-500/12 text-amber-700 ring-amber-500/20";
+    return "bg-warning/12 text-warning ring-warning/20";
   }
 
-  return "bg-rose-500/12 text-rose-700 ring-rose-500/20";
+  return "bg-danger/12 text-danger ring-danger/20";
 }
 
 export function getStatusTone(status: TransactionStatus | RecurringStatus) {
   if (status === "posted" || status === "active") {
-    return "bg-emerald-500/12 text-emerald-700 ring-emerald-500/20";
+    return "bg-warning/12 text-warning ring-warning/20";
   }
 
   if (status === "pending" || status === "paused") {
-    return "bg-amber-500/12 text-amber-700 ring-amber-500/20";
+    return "bg-warning/12 text-warning ring-warning/20";
   }
 
-  return "bg-slate-500/12 text-slate-700 ring-slate-500/20";
+  return "bg-surface-elevated/12 text-content-subtle ring-content-subtle/20";
 }
 
 export function isValidMonth(value: string | null | undefined): value is string {

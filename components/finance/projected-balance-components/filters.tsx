@@ -37,13 +37,13 @@ import { cn } from "@/lib/utils";
 import { EMPTY_FILTER_VALUE, periodLabels } from "./labels";
 
 const filterInputClassName =
-  "h-10 rounded-xl border-slate-700 bg-slate-950/80 text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] focus-visible:border-sky-400/70 focus-visible:ring-sky-400/20";
+  "h-10 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const filterSelectTriggerClassName =
-  "h-10 w-full rounded-xl border-slate-700 bg-slate-950/80 pr-11 pl-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-sky-400/70 focus-visible:ring-sky-400/20 data-[state=open]:border-slate-600 data-[state=open]:bg-slate-900";
+  "h-10 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
 const filterSelectContentClassName =
-  "rounded-[1.25rem] border-slate-800 bg-slate-950/96 p-1 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]";
+  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
 const filterSelectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-slate-200 focus:bg-slate-800 focus:text-slate-50 data-[state=checked]:bg-slate-800/90 data-[state=checked]:text-slate-50";
+  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
 
 export function ProjectionFilters({
   accounts,
@@ -115,10 +115,10 @@ export function ProjectionFilters({
   }
 
   return (
-    <Card className="rounded-[1.75rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.75rem] border-border bg-surface/75">
       <CardHeader className="gap-2">
         <div className="flex items-center gap-3">
-          <div className={cn(financeIconClassName, "bg-cyan-400/10 text-cyan-300")}>
+          <div className={cn(financeIconClassName, "bg-brand/10 text-brand")}>
             <SlidersHorizontal className="size-4" />
           </div>
           <CardTitle>Filtros da projeção</CardTitle>
@@ -163,12 +163,12 @@ export function ProjectionFilters({
                   aria-label={`Selecionar data inicial: ${formatDateLabel(filters.startDate)}`}
                 >
                   <span>{formatDateLabel(filters.startDate)}</span>
-                  <CalendarDays className="size-4 text-slate-400" />
+                  <CalendarDays className="size-4 text-content" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+                className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
               >
                 <Calendar
                   mode="single"
@@ -182,7 +182,7 @@ export function ProjectionFilters({
                     setIsStartDatePickerOpen(false);
                   }}
                   locale={ptBR}
-                  className="text-slate-100"
+                  className="text-content-strong"
                 />
               </PopoverContent>
             </Popover>
@@ -253,7 +253,7 @@ export function ProjectionFilters({
                 onClick={applyReserve}
                 disabled={isPending}
                 aria-label="Aplicar reserva mínima"
-                className="h-10 border-slate-700 bg-slate-950/80 text-slate-100 hover:bg-slate-900"
+                className="h-10 border-input bg-surface/80 text-content-strong hover:bg-surface-raised"
               >
                 <Check className="size-4" />
               </Button>
@@ -296,7 +296,7 @@ export function ProjectionFilters({
 function FilterField({ label, children }: FilterFieldProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-xs uppercase tracking-[0.18em] text-slate-500">
+      <Label className="text-xs uppercase tracking-[0.18em] text-content-strong0">
         {label}
       </Label>
       {children}
@@ -314,19 +314,19 @@ function ToggleFilter({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-4",
+        "flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface-raised/40 p-4",
         disabled && "opacity-60"
       )}
     >
       <div>
-        <p className="font-medium text-slate-100">{label}</p>
-        <p className="mt-1 text-sm text-slate-500">{description}</p>
+        <p className="font-medium text-content-strong">{label}</p>
+        <p className="mt-1 text-sm text-content-strong0">{description}</p>
       </div>
       <Switch
         checked={checked}
         disabled={disabled}
         onCheckedChange={onCheckedChange}
-        className="data-checked:bg-cyan-300"
+        className="data-checked:bg-brand"
       />
     </div>
   );

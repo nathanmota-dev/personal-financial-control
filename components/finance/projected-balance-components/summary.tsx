@@ -99,8 +99,8 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
             "flex gap-3 rounded-[1.25rem] border p-4 text-sm",
             alert.code === "PROJECTED_BALANCE_NEGATIVE" ||
               alert.code === "CURRENT_BALANCE_NEGATIVE"
-              ? "border-rose-400/25 bg-rose-400/10 text-rose-100"
-              : "border-amber-300/25 bg-amber-300/10 text-amber-100"
+              ? "border-danger/25 bg-danger/10 text-danger"
+              : "border-warning/25 bg-warning/10 text-warning"
           )}
         >
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
@@ -116,24 +116,24 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
 
 function MetricCard({ label, value, description, icon, tone }: MetricCardProps) {
   const tones = {
-    cyan: "text-cyan-300 bg-cyan-400/10",
-    emerald: "text-emerald-300 bg-emerald-400/10",
-    sky: "text-sky-300 bg-sky-400/10",
-    amber: "text-amber-300 bg-amber-300/10",
-    rose: "text-rose-300 bg-rose-400/10",
+    cyan: "text-brand bg-brand/10",
+    emerald: "text-warning bg-warning/10",
+    sky: "text-brand bg-brand/10",
+    amber: "text-warning bg-warning/10",
+    rose: "text-danger bg-danger/10",
   } as const;
 
   return (
-    <Card className="rounded-[1.5rem] border-slate-800 bg-slate-950/75">
+    <Card className="rounded-[1.5rem] border-border bg-surface/75">
       <CardContent className="space-y-3 pt-6">
         <div className={cn(financeIconClassName, tones[tone])}>{icon}</div>
         <div>
-          <p className="text-sm text-slate-400">{label}</p>
+          <p className="text-sm text-content">{label}</p>
           <p className={cn("font-heading text-2xl font-semibold tracking-tight", tones[tone])}>
             {value}
           </p>
         </div>
-        <p className="text-sm leading-6 text-slate-400">{description}</p>
+        <p className="text-sm leading-6 text-content">{description}</p>
       </CardContent>
     </Card>
   );

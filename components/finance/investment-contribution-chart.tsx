@@ -37,24 +37,24 @@ export function InvestmentContributionChart({
   const netMovementCents = history.totalContributionCents - history.totalWithdrawalCents;
 
   return (
-    <Card className="h-full overflow-hidden rounded-[1.75rem] border-slate-800 bg-slate-950/75 shadow-[0_24px_80px_rgba(2,6,23,0.28)]">
-      <CardHeader className="border-b border-slate-800/80 pb-5">
+    <Card className="h-full overflow-hidden rounded-[1.75rem] border-border bg-surface/75 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .28)]">
+      <CardHeader className="border-b border-border/80 pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="mb-2 flex items-center gap-2 text-cyan-300">
+            <div className="mb-2 flex items-center gap-2 text-brand">
               <WalletCards className="size-4" />
               <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
                 Movimentações reais
               </span>
             </div>
-            <h2 className="font-heading text-xl font-semibold text-slate-100">
+            <h2 className="font-heading text-xl font-semibold text-content-strong">
               Aportes e resgates
             </h2>
-            <p className="mt-1 text-sm leading-6 text-slate-400">
+            <p className="mt-1 text-sm leading-6 text-content">
               Histórico dos lançamentos realizados, sem misturar rendimento estimado.
             </p>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/8 px-3 py-2 text-xs text-cyan-100">
+          <div className="flex items-center gap-2 rounded-full border border-brand/15 bg-brand/8 px-3 py-2 text-xs text-brand">
             <ArrowUpFromLine className="size-3.5" />
             <span>Ligado a Lançamentos</span>
           </div>
@@ -85,9 +85,9 @@ export function InvestmentContributionChart({
           <ChartContainer
             className={cn(financeChartSurfaceClassName, "h-[330px] w-full")}
             config={{
-              monthlyContribution: { label: "Aportes", color: "#38bdf8" },
-              monthlyWithdrawal: { label: "Resgates", color: "#f59e0b" },
-              cumulativeNetMovement: { label: "Movimentação líquida", color: "#22d3ee" },
+              monthlyContribution: { label: "Aportes", color: "var(--chart-brand)" },
+              monthlyWithdrawal: { label: "Resgates", color: "var(--chart-warning)" },
+              cumulativeNetMovement: { label: "Movimentação líquida", color: "var(--chart-brand)" },
             }}
           >
             <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
@@ -124,7 +124,7 @@ export function InvestmentContributionChart({
                   />
                 }
               />
-              <ChartLegend content={<ChartLegendContent className="text-slate-300" />} />
+              <ChartLegend content={<ChartLegendContent className="text-content" />} />
               <Bar
                 dataKey="monthlyContribution"
                 name="Aportes"
@@ -152,14 +152,14 @@ export function InvestmentContributionChart({
             </ComposedChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-slate-700 bg-slate-900/35 px-6 text-center">
-            <div className="rounded-full border border-cyan-400/15 bg-cyan-400/10 p-3 text-cyan-300">
+          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-input bg-surface-raised/35 px-6 text-center">
+            <div className="rounded-full border border-brand/15 bg-brand/10 p-3 text-brand">
               <ArrowDownToLine className="size-6" />
             </div>
-            <p className="mt-4 font-heading text-lg font-semibold text-slate-100">
+            <p className="mt-4 font-heading text-lg font-semibold text-content-strong">
               Nenhuma movimentação realizada
             </p>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-slate-400">
+            <p className="mt-2 max-w-sm text-sm leading-6 text-content">
               Cadastre aportes ou resgates na tela de Lançamentos para acompanhar o capital em movimento.
             </p>
           </div>

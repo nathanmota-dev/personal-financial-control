@@ -27,8 +27,8 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   if (reconciliation.state === "aligned" && overAllocatedCents === 0) {
     return (
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-teal-400/20 bg-teal-400/8 px-4 py-3 text-sm text-teal-100">
-        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-teal-300" />
+      <div className="flex items-start gap-3 rounded-[1.4rem] border border-warning/20 bg-warning/8 px-4 py-3 text-sm text-warning">
+        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-warning" />
         <p className="leading-6">
           Os ativos cadastrados fecham com o saldo global em{" "}
           {formatDateLabel(
@@ -44,13 +44,13 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   if (reconciliation.state === "not_configured") {
     return (
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-sky-400/20 bg-sky-400/8 px-4 py-3 text-sm text-sky-100">
-        <Info className="mt-0.5 size-4 shrink-0 text-sky-300" />
+      <div className="flex items-start gap-3 rounded-[1.4rem] border border-brand/20 bg-brand/8 px-4 py-3 text-sm text-brand">
+        <Info className="mt-0.5 size-4 shrink-0 text-brand" />
         <p className="leading-6">
           A carteira global ainda não tem checkpoint. Os percentuais usam os{" "}
           {formatCurrency(dashboard.totalRegisteredCents)} cadastrados como base até você
           configurar o saldo em{" "}
-          <Link className="font-semibold text-cyan-200 underline underline-offset-4" href="/investments">
+          <Link className="font-semibold text-brand underline underline-offset-4" href="/investments">
             Investimentos
           </Link>
           .
@@ -106,19 +106,19 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   return (
     <>
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-300" />
+      <div className="flex items-start gap-3 rounded-[1.4rem] border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
+        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
         <div className="flex min-w-0 flex-1 flex-col gap-3 leading-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p>{registrationMessage}</p>
-            <p className="text-amber-100/75">{allocationMessage}</p>
+            <p className="text-warning/75">{allocationMessage}</p>
           </div>
           {reductionCents > 0 ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="shrink-0 border-amber-300/30 bg-amber-300/10 text-amber-50 hover:bg-amber-300/20 hover:text-white"
+              className="shrink-0 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20 hover:text-content-strong"
               disabled={isPending}
               onClick={() => startTransition(() => void openReduction())}
             >

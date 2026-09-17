@@ -37,10 +37,10 @@ export function ContributionDialog({
 
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-slate-950 text-slate-100 sm:max-w-lg">
+      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Registrar aporte</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-content">
             {state?.goal.name ?? "Meta"}
           </DialogDescription>
         </DialogHeader>
@@ -100,7 +100,7 @@ export function ContributionDialog({
             }))}
           />
           <div className="space-y-2">
-            <Label htmlFor="goal-contribution-notes" className="text-slate-200">
+            <Label htmlFor="goal-contribution-notes" className="text-content-strong">
               Notas
             </Label>
             <Textarea
@@ -109,7 +109,7 @@ export function ContributionDialog({
               onChange={(event) =>
                 setForm((current) => ({ ...current, notes: event.target.value }))
               }
-              className="min-h-20 border-slate-700 bg-slate-950/70 text-slate-100"
+              className="min-h-20 border-input bg-surface/70 text-content-strong"
             />
           </div>
           <DialogFooter>

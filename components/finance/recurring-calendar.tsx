@@ -38,7 +38,7 @@ export function RecurringCalendar({
       >
         <RecurringCalendarNav />
         {!events.length ? (
-          <div className="border-b border-slate-800 bg-slate-950/50 px-5 py-3 text-sm text-slate-400">
+          <div className="border-b border-border bg-surface/50 px-5 py-3 text-sm text-content">
             Nenhuma recorrência ativa está prevista para este mês.
           </div>
         ) : null}
@@ -52,7 +52,7 @@ export function RecurringCalendar({
           />
         </MonthlyBody>
       </MonthlyCalendar>
-      <p className="border-t border-slate-800 px-5 py-3 text-xs text-slate-500">
+      <p className="border-t border-border px-5 py-3 text-xs text-content-strong0">
         Eventos com ✓ já possuem lançamento gerado para a competência exibida.
         <span className="sr-only"> Mês exibido: {format(currentMonth, "yyyy-MM")}</span>
       </p>

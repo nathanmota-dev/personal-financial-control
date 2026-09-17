@@ -93,19 +93,19 @@ export function MonthPickerField({
             aria-haspopup="dialog"
             aria-label={label ?? placeholder}
             className={cn(
-              "h-11 min-w-0 flex-1 justify-between rounded-xl border-slate-700 bg-slate-950/80 px-4 text-left text-sm text-slate-100 shadow-[inset_0_1px_0_rgba(148,163,184,0.08)] hover:bg-slate-900/90 focus-visible:border-cyan-400/70 focus-visible:ring-cyan-400/20",
+              "h-11 min-w-0 flex-1 justify-between rounded-xl border-input bg-surface/80 px-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20",
               className
             )}
           >
-            <span className={cn("truncate", !label && "text-slate-500")}>
+            <span className={cn("truncate", !label && "text-content-strong0")}>
               {label ?? placeholder}
             </span>
-            <CalendarDays className="size-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <CalendarDays className="size-4 shrink-0 text-content" aria-hidden="true" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align={align}
-          className="w-auto overflow-hidden rounded-[1.5rem] border border-slate-800 bg-slate-950/95 p-0 text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.45)]"
+          className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
         >
           <MonthPicker
             selectedMonth={parseMonthValue(selectedValue)}
@@ -120,7 +120,7 @@ export function MonthPickerField({
               },
               chevrons: "ghost",
             }}
-            className="text-slate-100"
+            className="text-content-strong"
           />
         </PopoverContent>
       </Popover>
@@ -130,7 +130,7 @@ export function MonthPickerField({
           variant="outline"
           size="icon-sm"
           aria-label="Remover mês"
-          className="border-slate-700 bg-slate-950/80 text-slate-400 hover:bg-slate-900 hover:text-slate-100"
+          className="border-input bg-surface/80 text-content hover:bg-surface-raised hover:text-content-strong"
           onClick={handleClear}
         >
           <X className="size-4" aria-hidden="true" />
