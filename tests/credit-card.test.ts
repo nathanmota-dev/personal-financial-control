@@ -178,6 +178,14 @@ describe("credit card", () => {
       ["Groceries", 60000],
       ["Transport", 45000],
     ]);
+    expect(overview.timeline.find((item) => item.month === "2026-05")).toMatchObject({
+      totalAmountCents: 105000,
+      purchaseCount: 2,
+    });
+    expect(overview.timeline.find((item) => item.month === "2026-06")).toMatchObject({
+      totalAmountCents: 90000,
+      purchaseCount: 2,
+    });
     expect(overview.invoice.futureInstallments).toHaveLength(2);
     expect(overview.invoice.futureInstallments[0]?.installments[0]?.invoiceMonth).toBe("2026-06");
   });

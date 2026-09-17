@@ -491,7 +491,7 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
   }
 
   const [account] = creditAccounts;
-  const [invoiceEntries, monthTransactions, futureChargeRows] = await Promise.all([
+  const [invoiceEntries, monthTransactions, futureChargeRows, cardTransactions, billRows] = await Promise.all([
     listCreditCardExpenseEntries(normalizedMonth, db, { accountId: account.id }),
     listTransactions({ competenceMonth: normalizedMonth }, db),
     db.query.creditCardCharges.findMany({
@@ -504,6 +504,10 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
         orderDesc(table.purchaseDate),
         orderDesc(table.createdAt),
       ],
+    }),
+    listTransactions({ accountId: account.id }, db),
+    db.query.creditCardBills.findMany({
+      where: eq(creditCardBills.accountId, account.id),
     }),
   ]);
 
@@ -518,6 +522,60 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
   });
   const paymentTransactionIds = new Set(
     (await db.query.creditCardBillPayments.findMany()).map((payment) => payment.transactionId)
+  );
+
+  const timelineByMonth = new Map<
+    string,
+    {
+      month: string;
+      totalAmountCents: number;
+      purchaseCount: number;
+      billStatus: "open" | "paid" | null;
+    }
+  >();
+
+  function timelinePoint(month: string) {
+    const existing = timelineByMonth.get(month);
+    if (existing) {
+      return existing;
+    }
+
+    const created = {
+      month,
+      totalAmountCents: 0,
+      purchaseCount: 0,
+      billStatus: null as "open" | "paid" | null,
+    };
+    timelineByMonth.set(month, created);
+    return created;
+  }
+
+  for (const charge of futureChargeRows) {
+    for (const installment of charge.installments) {
+      const point = timelinePoint(installment.invoiceMonth);
+      point.totalAmountCents += installment.amountCents;
+      point.purchaseCount += 1;
+    }
+  }
+
+  for (const transaction of cardTransactions) {
+    if (transaction.type !== "expense" || transaction.status === "cancelled") {
+      continue;
+    }
+
+    const point = timelinePoint(transaction.competenceMonth);
+    point.totalAmountCents += transaction.amountCents;
+    point.purchaseCount += 1;
+  }
+
+  for (const billRow of billRows) {
+    const point = timelinePoint(billRow.invoiceMonth);
+    point.totalAmountCents = billRow.statementTotalCents;
+    point.billStatus = billRow.status;
+  }
+
+  const timeline = Array.from(timelineByMonth.values()).sort((left, right) =>
+    left.month.localeCompare(right.month)
   );
 
   const categoryTotals = new Map<
@@ -600,6 +658,7 @@ export async function getCreditCardOverview(invoiceMonth: string, database?: App
     month: normalizedMonth,
     account,
     needsConfiguration: !account.creditClosingDay,
+    timeline,
     budgetSummary: {
       incomeCents,
       nonCardExpenseCents,

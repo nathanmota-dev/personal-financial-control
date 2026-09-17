@@ -43,6 +43,12 @@ export type CreditCardOverview =
         creditClosingDay: number | null;
         creditDueDay: number;
       };
+      timeline: Array<{
+        month: string;
+        totalAmountCents: number;
+        purchaseCount: number;
+        billStatus: "open" | "paid" | null;
+      }>;
       budgetSummary: {
         incomeCents: number;
         nonCardExpenseCents: number;
