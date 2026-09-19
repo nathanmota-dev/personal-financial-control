@@ -113,6 +113,7 @@ export type TransactionDialogProps = {
   month: string;
   transaction?: TransactionRow;
   trigger?: ReactNode;
+  afterCategorization?: string;
 };
 
 export type TransactionSummaryCardProps = {

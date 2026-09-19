@@ -48,6 +48,8 @@ import {
   transactionTypeLabels,
 } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
+import { needsInvestmentReductionConfirmation } from "@/lib/transaction-reduction";
+import { transactionSaveDestination } from "@/lib/transaction-navigation";
 
 const NO_CATEGORY_VALUE = "__no-category__";
 const fieldClassName =
@@ -105,6 +107,7 @@ export function TransactionDialog({
   month,
   transaction,
   trigger,
+  afterCategorization,
 }: TransactionDialogProps) {
   const router = useRouter();
   const formId = useId();
@@ -225,7 +228,7 @@ export function TransactionDialog({
     };
 
     try {
-      if (needsInvestmentReductionConfirmation(payload)) {
+      if (needsInvestmentReductionConfirmation(payload, transaction, todayDate())) {
         const sourceResult = await getInvestmentReductionSourcesAction({
           transactionId: transaction?.fundingLink?.withdrawalTransactionId ?? transaction?.id,
         });
@@ -272,7 +275,16 @@ export function TransactionDialog({
     toast.success(transaction ? "Lançamento atualizado." : "Lançamento criado.");
     clearReductionState();
     setOpen(false);
-    router.refresh();
+    const destination = transactionSaveDestination({
+      transaction,
+      payload,
+      afterCategorization,
+    });
+    if (destination) {
+      router.replace(destination);
+    } else {
+      router.refresh();
+    }
   }
 
   async function confirmReduction(selections: InvestmentReductionSelection[]) {
@@ -486,13 +498,6 @@ export function TransactionDialog({
       />
     </>
   );
-}
-
-function needsInvestmentReductionConfirmation(payload: TransactionMutationPayload) {
-  const isFundedExpense = payload.type === "expense" && payload.fundingSource === "investments";
-  const isManualWithdrawal = payload.type === "investment_withdrawal";
-
-  return (isFundedExpense || isManualWithdrawal) && payload.status === "posted" && payload.transactionDate <= todayDate();
 }
 
 function todayDate() {

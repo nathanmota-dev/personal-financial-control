@@ -441,7 +441,6 @@ describe("transactions", () => {
     const expense = await createTransaction(
       {
         accountId: account.id,
-        categoryId: expenseCategory.id,
         type: "expense",
         status: "posted",
         amountCents: 20000,
@@ -453,6 +452,16 @@ describe("transactions", () => {
       },
       db
     );
+
+    await updateTransaction({ id: expense.id, categoryId: expenseCategory.id }, db);
+    const categorizedExpense = (await listTransactions({}, db)).find(
+      (transaction) => transaction.id === expense.id
+    );
+    expect(categorizedExpense).toMatchObject({
+      categoryId: expenseCategory.id,
+      fundingSource: "investments",
+    });
+    expect((await getInvestmentPortfolioDashboard(db)).holdings[0]?.currentValueCents).toBe(60000);
 
     await updateTransaction(
       {

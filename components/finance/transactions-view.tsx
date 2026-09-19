@@ -63,6 +63,10 @@ export function TransactionsView({
     [transactions]
   );
   const hasSetup = accounts.length > 0;
+  const afterLastCategorization =
+    filters.uncategorized && transactions.length === 1
+      ? `/transactions?month=${encodeURIComponent(filters.month)}`
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -161,6 +165,7 @@ export function TransactionsView({
                                     categories={categories}
                                     month={filters.month}
                                     transaction={transaction}
+                                    afterCategorization={afterLastCategorization}
                                     trigger={
                                       <Button variant="outline" size="icon-sm" aria-label="Editar lançamento">
                                         <Pencil className="size-4" />
@@ -213,6 +218,7 @@ export function TransactionsView({
                               categories={categories}
                               month={filters.month}
                               transaction={transaction}
+                              afterCategorization={afterLastCategorization}
                               trigger={<Button variant="outline" className="flex-1">Editar</Button>}
                             />
                             <DeleteTransactionDialog id={transaction.id} />
