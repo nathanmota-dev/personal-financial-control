@@ -217,6 +217,7 @@ export const transactions = sqliteTable(
     competenceMonth: text("competence_month").notNull(),
     description: text("description").notNull(),
     notes: text("notes"),
+    importFingerprint: text("import_fingerprint"),
     isIncludedInInvestmentCheckpoint: integer("is_included_in_investment_checkpoint", {
       mode: "boolean",
     })
@@ -228,6 +229,7 @@ export const transactions = sqliteTable(
     index("transactions_account_idx").on(table.accountId),
     index("transactions_category_idx").on(table.categoryId),
     index("transactions_competence_idx").on(table.competenceMonth),
+    uniqueIndex("transactions_import_fingerprint_unique").on(table.importFingerprint),
     uniqueIndex("transactions_recurring_month_unique").on(
       table.recurringTemplateId,
       table.competenceMonth

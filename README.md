@@ -110,6 +110,43 @@ PORT=3008 ./open-app.sh
 
 Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; trocá-la impede a leitura desses dados.
 
+## Integração MCP local com o Codex
+
+O endpoint `POST /api/mcp` expõe ferramentas para consultar referências e administrar
+receitas, despesas e compras de cartão. Ele aceita apenas conexões loopback e fica
+desabilitado quando `PFC_MCP_TOKEN` não existe ou tem menos de 32 caracteres.
+
+Gere um token e adicione-o ao `.env`:
+
+```bash
+openssl rand -hex 32
+# .env
+PFC_MCP_TOKEN="cole-o-token-aqui"
+```
+
+Exporte o mesmo valor no ambiente que inicia o Codex (o Codex não lê o `.env` do app
+para preencher cabeçalhos):
+
+```bash
+export PFC_MCP_TOKEN="cole-o-token-aqui"
+```
+
+Inicie o app e crie a configuração local `.codex/config.toml`, que é ignorada pelo
+Git. Use a porta real do processo: normalmente `3000` com `npm run dev` e `3007` com
+Docker ou os scripts locais. O token não deve ser escrito nesse arquivo;
+`bearer_token_env_var` recebe somente o nome da variável de ambiente. Consulte
+[a documentação completa dos comandos MCP](docs/MCP.md#configuração-rápida) para
+copiar a configuração. Em um projeto confiável, confirme a conexão com
+`codex mcp list`; na interface do Codex, use `/mcp`.
+
+As ferramentas esperam datas `YYYY-MM-DD`, meses `YYYY-MM`, valores inteiros em
+centavos e chaves idempotentes estáveis no formato `origem:periodo:linha`. Consulte
+as referências antes de importar e envie uma linha do documento por chamada.
+
+Consulte [a documentação completa dos comandos MCP](docs/MCP.md) para ver todos os
+contratos, exemplos de argumentos, respostas, erros e o fluxo recomendado de
+importação.
+
 ## Desenvolvimento
 
 Para executar o servidor de desenvolvimento:

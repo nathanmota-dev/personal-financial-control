@@ -11,7 +11,7 @@ services:
       PORT: 3000
       DATABASE_URL: file:/app/.local/personal-finance.db
     ports:
-      - "${APP_PORT:-3007}:3000"
+      - "127.0.0.1:${APP_PORT:-3007}:3000"
     volumes:
       - personal_financial_control_data:/app/.local
     restart: unless-stopped

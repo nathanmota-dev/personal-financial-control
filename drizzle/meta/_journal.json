@@ -85,6 +85,13 @@
       "when": 1789700001000,
       "tag": "0011_credit_card_charge_kinds",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790000000000,
+      "tag": "0012_transaction_import_fingerprint",
+      "breakpoints": true
     }
   ]
 }

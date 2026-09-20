@@ -15,7 +15,7 @@ export type { TransactionFundingLink, TransactionFundingSource } from "@/lib/int
 
 export type TransactionMutationPayload = {
   accountId: string;
-  categoryId?: string | null;
+  categoryId: string | null;
   type: TransactionType;
   status: TransactionStatus;
   amountCents: number;

@@ -42,6 +42,7 @@ const transactionSchema = z.object({
   competenceMonth: z.string(),
   description: z.string().trim().min(1),
   notes: z.string().trim().optional(),
+  importFingerprint: z.string().trim().min(1).max(255).optional(),
   recurringTemplateId: z.string().uuid().optional(),
   fundingSource: z.enum(["account", "investments"]).optional(),
   sourceSelections: z.array(investmentReductionSelectionSchema).optional(),
@@ -206,6 +207,7 @@ async function insertTransactionRecord(
     description: string;
     notes?: string;
     recurringTemplateId?: string;
+    importFingerprint?: string;
     isIncludedInInvestmentCheckpoint: boolean;
   }
 ) {
@@ -215,6 +217,7 @@ async function insertTransactionRecord(
       ...values,
       notes: values.notes ?? null,
       recurringTemplateId: values.recurringTemplateId ?? null,
+      importFingerprint: values.importFingerprint ?? null,
       updatedAt: currentTimestamp(),
     })
     .returning();
@@ -268,6 +271,7 @@ async function createSingleTransactionInTransaction(
     description: values.description,
     notes: values.notes,
     recurringTemplateId: values.recurringTemplateId,
+    importFingerprint: values.importFingerprint,
     isIncludedInInvestmentCheckpoint,
   });
 
@@ -359,6 +363,30 @@ export async function createTransaction(
   values.competenceMonth = normalizeCompetenceMonth(values.competenceMonth);
   values.transactionDate = normalizeDate(values.transactionDate);
 
+  if (values.importFingerprint) {
+    const existing = await db.query.transactions.findFirst({
+      where: eq(transactions.importFingerprint, values.importFingerprint),
+    });
+    if (existing) {
+      const samePayload =
+        existing.accountId === values.accountId &&
+        existing.categoryId === (values.categoryId ?? null) &&
+        existing.type === values.type &&
+        existing.status === values.status &&
+        existing.amountCents === values.amountCents &&
+        existing.transactionDate === values.transactionDate &&
+        existing.competenceMonth === values.competenceMonth &&
+        existing.description === values.description &&
+        existing.notes === (values.notes ?? null);
+      invariant(
+        samePayload,
+        "IDEMPOTENCY_KEY_CONFLICT",
+        "The idempotency key is already associated with a different transaction payload."
+      );
+      return serializeTimestamps(existing);
+    }
+  }
+
   return db.transaction(async (transactionDb) => {
     const created = shouldCreateInvestmentFundedExpense(values)
       ? await createInvestmentFundedExpenseInTransaction(transactionDb, values)
@@ -366,6 +394,19 @@ export async function createTransaction(
 
     return serializeTimestamps(created);
   });
+}
+
+export async function createIdempotentTransaction(
+  input: z.input<typeof transactionSchema> & { importFingerprint: string },
+  database?: AppDb
+) {
+  const db = database ?? await getFinanceDatabase();
+  const existing = await db.query.transactions.findFirst({
+    where: eq(transactions.importFingerprint, input.importFingerprint),
+  });
+  const transaction = await createTransaction(input, db);
+
+  return { transaction, created: !existing };
 }
 
 function fundingLinkForTransaction(
@@ -495,6 +536,7 @@ function resolvedTransactionValues(
       rawValues.recurringTemplateId === undefined
         ? existing.recurringTemplateId ?? undefined
         : rawValues.recurringTemplateId,
+    importFingerprint: existing.importFingerprint ?? undefined,
     fundingSource,
     sourceSelections: rawValues.sourceSelections,
     sources: rawValues.sources,

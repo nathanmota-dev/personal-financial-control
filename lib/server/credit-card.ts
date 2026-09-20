@@ -255,6 +255,24 @@ export async function createCreditCardCharge(
     });
 
     if (existing) {
+      const normalizedFirstInvoiceMonth = values.firstInvoiceMonth
+        ? normalizeCompetenceMonth(values.firstInvoiceMonth)
+        : resolveFirstInvoiceMonth(values.purchaseDate, (await getAccountById(values.accountId, db)).creditClosingDay as number);
+      const samePayload =
+        existing.accountId === values.accountId &&
+        existing.categoryId === values.categoryId &&
+        existing.description === values.description &&
+        existing.notes === (values.notes ?? null) &&
+        existing.purchaseDate === values.purchaseDate &&
+        existing.totalAmountCents === values.totalAmountCents &&
+        existing.installmentCount === values.installmentCount &&
+        existing.kind === values.kind &&
+        existing.firstInvoiceMonth === normalizedFirstInvoiceMonth;
+      invariant(
+        samePayload,
+        "IDEMPOTENCY_KEY_CONFLICT",
+        "The idempotency key is already associated with a different credit card charge payload."
+      );
       return getCreditCardCharge(existing.id, db);
     }
   }
@@ -299,6 +317,19 @@ export async function createCreditCardCharge(
       installments: installments.map(serializeTimestamps),
     };
   });
+}
+
+export async function createIdempotentCreditCardCharge(
+  input: CreateCreditCardChargeInput & { importFingerprint: string },
+  database?: AppDb
+) {
+  const db = await resolveDb(database);
+  const existing = await db.query.creditCardCharges.findFirst({
+    where: eq(creditCardCharges.importFingerprint, input.importFingerprint),
+  });
+  const charge = await createCreditCardCharge(input, db);
+
+  return { charge, created: !existing };
 }
 
 export async function updateCreditCardCharge(
