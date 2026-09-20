@@ -16,7 +16,9 @@ Atualmente, o app oferece controle de:
 - cartão de crédito, compras, parcelas e faturas;
 - saldo projetado;
 - investimentos e carteira patrimonial;
-- metas financeiras.
+- metas financeiras;
+- integração local com MCP para consultar referências e administrar lançamentos e
+  compras de cartão.
 
 Os valores monetários persistidos no banco são criptografados. O app também possui um modo de demonstração em memória, que não altera o banco real.
 
@@ -234,6 +236,36 @@ A importação cria a conta e as categorias ausentes quando necessário e evita 
 | `GET` | `/api/goals/:id/allocations` | Lista as movimentações de alocação da meta. |
 | `POST` | `/api/goals/:id/allocations` | Aloca ou libera recursos da meta. |
 | `POST` | `/api/goals/:id/contributions` | Registra uma contribuição vinculada a uma conta e categoria. |
+
+### MCP local
+
+O endpoint `POST /api/mcp` disponibiliza um servidor MCP compatível com clientes
+como o Codex. Ele aceita somente conexões de loopback e exige a variável
+`PFC_MCP_TOKEN` com pelo menos 32 caracteres. O endpoint fica desabilitado quando
+essa variável não está configurada corretamente.
+
+As ferramentas disponíveis são:
+
+- `list_finance_references`: lista contas e categorias ativas, sem expor saldos;
+- `list_transactions` e `get_transaction`: consultam receitas e despesas de
+  contas que não são cartão de crédito;
+- `create_transaction`, `update_transaction` e `delete_transaction`: administram
+  receitas e despesas, com criação idempotente e confirmação literal
+  `confirm: true` para exclusões;
+- `list_credit_card_charges` e `get_credit_card_charge`: consultam compras e
+  ajustes que possuem parcela na fatura selecionada;
+- `create_credit_card_charge`, `update_credit_card_charge` e
+  `delete_credit_card_charge`: administram compras, ajustes e parcelas, com
+  criação idempotente e confirmação literal para exclusões.
+
+Os comandos usam datas `YYYY-MM-DD`, competências e meses de fatura `YYYY-MM`,
+valores inteiros em centavos e UUIDs para contas e categorias. Criações exigem uma
+chave de idempotência estável; em importações, cada linha deve ser enviada em uma
+chamada separada. O MCP não processa PDFs e não expõe operações para contas,
+categorias, transferências, investimentos, recorrências, faturas ou pagamentos.
+
+A configuração, os contratos completos e o fluxo recomendado de importação estão
+em [`docs/mcp.md`](mcp.md).
 
 ## Operações disponíveis por Server Actions
 
