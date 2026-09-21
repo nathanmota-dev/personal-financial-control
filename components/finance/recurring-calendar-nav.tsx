@@ -22,7 +22,7 @@ export function RecurringCalendarNav() {
           <p className="font-heading text-lg font-semibold text-content-strong">
             {formatMonthLabel(month)}
           </p>
-          <p className="text-xs text-content-strong0">Previsões das recorrências ativas</p>
+          <p className="text-xs text-content-muted">Previsões das recorrências ativas</p>
         </div>
       </div>
 

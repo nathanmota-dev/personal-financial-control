@@ -175,9 +175,9 @@
   }
 }
 
-.recurring-calendar .rc-bg-content-strong,
-.finance-monthly-calendar .rc-bg-content-strong {
-  background-color: rgb(var(--surface-rgb) / .72);
+.recurring-calendar .rc-bg-white,
+.finance-monthly-calendar .rc-bg-white {
+  background-color: var(--surface);
 }
 
 .recurring-calendar .rc-border-l-2,
@@ -197,8 +197,8 @@
   color: rgb(var(--content-strong-rgb));
 }
 
-.recurring-calendar .rc-text-content-muted,
-.finance-monthly-calendar .rc-text-content-muted {
+.recurring-calendar .rc-text-gray-500,
+.finance-monthly-calendar .rc-text-gray-500 {
   color: rgb(var(--content-muted-rgb));
 }
 

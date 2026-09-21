@@ -52,7 +52,7 @@ export function RecurringCalendar({
           />
         </MonthlyBody>
       </MonthlyCalendar>
-      <p className="border-t border-border px-5 py-3 text-xs text-content-strong0">
+      <p className="border-t border-border px-5 py-3 text-xs text-content-muted">
         Eventos com ✓ já possuem lançamento gerado para a competência exibida.
         <span className="sr-only"> Mês exibido: {format(currentMonth, "yyyy-MM")}</span>
       </p>

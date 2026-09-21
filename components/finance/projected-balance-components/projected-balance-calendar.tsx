@@ -63,7 +63,7 @@ export function ProjectedBalanceCalendar({
               Cada dia mostra o saldo projetado e quanto permanece sustentável para gastar.
             </p>
           </div>
-          <p className="text-xs text-content-strong0">
+          <p className="text-xs text-content-muted">
             {formatMonthLabel(firstMonth)} até {formatMonthLabel(lastMonth)}
           </p>
         </div>
@@ -93,7 +93,7 @@ export function ProjectedBalanceCalendar({
         </MonthlyCalendar>
       </CardContent>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-xs text-content-strong0">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-xs text-content-muted">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-1.5 rounded-full bg-warning" aria-hidden="true" />
           Seguro

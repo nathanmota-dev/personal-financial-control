@@ -48,7 +48,7 @@ export function ProjectedBalanceCalendarDay({
         aria-label={`${formatDateLabel(day.date)}. ${statusLabels[day.status]}. Saldo projetado ${formatCurrency(day.projectedBalanceCents)}. Disponível por dia ${formatCurrency(day.availablePerDayCents)}.`}
       >
         <div className="min-w-0">
-          <p className="truncate text-[0.58rem] uppercase tracking-[0.13em] text-content-strong0">
+          <p className="truncate text-[0.58rem] uppercase tracking-[0.13em] text-content-muted">
             Saldo projetado
           </p>
           <p
@@ -63,7 +63,7 @@ export function ProjectedBalanceCalendarDay({
 
         <div className="mt-auto border-t border-white/[0.07] pt-1.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[0.58rem] text-content-strong0">Disponível/dia</span>
+            <span className="text-[0.58rem] text-content-muted">Disponível/dia</span>
             <span
               className={cn(
                 "font-mono text-[0.64rem] font-semibold tabular-nums",
