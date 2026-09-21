@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   ArrowLeftRight,
+  Calculator,
   ChartLine,
   ChartNoAxesCombined,
   ChevronRight,
@@ -37,6 +38,7 @@ const navigation: SidebarNavigationItem[] = [
     ],
   },
   { href: "/goals", label: "Metas", icon: Target },
+  { href: "/calculators", label: "Calculadoras", icon: Calculator },
   { href: "/settings", label: "Configurações", icon: Settings2 },
 ];
 

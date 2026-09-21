@@ -178,6 +178,30 @@ export function formatMoneyInput(value: string) {
   }
 }
 
+export function appendDigitToMoneyInput(
+  value: string,
+  digit: string,
+  replaceValue = false
+) {
+  const currentWholeDigits = replaceValue
+    ? ""
+    : value.split(",")[0].replace(/\D/g, "");
+  const nextDigits = `${currentWholeDigits}${digit}`.replace(/^0+(?=\d)/, "");
+
+  return formatMoneyInput(nextDigits || "0");
+}
+
+export function removeDigitFromMoneyInput(value: string, clearValue = false) {
+  if (clearValue) {
+    return "";
+  }
+
+  const currentWholeDigits = value.split(",")[0].replace(/\D/g, "");
+  const nextDigits = currentWholeDigits.slice(0, -1);
+
+  return nextDigits ? formatMoneyInput(nextDigits) : "";
+}
+
 export function extractErrorMessage(error: unknown) {
   if (error instanceof Error && error.message) {
     return error.message;
