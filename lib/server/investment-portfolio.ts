@@ -43,6 +43,7 @@ export const updateInvestmentHoldingSchema = investmentHoldingSchema.partial().e
 
 export const investmentPurposeSchema = z.object({
   name: z.string().trim().min(1),
+  kind: z.enum(["general", "emergency_reserve"]).default("general"),
   targetAmountCents: z.number().int().nonnegative().nullable().optional(),
   color: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/).default("#22d3ee"),
   notes: nullableTextSchema,
@@ -251,6 +252,24 @@ export async function updateInvestmentHolding(
 
     invariant(updated, "HOLDING_UPDATE_FAILED", "Investment holding could not be updated.", 500);
 
+    const reservePurpose = await transaction.query.investmentPurposes.findFirst({
+      where: and(
+        eq(investmentPurposes.kind, "emergency_reserve"),
+        eq(investmentPurposes.isArchived, false)
+      ),
+    });
+    if (reservePurpose) {
+      await transaction
+        .update(investmentPurposeAllocations)
+        .set({ amountCents: updated.currentValueCents, updatedAt: currentTimestamp() })
+        .where(
+          and(
+            eq(investmentPurposeAllocations.holdingId, updated.id),
+            eq(investmentPurposeAllocations.purposeId, reservePurpose.id)
+          )
+        );
+    }
+
     return serializeHolding(updated);
   });
 }
@@ -302,6 +321,7 @@ export async function createInvestmentPurpose(
     .insert(investmentPurposes)
     .values({
       name: values.name,
+      kind: values.kind,
       targetAmountCents: values.targetAmountCents ?? null,
       color: values.color,
       notes: normalizeNullableText(values.notes),
@@ -331,6 +351,7 @@ export async function updateInvestmentPurpose(
       .update(investmentPurposes)
       .set({
         name: values.name ?? existing.name,
+        kind: values.kind ?? existing.kind,
         targetAmountCents:
           values.targetAmountCents === undefined
             ? existing.targetAmountCents
@@ -421,6 +442,31 @@ export async function upsertInvestmentPurposeAllocation(
     const allocatedElsewhereCents = holdingAllocations
       .filter((allocation) => allocation.id !== existing?.id)
       .reduce((total, allocation) => total + allocation.amountCents, 0);
+
+    const purposeIds = holdingAllocations.map((allocation) => allocation.purposeId);
+    const linkedPurposes = purposeIds.length
+      ? await transaction.query.investmentPurposes.findMany({
+          where: inArray(investmentPurposes.id, purposeIds),
+        })
+      : [];
+    const linkedToReserve = linkedPurposes.some(
+      (linkedPurpose) => linkedPurpose.kind === "emergency_reserve"
+    );
+    invariant(
+      purpose.kind !== "emergency_reserve" || allocatedElsewhereCents === 0,
+      "RESERVE_HOLDING_MUST_BE_DEDICATED",
+      "O ativo da reserva não pode compartilhar outras finalidades."
+    );
+    invariant(
+      purpose.kind === "emergency_reserve" || !linkedToReserve,
+      "RESERVE_HOLDING_MUST_BE_DEDICATED",
+      "O ativo da reserva não pode compartilhar outras finalidades."
+    );
+    invariant(
+      purpose.kind !== "emergency_reserve" || values.amountCents === holding.currentValueCents,
+      "RESERVE_ALLOCATION_MUST_MATCH_BALANCE",
+      "A reserva deve receber 100% do saldo do ativo dedicado."
+    );
 
     invariant(
       allocatedElsewhereCents + values.amountCents <= holding.currentValueCents,

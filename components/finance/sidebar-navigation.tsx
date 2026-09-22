@@ -34,7 +34,8 @@ const navigation: SidebarNavigationItem[] = [
     icon: PiggyBank,
     children: [
       { href: "/investments", label: "Visão geral" },
-      { href: "/investments/portfolio", label: "Carteira atual" },
+      { href: "/investments/portfolio", label: "Carteira de longo prazo" },
+      { href: "/investments/emergency-reserve", label: "Reserva de emergência" },
     ],
   },
   { href: "/goals", label: "Metas", icon: Target },

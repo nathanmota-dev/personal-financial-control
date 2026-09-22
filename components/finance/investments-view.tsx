@@ -108,7 +108,7 @@ export function InvestmentsView({
           <div className="flex flex-wrap gap-2">
             <Button asChild>
               <Link href="/investments/portfolio">
-                Carteira atual
+                Carteira de longo prazo
                 <ArrowRight className="size-4" />
               </Link>
             </Button>

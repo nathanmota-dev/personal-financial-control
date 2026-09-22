@@ -63,7 +63,7 @@ describe("demo mode", () => {
     expect(goals.archivedGoals.length).toBe(1);
     expect(portfolioDashboard.holdings).toHaveLength(3);
     expect(portfolioDashboard.purposes).toHaveLength(2);
-    expect(portfolioDashboard.holdings.find((holding) => holding.ticker === "BOVA11")?.allocationCount).toBe(2);
+    expect(portfolioDashboard.holdings.find((holding) => holding.ticker === "BOVA11")?.allocationCount).toBe(1);
   });
 
   it("calculates a projected balance and keeps mutations in memory", async () => {

@@ -92,6 +92,20 @@
       "when": 1790000000000,
       "tag": "0012_transaction_import_fingerprint",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790100000000,
+      "tag": "0013_operational_investments",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1790200000000,
+      "tag": "0014_remove_legacy_investments",
+      "breakpoints": true
     }
   ]
 }

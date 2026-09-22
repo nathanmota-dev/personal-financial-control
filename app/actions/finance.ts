@@ -33,6 +33,15 @@ import {
   upsertInvestmentPurposeAllocation,
 } from "@/lib/server/investment-portfolio";
 import {
+  createOperationalInvestmentAsset,
+  createInvestmentOperation,
+  deleteInvestmentOperation,
+  registerManualInvestmentQuote,
+  updateFixedIncomeTerms,
+  updateInvestmentOperation,
+  updateManualInvestmentBalance,
+} from "@/lib/server/investment-operations";
+import {
   createRecurringTemplate,
   deleteRecurringTemplate,
   generateRecurringTransactions,
@@ -57,6 +66,7 @@ function revalidateFinanceViews() {
     "/projected-balance",
     "/investments",
     "/investments/portfolio",
+    "/investments/emergency-reserve",
     "/goals",
     "/credit-card",
   ].forEach((path) => {
@@ -345,4 +355,32 @@ export async function deleteInvestmentPurposeAllocationAction(
   const result = await deleteInvestmentPurposeAllocation(input);
   revalidateFinanceViews();
   return result;
+}
+
+export async function createOperationalInvestmentAssetAction(input: Parameters<typeof createOperationalInvestmentAsset>[0]) {
+  return runFinanceAction(() => createOperationalInvestmentAsset(input));
+}
+
+export async function createInvestmentOperationAction(input: Parameters<typeof createInvestmentOperation>[0]) {
+  return runFinanceAction(() => createInvestmentOperation(input));
+}
+
+export async function updateInvestmentOperationAction(id: string, input: Parameters<typeof updateInvestmentOperation>[1]) {
+  return runFinanceAction(() => updateInvestmentOperation(id, input));
+}
+
+export async function deleteInvestmentOperationAction(id: string) {
+  return runFinanceAction(async () => { await deleteInvestmentOperation(id); return null; });
+}
+
+export async function registerManualInvestmentQuoteAction(input: Parameters<typeof registerManualInvestmentQuote>[0]) {
+  return runFinanceAction(() => registerManualInvestmentQuote(input));
+}
+
+export async function updateManualInvestmentBalanceAction(input: Parameters<typeof updateManualInvestmentBalance>[0]) {
+  return runFinanceAction(async () => { await updateManualInvestmentBalance(input); return null; });
+}
+
+export async function updateFixedIncomeTermsAction(input: Parameters<typeof updateFixedIncomeTerms>[0]) {
+  return runFinanceAction(async () => { await updateFixedIncomeTerms(input); return null; });
 }

@@ -112,6 +112,27 @@ export const investmentInstrumentTypes = [
   "other",
 ] as const;
 
+export const investmentValuationModes = [
+  "market_quote",
+  "manual_balance",
+  "contract_estimate",
+] as const;
+export const investmentPurposeKinds = ["general", "emergency_reserve"] as const;
+export const investmentOperationTypes = [
+  "buy",
+  "sell",
+  "application",
+  "redemption",
+  "correction",
+] as const;
+export const fixedIncomeSubtypes = [
+  "treasury",
+  "cdb",
+  "lci_lca",
+  "debenture",
+  "other",
+] as const;
+
 function timestampColumns() {
   return {
     createdAt: integer("created_at", { mode: "timestamp_ms" })
@@ -490,6 +511,13 @@ export const investmentHoldings = sqliteTable(
     institutionName: text("institution_name"),
     assetClass: text("asset_class", { enum: investmentAssetClasses }).notNull(),
     instrumentType: text("instrument_type", { enum: investmentInstrumentTypes }).notNull(),
+    valuationMode: text("valuation_mode", { enum: investmentValuationModes })
+      .notNull()
+      .default("manual_balance"),
+    currency: text("currency").notNull().default("BRL"),
+    quoteSymbol: text("quote_symbol"),
+    externalProvider: text("external_provider"),
+    externalAssetId: text("external_asset_id"),
     currentValueCents: encryptedMoneyColumn(
       "current_value_cents",
       "investment_holdings.current_value_cents"
@@ -516,6 +544,7 @@ export const investmentPurposes = sqliteTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
     name: text("name").notNull(),
+    kind: text("kind", { enum: investmentPurposeKinds }).notNull().default("general"),
     targetAmountCents: encryptedMoneyColumn(
       "target_amount_cents",
       "investment_purposes.target_amount_cents"
@@ -532,6 +561,81 @@ export const investmentPurposes = sqliteTable(
       sql`${table.targetAmountCents} IS NULL OR (typeof(${table.targetAmountCents}) = 'text' AND ${table.targetAmountCents} LIKE 'pfc:v1:%')`
     ),
   ]
+);
+
+export const investmentOperations = sqliteTable(
+  "investment_operations",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    holdingId: text("holding_id")
+      .notNull()
+      .references(() => investmentHoldings.id, { onDelete: "restrict" }),
+    type: text("type", { enum: investmentOperationTypes }).notNull(),
+    operatedOn: text("operated_on").notNull(),
+    settledOn: text("settled_on"),
+    quantityUnits: integer("quantity_units").notNull().default(0),
+    unitPriceCents: encryptedMoneyColumn(
+      "unit_price_cents",
+      "investment_operations.unit_price_cents"
+    ),
+    grossAmountCents: encryptedMoneyColumn(
+      "gross_amount_cents",
+      "investment_operations.gross_amount_cents"
+    ).notNull(),
+    feesCents: encryptedMoneyColumn(
+      "fees_cents",
+      "investment_operations.fees_cents"
+    ).notNull().default(0),
+    targetCostCents: encryptedMoneyColumn(
+      "target_cost_cents",
+      "investment_operations.target_cost_cents"
+    ),
+    notes: text("notes"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_operations_holding_idx").on(table.holdingId),
+    index("investment_operations_date_idx").on(table.operatedOn),
+  ]
+);
+
+export const investmentQuotes = sqliteTable(
+  "investment_quotes",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    holdingId: text("holding_id")
+      .notNull()
+      .references(() => investmentHoldings.id, { onDelete: "cascade" }),
+    quotedOn: text("quoted_on").notNull(),
+    unitPriceCents: encryptedMoneyColumn(
+      "unit_price_cents",
+      "investment_quotes.unit_price_cents"
+    ).notNull(),
+    source: text("source").notNull().default("manual"),
+    ...timestampColumns(),
+  },
+  (table) => [
+    index("investment_quotes_holding_idx").on(table.holdingId),
+    uniqueIndex("investment_quotes_holding_date_unique").on(table.holdingId, table.quotedOn),
+  ]
+);
+
+export const fixedIncomeTerms = sqliteTable(
+  "fixed_income_terms",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    holdingId: text("holding_id")
+      .notNull()
+      .unique()
+      .references(() => investmentHoldings.id, { onDelete: "cascade" }),
+    subtype: text("subtype", { enum: fixedIncomeSubtypes }).notNull(),
+    issuer: text("issuer"),
+    indexer: text("indexer"),
+    rateBps: integer("rate_bps"),
+    maturityDate: text("maturity_date"),
+    liquidity: text("liquidity"),
+    ...timestampColumns(),
+  }
 );
 
 export const investmentPurposeAllocations = sqliteTable(
@@ -765,8 +869,32 @@ export const financialGoalsRelations = relations(financialGoals, ({ many }) => (
   allocations: many(financialGoalAllocations),
 }));
 
-export const investmentHoldingsRelations = relations(investmentHoldings, ({ many }) => ({
+export const investmentHoldingsRelations = relations(investmentHoldings, ({ many, one }) => ({
   allocations: many(investmentPurposeAllocations),
+  operations: many(investmentOperations),
+  quotes: many(investmentQuotes),
+  fixedIncomeTerms: one(fixedIncomeTerms),
+}));
+
+export const investmentOperationsRelations = relations(investmentOperations, ({ one }) => ({
+  holding: one(investmentHoldings, {
+    fields: [investmentOperations.holdingId],
+    references: [investmentHoldings.id],
+  }),
+}));
+
+export const investmentQuotesRelations = relations(investmentQuotes, ({ one }) => ({
+  holding: one(investmentHoldings, {
+    fields: [investmentQuotes.holdingId],
+    references: [investmentHoldings.id],
+  }),
+}));
+
+export const fixedIncomeTermsRelations = relations(fixedIncomeTerms, ({ one }) => ({
+  holding: one(investmentHoldings, {
+    fields: [fixedIncomeTerms.holdingId],
+    references: [investmentHoldings.id],
+  }),
 }));
 
 export const investmentPurposesRelations = relations(investmentPurposes, ({ many }) => ({
