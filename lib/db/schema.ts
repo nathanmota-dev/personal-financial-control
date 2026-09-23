@@ -132,6 +132,10 @@ export const fixedIncomeSubtypes = [
   "debenture",
   "other",
 ] as const;
+export const fixedIncomeIndexers = ["pre", "cdi", "ipca", "selic", "other"] as const;
+export const investmentQuoteProviders = ["manual", "brapi"] as const;
+export const investmentMarketStates = ["regular", "closed", "delayed", "unknown"] as const;
+export const investmentValuationSources = ["market_quote", "manual_balance"] as const;
 
 function timestampColumns() {
   return {
@@ -612,6 +616,13 @@ export const investmentQuotes = sqliteTable(
       "investment_quotes.unit_price_cents"
     ).notNull(),
     source: text("source").notNull().default("manual"),
+    provider: text("provider", { enum: investmentQuoteProviders }).notNull().default("manual"),
+    symbol: text("symbol"),
+    currency: text("currency").notNull().default("BRL"),
+    quotedAt: integer("quoted_at", { mode: "timestamp_ms" }),
+    fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }),
+    marketState: text("market_state", { enum: investmentMarketStates }).notNull().default("unknown"),
+    isStale: integer("is_stale", { mode: "boolean" }).notNull().default(false),
     ...timestampColumns(),
   },
   (table) => [
@@ -631,11 +642,45 @@ export const fixedIncomeTerms = sqliteTable(
     subtype: text("subtype", { enum: fixedIncomeSubtypes }).notNull(),
     issuer: text("issuer"),
     indexer: text("indexer"),
+    indexerPercentageBps: integer("indexer_percentage_bps"),
     rateBps: integer("rate_bps"),
     maturityDate: text("maturity_date"),
     liquidity: text("liquidity"),
     ...timestampColumns(),
   }
+);
+
+export const investmentPositionSnapshots = sqliteTable(
+  "investment_position_snapshots",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    holdingId: text("holding_id").notNull().references(() => investmentHoldings.id, { onDelete: "cascade" }),
+    snapshotDate: text("snapshot_date").notNull(),
+    quantityUnits: integer("quantity_units").notNull().default(0),
+    costCents: encryptedMoneyColumn("cost_cents", "investment_position_snapshots.cost_cents"),
+    currentValueCents: encryptedMoneyColumn("current_value_cents", "investment_position_snapshots.current_value_cents").notNull(),
+    unitPriceCents: encryptedMoneyColumn("unit_price_cents", "investment_position_snapshots.unit_price_cents"),
+    valuationSource: text("valuation_source", { enum: investmentValuationSources }).notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [
+    uniqueIndex("investment_position_snapshots_holding_date_unique").on(table.holdingId, table.snapshotDate),
+    index("investment_position_snapshots_date_idx").on(table.snapshotDate),
+  ]
+);
+
+export const investmentPortfolioSnapshots = sqliteTable(
+  "investment_portfolio_snapshots",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    snapshotDate: text("snapshot_date").notNull(),
+    knownCostCents: encryptedMoneyColumn("known_cost_cents", "investment_portfolio_snapshots.known_cost_cents").notNull(),
+    knownValueCents: encryptedMoneyColumn("known_value_cents", "investment_portfolio_snapshots.known_value_cents").notNull(),
+    totalValueCents: encryptedMoneyColumn("total_value_cents", "investment_portfolio_snapshots.total_value_cents").notNull(),
+    unrealizedResultCents: encryptedMoneyColumn("unrealized_result_cents", "investment_portfolio_snapshots.unrealized_result_cents").notNull(),
+    ...timestampColumns(),
+  },
+  (table) => [uniqueIndex("investment_portfolio_snapshots_date_unique").on(table.snapshotDate)]
 );
 
 export const investmentPurposeAllocations = sqliteTable(

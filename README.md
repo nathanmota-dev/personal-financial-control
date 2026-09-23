@@ -106,6 +106,8 @@ PORT=3008 ./open-app.sh
 - `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`: conexão com Turso quando `DATABASE_URL` não estiver definida;
 - `DATA_ENCRYPTION_KEY`: chave base64 de 32 bytes usada para proteger os dados financeiros;
 - `DEMO_MODE`: use `true`, `1`, `yes` ou `on` para carregar um portfólio simulado em memória. O padrão é `false`; alterações feitas no demo são temporárias e não exigem banco ou chave financeira reais;
+- `BRAPI_API_TOKEN`: token opcional da brapi. Sem ele, apenas a atualização automática de cotações fica desabilitada; cotações manuais continuam disponíveis;
+- `INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES`: intervalo mínimo entre consultas do mesmo ticker (padrão: `30`). Atualizações dentro desse intervalo são ignoradas;
 - `BROWSER_BIN`: executável usado pelo launcher do Linux.
 
 Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; trocá-la impede a leitura desses dados.

@@ -1,4 +1,3 @@
-import type { investmentOperationTypes } from "@/lib/db/schema";
 import type {
   getInvestmentAssetDetails,
   getInvestmentOverview,
@@ -13,18 +12,18 @@ export type InvestmentAssetDetails = NonNullable<
   Awaited<ReturnType<typeof getInvestmentAssetDetails>>
 >;
 
-export type InvestmentOperationInput = {
+type InvestmentOperationBase = {
   holdingId: string;
-  type: (typeof investmentOperationTypes)[number];
   operatedOn: string;
   settledOn?: string | null;
-  quantity: string;
-  unitPriceCents?: number | null;
-  grossAmountCents: number;
   feesCents?: number;
-  targetCostCents?: number | null;
   notes?: string | null;
 };
+
+export type InvestmentOperationInput =
+  | (InvestmentOperationBase & { type: "buy" | "sell"; quantity: string; unitPriceCents: number; grossAmountCents?: never; targetCostCents?: never })
+  | (InvestmentOperationBase & { type: "application" | "redemption"; quantity?: "0"; grossAmountCents: number; unitPriceCents?: never; targetCostCents?: never })
+  | (InvestmentOperationBase & { type: "correction"; quantity: string; grossAmountCents: number; targetCostCents: number; unitPriceCents?: never; notes: string });
 
 export type ManualQuoteInput = {
   holdingId: string;
@@ -37,6 +36,7 @@ export type FixedIncomeTermsInput = {
   subtype: "treasury" | "cdb" | "lci_lca" | "debenture" | "other";
   issuer?: string | null;
   indexer?: string | null;
+  indexerPercentageBps?: number | null;
   rateBps?: number | null;
   maturityDate?: string | null;
   liquidity?: string | null;
@@ -45,6 +45,7 @@ export type FixedIncomeTermsInput = {
 export type InvestmentReserveSummary = InvestmentOverview["reserve"];
 
 export type OperationalAssetInput = {
+  type?: "stock" | "real_estate_fund" | "etf" | "treasury" | "cdb" | "lci" | "lca";
   name: string;
   ticker?: string | null;
   institutionName?: string | null;
@@ -60,5 +61,5 @@ export type OperationalPortfolioViewProps = { positions: InvestmentPosition[] };
 export type InvestmentAssetDetailViewProps = { asset: InvestmentAssetDetails };
 export type OverviewMetricProps = { icon: React.ReactNode; label: string; value: string; detail: string; tone: "cyan" | "teal" | "blue" | "green" | "red"; href?: string };
 export type AssetFormState = { name: string; ticker: string; institutionName: string; assetClass: OperationalAssetInput["assetClass"]; instrumentType: OperationalAssetInput["instrumentType"]; valuationMode: OperationalAssetInput["valuationMode"]; quoteSymbol: string };
-export type OperationFormState = { type: InvestmentOperationInput["type"]; operatedOn: string; quantity: string; grossAmount: string; fees: string; notes: string };
+export type OperationFormState = { type: InvestmentOperationInput["type"]; operatedOn: string; quantity: string; unitPrice: string; grossAmount: string; fees: string; notes: string };
 export type DetailMetricProps = { label: string; value: string; tone?: "neutral" | "positive" | "negative" };

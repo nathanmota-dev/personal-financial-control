@@ -205,7 +205,7 @@ export async function createInvestmentContribution(
       competenceMonth: values.transactionDate.slice(0, 7),
       type: "investment_contribution",
       status: "posted",
-      description: "Aporte de investimento",
+      description: "Aporte à reserva",
     },
     db
   );
@@ -227,7 +227,7 @@ export async function createInvestmentWithdrawal(
       competenceMonth: values.transactionDate.slice(0, 7),
       type: "investment_withdrawal",
       status: "posted",
-      description: "Resgate de investimento",
+      description: "Retirada da reserva",
       sourceSelections: values.sourceSelections ?? values.sources,
     },
     db

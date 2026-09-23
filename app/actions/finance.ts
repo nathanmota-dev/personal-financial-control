@@ -34,9 +34,12 @@ import {
 } from "@/lib/server/investment-portfolio";
 import {
   createOperationalInvestmentAsset,
+  archiveOperationalInvestmentAsset,
   createInvestmentOperation,
   deleteInvestmentOperation,
   registerManualInvestmentQuote,
+  refreshInvestmentQuotes,
+  updateOperationalInvestmentAsset,
   updateFixedIncomeTerms,
   updateInvestmentOperation,
   updateManualInvestmentBalance,
@@ -383,4 +386,16 @@ export async function updateManualInvestmentBalanceAction(input: Parameters<type
 
 export async function updateFixedIncomeTermsAction(input: Parameters<typeof updateFixedIncomeTerms>[0]) {
   return runFinanceAction(async () => { await updateFixedIncomeTerms(input); return null; });
+}
+
+export async function refreshInvestmentQuotesAction() {
+  return runFinanceAction(() => refreshInvestmentQuotes());
+}
+
+export async function updateOperationalInvestmentAssetAction(id: string, input: Parameters<typeof updateOperationalInvestmentAsset>[1]) {
+  return runFinanceAction(() => updateOperationalInvestmentAsset(id, input));
+}
+
+export async function archiveOperationalInvestmentAssetAction(id: string) {
+  return runFinanceAction(async () => { await archiveOperationalInvestmentAsset(id); return null; });
 }

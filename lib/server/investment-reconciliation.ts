@@ -310,6 +310,14 @@ export async function getInvestmentReductionSources(
 
   const holdingsById = new Map(holdings.map((holding) => [holding.id, holding]));
   const purposesById = new Map(purposes.map((purpose) => [purpose.id, purpose]));
+  const reservePurposeIds = new Set(
+    purposes.filter((purpose) => purpose.kind === "emergency_reserve").map((purpose) => purpose.id)
+  );
+  const reserveHoldingIds = new Set(
+    allocations
+      .filter((allocation) => reservePurposeIds.has(allocation.purposeId))
+      .map((allocation) => allocation.holdingId)
+  );
   const allocatedByHolding = new Map<string, number>();
   const sourcesById = new Map<string, InvestmentReductionSource>();
 
@@ -320,6 +328,8 @@ export async function getInvestmentReductionSources(
     if (!holding || !purpose) {
       continue;
     }
+
+    if (reservePurposeIds.size > 0 && !reservePurposeIds.has(purpose.id)) continue;
 
     allocatedByHolding.set(
       holding.id,
@@ -333,6 +343,7 @@ export async function getInvestmentReductionSources(
   }
 
   for (const holding of holdings) {
+    if (reservePurposeIds.size > 0 && !reserveHoldingIds.has(holding.id)) continue;
     const freeCents = Math.max(
       holding.currentValueCents - (allocatedByHolding.get(holding.id) ?? 0),
       0
@@ -344,7 +355,7 @@ export async function getInvestmentReductionSources(
     }
   }
 
-  const totalRegisteredCents = holdings.reduce(
+  const totalRegisteredCents = holdings.filter((holding) => reservePurposeIds.size === 0 || reserveHoldingIds.has(holding.id)).reduce(
     (total, holding) => total + holding.currentValueCents,
     0
   );

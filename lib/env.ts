@@ -34,6 +34,8 @@ const serverEnvSchema = z.object({
   TURSO_DATABASE_URL: z.string().min(1).optional(),
   TURSO_AUTH_TOKEN: z.string().min(1).optional(),
   DATA_ENCRYPTION_KEY: z.string().min(1).optional(),
+  BRAPI_API_TOKEN: z.string().min(1).optional(),
+  INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES: z.coerce.number().int().nonnegative().default(30),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & {

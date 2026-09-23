@@ -115,12 +115,12 @@ Suporta:
 
 ### `/investments`
 
-Visão consolidada dos investimentos.
+Visão consolidada da reserva de emergência e da carteira de longo prazo, sem dupla contagem. O saldo projetado por checkpoint, aportes, retiradas e rendimento estimado é a fonte oficial da reserva.
 
 Suporta:
 
 - configuração inicial da carteira;
-- saldo consolidado informado pelo usuário;
+- patrimônio total, reserva oficial e longo prazo;
 - data de referência do saldo;
 - taxa mensal esperada;
 - aportes futuros previstos a partir das recorrências;
@@ -131,22 +131,24 @@ Suporta:
 
 ### `/investments/portfolio`
 
-Detalhamento patrimonial da carteira atual.
+Carteira exclusivamente de longo prazo. Ativos integralmente dedicados à reserva não aparecem aqui.
 
 Suporta:
 
 - cadastro de ativos e posições;
 - ticker, instituição, classe e tipo do instrumento;
-- ações, renda fixa, fundos, imóveis, cripto, caixa e outros tipos previstos no domínio;
-- valor atual e data de referência informados manualmente;
+- ações, FIIs e ETFs com quantidade, preço médio e cotação;
+- Tesouro, CDB, LCI e LCA com aplicações, resgates e saldo atual manual;
 - finalidades ou “caixinhas” para o patrimônio;
 - associação de uma posição a uma ou mais finalidades;
 - distribuição da carteira por classe;
 - valores alocados, livres e ainda não cadastrados;
 - arquivamento de ativos e finalidades;
-- reconciliação de reduções e resgates.
+- atualização automática pela brapi, com cooldown, sucesso parcial e fallback manual;
+- histórico diário da posição e da carteira;
+- edição e exclusão transacional de operações.
 
-Neste momento, o app não busca cotações de mercado automaticamente e não registra compras individuais com quantidade e preço unitário.
+Falhas em um ticker preservam a última cotação e marcam o dado como desatualizado. A atualização automática exige `BRAPI_API_TOKEN`; o intervalo pode ser ajustado por `INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES`.
 
 ### `/goals`
 
