@@ -10,6 +10,10 @@ export type CreditCardViewProps = {
   categories: CreditCardCategoryOption[];
 };
 
+export type CreditCardMonthLoadingProps = {
+  month: string;
+};
+
 export type CreditCardMonthPoint = {
   month: string;
   totalCents: number;
@@ -21,6 +25,7 @@ export type CreditCardMonthStripProps = {
   points: CreditCardMonthPoint[];
   selectedMonth: string;
   onSelectMonth: (month: string) => void;
+  isLoading: boolean;
 };
 
 export type CreditCardTimelineChartProps = {

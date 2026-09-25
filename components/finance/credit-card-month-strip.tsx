@@ -20,6 +20,7 @@ export function CreditCardMonthStrip({
   points,
   selectedMonth,
   onSelectMonth,
+  isLoading,
 }: CreditCardMonthStripProps) {
   const cardsViewportRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(7);
@@ -68,7 +69,10 @@ export function CreditCardMonthStrip({
   }
 
   return (
-    <section className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-4 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-5">
+    <section
+      className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-4 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-5"
+      aria-busy={isLoading}
+    >
       <div className="flex items-start justify-between gap-4 px-1">
         <div>
           <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-content-strong0">
@@ -168,7 +172,7 @@ function CreditCardMonthCard({
           {formatCreditCardMonth(point.month)}
         </span>
         {hasChange ? (
-          isIncrease ? <ArrowUpRight className="size-3.5 shrink-0 text-danger" /> : <ArrowDownRight className="size-3.5 shrink-0 text-warning" />
+          isIncrease ? <ArrowUpRight className="size-3.5 shrink-0 text-danger" /> : <ArrowDownRight className="size-3.5 shrink-0 text-emerald-400" />
         ) : null}
       </div>
       <p className={cn("mt-2 truncate text-lg font-semibold", selected ? "text-brand" : "text-content")}>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useOptimistic, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { CreditCardCommitments } from "@/components/finance/credit-card-commitments";
@@ -9,6 +10,7 @@ import {
   CreditCardPageActions,
 } from "@/components/finance/credit-card-page-actions";
 import { CreditCardMonthStrip } from "@/components/finance/credit-card-month-strip";
+import { CreditCardMonthLoading } from "@/components/finance/credit-card-month-loading";
 import { CreditCardSetupCard } from "@/components/finance/credit-card-setup-card";
 import { CreditCardTransactionsPanel } from "@/components/finance/credit-card-transactions-panel";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
@@ -24,6 +26,8 @@ import type { CreditCardViewProps } from "@/lib/interfaces/credit-card-view";
 export function CreditCardView({ overview, categories }: CreditCardViewProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [selectedMonth, setSelectedMonth] = useOptimistic(overview.month);
   const expenseCategories = categories.filter(
     (category) =>
       category.group === "fixed_expense" || category.group === "variable_expense"
@@ -80,9 +84,16 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
   const canCreatePurchase = expenseCategories.length > 0 && !overview.needsConfiguration;
 
   function selectMonth(month: string) {
+    if (month === overview.month) {
+      return;
+    }
+
     const params = new URLSearchParams();
     params.set("month", month);
-    router.replace(`${pathname}?${params.toString()}`);
+    startTransition(() => {
+      setSelectedMonth(month);
+      router.replace(`${pathname}?${params.toString()}`);
+    });
   }
 
   return (
@@ -123,25 +134,32 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
         />
       ) : null}
 
-      <CreditCardHero overview={overview} nextInvoice={monthPoints[1]} />
-
       <CreditCardMonthStrip
         key={overview.month}
         points={monthPoints}
-        selectedMonth={overview.month}
+        selectedMonth={selectedMonth}
         onSelectMonth={selectMonth}
+        isLoading={isPending}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
-        <CreditCardTransactionsPanel
-          accountId={overview.account.id}
-          categories={expenseCategories}
-          month={overview.month}
-          entries={overview.invoice.entries}
-          categoryTotals={overview.invoice.categoryTotals}
-        />
-        <CreditCardCommitments overview={overview} monthPoints={monthPoints} />
-      </div>
+      {isPending ? (
+        <CreditCardMonthLoading month={selectedMonth} />
+      ) : (
+        <>
+          <CreditCardHero overview={overview} nextInvoice={monthPoints[1]} />
+
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+            <CreditCardTransactionsPanel
+              accountId={overview.account.id}
+              categories={expenseCategories}
+              month={overview.month}
+              entries={overview.invoice.entries}
+              categoryTotals={overview.invoice.categoryTotals}
+            />
+            <CreditCardCommitments overview={overview} monthPoints={monthPoints} />
+          </div>
+        </>
+      )}
     </div>
   );
 }
