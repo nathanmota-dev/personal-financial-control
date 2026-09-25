@@ -29,8 +29,8 @@ export function AppShell({
       <RecurringAutoGenerator demoMode={demoMode} />
       <div className="mx-auto flex min-h-screen max-w-[1600px] gap-6 p-4 md:p-6">
         <aside className="hidden w-72 shrink-0 lg:block">
-          <div className="sticky top-6 flex h-[calc(100vh-3rem)] flex-col overflow-hidden rounded-[2rem] border border-brand/40 bg-sidebar-shell px-6 py-7 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .55)]">
-            <div className="space-y-3">
+          <div className="sticky top-6 flex h-[calc(100dvh-3rem)] flex-col overflow-hidden rounded-[2rem] border border-brand/40 bg-sidebar-shell px-6 py-7 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .55)]">
+            <div className="shrink-0 space-y-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-[0.32em] text-brand">
                 Controle Financeiro
               </p>

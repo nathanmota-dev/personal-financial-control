@@ -62,7 +62,12 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
   }
 
   return (
-    <nav className={cn("space-y-2", mobile ? "p-4" : "mt-10")}>
+    <nav
+      className={cn(
+        "space-y-2",
+        mobile ? "p-4" : "mt-10 min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar"
+      )}
+    >
       {navigation.map((item) => {
         const Icon = item.icon;
         const parentActive = pathname === item.href || pathname.startsWith(item.href + "/");
