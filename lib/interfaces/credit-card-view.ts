@@ -32,6 +32,18 @@ export type CreditCardHeroProps = {
   nextInvoice?: CreditCardMonthPoint;
 };
 
+export type CreditCardHeroDetailProps = {
+  label: string;
+  value: string;
+  detail: string;
+};
+
+export type CreditCardNextInvoiceCardProps = {
+  accountId: string;
+  creditDueDay: number;
+  nextInvoice?: CreditCardMonthPoint;
+};
+
 export type CreditCardTransactionsPanelProps = {
   accountId: string;
   categories: CreditCardCategoryOption[];

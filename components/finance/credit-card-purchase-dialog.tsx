@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,7 +20,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DatePickerField } from "@/components/ui/date-picker-field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type {
   CreditCardCategoryOption,
@@ -47,8 +49,11 @@ export function CreditCardPurchaseDialog({
   charge?: CreditCardChargeForEdit;
   trigger?: ReactNode;
 }) {
+  const defaultDate = charge?.purchaseDate ?? `${month}-01`;
+  const purchaseDateFieldId = useId();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [purchaseDate, setPurchaseDate] = useState(defaultDate);
   const [isPending, startTransition] = useTransition();
   const isEditing = Boolean(charge);
 
@@ -81,10 +86,15 @@ export function CreditCardPurchaseDialog({
   }
 
   const defaultCategoryId = charge?.categoryId ?? categories[0]?.id;
-  const defaultDate = charge?.purchaseDate ?? `${month}-01`;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (nextOpen) setPurchaseDate(defaultDate);
+      }}
+    >
       <DialogTrigger asChild>
         {trigger ?? (
           <Button disabled={disabled} variant={isEditing ? "outline" : "default"} size={isEditing ? "sm" : "default"}>
@@ -117,7 +127,20 @@ export function CreditCardPurchaseDialog({
                   </option>
                 ))}
               </select>
-              <Input name="purchaseDate" type="date" defaultValue={defaultDate} />
+              <div className="grid gap-2">
+                <Label htmlFor={purchaseDateFieldId} className="text-xs uppercase tracking-[0.16em] text-content">
+                  Data da compra
+                </Label>
+                <DatePickerField
+                  id={purchaseDateFieldId}
+                  name="purchaseDate"
+                  value={purchaseDate}
+                  required
+                  onDateChange={(nextDate) => {
+                    if (nextDate) setPurchaseDate(nextDate);
+                  }}
+                />
+              </div>
               <Input
                 name="amount"
                 placeholder="0,00"

@@ -1,6 +1,8 @@
 import { CalendarClock, CheckCircle2, CreditCard, ReceiptText } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { CreditCardHeroDetail } from "@/components/finance/credit-card-hero-detail";
+import { CreditCardNextInvoiceCard } from "@/components/finance/credit-card-next-invoice-card";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
 import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 import type { CreditCardHeroProps } from "@/lib/interfaces/credit-card-view";
@@ -71,12 +73,12 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <HeroDetail
-            label="Próxima fatura"
-            value={nextInvoice?.entryCount ? formatCurrency(nextInvoice.totalCents) : "—"}
-            detail={nextInvoice?.entryCount ? `Estimativa para ${nextInvoice.month.slice(5, 7)}/${nextInvoice.month.slice(0, 4)}` : "Sem parcelas futuras"}
+          <CreditCardNextInvoiceCard
+            accountId={overview.account.id}
+            creditDueDay={overview.account.creditDueDay}
+            nextInvoice={nextInvoice}
           />
-          <HeroDetail
+          <CreditCardHeroDetail
             label="Compras e parcelas"
             value={String(overview.invoice.purchaseCount)}
             detail={overview.invoice.bill ? "Leitura baseada na fatura fechada" : "Leitura baseada nos lançamentos"}
@@ -84,15 +86,5 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
         </div>
       </div>
     </section>
-  );
-}
-
-function HeroDetail({ label, value, detail }: { label: string; value: string; detail: string }) {
-  return (
-    <div className="rounded-2xl border border-input/70 bg-surface/35 px-4 py-3.5">
-      <p className="text-xs uppercase tracking-[0.16em] text-content-strong0">{label}</p>
-      <p className="mt-1 font-heading text-2xl font-semibold text-brand">{value}</p>
-      <p className="mt-1 text-xs text-content-strong0">{detail}</p>
-    </div>
   );
 }
