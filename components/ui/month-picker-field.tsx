@@ -97,7 +97,7 @@ export function MonthPickerField({
               className
             )}
           >
-            <span className={cn("truncate", !label && "text-content-strong0")}>
+            <span className={cn("truncate", !label && "text-content")}>
               {label ?? placeholder}
             </span>
             <CalendarDays className="size-4 shrink-0 text-content" aria-hidden="true" />

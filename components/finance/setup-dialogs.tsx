@@ -240,7 +240,7 @@ export function SetupCallout({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-brand/60 bg-brand/40 p-4 text-sm text-content">
+    <div className="rounded-2xl border border-brand/20 bg-brand-soft p-4 text-sm text-content">
       <p className="font-medium text-content-strong">{title}</p>
       <p className="mt-1 leading-6 text-content">{description}</p>
       <div className="mt-4 flex flex-wrap gap-2">

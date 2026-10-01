@@ -33,7 +33,7 @@ export function DailyProjectionExplorer({
           <p className="font-heading text-xl font-semibold text-content-strong">
             Leitura diária
           </p>
-          <p className="mt-1 text-sm text-content-strong0">
+          <p className="mt-1 text-sm text-content">
             Navegue pelo mês ou alterne para a conferência em formato de tabela.
           </p>
         </div>

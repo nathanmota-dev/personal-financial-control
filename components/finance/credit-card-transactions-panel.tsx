@@ -47,7 +47,7 @@ export function CreditCardTransactionsPanel({
               <h2 className="font-heading text-2xl font-semibold text-content-strong">Extrato da fatura</h2>
               <Badge variant="outline" className="border-input text-content">{entries.length}</Badge>
             </div>
-            <p className="mt-1 text-sm text-content-strong0">Compras, parcelas e ajustes lançados no ciclo selecionado.</p>
+            <p className="mt-1 text-sm text-content">Compras, parcelas e ajustes lançados no ciclo selecionado.</p>
           </div>
           <div className="flex rounded-xl border border-border bg-surface/50 p-1">
             <ViewToggle
@@ -69,7 +69,7 @@ export function CreditCardTransactionsPanel({
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
             <label className="relative min-w-0 flex-1">
               <span className="sr-only">Buscar uma transação</span>
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content-strong0" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content" />
               <Input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
@@ -133,7 +133,7 @@ function ViewToggle({
       onClick={onClick}
       className={cn(
         "inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors",
-        active ? "bg-surface-elevated text-content-strong" : "text-content-strong0 hover:text-content"
+        active ? "bg-surface-elevated text-content-strong" : "text-content hover:text-content"
       )}
     >
       {icon}
@@ -185,7 +185,7 @@ function CreditCardTransactionRow({
         <div className="flex flex-wrap items-center gap-2">
           <p className="truncate font-medium text-content-strong">{entry.description}</p>
           {entry.installmentNumber && entry.installmentCount ? (
-            <Badge variant="outline" className="border-input text-[0.68rem] text-content-strong0">
+            <Badge variant="outline" className="border-input text-[0.68rem] text-content">
               {entry.installmentNumber}/{entry.installmentCount}
             </Badge>
           ) : null}
@@ -195,7 +195,7 @@ function CreditCardTransactionRow({
             </Badge>
           ) : null}
         </div>
-        <p className="mt-1 truncate text-sm text-content-strong0">{entry.category?.name ?? "Sem categoria"}</p>
+        <p className="mt-1 truncate text-sm text-content">{entry.category?.name ?? "Sem categoria"}</p>
       </div>
       <div className="flex shrink-0 items-start gap-1 sm:items-center">
         <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-brand")}>
@@ -234,7 +234,7 @@ function CategoryBreakdown({
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate font-medium text-content-strong">{category.categoryName}</p>
-              <p className="mt-1 text-xs text-content-strong0">{category.group === "fixed_expense" ? "Gasto fixo" : "Gasto variável"}</p>
+              <p className="mt-1 text-xs text-content">{category.group === "fixed_expense" ? "Gasto fixo" : "Gasto variável"}</p>
             </div>
             <p className="shrink-0 font-semibold text-brand">{formatCurrency(category.amountCents)}</p>
           </div>
@@ -254,7 +254,7 @@ function TransactionEmptyState({ query }: { query: string }) {
         <Search className="size-5" />
       </div>
       <p className="mt-4 font-medium text-content-strong">{query ? "Nenhum resultado encontrado" : "Nenhum lançamento nesta fatura"}</p>
-      <p className="mt-1 max-w-sm text-sm leading-6 text-content-strong0">
+      <p className="mt-1 max-w-sm text-sm leading-6 text-content">
         {query ? "Tente buscar por outro nome ou remova o filtro de categoria." : "Quando houver compras ou parcelas no mês selecionado, elas aparecerão aqui."}
       </p>
     </div>

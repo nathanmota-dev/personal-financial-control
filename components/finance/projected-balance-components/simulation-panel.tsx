@@ -45,7 +45,7 @@ export function ProjectionSimulationPanel({
 
       {simulations.length ? (
         <CardContent className="space-y-3 pt-0">
-          <div className="flex items-center justify-between gap-3 text-xs text-content-strong0">
+          <div className="flex items-center justify-between gap-3 text-xs text-content">
             <span>
               {simulations.length} {simulations.length === 1 ? "compra simulada" : "compras simuladas"}
             </span>
@@ -79,7 +79,7 @@ export function ProjectionSimulationPanel({
                         Simulação
                       </Badge>
                     </div>
-                    <p className="mt-1 text-xs text-content-strong0">
+                    <p className="mt-1 text-xs text-content">
                       {formatDateLabel(simulation.date)} · {simulation.accountName}
                     </p>
                   </div>
@@ -87,7 +87,7 @@ export function ProjectionSimulationPanel({
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    className="shrink-0 text-content-strong0 hover:bg-danger/10 hover:text-danger"
+                    className="shrink-0 text-content hover:bg-danger/10 hover:text-danger"
                     aria-label={`Remover simulação ${simulation.description}`}
                     onClick={() => onRemoveSimulation(simulation.id)}
                   >
@@ -102,7 +102,7 @@ export function ProjectionSimulationPanel({
           </div>
         </CardContent>
       ) : (
-        <CardContent className="pt-0 text-sm text-content-strong0">
+        <CardContent className="pt-0 text-sm text-content">
           Nenhuma simulação ativa. A projeção atual considera apenas os eventos cadastrados.
         </CardContent>
       )}

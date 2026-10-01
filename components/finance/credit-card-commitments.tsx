@@ -14,7 +14,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
       <section className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-5 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content-strong0">Planejamento</p>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content">Planejamento</p>
             <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Próximas faturas</h2>
           </div>
           <CalendarRange className="size-5 text-brand" />
@@ -35,7 +35,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
       <section className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-5 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content-strong0">Compromissos</p>
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content">Compromissos</p>
             <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Parcelas em aberto</h2>
           </div>
           <Layers3 className="size-5 text-brand" />
@@ -51,7 +51,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
                 <p className="shrink-0 text-sm font-semibold text-content">{formatCurrency(charge.remainingAmountCents)}</p>
               </div>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="border-input text-[0.68rem] text-content-strong0">
+                <Badge variant="outline" className="border-input text-[0.68rem] text-content">
                   {charge.installments.length} futuras
                 </Badge>
                 <span className="text-[0.68rem] text-content-subtle">até {formatCreditCardMonth(charge.installments.at(-1)?.invoiceMonth ?? overview.month)}</span>
@@ -71,7 +71,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
         ) : null}
       </section>
 
-      <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-xs leading-5 text-content-strong0">
+      <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-xs leading-5 text-content">
         Ciclo atual: {overview.account.creditClosingDay ? `fecha dia ${overview.account.creditClosingDay}` : "fechamento não configurado"} · vencimento dia {overview.account.creditDueDay} · mês {formatCreditCardMonth(overview.month)}.
       </div>
     </aside>

@@ -36,7 +36,7 @@ export function PurposeCard({
             <h3 className="truncate font-heading text-lg font-semibold text-content-strong">
               {purpose.name}
             </h3>
-            <p className="mt-0.5 text-xs text-content-strong0">
+            <p className="mt-0.5 text-xs text-content">
               {purpose.holdingCount}{" "}
               {purpose.holdingCount === 1 ? "ativo relacionado" : "ativos relacionados"}
             </p>
@@ -86,11 +86,11 @@ export function PurposeCard({
           <p className="font-heading text-2xl font-semibold text-warning">
             {formatCurrency(purpose.allocatedCents)}
           </p>
-          <p className="mt-1 text-xs text-content-strong0">{percentage}% do patrimônio de referência</p>
+          <p className="mt-1 text-xs text-content">{percentage}% do patrimônio de referência</p>
         </div>
         {purpose.targetAmountCents ? (
           <div className="text-right">
-            <p className="text-xs text-content-strong0">Alvo</p>
+            <p className="text-xs text-content">Alvo</p>
             <p className="text-sm font-medium text-content">
               {formatCurrency(purpose.targetAmountCents)}
             </p>
@@ -100,7 +100,7 @@ export function PurposeCard({
 
       {progress !== null ? (
         <div className="mt-4 space-y-1.5">
-          <div className="flex items-center justify-between text-xs text-content-strong0">
+          <div className="flex items-center justify-between text-xs text-content">
             <span>Progresso do alvo</span>
             <span>{progress.toFixed(0).replace(".", ",")}%</span>
           </div>
@@ -113,7 +113,7 @@ export function PurposeCard({
       ) : null}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border/80 pt-3 text-xs">
-        <span className="text-content-strong0">
+        <span className="text-content">
           {purpose.lastAllocatedOn
             ? "Última alocação em " + formatDateLabel(purpose.lastAllocatedOn)
             : "Sem alocações ainda"}

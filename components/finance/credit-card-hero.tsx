@@ -20,7 +20,7 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
   return (
     <section className="relative isolate overflow-hidden rounded-[2rem] border border-border/90 bg-surface-raised shadow-[0_28px_90px_rgb(var(--surface-rgb) / .42)]">
       <div className="pointer-events-none absolute -right-24 -top-36 -z-10 size-[28rem] rounded-full bg-brand/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-48 left-1/3 -z-10 size-[24rem] rounded-full bg-indigo-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-48 left-1/3 -z-10 size-[24rem] rounded-full bg-brand-strong/10 blur-3xl" />
       <div className="border-b border-border/90 px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
