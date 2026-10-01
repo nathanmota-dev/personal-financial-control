@@ -157,7 +157,7 @@ export function TransactionsView({
                             <TableCell className="text-right font-semibold">{formatCurrency(transaction.amountCents)}</TableCell>
                             <TableCell className="text-right">
                               {transaction.isGeneratedByFunding ? (
-                                <span className="text-xs text-content-strong0">Gerenciado pela despesa</span>
+                                <span className="text-xs text-content">Gerenciado pela despesa</span>
                               ) : (
                                 <div className="flex justify-end gap-2">
                                   <TransactionDialog
@@ -199,7 +199,7 @@ export function TransactionsView({
                           </div>
                           <p className="font-semibold text-content-strong">{formatCurrency(transaction.amountCents)}</p>
                         </div>
-                        <p className="mt-2 text-xs text-content-strong0">{transaction.category?.name ?? "Sem categoria"}</p>
+                        <p className="mt-2 text-xs text-content">{transaction.category?.name ?? "Sem categoria"}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>{transactionTypeLabels[transaction.type]}</Badge>
                           {transaction.isGeneratedByFunding ? (
@@ -210,7 +210,7 @@ export function TransactionsView({
                           <Badge className={cn("ring-1", getStatusTone(transaction.status))}>{transactionStatusLabels[transaction.status]}</Badge>
                         </div>
                         {transaction.isGeneratedByFunding ? (
-                          <p className="mt-4 text-xs text-content-strong0">Gerenciado pela despesa vinculada</p>
+                          <p className="mt-4 text-xs text-content">Gerenciado pela despesa vinculada</p>
                         ) : (
                           <div className="mt-4 flex gap-2">
                             <TransactionDialog

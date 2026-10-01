@@ -213,13 +213,13 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
         <CardContent className="grid gap-4">
           <div className="grid gap-3 rounded-2xl border border-border bg-surface-raised/55 p-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">Checkpoint</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-content">Checkpoint</p>
               <p className="mt-1 font-semibold text-content-strong">
                 {formatCurrency(projection.checkpointBalanceCents)}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">Data</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-content">Data</p>
               <p className="mt-1 font-semibold text-content-strong">
                 {formatDateLabel(projection.checkpointDate)}
               </p>
@@ -232,7 +232,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
             placeholder="1,00"
             onChange={setRate}
           />
-          <p className="text-xs leading-5 text-content-strong0">
+          <p className="text-xs leading-5 text-content">
             A taxa atual é {formatRateFromBps(projection.expectedMonthlyRateBps)} e serve para
             estimar o rendimento entre movimentações.
           </p>

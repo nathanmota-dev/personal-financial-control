@@ -63,13 +63,13 @@ export function HoldingsTable({
           <Table>
             <TableHeader>
               <TableRow className="border-border/80 hover:bg-transparent">
-                <TableHead className="pl-6 text-content-strong0">Ativo</TableHead>
-                <TableHead className="text-content-strong0">Classe / tipo</TableHead>
-                <TableHead className="text-right text-content-strong0">Atual</TableHead>
-                <TableHead className="text-right text-content-strong0">Alocado</TableHead>
-                <TableHead className="text-right text-content-strong0">Livre</TableHead>
-                <TableHead className="text-content-strong0">Valor em</TableHead>
-                <TableHead className="pr-6 text-right text-content-strong0">Ações</TableHead>
+                <TableHead className="pl-6 text-content">Ativo</TableHead>
+                <TableHead className="text-content">Classe / tipo</TableHead>
+                <TableHead className="text-right text-content">Atual</TableHead>
+                <TableHead className="text-right text-content">Alocado</TableHead>
+                <TableHead className="text-right text-content">Livre</TableHead>
+                <TableHead className="text-content">Valor em</TableHead>
+                <TableHead className="pr-6 text-right text-content">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,7 +79,7 @@ export function HoldingsTable({
                     <TableCell className="max-w-[230px] pl-6">
                       <div className="min-w-0">
                         <p className="truncate font-medium text-content-strong">{holding.name}</p>
-                        <p className="mt-1 truncate text-xs text-content-strong0">
+                        <p className="mt-1 truncate text-xs text-content">
                           {holding.ticker || "Sem ticker"}
                           {holding.institutionName ? " · " + holding.institutionName : ""}
                         </p>
@@ -109,7 +109,7 @@ export function HoldingsTable({
                         <Badge variant="outline" className="border-brand/20 text-brand">
                           {investmentAssetClassLabels[holding.assetClass]}
                         </Badge>
-                        <p className="text-xs text-content-strong0">
+                        <p className="text-xs text-content">
                           {investmentInstrumentTypeLabels[holding.instrumentType]}
                         </p>
                       </div>
@@ -143,7 +143,7 @@ export function HoldingsTable({
                     <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
                       Nenhuma posição cadastrada
                     </p>
-                    <p className="mt-1 text-sm text-content-strong0">
+                    <p className="mt-1 text-sm text-content">
                       Comece pelo ativo com maior impacto no seu patrimônio.
                     </p>
                   </TableCell>
@@ -162,7 +162,7 @@ export function HoldingsTable({
                     <p className="truncate font-heading text-lg font-semibold text-content-strong">
                       {holding.name}
                     </p>
-                    <p className="mt-1 truncate text-xs text-content-strong0">
+                    <p className="mt-1 truncate text-xs text-content">
                       {holding.ticker || "Sem ticker"}
                       {holding.institutionName ? " · " + holding.institutionName : ""}
                     </p>
@@ -187,7 +187,7 @@ export function HoldingsTable({
                   <HoldingMetric label="Alocado" value={formatCurrency(holding.allocatedCents)} />
                   <HoldingMetric label="Livre" value={formatCurrency(holding.freeValueCents)} />
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-content-strong0">
+                <div className="mt-4 flex items-center gap-2 text-xs text-content">
                   <CalendarDays className="size-3.5" />
                   Valor informado em {formatDateLabel(holding.valueAsOf)}
                 </div>

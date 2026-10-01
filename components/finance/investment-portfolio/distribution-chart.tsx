@@ -87,7 +87,7 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
         <div className="overflow-hidden rounded-2xl border border-border/80 bg-surface-raised/35">
           <table className="w-full text-sm">
             <caption className="sr-only">Tabela acessível da distribuição por tipo de ativo</caption>
-            <thead className="border-b border-border/80 text-left text-xs uppercase tracking-[0.14em] text-content-strong0">
+            <thead className="border-b border-border/80 text-left text-xs uppercase tracking-[0.14em] text-content">
               <tr>
                 <th className="px-4 py-3 font-medium">Tipo</th>
                 <th className="px-4 py-3 text-right font-medium">Valor</th>
@@ -112,7 +112,7 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
                 ))
               ) : (
                 <tr>
-                  <td className="px-4 py-4 text-content-strong0" colSpan={3}>
+                  <td className="px-4 py-4 text-content" colSpan={3}>
                     Sem composição cadastrada.
                   </td>
                 </tr>
@@ -121,7 +121,7 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
           </table>
         </div>
 
-        <p className="text-xs leading-5 text-content-strong0">
+        <p className="text-xs leading-5 text-content">
           {dashboard.globalBalanceCents !== null
             ? "Percentuais calculados contra o saldo global projetado."
             : "Sem carteira global: percentuais calculados contra o total cadastrado."}

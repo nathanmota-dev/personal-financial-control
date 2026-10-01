@@ -126,7 +126,7 @@ export function AllocationDialog({
                 {formatCurrency(Math.max(availableCents, 0))}
               </strong>
             </div>
-            <p className="mt-1 text-xs leading-5 text-content-strong0">
+            <p className="mt-1 text-xs leading-5 text-content">
               O valor disponível considera as outras caixinhas deste ativo.
             </p>
           </div>

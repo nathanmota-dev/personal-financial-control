@@ -5,6 +5,7 @@ import {
   Menu,
 } from "lucide-react";
 
+import { ThemeToggle } from "@/components/finance/theme-toggle";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,10 @@ export function AppShell({
             </div>
 
             <SidebarNavigation />
+            <div className="mt-4 flex shrink-0 items-center justify-between border-t border-border pt-4">
+              <span className="text-sm text-content">Aparência</span>
+              <ThemeToggle />
+            </div>
           </div>
         </aside>
 
@@ -54,22 +59,25 @@ export function AppShell({
               <p className="text-sm text-content">Navegação principal</p>
             </div>
 
-            <Drawer direction="left">
-              <DrawerTrigger asChild>
-                <Button variant="outline" size="icon-sm">
-                  <Menu className="size-4" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="border-r border-border bg-surface text-content-strong">
-                <DrawerHeader className="border-b border-border text-left">
-                  <DrawerTitle>Menu</DrawerTitle>
-                  <DrawerDescription className="text-content">
-                    Selecione a área do app financeiro.
-                  </DrawerDescription>
-                </DrawerHeader>
-                <SidebarNavigation mobile />
-              </DrawerContent>
-            </Drawer>
+            <div className="flex shrink-0 items-center gap-2">
+              <ThemeToggle />
+              <Drawer direction="left">
+                <DrawerTrigger asChild>
+                  <Button variant="outline" size="icon-sm" aria-label="Abrir menu">
+                    <Menu className="size-4" />
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="border-r border-border bg-surface text-content-strong">
+                  <DrawerHeader className="border-b border-border text-left">
+                    <DrawerTitle>Menu</DrawerTitle>
+                    <DrawerDescription className="text-content">
+                      Selecione a área do app financeiro.
+                    </DrawerDescription>
+                  </DrawerHeader>
+                  <SidebarNavigation mobile />
+                </DrawerContent>
+              </Drawer>
+            </div>
           </header>
 
           <main className="flex-1">

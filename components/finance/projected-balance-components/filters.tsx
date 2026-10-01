@@ -296,7 +296,7 @@ export function ProjectionFilters({
 function FilterField({ label, children }: FilterFieldProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-xs uppercase tracking-[0.18em] text-content-strong0">
+      <Label className="text-xs uppercase tracking-[0.18em] text-content">
         {label}
       </Label>
       {children}
@@ -320,7 +320,7 @@ function ToggleFilter({
     >
       <div>
         <p className="font-medium text-content-strong">{label}</p>
-        <p className="mt-1 text-sm text-content-strong0">{description}</p>
+        <p className="mt-1 text-sm text-content">{description}</p>
       </div>
       <Switch
         checked={checked}

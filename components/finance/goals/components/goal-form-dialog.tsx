@@ -161,7 +161,7 @@ export function GoalFormDialog({
                   onClick={() => setForm((state) => ({ ...state, color }))}
                   className={cn(
                     "size-8 rounded-full border-2 transition",
-                    form.color === color ? "border-white" : "border-input"
+                    form.color === color ? "border-ring" : "border-input"
                   )}
                   style={{ backgroundColor: color }}
                 />

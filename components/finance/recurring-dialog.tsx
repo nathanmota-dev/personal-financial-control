@@ -256,7 +256,7 @@ export function RecurringDialog({
                 placeholder="Ex.: aluguel, academia ou salário"
                 className={cn(recurringFieldClassName, "mt-2 h-12 border-brand/30 bg-surface/70 text-base")}
               />
-              <p className="mt-2 text-xs leading-5 text-content-strong0">
+              <p className="mt-2 text-xs leading-5 text-content">
                 Este nome identifica a regra e os lançamentos gerados por ela.
               </p>
             </div>
@@ -340,7 +340,7 @@ export function RecurringDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-content-strong0">
+                <p className="text-xs text-content">
                   {selectedType === "income" ? "Receitas começam em Salário." : selectedType === "investment_contribution" ? "Aportes começam em Investimentos." : "Despesas começam em Outros."}
                 </p>
               </div>
@@ -377,7 +377,7 @@ export function RecurringDialog({
                   placeholder="Ex.: 5"
                   className={recurringFieldClassName}
                 />
-                <p className="text-xs text-content-strong0">Em meses menores, usamos o último dia disponível.</p>
+                <p className="text-xs text-content">Em meses menores, usamos o último dia disponível.</p>
               </div>
 
               <div className="space-y-2">

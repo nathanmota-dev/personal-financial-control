@@ -96,7 +96,7 @@ export function InvestmentReductionDialog({
               </p>
             </div>
             <div className="rounded-xl border border-input/80 bg-surface/60 px-3 py-2 text-right">
-              <p className="text-xs text-content-strong0">Selecionado</p>
+              <p className="text-xs text-content">Selecionado</p>
               <p className="mt-1 font-semibold text-content-strong">{formatCurrency(selectedCents)}</p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export function InvestmentReductionDialog({
             groupedSources.map((group) => (
               <section key={group.label} className="space-y-2">
                 <div className="flex items-center gap-2 px-1">
-                  <Layers3 className="size-4 text-content-strong0" />
+                  <Layers3 className="size-4 text-content" />
                   <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-content">
                     {group.label}
                   </h3>
@@ -133,7 +133,7 @@ export function InvestmentReductionDialog({
                               <Check className="size-4 shrink-0 text-brand" />
                             ) : null}
                           </div>
-                          <p className="mt-1 text-xs leading-5 text-content-strong0">{source.description}</p>
+                          <p className="mt-1 text-xs leading-5 text-content">{source.description}</p>
                           <p className="mt-1 text-xs text-content">
                             Disponível: {formatCurrency(source.availableCents)}
                           </p>

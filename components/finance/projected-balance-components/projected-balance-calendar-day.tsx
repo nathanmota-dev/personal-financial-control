@@ -61,7 +61,7 @@ export function ProjectedBalanceCalendarDay({
           </p>
         </div>
 
-        <div className="mt-auto border-t border-white/[0.07] pt-1.5">
+        <div className="mt-auto border-t border-border/60 pt-1.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-[0.58rem] text-content-muted">Disponível/dia</span>
             <span

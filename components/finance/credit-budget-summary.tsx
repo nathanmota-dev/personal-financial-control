@@ -38,7 +38,7 @@ export function CreditBudgetSummary({
           <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-brand">
             {formatCurrency(totalCommittedCents)}
           </p>
-          <p className="mt-2 text-xs leading-5 text-content-strong0">
+          <p className="mt-2 text-xs leading-5 text-content">
             Despesas fora do cartão somadas aos aportes e descontando os resgates.
           </p>
         </div>
@@ -52,7 +52,7 @@ export function CreditBudgetSummary({
           >
             {formatCurrency(availableForInvoiceCents)}
           </p>
-          <p className="mt-2 text-xs leading-5 text-content-strong0">
+          <p className="mt-2 text-xs leading-5 text-content">
             Fatura do mês: {formatCurrency(invoiceTotalCents)}.
           </p>
         </div>
