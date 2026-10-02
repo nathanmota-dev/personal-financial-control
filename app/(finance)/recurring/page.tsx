@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { RecurringView } from "@/components/finance/recurring-view";
 import { isValidMonth } from "@/lib/finance-ui";
 import type { RecurringViewProps } from "@/lib/interfaces/recurring";
@@ -12,6 +13,7 @@ export default async function RecurringPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageSession();
   const params = await searchParams;
   const month = isValidMonth(typeof params.month === "string" ? params.month : undefined)
     ? (params.month as string)

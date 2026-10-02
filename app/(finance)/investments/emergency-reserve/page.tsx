@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 
 import { InvestmentsView } from "@/components/finance/investments-view";
@@ -9,6 +10,7 @@ import {
 import { getEmergencyReserveComposition } from "@/lib/server/investment-operations";
 
 export default async function EmergencyReservePage() {
+  await requirePageSession();
   await connection();
   const [projection, contributionHistory, composition] = await Promise.all([
     getInvestmentProjection(),

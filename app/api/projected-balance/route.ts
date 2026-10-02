@@ -1,3 +1,4 @@
+import { apiGuard } from "@/lib/auth/server";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -7,7 +8,9 @@ import {
 } from "@/lib/server/projected-balance";
 import { DomainError } from "@/lib/server/errors";
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
+  const denied = await apiGuard(request);
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(request.url);
     const filters = parseProjectedBalanceSearchParams(searchParams);
@@ -57,4 +60,19 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function GET(...args: Parameters<typeof handleGET>) {
+  const response = await handleGET(...args);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export async function HEAD(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
+}
+export async function OPTIONS(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
 }

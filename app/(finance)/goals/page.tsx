@@ -1,9 +1,11 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 
 import { GoalsView } from "@/components/finance/goals-view";
 import { getGoalsDashboard } from "@/lib/server/goals";
 
 export default async function GoalsPage() {
+  await requirePageSession();
   await connection();
 
   const dashboard = await getGoalsDashboard();

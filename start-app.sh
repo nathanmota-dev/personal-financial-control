@@ -29,6 +29,11 @@ require_command() {
 
 compute_build_fingerprint() {
   local files=(
+    .env
+    .env.local
+    .env.production
+    .env.production.local
+    proxy.ts
     package.json
     package-lock.json
     next.config.ts
@@ -89,6 +94,14 @@ if [[ ! -x "$NEXT_BIN" ]]; then
   exit 1
 fi
 
+# Read dotenv through Next's parser; do not execute the file as shell code.
+if [[ -d node_modules ]]; then
+  CANONICAL_URL="$(node -e 'require("@next/env").loadEnvConfig(process.cwd()); process.stdout.write(process.env.APP_URL || "")')"
+  if [[ -n "$CANONICAL_URL" ]]; then
+    APP_PORT="$(node -e 'const u = new URL(process.argv[1]); process.stdout.write(u.port || (u.protocol === "https:" ? "443" : "80"))' "$CANONICAL_URL")"
+  fi
+fi
+
 CURRENT_FINGERPRINT="$(compute_build_fingerprint)"
 SAVED_FINGERPRINT=""
 
@@ -121,11 +134,11 @@ if [[ "${START_APP_BACKGROUND:-0}" == "1" ]]; then
   else
     rm -f "$SERVER_SESSION_FILE"
   fi
-  env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start >>"$SERVER_LOG_FILE" 2>&1 &
+  env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start --hostname "$APP_HOST" --port "$APP_PORT" >>"$SERVER_LOG_FILE" 2>&1 &
   SERVER_PID=$!
   printf '%s\n' "$SERVER_PID" > "$SERVER_PID_FILE"
   log "Servidor iniciado em background com PID $SERVER_PID. Log: $SERVER_LOG_FILE"
   exit 0
 fi
 
-exec env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start
+exec env HOST="$APP_HOST" PORT="$APP_PORT" "$NEXT_BIN" start --hostname "$APP_HOST" --port "$APP_PORT"

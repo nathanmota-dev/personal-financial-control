@@ -10,6 +10,11 @@ import {
 
 import { encryptedMoneyColumn } from "@/lib/db/encrypted-money";
 
+export const authorizedUsers = sqliteTable("authorized_users", {
+  email: text("email").primaryKey(),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
 export const accountTypes = [
   "checking",
   "savings",

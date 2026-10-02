@@ -1,3 +1,4 @@
+import { apiGuard } from "@/lib/auth/server";
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -77,7 +78,9 @@ function flattenPayload(payload: z.infer<typeof importPayloadSchema>): ImportRow
   ];
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
+  const denied = await apiGuard(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const payload = importPayloadSchema.parse(body);
@@ -208,4 +211,19 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+}
+
+export async function POST(...args: Parameters<typeof handlePOST>) {
+  const response = await handlePOST(...args);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export async function HEAD(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
+}
+export async function OPTIONS(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
 }

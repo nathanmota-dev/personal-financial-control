@@ -113,6 +113,13 @@
       "when": 1790300000000,
       "tag": "0015_complete_investments",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1790915666550,
+      "tag": "0016_authorized_users",
+      "breakpoints": true
     }
   ]
 }

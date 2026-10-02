@@ -1,5 +1,7 @@
 "use server";
 
+import { requireActionSession } from "@/lib/auth/server";
+
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
@@ -134,55 +136,65 @@ async function runFinanceAction<T>(operation: () => Promise<T>): Promise<Finance
 }
 
 export async function createAccountAction(input: Parameters<typeof createAccount>[0]) {
+  await requireActionSession();
   const result = await createAccount(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function updateAccountAction(input: Parameters<typeof updateAccount>[0]) {
+  await requireActionSession();
   const result = await updateAccount(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function archiveAccountAction(id: string) {
+  await requireActionSession();
   const result = await archiveAccount(id);
   revalidateFinanceViews();
   return result;
 }
 
 export async function createCategoryAction(input: Parameters<typeof createCategory>[0]) {
+  await requireActionSession();
   const result = await createCategory(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function updateCategoryAction(input: Parameters<typeof updateCategory>[0]) {
+  await requireActionSession();
   const result = await updateCategory(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function archiveCategoryAction(id: string) {
+  await requireActionSession();
   const result = await archiveCategory(id);
   revalidateFinanceViews();
   return result;
 }
 
 export async function deleteCategoryAction(id: string) {
+  await requireActionSession();
   await deleteCategory(id);
   revalidateFinanceViews();
 }
 
 export async function createTransactionAction(input: Parameters<typeof createTransaction>[0]) {
+  await requireActionSession();
   return runFinanceAction(() => createTransaction(input));
 }
 
 export async function updateTransactionAction(input: Parameters<typeof updateTransaction>[0]) {
+  await requireActionSession();
   return runFinanceAction(() => updateTransaction(input));
 }
 
 export async function deleteTransactionAction(id: string) {
+  await requireActionSession();
   return runFinanceAction(async () => {
     await deleteTransaction(id);
     return null;
@@ -190,6 +202,7 @@ export async function deleteTransactionAction(id: string) {
 }
 
 export async function createTransferAction(input: Parameters<typeof createTransfer>[0]) {
+  await requireActionSession();
   const result = await createTransfer(input);
   revalidateFinanceViews();
   return result;
@@ -198,6 +211,7 @@ export async function createTransferAction(input: Parameters<typeof createTransf
 export async function createCreditCardChargeAction(
   input: Parameters<typeof createCreditCardCharge>[0]
 ) {
+  await requireActionSession();
   const result = await createCreditCardCharge(input);
   revalidateFinanceViews();
   return result;
@@ -206,12 +220,14 @@ export async function createCreditCardChargeAction(
 export async function updateCreditCardChargeAction(
   input: Parameters<typeof updateCreditCardCharge>[0]
 ) {
+  await requireActionSession();
   const result = await updateCreditCardCharge(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function deleteCreditCardChargeAction(id: string) {
+  await requireActionSession();
   await deleteCreditCardCharge(id);
   revalidateFinanceViews();
 }
@@ -219,16 +235,19 @@ export async function deleteCreditCardChargeAction(id: string) {
 export async function createRecurringTemplateAction(
   input: Parameters<typeof createRecurringTemplate>[0]
 ) {
+  await requireActionSession();
   return runFinanceAction(() => createRecurringTemplate(input));
 }
 
 export async function updateRecurringTemplateAction(
   input: Parameters<typeof updateRecurringTemplate>[0]
 ) {
+  await requireActionSession();
   return runFinanceAction(() => updateRecurringTemplate(input));
 }
 
 export async function pauseRecurringTemplateAction(id: string) {
+  await requireActionSession();
   return runFinanceAction(() => pauseRecurringTemplate(id));
 }
 
@@ -236,6 +255,7 @@ export async function deleteRecurringTemplateAction(
   id: string,
   mode: Parameters<typeof deleteRecurringTemplate>[1]
 ) {
+  await requireActionSession();
   return runFinanceAction(async () => {
     await deleteRecurringTemplate(id, mode);
     return null;
@@ -243,12 +263,14 @@ export async function deleteRecurringTemplateAction(
 }
 
 export async function generateRecurringTransactionsAction(month: string) {
+  await requireActionSession();
   return runFinanceAction(() => generateRecurringTransactions(month));
 }
 
 export async function configureInvestmentPortfolioAction(
   input: Parameters<typeof configureInvestmentPortfolio>[0]
 ) {
+  await requireActionSession();
   const result = await configureInvestmentPortfolio(input);
   revalidateFinanceViews();
   return result;
@@ -257,6 +279,7 @@ export async function configureInvestmentPortfolioAction(
 export async function updateInvestmentSettingsAction(
   input: Parameters<typeof updateInvestmentSettings>[0]
 ) {
+  await requireActionSession();
   const result = await updateInvestmentSettings(input);
   revalidateFinanceViews();
   return result;
@@ -265,6 +288,7 @@ export async function updateInvestmentSettingsAction(
 export async function reconcileInvestmentBalanceAction(
   input: Parameters<typeof reconcileInvestmentBalance>[0]
 ) {
+  await requireActionSession();
   const result = await reconcileInvestmentBalance(input);
   revalidateFinanceViews();
   return result;
@@ -273,12 +297,14 @@ export async function reconcileInvestmentBalanceAction(
 export async function getInvestmentReductionSourcesAction(
   input?: Parameters<typeof getInvestmentReductionSources>[1]
 ) {
+  await requireActionSession();
   return getInvestmentReductionSources(undefined, input);
 }
 
 export async function applyInvestmentReductionAction(
   input: Parameters<typeof applyInvestmentReduction>[0]
 ) {
+  await requireActionSession();
   const result = await applyInvestmentReduction(input);
   revalidateFinanceViews();
   return result;
@@ -287,6 +313,7 @@ export async function applyInvestmentReductionAction(
 export async function createInvestmentContributionAction(
   input: Parameters<typeof createInvestmentContribution>[0]
 ) {
+  await requireActionSession();
   const result = await createInvestmentContribution(input);
   revalidateFinanceViews();
   return result;
@@ -295,6 +322,7 @@ export async function createInvestmentContributionAction(
 export async function createInvestmentWithdrawalAction(
   input: Parameters<typeof createInvestmentWithdrawal>[0]
 ) {
+  await requireActionSession();
   const result = await createInvestmentWithdrawal(input);
   revalidateFinanceViews();
   return result;
@@ -303,6 +331,7 @@ export async function createInvestmentWithdrawalAction(
 export async function createInvestmentHoldingAction(
   input: Parameters<typeof createInvestmentHolding>[0]
 ) {
+  await requireActionSession();
   const result = await createInvestmentHolding(input);
   revalidateFinanceViews();
   return result;
@@ -311,12 +340,14 @@ export async function createInvestmentHoldingAction(
 export async function updateInvestmentHoldingAction(
   input: Parameters<typeof updateInvestmentHolding>[0]
 ) {
+  await requireActionSession();
   const result = await updateInvestmentHolding(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function archiveInvestmentHoldingAction(id: string) {
+  await requireActionSession();
   const result = await archiveInvestmentHolding(id);
   revalidateFinanceViews();
   return result;
@@ -325,6 +356,7 @@ export async function archiveInvestmentHoldingAction(id: string) {
 export async function createInvestmentPurposeAction(
   input: Parameters<typeof createInvestmentPurpose>[0]
 ) {
+  await requireActionSession();
   const result = await createInvestmentPurpose(input);
   revalidateFinanceViews();
   return result;
@@ -333,12 +365,14 @@ export async function createInvestmentPurposeAction(
 export async function updateInvestmentPurposeAction(
   input: Parameters<typeof updateInvestmentPurpose>[0]
 ) {
+  await requireActionSession();
   const result = await updateInvestmentPurpose(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function archiveInvestmentPurposeAction(id: string) {
+  await requireActionSession();
   const result = await archiveInvestmentPurpose(id);
   revalidateFinanceViews();
   return result;
@@ -347,6 +381,7 @@ export async function archiveInvestmentPurposeAction(id: string) {
 export async function upsertInvestmentPurposeAllocationAction(
   input: Parameters<typeof upsertInvestmentPurposeAllocation>[0]
 ) {
+  await requireActionSession();
   const result = await upsertInvestmentPurposeAllocation(input);
   revalidateFinanceViews();
   return result;
@@ -355,47 +390,58 @@ export async function upsertInvestmentPurposeAllocationAction(
 export async function deleteInvestmentPurposeAllocationAction(
   input: Parameters<typeof deleteInvestmentPurposeAllocation>[0]
 ) {
+  await requireActionSession();
   const result = await deleteInvestmentPurposeAllocation(input);
   revalidateFinanceViews();
   return result;
 }
 
 export async function createOperationalInvestmentAssetAction(input: Parameters<typeof createOperationalInvestmentAsset>[0]) {
+  await requireActionSession();
   return runFinanceAction(() => createOperationalInvestmentAsset(input));
 }
 
 export async function createInvestmentOperationAction(input: Parameters<typeof createInvestmentOperation>[0]) {
+  await requireActionSession();
   return runFinanceAction(() => createInvestmentOperation(input));
 }
 
 export async function updateInvestmentOperationAction(id: string, input: Parameters<typeof updateInvestmentOperation>[1]) {
+  await requireActionSession();
   return runFinanceAction(() => updateInvestmentOperation(id, input));
 }
 
 export async function deleteInvestmentOperationAction(id: string) {
+  await requireActionSession();
   return runFinanceAction(async () => { await deleteInvestmentOperation(id); return null; });
 }
 
 export async function registerManualInvestmentQuoteAction(input: Parameters<typeof registerManualInvestmentQuote>[0]) {
+  await requireActionSession();
   return runFinanceAction(() => registerManualInvestmentQuote(input));
 }
 
 export async function updateManualInvestmentBalanceAction(input: Parameters<typeof updateManualInvestmentBalance>[0]) {
+  await requireActionSession();
   return runFinanceAction(async () => { await updateManualInvestmentBalance(input); return null; });
 }
 
 export async function updateFixedIncomeTermsAction(input: Parameters<typeof updateFixedIncomeTerms>[0]) {
+  await requireActionSession();
   return runFinanceAction(async () => { await updateFixedIncomeTerms(input); return null; });
 }
 
 export async function refreshInvestmentQuotesAction() {
+  await requireActionSession();
   return runFinanceAction(() => refreshInvestmentQuotes());
 }
 
 export async function updateOperationalInvestmentAssetAction(id: string, input: Parameters<typeof updateOperationalInvestmentAsset>[1]) {
+  await requireActionSession();
   return runFinanceAction(() => updateOperationalInvestmentAsset(id, input));
 }
 
 export async function archiveOperationalInvestmentAssetAction(id: string) {
+  await requireActionSession();
   return runFinanceAction(async () => { await archiveOperationalInvestmentAsset(id); return null; });
 }

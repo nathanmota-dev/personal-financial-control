@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { TransactionsView } from "@/components/finance/transactions-view";
 import { isValidMonth } from "@/lib/finance-ui";
 import { listAccounts } from "@/lib/server/accounts";
@@ -11,6 +12,7 @@ export default async function TransactionsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageSession();
   const params = await searchParams;
   const month = isValidMonth(typeof params.month === "string" ? params.month : undefined)
     ? (params.month as string)

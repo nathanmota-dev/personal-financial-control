@@ -1,8 +1,11 @@
+import { LogoutButton } from "@/components/auth/logout-button";
+import { requirePageSession } from "@/lib/auth/server";
 import { SettingsView } from "@/components/finance/settings-view";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 
 export default async function SettingsPage() {
+  await requirePageSession();
   let data:
     | {
         accounts: Awaited<ReturnType<typeof listAccounts>>;
@@ -18,5 +21,5 @@ export default async function SettingsPage() {
     data = { accounts, categories };
   } catch {}
 
-  return <SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} />;
+  return <><LogoutButton allDevices /><SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} /></>;
 }

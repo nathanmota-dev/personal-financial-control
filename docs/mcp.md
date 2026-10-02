@@ -6,59 +6,21 @@ despesas e compras de cartão sem acessar diretamente as tabelas do banco.
 
 ## Configuração rápida
 
-Gere um token com pelo menos 32 caracteres:
+Faça login no app com a conta Google autorizada. O MCP aceita somente hosts
+loopback e exige o mesmo cookie Firebase do navegador, além do cabeçalho Origin
+igual a APP_URL. Copie o cookie `session` nas ferramentas de desenvolvimento do
+navegador após o login e configure seu cliente HTTP MCP com:
 
-```bash
-openssl rand -hex 32
+```http
+Cookie: session=VALOR_DO_COOKIE
+Origin: http://127.0.0.1:3007
+Content-Type: application/json
 ```
 
-Use o mesmo token no `.env` do app e no ambiente do processo que inicia o Codex:
-
-```env
-PFC_MCP_TOKEN="cole-o-token-aqui"
-```
-
-```bash
-export PFC_MCP_TOKEN="cole-o-token-aqui"
-npm run dev
-```
-
-O arquivo `.codex/config.toml` é uma configuração local e está no `.gitignore`. Ele
-não vem no clone do repositório. Crie-o antes de iniciar ou reiniciar o Codex:
-
-```bash
-mkdir -p .codex
-```
-
-Para um app iniciado por `npm run dev` na porta 3000, coloque este conteúdo no
-arquivo `.codex/config.toml`:
-
-```toml
-[mcp_servers.personal_financial_control]
-url = "http://127.0.0.1:3000/api/mcp"
-bearer_token_env_var = "PFC_MCP_TOKEN"
-required = false
-default_tools_approval_mode = "writes"
-```
-
-Se o app estiver no Docker ou tiver sido iniciado pelos scripts locais na porta
-3007, troque apenas a URL para:
-
-```toml
-url = "http://127.0.0.1:3007/api/mcp"
-```
-
-`bearer_token_env_var` contém o **nome** da variável, nunca o token. O valor secreto
-fica no `.env` para o backend e deve ser exportado como `PFC_MCP_TOKEN` no terminal
-que inicia o Codex. Depois de criar ou alterar a configuração, reinicie o Codex e
-verifique:
-
-```bash
-codex mcp list
-```
-
-Na interface do Codex, o comando `/mcp` mostra o estado da conexão e as ferramentas
-disponíveis.
+Use a origem e porta de APP_URL também na URL `/api/mcp`. O cookie é secreto:
+não o inclua em arquivos versionados. Atualize-o após novo login quando expirar
+(em 14 dias). Sair de todos os dispositivos revoga também o acesso MCP.
+A autenticação por bearer token foi removida.
 
 ## Convenções dos comandos
 
@@ -349,7 +311,8 @@ manualmente se o endpoint responde, inicialize uma sessão stateless:
 curl --silent --show-error \
   --request POST \
   --url http://127.0.0.1:3007/api/mcp \
-  --header "Authorization: Bearer $PFC_MCP_TOKEN" \
+  --header "Cookie: session=$PFC_SESSION_COOKIE" \
+  --header "Origin: $APP_URL" \
   --header 'Content-Type: application/json' \
   --header 'Accept: application/json, text/event-stream' \
   --data '{

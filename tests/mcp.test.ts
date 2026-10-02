@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
@@ -6,19 +6,18 @@ import { handleMcpRequest } from "@/lib/mcp/http";
 import { createTestDatabase } from "@/tests/helpers/database";
 
 const token = "test-token-that-is-at-least-thirty-two-characters";
-const originalToken = process.env.PFC_MCP_TOKEN;
-
-afterEach(() => {
-  if (originalToken === undefined) delete process.env.PFC_MCP_TOKEN;
-  else process.env.PFC_MCP_TOKEN = originalToken;
-});
+vi.mock("@/lib/auth/server", () => ({ apiGuard: vi.fn(async (request: Request) => {
+  if (process.env.AUTH_TEST_UNAVAILABLE === "1") return Response.json({}, { status: 503 });
+  return request.headers.get("cookie") === "session=test-session" ? null : Response.json({}, { status: 401 });
+}) }));
+afterEach(() => { delete process.env.AUTH_TEST_UNAVAILABLE; });
 
 function request(body: unknown, options?: { token?: string; url?: string; method?: string }) {
   const headers = new Headers({
     "content-type": "application/json",
     accept: "application/json, text/event-stream",
   });
-  if (options?.token) headers.set("authorization", `Bearer ${options.token}`);
+  if (options?.token) headers.set("cookie", options.token === token ? "session=test-session" : "session=invalid");
   return new Request(options?.url ?? "http://127.0.0.1:3007/api/mcp", {
     method: options?.method ?? "POST",
     headers,
@@ -45,15 +44,14 @@ async function callTool(
 }
 
 describe("MCP HTTP security and protocol", () => {
-  it("disables MCP without a valid configured token", async () => {
-    delete process.env.PFC_MCP_TOKEN;
+  it("blocks MCP when authentication is unavailable", async () => {
+    process.env.AUTH_TEST_UNAVAILABLE = "1";
     expect((await handleMcpRequest(request(rpc("initialize"), { token }))).status).toBe(503);
-    process.env.PFC_MCP_TOKEN = "short";
+    process.env.AUTH_TEST_UNAVAILABLE = "1";
     expect((await handleMcpRequest(request(rpc("initialize"), { token }))).status).toBe(503);
   });
 
   it("rejects missing/invalid authorization, non-loopback hosts, and non-POST methods", async () => {
-    process.env.PFC_MCP_TOKEN = token;
     expect((await handleMcpRequest(request(rpc("initialize")))).status).toBe(401);
     expect((await handleMcpRequest(request(rpc("initialize"), { token: `${token}-wrong` }))).status).toBe(401);
     expect((await handleMcpRequest(request(rpc("initialize"), { token, url: "http://finance.test/api/mcp" }))).status).toBe(403);
@@ -61,7 +59,6 @@ describe("MCP HTTP security and protocol", () => {
   });
 
   it("publishes instructions, tool schemas, and safety annotations", async () => {
-    process.env.PFC_MCP_TOKEN = token;
     const initialized = await handleMcpRequest(request(rpc("initialize", {
       protocolVersion: "2025-11-25",
       capabilities: {},
@@ -82,7 +79,6 @@ describe("MCP HTTP security and protocol", () => {
 
 describe("MCP finance tools", () => {
   it("runs idempotent transaction and credit-card CRUD without leaking balances", async () => {
-    process.env.PFC_MCP_TOKEN = token;
     const { db, cleanup } = await createTestDatabase();
     try {
       const checking = await createAccount({ name: "Checking MCP", type: "checking", initialBalanceCents: 1000 }, db);
@@ -141,7 +137,6 @@ describe("MCP finance tools", () => {
   });
 
   it("rejects out-of-scope accounts and requires literal deletion confirmation", async () => {
-    process.env.PFC_MCP_TOKEN = token;
     const { db, cleanup } = await createTestDatabase();
     try {
       const card = await createAccount({ name: "Wrong account", type: "credit", creditClosingDay: 10 }, db);
