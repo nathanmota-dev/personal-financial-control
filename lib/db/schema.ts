@@ -1,14 +1,13 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
-  check,
   index,
-  integer,
   sqliteTable,
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
-import { encryptedMoneyColumn } from "@/lib/db/encrypted-money";
+import { encryptedBoolean, encryptedInteger, encryptedText, encryptedTimestamp } from "@/lib/db/encrypted-content";
+import { encryptionChecks } from "@/lib/db/encryption-checks";
 
 export const accountTypes = [
   "checking",
@@ -137,14 +136,10 @@ export const investmentQuoteProviders = ["manual", "brapi"] as const;
 export const investmentMarketStates = ["regular", "closed", "delayed", "unknown"] as const;
 export const investmentValuationSources = ["market_quote", "manual_balance"] as const;
 
-function timestampColumns() {
+function timestampColumns(table: string) {
   return {
-    createdAt: integer("created_at", { mode: "timestamp_ms" })
-      .notNull()
-      .default(sql`(unixepoch() * 1000)`),
-    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-      .notNull()
-      .default(sql`(unixepoch() * 1000)`),
+    createdAt: encryptedTimestamp("created_at", `${table}.created_at`).notNull().$defaultFn(() => new Date()),
+    updatedAt: encryptedTimestamp("updated_at", `${table}.updated_at`).notNull().$defaultFn(() => new Date()),
   };
 }
 
@@ -154,23 +149,18 @@ export const accounts = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    name: text("name").notNull(),
-    type: text("type", { enum: accountTypes }).notNull(),
-    initialBalanceCents: encryptedMoneyColumn(
-      "initial_balance_cents",
-      "accounts.initial_balance_cents"
-    ).notNull(),
-    creditClosingDay: integer("credit_closing_day"),
-    creditDueDay: integer("credit_due_day").notNull().default(10),
-    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
-    ...timestampColumns(),
+    name: encryptedText("name", "accounts.name").notNull(),
+    type: encryptedText("type", "accounts.type", { enum: accountTypes }).notNull(),
+    initialBalanceCents: encryptedInteger("initial_balance_cents", "accounts.initial_balance_cents").notNull(),
+    creditClosingDay: encryptedInteger("credit_closing_day", "accounts.credit_closing_day"),
+    creditDueDay: encryptedInteger("credit_due_day", "accounts.credit_due_day").notNull().$defaultFn(() => 10),
+    isArchived: encryptedBoolean("is_archived", "accounts.is_archived").notNull().$defaultFn(() => false),
+    nameHash: text("name_hash"),
+    ...timestampColumns("accounts"),
   },
   (table) => [
-    uniqueIndex("accounts_name_unique").on(table.name),
-    check(
-      "accounts_initial_balance_cents_encrypted",
-      sql`typeof(${table.initialBalanceCents}) = 'text' AND ${table.initialBalanceCents} LIKE 'pfc:v1:%'`
-    ),
+    ...encryptionChecks(table),
+    uniqueIndex("accounts_name_unique").on(table.nameHash),
   ]
 );
 
@@ -180,12 +170,15 @@ export const categories = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    name: text("name").notNull(),
-    group: text("group", { enum: categoryGroups }).notNull(),
-    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
-    ...timestampColumns(),
+    name: encryptedText("name", "categories.name").notNull(),
+    group: encryptedText("group", "categories.group", { enum: categoryGroups }).notNull(),
+    isArchived: encryptedBoolean("is_archived", "categories.is_archived").notNull().$defaultFn(() => false),
+    nameHash: text("name_hash"),
+    ...timestampColumns("categories"),
   },
-  (table) => [uniqueIndex("categories_name_unique").on(table.name)]
+  (table) => [
+    ...encryptionChecks(table),
+    uniqueIndex("categories_name_unique").on(table.nameHash)]
 );
 
 export const recurringTemplates = sqliteTable(
@@ -200,23 +193,20 @@ export const recurringTemplates = sqliteTable(
     categoryId: text("category_id")
       .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
-    type: text("type", { enum: recurringTransactionTypes }).notNull(),
-    status: text("status", { enum: recurringStatuses }).notNull().default("active"),
-    amountCents: encryptedMoneyColumn("amount_cents", "recurring_templates.amount_cents").notNull(),
-    dayOfMonth: integer("day_of_month").notNull(),
-    startMonth: text("start_month").notNull(),
-    endMonth: text("end_month"),
-    lastGeneratedMonth: text("last_generated_month"),
-    description: text("description").notNull(),
-    ...timestampColumns(),
+    type: encryptedText("type", "recurring_templates.type", { enum: recurringTransactionTypes }).notNull(),
+    status: encryptedText("status", "recurring_templates.status", { enum: recurringStatuses }).notNull().$defaultFn(() => "active"),
+    amountCents: encryptedInteger("amount_cents", "recurring_templates.amount_cents").notNull(),
+    dayOfMonth: encryptedInteger("day_of_month", "recurring_templates.day_of_month").notNull(),
+    startMonth: encryptedText("start_month", "recurring_templates.start_month").notNull(),
+    endMonth: encryptedText("end_month", "recurring_templates.end_month"),
+    lastGeneratedMonth: encryptedText("last_generated_month", "recurring_templates.last_generated_month"),
+    description: encryptedText("description", "recurring_templates.description").notNull(),
+    ...timestampColumns("recurring_templates"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("recurring_templates_account_idx").on(table.accountId),
     index("recurring_templates_category_idx").on(table.categoryId),
-    check(
-      "recurring_templates_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -235,33 +225,30 @@ export const transactions = sqliteTable(
       () => recurringTemplates.id,
       { onDelete: "set null" }
     ),
-    type: text("type", { enum: transactionTypes }).notNull(),
-    status: text("status", { enum: transactionStatuses }).notNull().default("posted"),
-    amountCents: encryptedMoneyColumn("amount_cents", "transactions.amount_cents").notNull(),
-    transactionDate: text("transaction_date").notNull(),
-    competenceMonth: text("competence_month").notNull(),
-    description: text("description").notNull(),
-    notes: text("notes"),
-    importFingerprint: text("import_fingerprint"),
-    isIncludedInInvestmentCheckpoint: integer("is_included_in_investment_checkpoint", {
-      mode: "boolean",
-    })
+    type: encryptedText("type", "transactions.type", { enum: transactionTypes }).notNull(),
+    status: encryptedText("status", "transactions.status", { enum: transactionStatuses }).notNull().$defaultFn(() => "posted"),
+    amountCents: encryptedInteger("amount_cents", "transactions.amount_cents").notNull(),
+    transactionDate: encryptedText("transaction_date", "transactions.transaction_date").notNull(),
+    competenceMonth: encryptedText("competence_month", "transactions.competence_month").notNull(),
+    description: encryptedText("description", "transactions.description").notNull(),
+    notes: encryptedText("notes", "transactions.notes"),
+    importFingerprint: encryptedText("import_fingerprint", "transactions.import_fingerprint"),
+    isIncludedInInvestmentCheckpoint: encryptedBoolean("is_included_in_investment_checkpoint", "transactions.is_included_in_investment_checkpoint")
       .notNull()
-      .default(true),
-    ...timestampColumns(),
+      .$defaultFn(() => true),
+    importFingerprintHash: text("import_fingerprint_hash"),
+    competenceMonthHash: text("competence_month_hash"),
+    ...timestampColumns("transactions"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("transactions_account_idx").on(table.accountId),
     index("transactions_category_idx").on(table.categoryId),
-    index("transactions_competence_idx").on(table.competenceMonth),
-    uniqueIndex("transactions_import_fingerprint_unique").on(table.importFingerprint),
+    index("transactions_competence_idx").on(table.competenceMonthHash),
+    uniqueIndex("transactions_import_fingerprint_unique").on(table.importFingerprintHash),
     uniqueIndex("transactions_recurring_month_unique").on(
       table.recurringTemplateId,
-      table.competenceMonth
-    ),
-    check(
-      "transactions_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+      table.competenceMonthHash
     ),
   ]
 );
@@ -278,13 +265,13 @@ export const transactionFundingLinks = sqliteTable(
     withdrawalTransactionId: text("withdrawal_transaction_id")
       .notNull()
       .references(() => transactions.id, { onDelete: "cascade" }),
-    type: text("type", { enum: transactionFundingLinkTypes }).notNull(),
-    ...timestampColumns(),
+    type: encryptedText("type", "transaction_funding_links.type", { enum: transactionFundingLinkTypes }).notNull(),
+    ...timestampColumns("transaction_funding_links"),
   },
   (table) => [
+    ...encryptionChecks(table),
     uniqueIndex("transaction_funding_links_expense_unique").on(table.expenseTransactionId),
     uniqueIndex("transaction_funding_links_withdrawal_unique").on(table.withdrawalTransactionId),
-    index("transaction_funding_links_type_idx").on(table.type),
   ]
 );
 
@@ -300,20 +287,16 @@ export const transfers = sqliteTable(
     toAccountId: text("to_account_id")
       .notNull()
       .references(() => accounts.id, { onDelete: "restrict" }),
-    amountCents: encryptedMoneyColumn("amount_cents", "transfers.amount_cents").notNull(),
-    transferDate: text("transfer_date").notNull(),
-    competenceMonth: text("competence_month").notNull(),
-    description: text("description").notNull(),
-    ...timestampColumns(),
+    amountCents: encryptedInteger("amount_cents", "transfers.amount_cents").notNull(),
+    transferDate: encryptedText("transfer_date", "transfers.transfer_date").notNull(),
+    competenceMonth: encryptedText("competence_month", "transfers.competence_month").notNull(),
+    description: encryptedText("description", "transfers.description").notNull(),
+    ...timestampColumns("transfers"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("transfers_from_account_idx").on(table.fromAccountId),
     index("transfers_to_account_idx").on(table.toAccountId),
-    index("transfers_competence_idx").on(table.competenceMonth),
-    check(
-      "transfers_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -329,29 +312,22 @@ export const creditCardCharges = sqliteTable(
     categoryId: text("category_id")
       .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
-    description: text("description").notNull(),
-    notes: text("notes"),
-    purchaseDate: text("purchase_date").notNull(),
-    totalAmountCents: encryptedMoneyColumn(
-      "total_amount_cents",
-      "credit_card_charges.total_amount_cents"
-    ).notNull(),
-    installmentCount: integer("installment_count").notNull(),
-    kind: text("kind", { enum: creditCardChargeKinds }).notNull().default("purchase"),
-    firstInvoiceMonth: text("first_invoice_month").notNull(),
-    importFingerprint: text("import_fingerprint"),
-    ...timestampColumns(),
+    description: encryptedText("description", "credit_card_charges.description").notNull(),
+    notes: encryptedText("notes", "credit_card_charges.notes"),
+    purchaseDate: encryptedText("purchase_date", "credit_card_charges.purchase_date").notNull(),
+    totalAmountCents: encryptedInteger("total_amount_cents", "credit_card_charges.total_amount_cents").notNull(),
+    installmentCount: encryptedInteger("installment_count", "credit_card_charges.installment_count").notNull(),
+    kind: encryptedText("kind", "credit_card_charges.kind", { enum: creditCardChargeKinds }).notNull().$defaultFn(() => "purchase"),
+    firstInvoiceMonth: encryptedText("first_invoice_month", "credit_card_charges.first_invoice_month").notNull(),
+    importFingerprint: encryptedText("import_fingerprint", "credit_card_charges.import_fingerprint"),
+    importFingerprintHash: text("import_fingerprint_hash"),
+    ...timestampColumns("credit_card_charges"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("credit_card_charges_account_idx").on(table.accountId),
     index("credit_card_charges_category_idx").on(table.categoryId),
-    index("credit_card_charges_purchase_date_idx").on(table.purchaseDate),
-    index("credit_card_charges_first_invoice_idx").on(table.firstInvoiceMonth),
-    uniqueIndex("credit_card_charges_import_fingerprint_unique").on(table.importFingerprint),
-    check(
-      "credit_card_charges_total_amount_cents_encrypted",
-      sql`typeof(${table.totalAmountCents}) = 'text' AND ${table.totalAmountCents} LIKE 'pfc:v1:%'`
-    ),
+    uniqueIndex("credit_card_charges_import_fingerprint_unique").on(table.importFingerprintHash),
   ]
 );
 
@@ -364,59 +340,25 @@ export const creditCardBills = sqliteTable(
     accountId: text("account_id")
       .notNull()
       .references(() => accounts.id, { onDelete: "restrict" }),
-    invoiceMonth: text("invoice_month").notNull(),
-    dueDate: text("due_date").notNull(),
-    statementTotalCents: encryptedMoneyColumn(
-      "statement_total_cents",
-      "credit_card_bills.statement_total_cents"
-    ).notNull(),
-    currentChargesTotalCents: encryptedMoneyColumn(
-      "current_charges_total_cents",
-      "credit_card_bills.current_charges_total_cents"
-    ).notNull(),
-    priorBalanceCents: encryptedMoneyColumn(
-      "prior_balance_cents",
-      "credit_card_bills.prior_balance_cents"
-    ).notNull(),
-    preStatementPaymentsCents: encryptedMoneyColumn(
-      "pre_statement_payments_cents",
-      "credit_card_bills.pre_statement_payments_cents"
-    ).notNull(),
-    ignoredAmountCents: encryptedMoneyColumn(
-      "ignored_amount_cents",
-      "credit_card_bills.ignored_amount_cents"
-    ).notNull(),
-    status: text("status", { enum: creditCardBillStatuses }).notNull().default("open"),
-    paidAt: text("paid_at"),
-    ...timestampColumns(),
+    invoiceMonth: encryptedText("invoice_month", "credit_card_bills.invoice_month").notNull(),
+    dueDate: encryptedText("due_date", "credit_card_bills.due_date").notNull(),
+    statementTotalCents: encryptedInteger("statement_total_cents", "credit_card_bills.statement_total_cents").notNull(),
+    currentChargesTotalCents: encryptedInteger("current_charges_total_cents", "credit_card_bills.current_charges_total_cents").notNull(),
+    priorBalanceCents: encryptedInteger("prior_balance_cents", "credit_card_bills.prior_balance_cents").notNull(),
+    preStatementPaymentsCents: encryptedInteger("pre_statement_payments_cents", "credit_card_bills.pre_statement_payments_cents").notNull(),
+    ignoredAmountCents: encryptedInteger("ignored_amount_cents", "credit_card_bills.ignored_amount_cents").notNull(),
+    status: encryptedText("status", "credit_card_bills.status", { enum: creditCardBillStatuses }).notNull().$defaultFn(() => "open"),
+    paidAt: encryptedText("paid_at", "credit_card_bills.paid_at"),
+    invoiceMonthHash: text("invoice_month_hash"),
+    ...timestampColumns("credit_card_bills"),
   },
   (table) => [
+    ...encryptionChecks(table),
     uniqueIndex("credit_card_bills_account_month_unique").on(
       table.accountId,
-      table.invoiceMonth
+      table.invoiceMonthHash
     ),
     index("credit_card_bills_account_idx").on(table.accountId),
-    index("credit_card_bills_status_idx").on(table.status),
-    check(
-      "credit_card_bills_statement_total_cents_encrypted",
-      sql`typeof(${table.statementTotalCents}) = 'text' AND ${table.statementTotalCents} LIKE 'pfc:v1:%'`
-    ),
-    check(
-      "credit_card_bills_current_charges_total_cents_encrypted",
-      sql`typeof(${table.currentChargesTotalCents}) = 'text' AND ${table.currentChargesTotalCents} LIKE 'pfc:v1:%'`
-    ),
-    check(
-      "credit_card_bills_prior_balance_cents_encrypted",
-      sql`typeof(${table.priorBalanceCents}) = 'text' AND ${table.priorBalanceCents} LIKE 'pfc:v1:%'`
-    ),
-    check(
-      "credit_card_bills_pre_statement_payments_cents_encrypted",
-      sql`typeof(${table.preStatementPaymentsCents}) = 'text' AND ${table.preStatementPaymentsCents} LIKE 'pfc:v1:%'`
-    ),
-    check(
-      "credit_card_bills_ignored_amount_cents_encrypted",
-      sql`typeof(${table.ignoredAmountCents}) = 'text' AND ${table.ignoredAmountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -430,24 +372,18 @@ export const creditCardBillPayments = sqliteTable(
     transactionId: text("transaction_id")
       .notNull()
       .references(() => transactions.id, { onDelete: "cascade" }),
-    paymentDate: text("payment_date").notNull(),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "credit_card_bill_payments.amount_cents"
-    ).notNull(),
-    kind: text("kind", { enum: creditCardBillPaymentKinds }).notNull(),
-    idempotencyKey: text("idempotency_key").notNull(),
-    ...timestampColumns(),
+    paymentDate: encryptedText("payment_date", "credit_card_bill_payments.payment_date").notNull(),
+    amountCents: encryptedInteger("amount_cents", "credit_card_bill_payments.amount_cents").notNull(),
+    kind: encryptedText("kind", "credit_card_bill_payments.kind", { enum: creditCardBillPaymentKinds }).notNull(),
+    idempotencyKey: encryptedText("idempotency_key", "credit_card_bill_payments.idempotency_key").notNull(),
+    idempotencyKeyHash: text("idempotency_key_hash"),
+    ...timestampColumns("credit_card_bill_payments"),
   },
   (table) => [
+    ...encryptionChecks(table),
     uniqueIndex("credit_card_bill_payments_transaction_unique").on(table.transactionId),
-    uniqueIndex("credit_card_bill_payments_idempotency_unique").on(table.idempotencyKey),
+    uniqueIndex("credit_card_bill_payments_idempotency_unique").on(table.idempotencyKeyHash),
     index("credit_card_bill_payments_bill_idx").on(table.billId),
-    index("credit_card_bill_payments_date_idx").on(table.paymentDate),
-    check(
-      "credit_card_bill_payments_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -460,24 +396,18 @@ export const creditCardInstallments = sqliteTable(
     chargeId: text("charge_id")
       .notNull()
       .references(() => creditCardCharges.id, { onDelete: "cascade" }),
-    installmentNumber: integer("installment_number").notNull(),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "credit_card_installments.amount_cents"
-    ).notNull(),
-    invoiceMonth: text("invoice_month").notNull(),
-    ...timestampColumns(),
+    installmentNumber: encryptedInteger("installment_number", "credit_card_installments.installment_number").notNull(),
+    amountCents: encryptedInteger("amount_cents", "credit_card_installments.amount_cents").notNull(),
+    invoiceMonth: encryptedText("invoice_month", "credit_card_installments.invoice_month").notNull(),
+    installmentNumberHash: text("installment_number_hash"),
+    ...timestampColumns("credit_card_installments"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("credit_card_installments_charge_idx").on(table.chargeId),
-    index("credit_card_installments_invoice_month_idx").on(table.invoiceMonth),
     uniqueIndex("credit_card_installments_charge_number_unique").on(
       table.chargeId,
-      table.installmentNumber
-    ),
-    check(
-      "credit_card_installments_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
+      table.installmentNumberHash
     ),
   ]
 );
@@ -488,19 +418,13 @@ export const investmentPortfolio = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    checkpointBalanceCents: encryptedMoneyColumn(
-      "checkpoint_balance_cents",
-      "investment_portfolio.checkpoint_balance_cents"
-    ).notNull(),
-    expectedMonthlyRateBps: integer("expected_monthly_rate_bps").notNull(),
-    checkpointDate: text("checkpoint_date").notNull(),
-    ...timestampColumns(),
+    checkpointBalanceCents: encryptedInteger("checkpoint_balance_cents", "investment_portfolio.checkpoint_balance_cents").notNull(),
+    expectedMonthlyRateBps: encryptedInteger("expected_monthly_rate_bps", "investment_portfolio.expected_monthly_rate_bps").notNull(),
+    checkpointDate: encryptedText("checkpoint_date", "investment_portfolio.checkpoint_date").notNull(),
+    ...timestampColumns("investment_portfolio"),
   },
   (table) => [
-    check(
-      "investment_portfolio_checkpoint_balance_cents_encrypted",
-      sql`typeof(${table.checkpointBalanceCents}) = 'text' AND ${table.checkpointBalanceCents} LIKE 'pfc:v1:%'`
-    ),
+    ...encryptionChecks(table),
   ]
 );
 
@@ -510,34 +434,28 @@ export const investmentHoldings = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    name: text("name").notNull(),
-    ticker: text("ticker"),
-    institutionName: text("institution_name"),
-    assetClass: text("asset_class", { enum: investmentAssetClasses }).notNull(),
-    instrumentType: text("instrument_type", { enum: investmentInstrumentTypes }).notNull(),
-    valuationMode: text("valuation_mode", { enum: investmentValuationModes })
+    name: encryptedText("name", "investment_holdings.name").notNull(),
+    ticker: encryptedText("ticker", "investment_holdings.ticker"),
+    institutionName: encryptedText("institution_name", "investment_holdings.institution_name"),
+    assetClass: encryptedText("asset_class", "investment_holdings.asset_class", { enum: investmentAssetClasses }).notNull(),
+    instrumentType: encryptedText("instrument_type", "investment_holdings.instrument_type", { enum: investmentInstrumentTypes }).notNull(),
+    valuationMode: encryptedText("valuation_mode", "investment_holdings.valuation_mode", { enum: investmentValuationModes })
       .notNull()
-      .default("manual_balance"),
-    currency: text("currency").notNull().default("BRL"),
-    quoteSymbol: text("quote_symbol"),
-    externalProvider: text("external_provider"),
-    externalAssetId: text("external_asset_id"),
-    currentValueCents: encryptedMoneyColumn(
-      "current_value_cents",
-      "investment_holdings.current_value_cents"
-    ).notNull(),
-    valueAsOf: text("value_as_of").notNull(),
-    notes: text("notes"),
-    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
-    ...timestampColumns(),
+      .$defaultFn(() => "manual_balance"),
+    currency: encryptedText("currency", "investment_holdings.currency").notNull().$defaultFn(() => "BRL"),
+    quoteSymbol: encryptedText("quote_symbol", "investment_holdings.quote_symbol"),
+    externalProvider: encryptedText("external_provider", "investment_holdings.external_provider"),
+    externalAssetId: encryptedText("external_asset_id", "investment_holdings.external_asset_id"),
+    currentValueCents: encryptedInteger("current_value_cents", "investment_holdings.current_value_cents").notNull(),
+    valueAsOf: encryptedText("value_as_of", "investment_holdings.value_as_of").notNull(),
+    notes: encryptedText("notes", "investment_holdings.notes"),
+    isArchived: encryptedBoolean("is_archived", "investment_holdings.is_archived").notNull().$defaultFn(() => false),
+    activeQuoteSymbolHash: text("active_quote_symbol_hash"),
+    ...timestampColumns("investment_holdings"),
   },
   (table) => [
-    index("investment_holdings_class_idx").on(table.assetClass),
-    index("investment_holdings_archived_idx").on(table.isArchived),
-    check(
-      "investment_holdings_current_value_cents_encrypted",
-      sql`typeof(${table.currentValueCents}) = 'text' AND ${table.currentValueCents} LIKE 'pfc:v1:%'`
-    ),
+    ...encryptionChecks(table),
+    uniqueIndex("investment_holdings_active_quote_symbol_unique").on(table.activeQuoteSymbolHash),
   ]
 );
 
@@ -547,23 +465,18 @@ export const investmentPurposes = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    name: text("name").notNull(),
-    kind: text("kind", { enum: investmentPurposeKinds }).notNull().default("general"),
-    targetAmountCents: encryptedMoneyColumn(
-      "target_amount_cents",
-      "investment_purposes.target_amount_cents"
-    ),
-    color: text("color").notNull().default("#22d3ee"),
-    notes: text("notes"),
-    isArchived: integer("is_archived", { mode: "boolean" }).notNull().default(false),
-    ...timestampColumns(),
+    name: encryptedText("name", "investment_purposes.name").notNull(),
+    kind: encryptedText("kind", "investment_purposes.kind", { enum: investmentPurposeKinds }).notNull().$defaultFn(() => "general"),
+    targetAmountCents: encryptedInteger("target_amount_cents", "investment_purposes.target_amount_cents"),
+    color: encryptedText("color", "investment_purposes.color").notNull().$defaultFn(() => "#22d3ee"),
+    notes: encryptedText("notes", "investment_purposes.notes"),
+    isArchived: encryptedBoolean("is_archived", "investment_purposes.is_archived").notNull().$defaultFn(() => false),
+    activeEmergencyHash: text("active_emergency_hash"),
+    ...timestampColumns("investment_purposes"),
   },
   (table) => [
-    index("investment_purposes_archived_idx").on(table.isArchived),
-    check(
-      "investment_purposes_target_amount_cents_encrypted",
-      sql`${table.targetAmountCents} IS NULL OR (typeof(${table.targetAmountCents}) = 'text' AND ${table.targetAmountCents} LIKE 'pfc:v1:%')`
-    ),
+    ...encryptionChecks(table),
+    uniqueIndex("investment_purposes_active_emergency_unique").on(table.activeEmergencyHash),
   ]
 );
 
@@ -574,32 +487,20 @@ export const investmentOperations = sqliteTable(
     holdingId: text("holding_id")
       .notNull()
       .references(() => investmentHoldings.id, { onDelete: "restrict" }),
-    type: text("type", { enum: investmentOperationTypes }).notNull(),
-    operatedOn: text("operated_on").notNull(),
-    settledOn: text("settled_on"),
-    quantityUnits: integer("quantity_units").notNull().default(0),
-    unitPriceCents: encryptedMoneyColumn(
-      "unit_price_cents",
-      "investment_operations.unit_price_cents"
-    ),
-    grossAmountCents: encryptedMoneyColumn(
-      "gross_amount_cents",
-      "investment_operations.gross_amount_cents"
-    ).notNull(),
-    feesCents: encryptedMoneyColumn(
-      "fees_cents",
-      "investment_operations.fees_cents"
-    ).notNull().default(0),
-    targetCostCents: encryptedMoneyColumn(
-      "target_cost_cents",
-      "investment_operations.target_cost_cents"
-    ),
-    notes: text("notes"),
-    ...timestampColumns(),
+    type: encryptedText("type", "investment_operations.type", { enum: investmentOperationTypes }).notNull(),
+    operatedOn: encryptedText("operated_on", "investment_operations.operated_on").notNull(),
+    settledOn: encryptedText("settled_on", "investment_operations.settled_on"),
+    quantityUnits: encryptedInteger("quantity_units", "investment_operations.quantity_units").notNull().$defaultFn(() => 0),
+    unitPriceCents: encryptedInteger("unit_price_cents", "investment_operations.unit_price_cents"),
+    grossAmountCents: encryptedInteger("gross_amount_cents", "investment_operations.gross_amount_cents").notNull(),
+    feesCents: encryptedInteger("fees_cents", "investment_operations.fees_cents").notNull().$defaultFn(() => 0),
+    targetCostCents: encryptedInteger("target_cost_cents", "investment_operations.target_cost_cents"),
+    notes: encryptedText("notes", "investment_operations.notes"),
+    ...timestampColumns("investment_operations"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("investment_operations_holding_idx").on(table.holdingId),
-    index("investment_operations_date_idx").on(table.operatedOn),
   ]
 );
 
@@ -610,24 +511,23 @@ export const investmentQuotes = sqliteTable(
     holdingId: text("holding_id")
       .notNull()
       .references(() => investmentHoldings.id, { onDelete: "cascade" }),
-    quotedOn: text("quoted_on").notNull(),
-    unitPriceCents: encryptedMoneyColumn(
-      "unit_price_cents",
-      "investment_quotes.unit_price_cents"
-    ).notNull(),
-    source: text("source").notNull().default("manual"),
-    provider: text("provider", { enum: investmentQuoteProviders }).notNull().default("manual"),
-    symbol: text("symbol"),
-    currency: text("currency").notNull().default("BRL"),
-    quotedAt: integer("quoted_at", { mode: "timestamp_ms" }),
-    fetchedAt: integer("fetched_at", { mode: "timestamp_ms" }),
-    marketState: text("market_state", { enum: investmentMarketStates }).notNull().default("unknown"),
-    isStale: integer("is_stale", { mode: "boolean" }).notNull().default(false),
-    ...timestampColumns(),
+    quotedOn: encryptedText("quoted_on", "investment_quotes.quoted_on").notNull(),
+    unitPriceCents: encryptedInteger("unit_price_cents", "investment_quotes.unit_price_cents").notNull(),
+    source: encryptedText("source", "investment_quotes.source").notNull().$defaultFn(() => "manual"),
+    provider: encryptedText("provider", "investment_quotes.provider", { enum: investmentQuoteProviders }).notNull().$defaultFn(() => "manual"),
+    symbol: encryptedText("symbol", "investment_quotes.symbol"),
+    currency: encryptedText("currency", "investment_quotes.currency").notNull().$defaultFn(() => "BRL"),
+    quotedAt: encryptedTimestamp("quoted_at", "investment_quotes.quoted_at"),
+    fetchedAt: encryptedTimestamp("fetched_at", "investment_quotes.fetched_at"),
+    marketState: encryptedText("market_state", "investment_quotes.market_state", { enum: investmentMarketStates }).notNull().$defaultFn(() => "unknown"),
+    isStale: encryptedBoolean("is_stale", "investment_quotes.is_stale").notNull().$defaultFn(() => false),
+    quotedOnHash: text("quoted_on_hash"),
+    ...timestampColumns("investment_quotes"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("investment_quotes_holding_idx").on(table.holdingId),
-    uniqueIndex("investment_quotes_holding_date_unique").on(table.holdingId, table.quotedOn),
+    uniqueIndex("investment_quotes_holding_date_unique").on(table.holdingId, table.quotedOnHash),
   ]
 );
 
@@ -639,15 +539,16 @@ export const fixedIncomeTerms = sqliteTable(
       .notNull()
       .unique()
       .references(() => investmentHoldings.id, { onDelete: "cascade" }),
-    subtype: text("subtype", { enum: fixedIncomeSubtypes }).notNull(),
-    issuer: text("issuer"),
-    indexer: text("indexer"),
-    indexerPercentageBps: integer("indexer_percentage_bps"),
-    rateBps: integer("rate_bps"),
-    maturityDate: text("maturity_date"),
-    liquidity: text("liquidity"),
-    ...timestampColumns(),
-  }
+    subtype: encryptedText("subtype", "fixed_income_terms.subtype", { enum: fixedIncomeSubtypes }).notNull(),
+    issuer: encryptedText("issuer", "fixed_income_terms.issuer"),
+    indexer: encryptedText("indexer", "fixed_income_terms.indexer"),
+    indexerPercentageBps: encryptedInteger("indexer_percentage_bps", "fixed_income_terms.indexer_percentage_bps"),
+    rateBps: encryptedInteger("rate_bps", "fixed_income_terms.rate_bps"),
+    maturityDate: encryptedText("maturity_date", "fixed_income_terms.maturity_date"),
+    liquidity: encryptedText("liquidity", "fixed_income_terms.liquidity"),
+    ...timestampColumns("fixed_income_terms"),
+  },
+  (table) => encryptionChecks(table)
 );
 
 export const investmentPositionSnapshots = sqliteTable(
@@ -655,17 +556,19 @@ export const investmentPositionSnapshots = sqliteTable(
   {
     id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
     holdingId: text("holding_id").notNull().references(() => investmentHoldings.id, { onDelete: "cascade" }),
-    snapshotDate: text("snapshot_date").notNull(),
-    quantityUnits: integer("quantity_units").notNull().default(0),
-    costCents: encryptedMoneyColumn("cost_cents", "investment_position_snapshots.cost_cents"),
-    currentValueCents: encryptedMoneyColumn("current_value_cents", "investment_position_snapshots.current_value_cents").notNull(),
-    unitPriceCents: encryptedMoneyColumn("unit_price_cents", "investment_position_snapshots.unit_price_cents"),
-    valuationSource: text("valuation_source", { enum: investmentValuationSources }).notNull(),
-    ...timestampColumns(),
+    snapshotDate: encryptedText("snapshot_date", "investment_position_snapshots.snapshot_date").notNull(),
+    quantityUnits: encryptedInteger("quantity_units", "investment_position_snapshots.quantity_units").notNull().$defaultFn(() => 0),
+    costCents: encryptedInteger("cost_cents", "investment_position_snapshots.cost_cents"),
+    currentValueCents: encryptedInteger("current_value_cents", "investment_position_snapshots.current_value_cents").notNull(),
+    unitPriceCents: encryptedInteger("unit_price_cents", "investment_position_snapshots.unit_price_cents"),
+    valuationSource: encryptedText("valuation_source", "investment_position_snapshots.valuation_source", { enum: investmentValuationSources }).notNull(),
+    snapshotDateHash: text("snapshot_date_hash"),
+    ...timestampColumns("investment_position_snapshots"),
   },
   (table) => [
-    uniqueIndex("investment_position_snapshots_holding_date_unique").on(table.holdingId, table.snapshotDate),
-    index("investment_position_snapshots_date_idx").on(table.snapshotDate),
+    ...encryptionChecks(table),
+    uniqueIndex("investment_position_snapshots_holding_date_unique").on(table.holdingId, table.snapshotDateHash),
+    index("investment_position_snapshots_date_idx").on(table.snapshotDateHash),
   ]
 );
 
@@ -673,14 +576,17 @@ export const investmentPortfolioSnapshots = sqliteTable(
   "investment_portfolio_snapshots",
   {
     id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-    snapshotDate: text("snapshot_date").notNull(),
-    knownCostCents: encryptedMoneyColumn("known_cost_cents", "investment_portfolio_snapshots.known_cost_cents").notNull(),
-    knownValueCents: encryptedMoneyColumn("known_value_cents", "investment_portfolio_snapshots.known_value_cents").notNull(),
-    totalValueCents: encryptedMoneyColumn("total_value_cents", "investment_portfolio_snapshots.total_value_cents").notNull(),
-    unrealizedResultCents: encryptedMoneyColumn("unrealized_result_cents", "investment_portfolio_snapshots.unrealized_result_cents").notNull(),
-    ...timestampColumns(),
+    snapshotDate: encryptedText("snapshot_date", "investment_portfolio_snapshots.snapshot_date").notNull(),
+    knownCostCents: encryptedInteger("known_cost_cents", "investment_portfolio_snapshots.known_cost_cents").notNull(),
+    knownValueCents: encryptedInteger("known_value_cents", "investment_portfolio_snapshots.known_value_cents").notNull(),
+    totalValueCents: encryptedInteger("total_value_cents", "investment_portfolio_snapshots.total_value_cents").notNull(),
+    unrealizedResultCents: encryptedInteger("unrealized_result_cents", "investment_portfolio_snapshots.unrealized_result_cents").notNull(),
+    snapshotDateHash: text("snapshot_date_hash"),
+    ...timestampColumns("investment_portfolio_snapshots"),
   },
-  (table) => [uniqueIndex("investment_portfolio_snapshots_date_unique").on(table.snapshotDate)]
+  (table) => [
+    ...encryptionChecks(table),
+    uniqueIndex("investment_portfolio_snapshots_date_unique").on(table.snapshotDateHash)]
 );
 
 export const investmentPurposeAllocations = sqliteTable(
@@ -695,25 +601,18 @@ export const investmentPurposeAllocations = sqliteTable(
     purposeId: text("purpose_id")
       .notNull()
       .references(() => investmentPurposes.id, { onDelete: "restrict" }),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "investment_purpose_allocations.amount_cents"
-    ).notNull(),
-    allocatedOn: text("allocated_on").notNull(),
-    notes: text("notes"),
-    ...timestampColumns(),
+    amountCents: encryptedInteger("amount_cents", "investment_purpose_allocations.amount_cents").notNull(),
+    allocatedOn: encryptedText("allocated_on", "investment_purpose_allocations.allocated_on").notNull(),
+    notes: encryptedText("notes", "investment_purpose_allocations.notes"),
+    ...timestampColumns("investment_purpose_allocations"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("investment_purpose_allocations_holding_idx").on(table.holdingId),
     index("investment_purpose_allocations_purpose_idx").on(table.purposeId),
-    index("investment_purpose_allocations_allocated_idx").on(table.allocatedOn),
     uniqueIndex("investment_purpose_allocations_holding_purpose_unique").on(
       table.holdingId,
       table.purposeId
-    ),
-    check(
-      "investment_purpose_allocations_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
     ),
   ]
 );
@@ -724,27 +623,19 @@ export const investmentReductionEvents = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    type: text("type", { enum: investmentReductionEventTypes }).notNull(),
-    status: text("status", { enum: investmentReductionStatuses }).notNull().default("active"),
+    type: encryptedText("type", "investment_reduction_events.type", { enum: investmentReductionEventTypes }).notNull(),
+    status: encryptedText("status", "investment_reduction_events.status", { enum: investmentReductionStatuses }).notNull().$defaultFn(() => "active"),
     transactionId: text("transaction_id").references(() => transactions.id, {
       onDelete: "set null",
     }),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "investment_reduction_events.amount_cents"
-    ).notNull(),
-    occurredOn: text("occurred_on").notNull(),
-    reversedAt: integer("reversed_at", { mode: "timestamp_ms" }),
-    ...timestampColumns(),
+    amountCents: encryptedInteger("amount_cents", "investment_reduction_events.amount_cents").notNull(),
+    occurredOn: encryptedText("occurred_on", "investment_reduction_events.occurred_on").notNull(),
+    reversedAt: encryptedTimestamp("reversed_at", "investment_reduction_events.reversed_at"),
+    ...timestampColumns("investment_reduction_events"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("investment_reduction_events_transaction_idx").on(table.transactionId),
-    index("investment_reduction_events_status_idx").on(table.status),
-    index("investment_reduction_events_occurred_idx").on(table.occurredOn),
-    check(
-      "investment_reduction_events_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -757,7 +648,7 @@ export const investmentReductionSources = sqliteTable(
     eventId: text("event_id")
       .notNull()
       .references(() => investmentReductionEvents.id, { onDelete: "cascade" }),
-    sourceType: text("source_type", { enum: investmentReductionSourceTypes }).notNull(),
+    sourceType: encryptedText("source_type", "investment_reduction_sources.source_type", { enum: investmentReductionSourceTypes }).notNull(),
     holdingId: text("holding_id").references(() => investmentHoldings.id, {
       onDelete: "set null",
     }),
@@ -767,21 +658,15 @@ export const investmentReductionSources = sqliteTable(
     allocationId: text("allocation_id").references(() => investmentPurposeAllocations.id, {
       onDelete: "set null",
     }),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "investment_reduction_sources.amount_cents"
-    ).notNull(),
-    ...timestampColumns(),
+    amountCents: encryptedInteger("amount_cents", "investment_reduction_sources.amount_cents").notNull(),
+    ...timestampColumns("investment_reduction_sources"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("investment_reduction_sources_event_idx").on(table.eventId),
     index("investment_reduction_sources_holding_idx").on(table.holdingId),
     index("investment_reduction_sources_purpose_idx").on(table.purposeId),
     index("investment_reduction_sources_allocation_idx").on(table.allocationId),
-    check(
-      "investment_reduction_sources_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 
@@ -791,34 +676,19 @@ export const financialGoals = sqliteTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    name: text("name").notNull(),
-    category: text("category", { enum: goalCategories }).notNull(),
-    targetAmountCents: encryptedMoneyColumn(
-      "target_amount_cents",
-      "financial_goals.target_amount_cents"
-    ).notNull(),
-    targetDate: text("target_date"),
-    plannedMonthlyContributionCents: encryptedMoneyColumn(
-      "planned_monthly_contribution_cents",
-      "financial_goals.planned_monthly_contribution_cents"
-    ).notNull(),
-    priority: integer("priority").notNull().default(1),
-    status: text("status", { enum: goalStatuses }).notNull().default("active"),
-    color: text("color").notNull().default("#38bdf8"),
-    notes: text("notes"),
-    ...timestampColumns(),
+    name: encryptedText("name", "financial_goals.name").notNull(),
+    category: encryptedText("category", "financial_goals.category", { enum: goalCategories }).notNull(),
+    targetAmountCents: encryptedInteger("target_amount_cents", "financial_goals.target_amount_cents").notNull(),
+    targetDate: encryptedText("target_date", "financial_goals.target_date"),
+    plannedMonthlyContributionCents: encryptedInteger("planned_monthly_contribution_cents", "financial_goals.planned_monthly_contribution_cents").notNull(),
+    priority: encryptedInteger("priority", "financial_goals.priority").notNull().$defaultFn(() => 1),
+    status: encryptedText("status", "financial_goals.status", { enum: goalStatuses }).notNull().$defaultFn(() => "active"),
+    color: encryptedText("color", "financial_goals.color").notNull().$defaultFn(() => "#38bdf8"),
+    notes: encryptedText("notes", "financial_goals.notes"),
+    ...timestampColumns("financial_goals"),
   },
   (table) => [
-    index("financial_goals_status_idx").on(table.status),
-    index("financial_goals_priority_idx").on(table.priority),
-    check(
-      "financial_goals_target_amount_cents_encrypted",
-      sql`typeof(${table.targetAmountCents}) = 'text' AND ${table.targetAmountCents} LIKE 'pfc:v1:%'`
-    ),
-    check(
-      "financial_goals_planned_monthly_contribution_cents_encrypted",
-      sql`typeof(${table.plannedMonthlyContributionCents}) = 'text' AND ${table.plannedMonthlyContributionCents} LIKE 'pfc:v1:%'`
-    ),
+    ...encryptionChecks(table),
   ]
 );
 
@@ -834,23 +704,16 @@ export const financialGoalAllocations = sqliteTable(
     transactionId: text("transaction_id").references(() => transactions.id, {
       onDelete: "set null",
     }),
-    type: text("type", { enum: allocationTypes }).notNull(),
-    amountCents: encryptedMoneyColumn(
-      "amount_cents",
-      "financial_goal_allocations.amount_cents"
-    ).notNull(),
-    occurredOn: text("occurred_on").notNull(),
-    notes: text("notes"),
-    ...timestampColumns(),
+    type: encryptedText("type", "financial_goal_allocations.type", { enum: allocationTypes }).notNull(),
+    amountCents: encryptedInteger("amount_cents", "financial_goal_allocations.amount_cents").notNull(),
+    occurredOn: encryptedText("occurred_on", "financial_goal_allocations.occurred_on").notNull(),
+    notes: encryptedText("notes", "financial_goal_allocations.notes"),
+    ...timestampColumns("financial_goal_allocations"),
   },
   (table) => [
+    ...encryptionChecks(table),
     index("financial_goal_allocations_goal_idx").on(table.goalId),
     index("financial_goal_allocations_transaction_idx").on(table.transactionId),
-    index("financial_goal_allocations_occurred_idx").on(table.occurredOn),
-    check(
-      "financial_goal_allocations_amount_cents_encrypted",
-      sql`typeof(${table.amountCents}) = 'text' AND ${table.amountCents} LIKE 'pfc:v1:%'`
-    ),
   ]
 );
 

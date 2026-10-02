@@ -191,16 +191,16 @@ describe("encrypted money columns", () => {
       try {
         const result = await rawClient.execute(`
           SELECT
-            (SELECT typeof(initial_balance_cents) = 'text' AND initial_balance_cents LIKE 'pfc:v1:%' FROM accounts WHERE id = '${account.id}') AS account_ok,
-            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM recurring_templates WHERE id = '${recurring.id}') AS recurring_ok,
-            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM transactions WHERE id = '${transaction.id}') AS transaction_ok,
-            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM transfers WHERE id = '${transfer.id}') AS transfer_ok,
-            (SELECT typeof(total_amount_cents) = 'text' AND total_amount_cents LIKE 'pfc:v1:%' FROM credit_card_charges WHERE id = '${charge.id}') AS charge_ok,
-            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM credit_card_installments WHERE id = '${installment.id}') AS installment_ok,
-            (SELECT typeof(checkpoint_balance_cents) = 'text' AND checkpoint_balance_cents LIKE 'pfc:v1:%' FROM investment_portfolio WHERE id = '${portfolio.id}') AS portfolio_ok,
-            (SELECT typeof(target_amount_cents) = 'text' AND target_amount_cents LIKE 'pfc:v1:%' FROM financial_goals WHERE id = '${goal.id}') AS goal_target_ok,
-            (SELECT typeof(planned_monthly_contribution_cents) = 'text' AND planned_monthly_contribution_cents LIKE 'pfc:v1:%' FROM financial_goals WHERE id = '${goal.id}') AS goal_plan_ok,
-            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM financial_goal_allocations WHERE id = '${allocation.id}') AS allocation_ok
+            (SELECT typeof(initial_balance_cents) = 'text' AND initial_balance_cents LIKE 'pfc:v2:%' FROM accounts WHERE id = '${account.id}') AS account_ok,
+            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM recurring_templates WHERE id = '${recurring.id}') AS recurring_ok,
+            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM transactions WHERE id = '${transaction.id}') AS transaction_ok,
+            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM transfers WHERE id = '${transfer.id}') AS transfer_ok,
+            (SELECT typeof(total_amount_cents) = 'text' AND total_amount_cents LIKE 'pfc:v2:%' FROM credit_card_charges WHERE id = '${charge.id}') AS charge_ok,
+            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM credit_card_installments WHERE id = '${installment.id}') AS installment_ok,
+            (SELECT typeof(checkpoint_balance_cents) = 'text' AND checkpoint_balance_cents LIKE 'pfc:v2:%' FROM investment_portfolio WHERE id = '${portfolio.id}') AS portfolio_ok,
+            (SELECT typeof(target_amount_cents) = 'text' AND target_amount_cents LIKE 'pfc:v2:%' FROM financial_goals WHERE id = '${goal.id}') AS goal_target_ok,
+            (SELECT typeof(planned_monthly_contribution_cents) = 'text' AND planned_monthly_contribution_cents LIKE 'pfc:v2:%' FROM financial_goals WHERE id = '${goal.id}') AS goal_plan_ok,
+            (SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM financial_goal_allocations WHERE id = '${allocation.id}') AS allocation_ok
         `);
 
         expect(Object.values(result.rows[0] ?? {})).toEqual(Array(10).fill(1));
