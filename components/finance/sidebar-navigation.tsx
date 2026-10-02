@@ -1,5 +1,4 @@
 "use client";
-import { LogoutButton } from "@/components/auth/logout-button";
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -125,7 +124,6 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
           </div>
         );
       })}
-      <LogoutButton />
     </nav>
   );
 }

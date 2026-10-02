@@ -51,7 +51,7 @@ export function authResponse(error: unknown) {
   return Response.json({ ok: false, error: failure.message }, { status: failure.status, headers: { "Cache-Control": "private, no-store" } });
 }
 export async function requirePageSession() {
-  try { await verifySession((await cookies()).get("session")?.value); }
+  try { return await verifySession((await cookies()).get("session")?.value); }
   catch (error) { if (firebaseError(error).status === 401) redirect("/login"); throw firebaseError(error); }
 }
 export async function requireActionSession() {

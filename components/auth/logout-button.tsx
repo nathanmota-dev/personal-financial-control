@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
+import { LoaderCircle, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { LogoutButtonProps } from "@/lib/interfaces/auth";
-export function LogoutButton({ allDevices = false }: LogoutButtonProps) {
+export function LogoutButton({ allDevices = false, iconOnly = false }: LogoutButtonProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function logout() {
@@ -14,5 +16,31 @@ export function LogoutButton({ allDevices = false }: LogoutButtonProps) {
       window.location.assign("/login");
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Falha de conexão."); setBusy(false); }
   }
-  return <div className="p-3"><button disabled={busy} onClick={logout} className="rounded-xl px-3 py-2 text-sm text-content hover:bg-brand/10 focus-visible:outline-2 focus-visible:outline-brand disabled:opacity-50">{busy ? "Saindo…" : allDevices ? "Sair de todos os dispositivos" : "Sair"}</button><p role="status" className="text-xs text-danger">{error}</p></div>;
+  const label = busy ? "Saindo…" : allDevices ? "Sair de todos os dispositivos" : "Sair";
+
+  return (
+    <div className={iconOnly ? "relative" : "p-3"}>
+      <Button
+        type="button"
+        variant={iconOnly ? "outline" : "ghost"}
+        size={iconOnly ? "icon" : "default"}
+        disabled={busy}
+        onClick={logout}
+        aria-label={label}
+        title={label}
+        className="rounded-xl"
+      >
+        {busy ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : <LogOut aria-hidden="true" />}
+        {!iconOnly && label}
+      </Button>
+      <p
+        role="status"
+        className={iconOnly && error
+          ? "absolute top-full right-0 z-20 mt-2 w-52 rounded-xl border border-danger/20 bg-surface p-3 text-xs text-danger shadow-lg lg:top-auto lg:bottom-full lg:mt-0 lg:mb-2"
+          : "text-xs text-danger"}
+      >
+        {error}
+      </p>
+    </div>
+  );
 }
