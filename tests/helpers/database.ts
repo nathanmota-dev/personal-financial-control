@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { migrate } from "drizzle-orm/libsql/migrator";
+import { migrateDatabase } from "@/lib/db/migrate";
 
 import { createDatabase } from "@/lib/db";
 
@@ -11,7 +11,7 @@ export async function createTestDatabase() {
   const databasePath = path.join(directory, "db.sqlite");
   const db = createDatabase(`file:${databasePath}`);
 
-  await migrate(db, { migrationsFolder: "./drizzle" });
+  await migrateDatabase(db.$client);
 
   return {
     db,

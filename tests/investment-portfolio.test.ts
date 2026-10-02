@@ -234,9 +234,9 @@ describe("investment portfolio classification", () => {
     try {
       const result = await rawClient.execute({
         sql: "SELECT " +
-          "(SELECT typeof(current_value_cents) = 'text' AND current_value_cents LIKE 'pfc:v1:%' FROM investment_holdings WHERE id = ?) AS holding_ok, " +
-          "(SELECT typeof(target_amount_cents) = 'text' AND target_amount_cents LIKE 'pfc:v1:%' FROM investment_purposes WHERE id = ?) AS purpose_ok, " +
-          "(SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v1:%' FROM investment_purpose_allocations WHERE id = ?) AS allocation_ok",
+          "(SELECT typeof(current_value_cents) = 'text' AND current_value_cents LIKE 'pfc:v2:%' FROM investment_holdings WHERE id = ?) AS holding_ok, " +
+          "(SELECT typeof(target_amount_cents) = 'text' AND target_amount_cents LIKE 'pfc:v2:%' FROM investment_purposes WHERE id = ?) AS purpose_ok, " +
+          "(SELECT typeof(amount_cents) = 'text' AND amount_cents LIKE 'pfc:v2:%' FROM investment_purpose_allocations WHERE id = ?) AS allocation_ok",
         args: [holding.id, purpose.id, allocation.id],
       });
 
