@@ -1,4 +1,4 @@
-export interface LoginFormProps { destination: string }
+export interface LoginFormProps { destination: string; demoMode: boolean }
 export interface LogoutButtonProps { allDevices?: boolean; iconOnly?: boolean }
 
 export interface SessionUser {
@@ -7,6 +7,7 @@ export interface SessionUser {
 }
 
 export interface UserControlsProps {
+  demoMode: boolean;
   user: SessionUser;
 }
 

@@ -43,7 +43,7 @@ export function AppShell({
 
             <SidebarNavigation />
             <div className="mt-4 shrink-0 border-t border-border pt-4">
-              <UserControls user={user} />
+              <UserControls user={user} demoMode={demoMode} />
             </div>
           </div>
         </aside>
@@ -58,7 +58,7 @@ export function AppShell({
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <UserControls user={user} />
+              <UserControls user={user} demoMode={demoMode} />
               <Drawer direction="left">
                 <DrawerTrigger asChild>
                   <Button variant="outline" size="icon-sm" aria-label="Abrir menu">
@@ -84,14 +84,14 @@ export function AppShell({
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-2 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-warning">
                     <FlaskConical className="size-3.5" />
-                    Demo Mode
+                    Demo pública
                   </span>
                   <p className="text-sm text-warning/80">
-                    Dados simulados para apresentação do produto.
+                    Sem login. Dados fictícios para explorar o produto.
                   </p>
                 </div>
                 <p className="text-xs text-warning/60 sm:text-right">
-                  Alterações são temporárias nesta instância.
+                  Alterações temporárias e compartilhadas. Não insira dados pessoais.
                 </p>
               </div>
             ) : null}

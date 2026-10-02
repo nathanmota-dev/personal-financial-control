@@ -1,8 +1,18 @@
+import { isDemoMode } from "@/lib/demo/mode";
 import { NextRequest, NextResponse } from "next/server";
 import { apiGuard, authResponse, verifySession, firebaseError } from "@/lib/auth/server";
 import { authConfig, isAllowedOrigin } from "@/lib/auth/config";
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  if (isDemoMode()) {
+    // Demo has no Firebase session endpoints or persistent user authorization.
+    if (path === "/api/session" || path.startsWith("/api/session/")) {
+      return Response.json({ ok: false }, { status: 404, headers: { "Cache-Control": "private, no-store" } });
+    }
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
   if (process.env.NODE_ENV === "development" && path === "/_next/webpack-hmr" && request.method === "GET") return NextResponse.next();
   const asset = path.startsWith("/_next/static/") || path === "/icon.png" || path === "/favicon.ico";
   if (asset && ["GET", "HEAD"].includes(request.method)) return NextResponse.next();

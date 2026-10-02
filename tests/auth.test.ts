@@ -6,10 +6,10 @@ vi.mock("firebase-admin/app", () => ({ cert: vi.fn(), getApps: () => [{ name: "p
 vi.mock("@/lib/auth/users", () => ({ isAuthorizedEmail: async (email: string) => email.toLowerCase() === "owner@gmail.com" }));
 vi.mock("firebase-admin/auth", () => ({ getAuth: () => sdk }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => ({ value: "valid" }) }), headers: async () => new Headers({ origin: "http://127.0.0.1:3007" }) }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => ({ value: "valid" }) }), headers: async () => new Headers({ origin: "http://127.0.0.1:3007", host: "127.0.0.1:3007" }) }));
 import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
-import { apiGuard, verifySession } from "@/lib/auth/server";
+import { apiGuard, verifySession, requirePageSession, requireActionSession } from "@/lib/auth/server";
 import { safeDestination, isAllowedOrigin } from "@/lib/auth/config";
 import { POST, DELETE } from "@/app/api/session/route";
 import { POST as revoke } from "@/app/api/session/revoke/route";
@@ -19,6 +19,7 @@ function request(method = "POST", origin = "http://127.0.0.1:3007", cookie = "va
 }
 beforeEach(() => {
   vi.unstubAllEnvs(); vi.clearAllMocks();
+  vi.stubEnv("DEMO_MODE", "false");
   for (const [key, value] of Object.entries({ APP_URL: "http://127.0.0.1:3007", FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "public-key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test-app", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
   sdk.verifySessionCookie.mockResolvedValue(claims); sdk.verifyIdToken.mockResolvedValue(claims); sdk.createSessionCookie.mockResolvedValue("persistent-cookie"); sdk.revokeRefreshTokens.mockResolvedValue(undefined);
 });
@@ -189,5 +190,30 @@ describe("Firebase access boundary", () => {
     expect([...actions.matchAll(/export async function/g)]).toHaveLength(44);
     expect([...actions.matchAll(/await requireActionSession\(\)/g)]).toHaveLength(44);
     for (const file of files("app/(finance)").filter(file => file.endsWith("page.tsx"))) expect(readFileSync(file, "utf8")).toContain("await requirePageSession();");
+  });
+});
+
+
+describe("public demo access", () => {
+  it.each(["true", "1", "yes", "on"])("opens demo pages and operations without Firebase for %s", async flag => {
+    vi.stubEnv("DEMO_MODE", flag);
+    vi.stubEnv("FIREBASE_PRIVATE_KEY", "");
+    vi.stubEnv("APP_URL", "");
+    const response = await proxy(new NextRequest("http://127.0.0.1:3007/dashboard"));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    expect(await requirePageSession()).toEqual({ name: "Visitante demo", picture: null });
+    await expect(requireActionSession()).resolves.toBeUndefined();
+    expect(await apiGuard(new Request("http://127.0.0.1:3007/api/accounts"))).toBeNull();
+    expect(await apiGuard(request("POST", "http://127.0.0.1:3007", ""))).toBeNull();
+    expect(sdk.verifySessionCookie).not.toHaveBeenCalled();
+    expect((await proxy(new NextRequest("http://127.0.0.1:3007/api/session"))).status).toBe(404);
+  });
+  it("keeps origin and content-type checks on demo writes", async () => {
+    vi.stubEnv("DEMO_MODE", "true");
+    expect((await apiGuard(request("POST", "https://evil.test", "")))?.status).toBe(403);
+    expect((await apiGuard(new Request("http://127.0.0.1:3007/api/accounts", {
+      method: "POST", headers: { origin: "http://127.0.0.1:3007", "content-type": "text/plain" },
+    })))?.status).toBe(415);
   });
 });

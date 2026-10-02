@@ -148,8 +148,7 @@ sugerir downgrades incompatíveis do Firebase e do Drizzle.
 Preencha as variáveis Firebase em `.env` conforme `.example.env`. Habilite o
 Google no Firebase Authentication e registre os domínios autorizados. Os IDs de
 projeto público e Admin devem coincidir; somente e-mails verificados cadastrados na tabela `authorized_users`
-podem entrar. A autorização é consultada no banco a cada requisição, inclusive
-em DEMO_MODE. Aplique `npm run db:migrate` para criar a tabela; ela começa vazia
+podem entrar. A autorização é consultada no banco a cada requisição fora do modo demo. Aplique `npm run db:migrate` para criar a tabela; ela começa vazia
 e não há cadastro público. APP_URL é a origem canônica (HTTP somente em loopback, HTTPS remoto).
 Para `npm run dev`, use `http://127.0.0.1:3000`. Docker recebe as variáveis públicas
 no build; refaça a imagem quando mudarem. Credenciais Admin são usadas apenas no
@@ -158,7 +157,15 @@ runtime. Nunca versione a chave privada.
 A sessão persiste por 14 dias. Sair limpa o cookie deste navegador mesmo se a sessão
 expirou ou foi revogada, mantendo a validação de Origin; em Configurações,
 Sair de todos os dispositivos revoga todas as sessões, inclusive MCP. Sem configuração
-válida o acesso financeiro permanece bloqueado, também no modo demo.
+válida o acesso financeiro permanece bloqueado fora do modo demo.
+
+Com `DEMO_MODE=true` (também aceita `1`, `yes` ou `on`), a demo é pública:
+`/login` mostra “Explorar demo”, que leva diretamente à rota interna solicitada
+ou a `/dashboard`, sem Google, cookie de sessão ou cadastro de usuário autorizado.
+Páginas, APIs financeiras e ações usam os dados simulados; Firebase e banco real
+não são necessários. O aviso permanece visível dentro do app. As alterações são
+temporárias e compartilhadas pelos visitantes da mesma instância; não insira dados
+pessoais. Desative `DEMO_MODE` para voltar a exigir autenticação.
 
 ### Diagnóstico do login
 

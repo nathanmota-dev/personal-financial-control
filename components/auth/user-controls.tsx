@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/finance/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { UserControlsProps } from "@/lib/interfaces/auth";
 
-export function UserControls({ user }: UserControlsProps) {
+export function UserControls({ user, demoMode }: UserControlsProps) {
   const names = user.name.trim().split(/\s+/);
   const initials = (Array.from(names[0] ?? "")[0] ?? "U") +
     (names.length > 1 ? Array.from(names[names.length - 1])[0] ?? "" : "");
@@ -20,7 +20,7 @@ export function UserControls({ user }: UserControlsProps) {
       </Avatar>
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <LogoutButton iconOnly />
+        {!demoMode && <LogoutButton iconOnly />}
       </div>
     </div>
   );

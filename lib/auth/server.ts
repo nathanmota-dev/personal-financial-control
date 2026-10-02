@@ -1,4 +1,5 @@
 import "server-only";
+import { isDemoMode } from "@/lib/demo/mode";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
 import { cookies, headers } from "next/headers";
@@ -30,7 +31,15 @@ export async function verifySession(cookie?: string) {
   if (!cookie) throw new AuthError(401);
   try { return await authorizeClaims(await auth.verifySessionCookie(cookie, true)); } catch (error) { throw firebaseError(error); }
 }
-export function checkOrigin(requestHeaders: Headers) {
+export function checkOrigin(requestHeaders: Headers, demoOrigin?: string) {
+  if (isDemoMode()) {
+    const origin = requestHeaders.get("origin");
+    const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+    try {
+      if (origin && (demoOrigin ? origin === demoOrigin : new URL(origin).host === host)) return;
+    } catch {}
+    throw new AuthError(403);
+  }
   let origin: string;
   try { origin = authConfig().origin; } catch { throw new AuthError(503); }
   if (!isAllowedOrigin(requestHeaders.get("origin"), origin)) throw new AuthError(403);
@@ -38,9 +47,9 @@ export function checkOrigin(requestHeaders: Headers) {
 export async function apiGuard(request: Request) {
   try {
     const cookie = request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith("session="))?.slice(8);
-    await verifySession(cookie);
+    if (!isDemoMode()) await verifySession(cookie);
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
-      checkOrigin(request.headers);
+      checkOrigin(request.headers, new URL(request.url).origin);
       if (request.method !== "DELETE" && request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") throw new AuthError(415);
     }
     return null;
@@ -51,10 +60,11 @@ export function authResponse(error: unknown) {
   return Response.json({ ok: false, error: failure.message }, { status: failure.status, headers: { "Cache-Control": "private, no-store" } });
 }
 export async function requirePageSession() {
+  if (isDemoMode()) return { name: "Visitante demo", picture: null };
   try { return await verifySession((await cookies()).get("session")?.value); }
   catch (error) { if (firebaseError(error).status === 401) redirect("/login"); throw firebaseError(error); }
 }
 export async function requireActionSession() {
-  await verifySession((await cookies()).get("session")?.value);
+  if (!isDemoMode()) await verifySession((await cookies()).get("session")?.value);
   checkOrigin(await headers());
 }

@@ -1,7 +1,8 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import type { LoginFormProps } from "@/lib/interfaces/auth";
-export function LoginForm({ destination }: LoginFormProps) {
+export function LoginForm({ destination, demoMode }: LoginFormProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function login() {
@@ -13,5 +14,6 @@ export function LoginForm({ destination }: LoginFormProps) {
       setError(messages[code || ""] || (failure instanceof Error ? failure.message : "Não foi possível entrar.")); setBusy(false);
     }
   }
+  if (demoMode) return <div className="mt-10"><Link href={destination} className="flex w-full items-center justify-center rounded-2xl border border-brand/40 bg-brand px-6 py-4 font-semibold text-surface transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">Explorar demo</Link></div>;
   return <div className="mt-10"><button onClick={login} disabled={busy} className="flex cursor-pointer disabled:cursor-not-allowed w-full items-center justify-center gap-3 rounded-2xl border border-brand/40 bg-brand px-6 py-4 font-semibold text-surface transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand disabled:opacity-60"><span aria-hidden="true" className="text-xl">G</span>{busy ? "Entrando…" : "Continuar com Google"}</button><p role="status" aria-live="polite" className="mt-4 min-h-12 text-sm text-content">{error}</p></div>;
 }
