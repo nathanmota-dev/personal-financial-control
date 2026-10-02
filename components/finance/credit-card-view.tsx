@@ -69,7 +69,7 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
             {overview.accounts.map((account) => (
               <div key={account.id} className="rounded-2xl border border-border bg-surface/35 p-4">
                 <p className="font-medium text-content-strong">{account.name}</p>
-                <p className="mt-2 text-sm text-content-strong0">
+                <p className="mt-2 text-sm text-content">
                   Fecha dia {account.creditClosingDay ?? "—"} · vence dia {account.creditDueDay}
                 </p>
               </div>

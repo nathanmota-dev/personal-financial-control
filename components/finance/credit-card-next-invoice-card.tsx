@@ -63,7 +63,7 @@ export function CreditCardNextInvoiceCard({
           className="group w-full cursor-pointer rounded-2xl border border-input/70 bg-surface/35 px-4 py-3.5 text-left outline-none transition-colors hover:border-brand/45 hover:bg-surface/60 focus-visible:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/45"
         >
           <span className="flex items-center justify-between gap-3">
-            <span className="text-xs uppercase tracking-[0.16em] text-content-strong0">
+            <span className="text-xs uppercase tracking-[0.16em] text-content">
               Próxima fatura
             </span>
             <PencilLine
@@ -74,7 +74,7 @@ export function CreditCardNextInvoiceCard({
           <span className="mt-1 block font-heading text-2xl font-semibold text-brand">
             {upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
           </span>
-          <span className="mt-1 block text-xs text-content-strong0">
+          <span className="mt-1 block text-xs text-content">
             {upcomingInvoice
               ? `Estimativa para ${upcomingInvoice.month.slice(5, 7)}/${upcomingInvoice.month.slice(0, 4)} · vence dia ${creditDueDay}`
               : `Sem parcelas futuras · vence dia ${creditDueDay}`}

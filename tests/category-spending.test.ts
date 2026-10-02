@@ -21,7 +21,7 @@ describe("category spending chart data", () => {
     expect(data[0]).toMatchObject({
       categoryId: "category-6",
       amount: 70,
-      fill: "#38bdf8",
+      fill: "var(--chart-brand)",
       shortLabel: "Uma categoria com...",
     });
     expect(data.some((item) => item.categoryId === "zero")).toBe(false);

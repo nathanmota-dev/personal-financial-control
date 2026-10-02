@@ -49,7 +49,7 @@ export const GOAL_COLORS = [
   "var(--chart-warning)",
   "var(--chart-danger)",
   "var(--chart-brand)",
-  "#22c55e",
+  "var(--chart-success)",
   "var(--chart-danger)",
   "var(--chart-warning)",
 ] as const;
@@ -59,7 +59,7 @@ export const SUMMARY_TONE_CLASSNAMES: Record<SummaryTone, string> = {
   sky: "border-brand/15 bg-brand/8 text-brand",
   teal: "border-warning/15 bg-warning/8 text-warning",
   amber: "border-warning/15 bg-warning/8 text-warning",
-  violet: "border-violet-400/15 bg-violet-400/8 text-violet-200",
+  violet: "border-violet/15 bg-violet/8 text-violet",
   rose: "border-danger/15 bg-danger/8 text-danger",
 };
 

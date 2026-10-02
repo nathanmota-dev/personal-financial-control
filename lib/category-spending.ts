@@ -1,12 +1,12 @@
 import type { CategorySpendingItem } from "@/lib/interfaces/recurring";
 
 export const categoryChartColors = [
-  "#38bdf8",
-  "#f97316",
-  "#14b8a6",
-  "#f43f5e",
-  "#eab308",
-  "#a78bfa",
+  "var(--chart-brand)",
+  "var(--orange)",
+  "var(--chart-success)",
+  "var(--chart-danger)",
+  "var(--chart-warning)",
+  "var(--violet)",
 ] as const;
 
 export type CategoryChartItem = CategorySpendingItem & {

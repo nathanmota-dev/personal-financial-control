@@ -79,7 +79,7 @@ export function CreditCardTimelineChart({ points }: CreditCardTimelineChartProps
           name="Fatura"
           stroke="var(--color-amount)"
           strokeWidth={2.5}
-          dot={{ r: 4, fill: "var(--surface);", stroke: "var(--chart-brand)", strokeWidth: 2 }}
+          dot={{ r: 4, fill: "var(--surface)", stroke: "var(--chart-brand)", strokeWidth: 2 }}
           activeDot={{ r: 6, fill: "var(--brand-strong)", stroke: "var(--content-strong)", strokeWidth: 2 }}
         />
       </LineChart>

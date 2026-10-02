@@ -1,20 +1,15 @@
-import { migrate } from "drizzle-orm/libsql/migrator";
-
-import { getDatabase } from "@/lib/db";
+import { createClient } from "@libsql/client";
 import { getServerEnv } from "@/lib/env";
+import { migrateDatabase } from "@/lib/db/migrate";
 
 async function main() {
-  if (getServerEnv().DEMO_MODE) {
-    console.log("Demo mode enabled; persistent migrations skipped.");
-    return;
-  }
-
-  const db = getDatabase();
-  await migrate(db, { migrationsFolder: "./drizzle" });
-  console.log("Migrations applied.");
+  const env = getServerEnv();
+  if (env.DEMO_MODE) { console.log("Demo mode enabled; persistent migrations skipped."); return; }
+  if (!process.env.DATABASE_URL && !process.env.TURSO_DATABASE_URL) throw new Error("Explicit DATABASE_URL or TURSO_DATABASE_URL is required; migration never falls back to another database.");
+  const client = createClient({ url: env.DATABASE_URL, authToken: env.TOKEN });
+  try {
+    await migrateDatabase(client);
+    console.log("Migrations applied.");
+  } finally { client.close(); }
 }
-
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main().catch((error) => { console.error(error instanceof Error ? error.message : "Migration failed."); process.exitCode = 1; });

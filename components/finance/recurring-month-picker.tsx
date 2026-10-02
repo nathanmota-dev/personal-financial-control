@@ -65,7 +65,7 @@ export function RecurringMonthPicker({
             )}
             aria-label={month ? formatMonthLabel(month) : placeholder}
           >
-            <span className={cn("truncate", !month && "text-content-strong0")}>
+            <span className={cn("truncate", !month && "text-content")}>
               {month ? formatMonthLabel(month) : placeholder}
             </span>
             <CalendarDays className="size-4 shrink-0 text-content" />

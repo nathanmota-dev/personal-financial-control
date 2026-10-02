@@ -110,7 +110,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
                         "relative flex items-center justify-between rounded-xl px-3 py-2 text-xs transition before:pointer-events-none before:absolute before:-left-3 before:top-0 before:h-1/2 before:w-3 before:rounded-bl-xl before:border-b before:border-l before:border-border/90 before:content-['']",
                         childActive
                           ? "bg-brand/12 font-semibold text-brand"
-                          : "text-content-strong0 hover:bg-brand/8 hover:text-content-strong"
+                          : "text-content hover:bg-brand/8 hover:text-content-strong"
                       )}
                     >
                       <span>{child.label}</span>

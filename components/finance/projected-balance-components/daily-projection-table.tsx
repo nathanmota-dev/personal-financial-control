@@ -138,7 +138,7 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
 function MobileDayMetric({ label, value, className }: MobileDayMetricProps) {
   return (
     <div className={cn(financeItemClassName, "p-3")}>
-      <p className="text-xs text-content-strong0">{label}</p>
+      <p className="text-xs text-content">{label}</p>
       <p className={cn("mt-1 font-semibold", className)}>{value}</p>
     </div>
   );

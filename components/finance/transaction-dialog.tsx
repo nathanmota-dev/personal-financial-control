@@ -383,7 +383,7 @@ export function TransactionDialog({
                         />
                         <span>
                           <span className="block text-sm font-medium text-content-strong">Saldo em conta</span>
-                          <span className="mt-1 block text-xs leading-5 text-content-strong0">A despesa reduz diretamente o saldo líquido da conta.</span>
+                          <span className="mt-1 block text-xs leading-5 text-content">A despesa reduz diretamente o saldo líquido da conta.</span>
                         </span>
                       </label>
                       <label
@@ -404,7 +404,7 @@ export function TransactionDialog({
                         />
                         <span>
                           <span className="block text-sm font-medium text-content-strong">Investimentos</span>
-                          <span className="mt-1 block text-xs leading-5 text-content-strong0">Cria um resgate automático e registra de quais ativos ele saiu.</span>
+                          <span className="mt-1 block text-xs leading-5 text-content">Cria um resgate automático e registra de quais ativos ele saiu.</span>
                         </span>
                       </label>
                     </div>
@@ -422,7 +422,7 @@ export function TransactionDialog({
                     ))}
                   </select>
                   {isInvestmentExpense ? (
-                    <p className="text-xs text-content-strong0">O resgate entra nesta conta e a despesa sai dela, mantendo o efeito líquido zerado.</p>
+                    <p className="text-xs text-content">O resgate entra nesta conta e a despesa sai dela, mantendo o efeito líquido zerado.</p>
                   ) : null}
                 </div>
                 <div className="space-y-2">
@@ -432,7 +432,7 @@ export function TransactionDialog({
                     {!filteredCategories.length && categoryRequired ? <option value={NO_CATEGORY_VALUE}>Nenhuma categoria compatível</option> : null}
                     {filteredCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                   </select>
-                  <p className="text-xs text-content-strong0">
+                  <p className="text-xs text-content">
                     {categoryRequired ? "Obrigatória para movimentações de investimento." : "Opcional; você pode categorizar depois."}
                   </p>
                 </div>

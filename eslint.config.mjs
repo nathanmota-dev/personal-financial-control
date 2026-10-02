@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated from the linted TypeScript migration entry point.
+    "scripts/migrate.mjs",
   ]),
 ]);
 

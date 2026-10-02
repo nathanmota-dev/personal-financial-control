@@ -74,7 +74,7 @@ export function PurposeDialog({
                     <SelectItem key={key} value={option.value}>
                       <span className="flex items-center gap-2">
                         <span
-                          className="size-3.5 rounded-full border border-white/20"
+                          className="size-3.5 rounded-full border border-border"
                           style={{ backgroundColor: option.value }}
                           aria-hidden="true"
                         />

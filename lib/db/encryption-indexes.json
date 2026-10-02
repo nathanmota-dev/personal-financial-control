@@ -1,0 +1,33 @@
+{
+  "accounts": [
+    "name"
+  ],
+  "categories": [
+    "name"
+  ],
+  "transactions": [
+    "import_fingerprint",
+    "competence_month"
+  ],
+  "credit_card_charges": [
+    "import_fingerprint"
+  ],
+  "credit_card_bills": [
+    "invoice_month"
+  ],
+  "credit_card_bill_payments": [
+    "idempotency_key"
+  ],
+  "credit_card_installments": [
+    "installment_number"
+  ],
+  "investment_quotes": [
+    "quoted_on"
+  ],
+  "investment_position_snapshots": [
+    "snapshot_date"
+  ],
+  "investment_portfolio_snapshots": [
+    "snapshot_date"
+  ]
+}

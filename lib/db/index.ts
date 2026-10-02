@@ -1,6 +1,9 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { migrate } from "drizzle-orm/libsql/migrator";
+import { getTableConfig, SQLiteTable } from "drizzle-orm/sqlite-core";
+import { is } from "drizzle-orm";
+import { migrateDatabase } from "@/lib/db/migrate";
+import { protectContentPersistence } from "@/lib/db/content-persistence";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -25,12 +28,13 @@ import {
 } from "@/lib/db/schema";
 
 export function createDatabase(url: string, authToken?: string) {
+  for (const value of Object.values(schema)) if (is(value, SQLiteTable)) getTableConfig(value as SQLiteTable);
   const client = createClient({
     url,
     authToken,
   });
 
-  return drizzle({ client, schema });
+  return protectContentPersistence(drizzle({ client, schema }));
 }
 
 export type AppDb = ReturnType<typeof createDatabase>;
@@ -73,9 +77,7 @@ async function initializeDemoDatabase() {
   const database = createDatabase(`file:${join(demoDirectory, "demo.db")}`);
 
   try {
-    await migrate(database, {
-      migrationsFolder: join(process.cwd(), "drizzle"),
-    });
+    await migrateDatabase(database.$client);
 
     await database.transaction(async (transaction) => {
       await transaction

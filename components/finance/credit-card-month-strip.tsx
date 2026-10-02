@@ -75,12 +75,12 @@ export function CreditCardMonthStrip({
     >
       <div className="flex items-start justify-between gap-4 px-1">
         <div>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-content-strong0">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-content">
             Linha do tempo
           </p>
           <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Suas faturas</h2>
         </div>
-        <CalendarDays className="size-5 text-content-strong0" />
+        <CalendarDays className="size-5 text-content" />
       </div>
 
       <div className="mt-4 rounded-2xl border border-border/70 bg-surface/25 px-2 py-2 sm:px-3">
@@ -172,13 +172,13 @@ function CreditCardMonthCard({
           {formatCreditCardMonth(point.month)}
         </span>
         {hasChange ? (
-          isIncrease ? <ArrowUpRight className="size-3.5 shrink-0 text-danger" /> : <ArrowDownRight className="size-3.5 shrink-0 text-emerald-400" />
+          isIncrease ? <ArrowUpRight className="size-3.5 shrink-0 text-danger" /> : <ArrowDownRight className="size-3.5 shrink-0 text-success" />
         ) : null}
       </div>
       <p className={cn("mt-2 truncate text-lg font-semibold", selected ? "text-brand" : "text-content")}>
         {formatCurrency(point.totalCents)}
       </p>
-      <p className="mt-1 truncate text-[0.68rem] text-content-strong0">
+      <p className="mt-1 truncate text-[0.68rem] text-content">
         {point.billStatus === "paid"
           ? "Paga"
           : point.entryCount

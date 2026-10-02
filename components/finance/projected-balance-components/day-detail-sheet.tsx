@@ -132,7 +132,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
               {eventTypeLabels[event.type]}
             </Badge>
           </div>
-          <p className="mt-1 text-xs text-content-strong0">
+          <p className="mt-1 text-xs text-content">
             {eventSourceLabels[event.source]}
             {accountName ? ` · ${accountName}` : ""}
           </p>
@@ -143,7 +143,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
               type="button"
               variant="ghost"
               size="icon-sm"
-              className="text-content-strong0 hover:bg-danger/10 hover:text-danger"
+              className="text-content hover:bg-danger/10 hover:text-danger"
               aria-label={`Remover simulação ${event.description}`}
               onClick={() => onRemoveSimulation(simulationId)}
             >
@@ -177,7 +177,7 @@ function DetailMetric({ label, value, tone = "slate" }: DetailMetricProps) {
 
   return (
     <div className="rounded-2xl border border-border bg-surface-raised/50 p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-content-strong0">{label}</p>
+      <p className="text-xs uppercase tracking-[0.18em] text-content">{label}</p>
       <p className={cn("mt-2 font-heading text-xl font-semibold", tones[tone])}>
         {value}
       </p>

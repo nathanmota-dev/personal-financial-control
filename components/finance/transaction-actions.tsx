@@ -56,9 +56,9 @@ export function TransferDialog({ accounts, month }: TransferDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline">Nova transferência</Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Transferência entre contas</DialogTitle>
+      <DialogContent className="border border-border bg-surface-raised text-content-strong sm:max-w-lg">
+        <DialogHeader className="pr-8">
+          <DialogTitle className="text-xl font-semibold">Transferência entre contas</DialogTitle>
           <DialogDescription>Você precisa de pelo menos duas contas para esta operação.</DialogDescription>
         </DialogHeader>
         {canTransfer ? (

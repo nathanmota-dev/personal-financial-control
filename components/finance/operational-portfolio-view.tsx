@@ -75,13 +75,13 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
         <div className="grid gap-4 border-b border-border p-5 md:grid-cols-[1fr_220px_auto] md:items-center">
           <div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content-muted" /><Input className="pl-9" placeholder="Buscar ativo, código ou instituição" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
           <Select value={assetClass} onValueChange={setAssetClass}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas as classes</SelectItem>{Object.entries(investmentAssetClassLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-          <div className="rounded-xl border border-border px-4 py-2 text-right"><p className="text-[10px] uppercase text-content-muted">Total</p><p className="font-semibold text-cyan-300">{formatCurrency(total)}</p></div>
+          <div className="rounded-xl border border-border px-4 py-2 text-right"><p className="text-[10px] uppercase text-content-muted">Total</p><p className="font-semibold text-brand">{formatCurrency(total)}</p></div>
         </div>
         <div className="divide-y divide-border">{filtered.length ? filtered.map((item) => (
-          <Link key={item.id} href={`/investments/assets/${item.id}`} className="grid gap-3 p-5 transition hover:bg-cyan-400/[.04] md:grid-cols-[1.3fr_.7fr_.7fr_.5fr_auto] md:items-center">
+          <Link key={item.id} href={`/investments/assets/${item.id}`} className="grid gap-3 p-5 transition hover:bg-brand/[.04] md:grid-cols-[1.3fr_.7fr_.7fr_.5fr_auto] md:items-center">
             <div><strong className="text-content-strong">{item.name}</strong><p className="mt-1 text-xs text-content-muted">{item.ticker ?? "Sem código"} · {item.institutionName ?? "Instituição não informada"}</p></div>
             <div><p className="text-[10px] uppercase text-content-muted">Valor atual</p><p className="font-mono text-sm">{formatCurrency(item.currentValueCents)}</p></div>
-            <div><p className="text-[10px] uppercase text-content-muted">Resultado</p><p className={item.resultCents === null ? "text-content-muted" : item.resultCents >= 0 ? "text-emerald-300" : "text-rose-300"}>{item.resultCents === null ? "Custo não informado" : formatCurrency(item.resultCents)}</p></div>
+            <div><p className="text-[10px] uppercase text-content-muted">Resultado</p><p className={item.resultCents === null ? "text-content-muted" : item.resultCents >= 0 ? "text-success" : "text-danger"}>{item.resultCents === null ? "Custo não informado" : formatCurrency(item.resultCents)}</p></div>
             <div><p className="text-[10px] uppercase text-content-muted">Participação</p><p className="font-mono text-sm">{item.participationPercentage.toFixed(1)}%</p></div><ArrowRight className="size-4 text-content-muted" />
           </Link>
         )) : <div className="p-12 text-center text-sm text-content-muted">Nenhuma posição encontrada.</div>}</div>
