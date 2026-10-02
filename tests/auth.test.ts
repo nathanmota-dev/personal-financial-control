@@ -83,6 +83,67 @@ describe("Firebase access boundary", () => {
     sdk.revokeRefreshTokens.mockRejectedValue(new Error("offline"));
     const failure = await revoke(request()); expect(failure.status).toBe(503); expect(failure.headers.get("set-cookie")).toBeNull();
   });
+  it.each([
+    "missing", "expired", "revoked", "invalid", "unauthorized", "offline",
+  ])("clears the local cookie through the proxy with a %s session", async state => {
+    if (state === "unauthorized") {
+      sdk.verifySessionCookie.mockResolvedValue({ ...claims, email: "removed@gmail.com" });
+    } else {
+      sdk.verifySessionCookie.mockRejectedValue(new Error(state));
+    }
+    const logoutRequest = new NextRequest("http://127.0.0.1:3007/api/session", {
+      method: "DELETE",
+      headers: {
+        host: "127.0.0.1:3007",
+        origin: "http://127.0.0.1:3007",
+        ...(state === "missing" ? {} : { cookie: `session=${state}` }),
+      },
+    });
+    const forwarded = await proxy(logoutRequest);
+    expect(forwarded.headers.get("x-middleware-next")).toBe("1");
+    const response = await DELETE(logoutRequest);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("set-cookie")).toContain("session=;");
+    expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
+    expect(response.headers.get("set-cookie")).toContain("HttpOnly");
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(sdk.verifySessionCookie).not.toHaveBeenCalled();
+    expect(sdk.revokeRefreshTokens).not.toHaveBeenCalled();
+  });
+  it.each([null, "null", "https://evil.test"])("rejects local logout with Origin %s", async origin => {
+    const response = await DELETE(new Request("http://127.0.0.1:3007/api/session", {
+      method: "DELETE",
+      headers: origin === null ? {} : { origin },
+    }));
+    expect(response.status).toBe(403);
+    expect(response.headers.get("set-cookie")).toBeNull();
+  });
+  it("clears a secure cookie on HTTPS and permits repeated logout", async () => {
+    vi.stubEnv("APP_URL", "https://finance.example");
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await DELETE(new Request("https://finance.example/api/session", {
+        method: "DELETE",
+        headers: { origin: "https://finance.example" },
+      }));
+      expect(response.status).toBe(200);
+      expect(response.headers.get("set-cookie")).toContain("Secure");
+      expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
+    }
+  });
+  it("still denies global revocation and financial access with a revoked session", async () => {
+    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
+    const response = await revoke(request());
+    expect(response.status).toBe(401);
+    expect(response.headers.get("set-cookie")).toBeNull();
+    expect(sdk.revokeRefreshTokens).not.toHaveBeenCalled();
+    for (const path of ["/api/session/revoke", "/api/accounts"]) {
+      const denied = await proxy(new NextRequest(`http://127.0.0.1:3007${path}`, {
+        method: "POST",
+        headers: { host: "127.0.0.1:3007", origin: "http://127.0.0.1:3007", cookie: "session=revoked", "content-type": "application/json" },
+      }));
+      expect(denied.status).toBe(401);
+    }
+  });
   it("accepts internal filters and rejects external destinations", () => {
     expect(safeDestination("/transactions?month=2026-10")).toBe("/transactions?month=2026-10");
     for (const target of ["https://evil.test", "//evil.test", "/\\evil.test", "/login", "/api/accounts", "/%6cogin", "/%61pi/accounts", "/%2f/evil.test", "/%", "/api"]) expect(safeDestination(target)).toBe("/dashboard");

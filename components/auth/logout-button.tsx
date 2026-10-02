@@ -9,6 +9,8 @@ export function LogoutButton({ allDevices = false }: LogoutButtonProps) {
     try {
       const response = await fetch(allDevices ? "/api/session/revoke" : "/api/session", { method: allDevices ? "POST" : "DELETE", headers: { "Content-Type": "application/json" }, ...(allDevices ? { body: "{}" } : {}) });
       if (!response.ok) throw new Error("Não foi possível sair. Tente novamente.");
+      // Discard the authenticated router cache and client state on logout.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/login");
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Falha de conexão."); setBusy(false); }
   }

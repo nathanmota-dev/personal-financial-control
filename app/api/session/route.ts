@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, apiGuard, AuthError, authorizeClaims, authResponse, checkOrigin } from "@/lib/auth/server";
+import { adminAuth, AuthError, authorizeClaims, authResponse, checkOrigin } from "@/lib/auth/server";
 import { authConfig, SESSION_SECONDS } from "@/lib/auth/config";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
@@ -19,9 +19,21 @@ export async function POST(request: Request) {
   } catch (error) { return authResponse(error); }
 }
 export async function DELETE(request: Request) {
-  const denied = await apiGuard(request);
-  if (denied) return denied;
-  const response = NextResponse.json({ ok: true }, { headers: { "Cache-Control": "private, no-store" } });
-  response.cookies.set("session", "", { httpOnly: true, sameSite: "lax", path: "/", secure: authConfig().secure, maxAge: 0 });
-  return response;
+  try {
+    // Clearing this browser's cookie must also work after expiration or revocation.
+    checkOrigin(request.headers);
+    const response = NextResponse.json({ ok: true }, {
+      headers: { "Cache-Control": "private, no-store" },
+    });
+    response.cookies.set("session", "", {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      secure: authConfig().secure,
+      maxAge: 0,
+    });
+    return response;
+  } catch (error) {
+    return authResponse(error);
+  }
 }

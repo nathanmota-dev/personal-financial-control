@@ -136,6 +136,13 @@ npm install
 npm run dev
 ```
 
+As versões transitivas em `overrides` no `package.json` corrigem alertas de
+segurança enquanto os pacotes de origem ainda fixam versões antigas:
+`@grpc/grpc-js` no Firestore, `uuid` no gaxios 6 e `esbuild` no loader do Drizzle.
+Ao atualizar esses pacotes, reavalie os overrides e execute `npm audit`, build,
+lint e a suíte completa de testes. Não use `npm audit fix --force`: ele pode
+sugerir downgrades incompatíveis do Firebase e do Drizzle.
+
 ## Login Google
 
 Preencha as variáveis Firebase em `.env` conforme `.example.env`. Habilite o
@@ -148,7 +155,8 @@ Para `npm run dev`, use `http://127.0.0.1:3000`. Docker recebe as variáveis pú
 no build; refaça a imagem quando mudarem. Credenciais Admin são usadas apenas no
 runtime. Nunca versione a chave privada.
 
-A sessão persiste por 14 dias. Sair encerra apenas este navegador; em Configurações,
+A sessão persiste por 14 dias. Sair limpa o cookie deste navegador mesmo se a sessão
+expirou ou foi revogada, mantendo a validação de Origin; em Configurações,
 Sair de todos os dispositivos revoga todas as sessões, inclusive MCP. Sem configuração
 válida o acesso financeiro permanece bloqueado, também no modo demo.
 

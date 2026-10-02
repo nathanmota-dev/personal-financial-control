@@ -23,7 +23,10 @@ export async function proxy(request: NextRequest) {
     if (["GET", "HEAD"].includes(request.method) && !path.startsWith("/api/")) return NextResponse.redirect(new URL(path + request.nextUrl.search, origin), { headers: { "Cache-Control": "private, no-store" } });
     return Response.json({ ok: false }, { status: 403, headers: { "Cache-Control": "private, no-store" } });
   }
-  if (!(path === "/login" && ["GET", "HEAD"].includes(request.method)) && !(path === "/api/session" && request.method === "POST")) {
+  // Session creation and local logout validate Origin in their own handlers.
+  // Neither requires an existing valid session; global revocation still does.
+  const publicSessionMethod = path === "/api/session" && ["POST", "DELETE"].includes(request.method);
+  if (!(path === "/login" && ["GET", "HEAD"].includes(request.method)) && !publicSessionMethod) {
     if (path.startsWith("/api/")) {
       const denied = await apiGuard(request);
       if (denied) return denied;
