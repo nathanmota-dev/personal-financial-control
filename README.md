@@ -182,6 +182,28 @@ usar `APP_URL_DEVELOPMENT` e carregar também `.env.development`). O comando ver
 chave privada e a disponibilidade do Authentication para a API key, sem imprimir
 credenciais. Ele não substitui o teste real de login.
 
+O app instalado no Linux usa `APP_URL` (por padrão, `http://127.0.0.1:3007`),
+enquanto `npm run dev` usa `APP_URL_DEVELOPMENT` (`http://localhost:3000`).
+O Firebase autoriza cada hostname separadamente: cadastrar `localhost` não autoriza
+`127.0.0.1`. Em **Authentication > Settings > Authorized domains**, cadastre ambos,
+sem protocolo ou porta. Se a janela fechar antes de mostrar o Google, confira o
+domínio informado na mensagem da tela de login e execute:
+
+```bash
+npm run auth:check
+npm run auth:check -- --development
+```
+
+O primeiro comando verifica a configuração usada pelo launcher Linux e o segundo,
+a configuração de desenvolvimento. Após cadastrar um domínio, recarregue a tela
+ou reabra o app para renovar a validação do Firebase. Alterar os domínios não exige
+rebuild; alterações nas variáveis `NEXT_PUBLIC_FIREBASE_*` exigem um novo build
+de produção.
+
+Ao fechar a janela do Google, o Firebase pode levar cerca de 8–10 segundos para
+reconhecer o cancelamento. Quando aparecer “Login cancelado”, o botão será liberado
+para uma nova tentativa manual. Uma tentativa cancelada não cria uma sessão do app.
+
 Se aparecer `CONFIGURATION_NOT_FOUND`:
 
 1. Abra o mesmo projeto da API key em https://console.firebase.google.com/.

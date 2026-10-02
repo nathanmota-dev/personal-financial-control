@@ -1,17 +1,30 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { loginErrorMessage } from "@/lib/auth/login-errors";
 import type { LoginFormProps } from "@/lib/interfaces/auth";
 export function LoginForm({ destination, demoMode }: LoginFormProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const loginInProgress = useRef(false);
   async function login() {
+    if (loginInProgress.current) return;
+    loginInProgress.current = true;
+    let navigating = false;
     setBusy(true); setError("");
-    try { const { googleLogin } = await import("@/lib/auth/client"); await googleLogin(); window.location.assign(destination); }
+    try {
+      const { googleLogin } = await import("@/lib/auth/client");
+      await googleLogin();
+      window.location.assign(destination);
+      navigating = true;
+    }
     catch (failure) {
-      const code = (failure as { code?: string }).code;
-      const messages: Record<string, string> = { "auth/configuration-not-found": "O Firebase Authentication ainda não foi configurado. Ative Authentication e o provedor Google no console do Firebase.", "auth/operation-not-allowed": "O login Google não está habilitado no Firebase Authentication.", "auth/unauthorized-domain": "Este domínio não está autorizado no Firebase Authentication. Cadastre-o em Settings > Authorized domains.", "auth/invalid-api-key": "A configuração do Firebase é inválida. Confira a API key do app Web e reinicie o app.", "auth/popup-closed-by-user": "Login cancelado. Você pode tentar novamente.", "auth/cancelled-popup-request": "Login cancelado. Tente novamente.", "auth/popup-blocked": "Permita popups neste navegador e tente novamente.", "auth/network-request-failed": "Falha de conexão. Verifique sua internet e tente novamente." };
-      setError(messages[code || ""] || (failure instanceof Error ? failure.message : "Não foi possível entrar.")); setBusy(false);
+      setError(loginErrorMessage(failure, window.location.hostname));
+    } finally {
+      if (!navigating) {
+        loginInProgress.current = false;
+        setBusy(false);
+      }
     }
   }
   if (demoMode) return <div className="mt-10"><Link href={destination} className="flex w-full items-center justify-center rounded-2xl border border-brand/40 bg-brand px-6 py-4 font-semibold text-surface transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">Explorar demo</Link></div>;
