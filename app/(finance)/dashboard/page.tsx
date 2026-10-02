@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import Link from "next/link";
 import { CircleAlert, PiggyBank, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
@@ -34,6 +35,7 @@ import { cn } from "@/lib/utils";
 export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
+  await requirePageSession();
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
   const month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();

@@ -1,3 +1,4 @@
+import { apiGuard } from "@/lib/auth/server";
 import {
   goalApiError,
   noStoreJson,
@@ -10,7 +11,9 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, { params }: RouteContext) {
+async function handleGET(_request: Request, { params }: RouteContext) {
+  const denied = await apiGuard(_request);
+  if (denied) return denied;
   try {
     const { id } = await params;
     return noStoreJson(await getGoalDetails(id));
@@ -24,7 +27,9 @@ export async function GET(_request: Request, { params }: RouteContext) {
   }
 }
 
-export async function PATCH(request: Request, { params }: RouteContext) {
+async function handlePATCH(request: Request, { params }: RouteContext) {
+  const denied = await apiGuard(request);
+  if (denied) return denied;
   try {
     const { id } = await params;
     const body = await request.json();
@@ -42,7 +47,9 @@ export async function PATCH(request: Request, { params }: RouteContext) {
   }
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext) {
+async function handleDELETE(_request: Request, { params }: RouteContext) {
+  const denied = await apiGuard(_request);
+  if (denied) return denied;
   try {
     const { id } = await params;
     const goal = await archiveGoal(id);
@@ -57,4 +64,31 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
       invalidMessage: "Invalid financial goal payload.",
     });
   }
+}
+
+export async function GET(...args: Parameters<typeof handleGET>) {
+  const response = await handleGET(...args);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export async function PATCH(...args: Parameters<typeof handlePATCH>) {
+  const response = await handlePATCH(...args);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export async function DELETE(...args: Parameters<typeof handleDELETE>) {
+  const response = await handleDELETE(...args);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export async function HEAD(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
+}
+export async function OPTIONS(request: Request) {
+  const denied = await apiGuard(request);
+  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
 }

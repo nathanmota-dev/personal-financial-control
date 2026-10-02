@@ -7,6 +7,8 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("@/lib/auth/server", () => ({ apiGuard: vi.fn(async () => null) }));
+
 const cleanups: Array<() => Promise<void>> = [];
 const originalDatabaseUrl = process.env.DATABASE_URL;
 const originalToken = process.env.TOKEN;

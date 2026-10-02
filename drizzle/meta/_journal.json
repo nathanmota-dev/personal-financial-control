@@ -120,6 +120,13 @@
       "when": 1790400000000,
       "tag": "0016_complete_content_encryption",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1790915666550,
+      "tag": "0017_authorized_users",
+      "breakpoints": true
     }
   ]
 }

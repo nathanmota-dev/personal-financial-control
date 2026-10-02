@@ -190,7 +190,7 @@ function withContentIndexes(table, values, defaults = false) {
 }
 
 // lib/db/schema.ts
-import { relations } from "drizzle-orm";
+import { relations, sql as sql2 } from "drizzle-orm";
 import {
   index,
   sqliteTable,
@@ -573,6 +573,10 @@ function encryptionChecks(columns) {
 }
 
 // lib/db/schema.ts
+var authorizedUsers = sqliteTable("authorized_users", {
+  email: text("email").primaryKey(),
+  createdAt: text("created_at").notNull().default(sql2`CURRENT_TIMESTAMP`)
+});
 var accountTypes = [
   "checking",
   "savings",

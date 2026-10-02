@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 import { ZodError } from "zod";
 
@@ -23,6 +24,7 @@ export default async function ProjectedBalancePage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePageSession();
   await connection();
 
   const params = await searchParams;

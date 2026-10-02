@@ -58,7 +58,7 @@ Depois, procure por `Finance` no menu de aplicativos do Linux. Para iniciar pelo
 ./open-app.sh
 ```
 
-Antes de iniciar fora do Docker, preencha no `.env` `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` com as credenciais do Turso. O primeiro início instala as dependências se necessário, gera o build quando houver alterações, aplica as migrações, inicia o servidor na porta `3007` e abre o app no navegador configurado.
+Antes de iniciar fora do Docker, preencha no `.env` `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` com as credenciais do Turso. O primeiro início instala as dependências se necessário, gera o build quando houver alterações, aplica as migrações, inicia o servidor na porta configurada em `APP_URL` e abre o app no navegador configurado.
 
 Se o projeto for movido para outra pasta, execute `./install-app.sh` novamente para atualizar o launcher.
 
@@ -115,37 +115,15 @@ Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; tro
 ## Integração MCP local com o Codex
 
 O endpoint `POST /api/mcp` expõe ferramentas para consultar referências e administrar
-receitas, despesas e compras de cartão. Ele aceita apenas conexões loopback e fica
-desabilitado quando `PFC_MCP_TOKEN` não existe ou tem menos de 32 caracteres.
-
-Gere um token e adicione-o ao `.env`:
-
-```bash
-openssl rand -hex 32
-# .env
-PFC_MCP_TOKEN="cole-o-token-aqui"
-```
-
-Exporte o mesmo valor no ambiente que inicia o Codex (o Codex não lê o `.env` do app
-para preencher cabeçalhos):
-
-```bash
-export PFC_MCP_TOKEN="cole-o-token-aqui"
-```
-
-Inicie o app e crie a configuração local `.codex/config.toml`, que é ignorada pelo
-Git. Use a porta real do processo: normalmente `3000` com `npm run dev` e `3007` com
-Docker ou os scripts locais. O token não deve ser escrito nesse arquivo;
-`bearer_token_env_var` recebe somente o nome da variável de ambiente. Consulte
-[a documentação completa dos comandos MCP](docs/MCP.md#configuração-rápida) para
-copiar a configuração. Em um projeto confiável, confirme a conexão com
-`codex mcp list`; na interface do Codex, use `/mcp`.
+receitas, despesas e compras de cartão. Ele aceita apenas conexões loopback,
+exige o cookie Firebase e Origin igual a APP_URL. Faça login e configure os
+cabeçalhos conforme [a documentação MCP](docs/mcp.md#configuração-rápida).
 
 As ferramentas esperam datas `YYYY-MM-DD`, meses `YYYY-MM`, valores inteiros em
 centavos e chaves idempotentes estáveis no formato `origem:periodo:linha`. Consulte
 as referências antes de importar e envie uma linha do documento por chamada.
 
-Consulte [a documentação completa dos comandos MCP](docs/MCP.md) para ver todos os
+Consulte [a documentação completa dos comandos MCP](docs/mcp.md) para ver todos os
 contratos, exemplos de argumentos, respostas, erros e o fluxo recomendado de
 importação.
 
@@ -157,3 +135,60 @@ Para executar o servidor de desenvolvimento:
 npm install
 npm run dev
 ```
+
+As versões transitivas em `overrides` no `package.json` corrigem alertas de
+segurança enquanto os pacotes de origem ainda fixam versões antigas:
+`@grpc/grpc-js` no Firestore, `uuid` no gaxios 6 e `esbuild` no loader do Drizzle.
+Ao atualizar esses pacotes, reavalie os overrides e execute `npm audit`, build,
+lint e a suíte completa de testes. Não use `npm audit fix --force`: ele pode
+sugerir downgrades incompatíveis do Firebase e do Drizzle.
+
+## Login Google
+
+Preencha as variáveis Firebase em `.env` conforme `.example.env`. Habilite o
+Google no Firebase Authentication e registre os domínios autorizados. Os IDs de
+projeto público e Admin devem coincidir; somente e-mails verificados cadastrados na tabela `authorized_users`
+podem entrar. A autorização é consultada no banco a cada requisição fora do modo demo. Aplique `npm run db:migrate` para criar a tabela; ela começa vazia
+e não há cadastro público. APP_URL é a origem canônica (HTTP somente em loopback, HTTPS remoto).
+Para `npm run dev`, use `http://127.0.0.1:3000`. Docker recebe as variáveis públicas
+no build; refaça a imagem quando mudarem. Credenciais Admin são usadas apenas no
+runtime. Nunca versione a chave privada.
+
+A sessão persiste por 14 dias. Sair limpa o cookie deste navegador mesmo se a sessão
+expirou ou foi revogada, mantendo a validação de Origin; em Configurações,
+Sair de todos os dispositivos revoga todas as sessões, inclusive MCP. Sem configuração
+válida o acesso financeiro permanece bloqueado fora do modo demo.
+
+Com `DEMO_MODE=true` (também aceita `1`, `yes` ou `on`), a demo é pública:
+`/login` mostra “Explorar demo”, que leva diretamente à rota interna solicitada
+ou a `/dashboard`, sem Google, cookie de sessão ou cadastro de usuário autorizado.
+Páginas, APIs financeiras e ações usam os dados simulados; Firebase e banco real
+não são necessários. O aviso permanece visível dentro do app. As alterações são
+temporárias e compartilhadas pelos visitantes da mesma instância; não insira dados
+pessoais. Desative `DEMO_MODE` para voltar a exigir autenticação.
+
+### Diagnóstico do login
+
+Execute `npm run auth:check` (ou `npm run auth:check -- --development` para
+usar `.env.development`). O comando verifica a configuração local, o formato da
+chave privada e a disponibilidade do Authentication para a API key, sem imprimir
+credenciais. Ele não substitui o teste real de login.
+
+Se aparecer `CONFIGURATION_NOT_FOUND`:
+
+1. Abra o mesmo projeto da API key em https://console.firebase.google.com/.
+2. Acesse **Authentication > Começar** para inicializar o serviço.
+3. Em **Sign-in method**, habilite **Google**, escolha o e-mail de suporte e salve.
+4. Em **Settings > Authorized domains**, adicione `127.0.0.1`, `localhost` e o
+   domínio de produção (sem protocolo ou porta).
+5. Confira se as credenciais Web e Admin pertencem a esse projeto. Reinicie
+   `npm run dev` após alterar o `.env`; no Docker, reconstrua a imagem.
+
+Os launchers leem `.env*` com a mesma precedência do Next em produção e usam
+`APP_URL` como origem canônica. No Docker, ajuste também `APP_PORT` para a porta
+externa de `APP_URL` (padrão 3007). Em desenvolvimento, acesse
+`http://127.0.0.1:3000` com `APP_URL` configurada para essa origem.
+
+Em desenvolvimento, `localhost`, `127.0.0.1` e `[::1]` são aceitos na mesma porta
+e protocolo de `APP_URL`. Em produção, a origem canônica continua obrigatória.
+O endpoint de HMR do Next é liberado somente em desenvolvimento.

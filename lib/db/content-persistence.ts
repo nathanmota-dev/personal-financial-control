@@ -114,7 +114,9 @@ export function protectContentPersistence<T extends object>(database: T, insideT
         const result = [];
         for (const row of rows) {
           let statement = operation === "delete" ? db.delete(table) : db.update(table).set(withContentIndexes(table, { ...row, ...values }));
-          statement = statement.where(eq(columns.id, row.id));
+          const primaryKey = Object.entries(columns).find(([, column]) => column.primary);
+          if (!primaryKey) throw new Error("Content mutations require a primary key.");
+          statement = statement.where(eq(primaryKey[1], row[primaryKey[0]]));
           if (returning) statement = returning === true ? statement.returning() : statement.returning(returning);
           const changed = await statement;
           if (returning) result.push(...changed);

@@ -1,3 +1,4 @@
+import { requirePageSession } from "@/lib/auth/server";
 import { CreditCardView } from "@/components/finance/credit-card-view";
 import { isValidMonth } from "@/lib/finance-ui";
 import { listCategories } from "@/lib/server/categories";
@@ -9,6 +10,7 @@ export default async function CreditCardPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requirePageSession();
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
   const month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();

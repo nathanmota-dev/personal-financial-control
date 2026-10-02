@@ -5,7 +5,8 @@ import {
   Menu,
 } from "lucide-react";
 
-import { ThemeToggle } from "@/components/finance/theme-toggle";
+import { UserControls } from "@/components/auth/user-controls";
+import type { AppShellProps } from "@/lib/interfaces/app-shell";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { Button } from "@/components/ui/button";
@@ -21,10 +22,8 @@ import {
 export function AppShell({
   children,
   demoMode,
-}: {
-  children: React.ReactNode;
-  demoMode: boolean;
-}) {
+  user,
+}: AppShellProps) {
   return (
     <div className="min-h-screen bg-app-shell text-content-strong">
       <RecurringAutoGenerator demoMode={demoMode} />
@@ -43,24 +42,23 @@ export function AppShell({
             </div>
 
             <SidebarNavigation />
-            <div className="mt-4 flex shrink-0 items-center justify-between border-t border-border pt-4">
-              <span className="text-sm text-content">Aparência</span>
-              <ThemeToggle />
+            <div className="mt-4 shrink-0 border-t border-border pt-4">
+              <UserControls user={user} demoMode={demoMode} />
             </div>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col gap-6">
-          <header className="flex items-center justify-between rounded-[1.75rem] border border-border bg-surface/75 px-4 py-3 shadow-[0_18px_50px_rgb(var(--surface-rgb) / .35)] backdrop-blur md:px-6 lg:hidden">
-            <div>
-              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.32em] text-brand">
+          <header className="flex items-center justify-between gap-2 rounded-[1.75rem] border border-border bg-surface/75 px-4 py-3 shadow-[0_18px_50px_rgb(var(--surface-rgb) / .35)] backdrop-blur md:px-6 lg:hidden">
+            <div className="min-w-0">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[0.72rem] sm:tracking-[0.32em]">
                 Controle Financeiro
               </p>
-              <p className="text-sm text-content">Navegação principal</p>
+              <p className="hidden text-sm text-content sm:block">Navegação principal</p>
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <ThemeToggle />
+              <UserControls user={user} demoMode={demoMode} />
               <Drawer direction="left">
                 <DrawerTrigger asChild>
                   <Button variant="outline" size="icon-sm" aria-label="Abrir menu">
@@ -86,14 +84,14 @@ export function AppShell({
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-2 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-warning">
                     <FlaskConical className="size-3.5" />
-                    Demo Mode
+                    Demo pública
                   </span>
                   <p className="text-sm text-warning/80">
-                    Dados simulados para apresentação do produto.
+                    Sem login. Dados fictícios para explorar o produto.
                   </p>
                 </div>
                 <p className="text-xs text-warning/60 sm:text-right">
-                  Alterações são temporárias nesta instância.
+                  Alterações temporárias e compartilhadas. Não insira dados pessoais.
                 </p>
               </div>
             ) : null}

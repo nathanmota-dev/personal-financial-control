@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "auth:check": "tsx scripts/check-auth.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -27,9 +28,11 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.2",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^12.19.0",
+    "firebase-admin": "^14.5.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.14.0",
-    "next": "16.2.4",
+    "next": "16.3.8",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
@@ -37,6 +40,7 @@
     "react-dom": "19.2.4",
     "react-resizable-panels": "^4.10.0",
     "recharts": "^3.8.0",
+    "server-only": "^0.0.1",
     "shadcn": "^4.6.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
@@ -52,10 +56,21 @@
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.28.2",
     "eslint": "^9",
-    "eslint-config-next": "16.2.4",
+    "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
-    "tsx": "^4.21.0",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^4.1.5"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.5"
+    },
+    "gaxios@6": {
+      "uuid": "^11.1.1"
+    },
+    "@esbuild-kit/core-utils": {
+      "esbuild": "$esbuild"
+    }
   }
 }

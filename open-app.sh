@@ -5,21 +5,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "$SCRIPT_DIR"
 
-ENV_BROWSER_BIN="${BROWSER_BIN-}"
-if [[ -f "$SCRIPT_DIR/.env" ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source "$SCRIPT_DIR/.env"
-  set +a
+# Use the same dotenv precedence and parser as the production build.
+if [[ ! -d node_modules ]]; then
+  npm install
 fi
-
-if [[ -n "$ENV_BROWSER_BIN" ]]; then
-  BROWSER_BIN="$ENV_BROWSER_BIN"
-fi
+read_env() {
+  node -e 'require("@next/env").loadEnvConfig(process.cwd()); process.stdout.write(process.env[process.argv[1]] || "")' "$1"
+}
+APP_URL="$(read_env APP_URL)"
+BROWSER_BIN="$(read_env BROWSER_BIN)"
+BROWSER_PROFILE_DIR="$(read_env BROWSER_PROFILE_DIR)"
+BRAVE_BIN="$(read_env BRAVE_BIN)"
 
 APP_HOST="${HOST:-127.0.0.1}"
 APP_PORT="${PORT:-3007}"
-APP_URL="http://$APP_HOST:$APP_PORT"
+APP_URL="${APP_URL:-http://$APP_HOST:$APP_PORT}"
+APP_PORT="$(node -e 'const u = new URL(process.argv[1]); process.stdout.write(u.port || (u.protocol === "https:" ? "443" : "80"))' "$APP_URL")"
 STATE_DIR="$SCRIPT_DIR/.local/runtime"
 LOCK_FILE="$STATE_DIR/open-app.lock"
 SESSION_FILE="$STATE_DIR/app.session"
@@ -95,7 +96,7 @@ current_session_id() {
 }
 
 is_http_ready() {
-  curl --silent --show-error --fail --max-time 2 "$APP_URL" >/dev/null 2>&1
+  curl --silent --show-error --fail --location --max-time 2 "${APP_URL%/}/login" >/dev/null 2>&1
 }
 
 clear_runtime_state() {
