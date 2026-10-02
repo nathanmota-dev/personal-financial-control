@@ -96,3 +96,7 @@ export type RecurringMonthPickerProps = {
   onMonthChange: (month: string | undefined) => void;
   className?: string;
 };
+
+export type RecurringCardProps = Pick<RecurringViewProps, "accounts" | "categories" | "month"> & {
+  template: RecurringTemplateRow;
+};

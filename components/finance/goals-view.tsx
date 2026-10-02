@@ -357,7 +357,7 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
           />
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.16fr)_minmax(360px,0.84fr)]">
+        <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1fr)_340px]">
           <Tabs defaultValue="active" className="min-w-0">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -378,7 +378,7 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
 
             <TabsContent value="active" className="mt-4">
               {dashboard.goals.length ? (
-                <div className="grid gap-4 2xl:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {dashboard.goals.map((goal) => (
                     <GoalCardItem
                       key={goal.id}
@@ -408,7 +408,7 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
 
             <TabsContent value="archived" className="mt-4">
               {dashboard.archivedGoals.length ? (
-                <div className="grid gap-4 2xl:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   {dashboard.archivedGoals.map((goal) => (
                     <GoalArchiveCard key={goal.id} goal={goal} />
                   ))}
@@ -422,7 +422,7 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
             </TabsContent>
           </Tabs>
 
-          <div className="grid gap-6">
+          <div className="grid min-w-0 gap-6 md:grid-cols-2 2xl:grid-cols-1">
             <AllocationBreakdownCard dashboard={dashboard} />
             <MonthlyEvolutionCard dashboard={dashboard} />
           </div>
