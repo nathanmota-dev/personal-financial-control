@@ -10,7 +10,7 @@ vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => ({ value: "v
 import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
 import { apiGuard, verifySession, requirePageSession, requireActionSession } from "@/lib/auth/server";
-import { safeDestination, isAllowedOrigin } from "@/lib/auth/config";
+import { authConfig, safeDestination, isAllowedOrigin } from "@/lib/auth/config";
 import { POST, DELETE } from "@/app/api/session/route";
 import { POST as revoke } from "@/app/api/session/revoke/route";
 const claims = { uid: "owner", email: "owner@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" }, auth_time: Math.floor(Date.now() / 1000) };
@@ -20,12 +20,34 @@ function request(method = "POST", origin = "http://127.0.0.1:3007", cookie = "va
 beforeEach(() => {
   vi.unstubAllEnvs(); vi.clearAllMocks();
   vi.stubEnv("DEMO_MODE", "false");
-  for (const [key, value] of Object.entries({ APP_URL: "http://127.0.0.1:3007", FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "public-key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test-app", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
+  for (const [key, value] of Object.entries({ APP_URL: "http://127.0.0.1:3007", APP_URL_DEVELOPMENT: "http://localhost:3000", FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "public-key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test-app", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
   sdk.verifySessionCookie.mockResolvedValue(claims); sdk.verifyIdToken.mockResolvedValue(claims); sdk.createSessionCookie.mockResolvedValue("persistent-cookie"); sdk.revokeRefreshTokens.mockResolvedValue(undefined);
 });
 describe("Firebase access boundary", () => {
+  it("selects separate origins and rejects cross-environment session requests", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    expect(authConfig().origin).toBe("http://localhost:3000");
+    expect((await POST(request("POST", "http://localhost:3000"))).status).toBe(200);
+    expect((await POST(request())).status).toBe(403);
+    vi.stubEnv("NODE_ENV", "production");
+    expect(authConfig().origin).toBe("http://127.0.0.1:3007");
+    expect((await POST(request())).status).toBe(200);
+    expect((await POST(request("POST", "http://localhost:3000"))).status).toBe(403);
+  });
+  it("fails closed when the selected environment URL is missing or invalid", () => {
+    for (const environment of ["development", "production"]) {
+      vi.stubEnv("NODE_ENV", environment);
+      const variable = environment === "development" ? "APP_URL_DEVELOPMENT" : "APP_URL";
+      for (const value of ["", "invalid", "http://remote.example", "https://finance.example/path"]) {
+        vi.stubEnv(variable, value);
+        expect(() => authConfig()).toThrow();
+      }
+    }
+  });
+
   it("accepts local development aliases without redirects and permits HMR only in development", async () => {
     vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("APP_URL_DEVELOPMENT", "http://127.0.0.1:3007");
     expect(isAllowedOrigin("http://localhost:3007", "http://127.0.0.1:3007")).toBe(true);
     expect(isAllowedOrigin("http://localhost:3000", "http://127.0.0.1:3007")).toBe(false);
     expect(isAllowedOrigin("https://evil.test", "http://127.0.0.1:3007")).toBe(false);

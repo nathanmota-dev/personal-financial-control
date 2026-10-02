@@ -8,7 +8,7 @@ despesas e compras de cartão sem acessar diretamente as tabelas do banco.
 
 Faça login no app com a conta Google autorizada. O MCP aceita somente hosts
 loopback e exige o mesmo cookie Firebase do navegador, além do cabeçalho Origin
-igual a APP_URL. Copie o cookie `session` nas ferramentas de desenvolvimento do
+igual a APP_URL em produção ou APP_URL_DEVELOPMENT em desenvolvimento. Copie o cookie `session` nas ferramentas de desenvolvimento do
 navegador após o login e configure seu cliente HTTP MCP com:
 
 ```http
@@ -17,7 +17,7 @@ Origin: http://127.0.0.1:3007
 Content-Type: application/json
 ```
 
-Use a origem e porta de APP_URL também na URL `/api/mcp`. O cookie é secreto:
+Use a origem e porta da variável do ambiente também na URL `/api/mcp`. O cookie é secreto:
 não o inclua em arquivos versionados. Atualize-o após novo login quando expirar
 (em 14 dias). Sair de todos os dispositivos revoga também o acesso MCP.
 A autenticação por bearer token foi removida.

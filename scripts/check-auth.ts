@@ -2,15 +2,17 @@ import { loadEnvConfig } from "@next/env";
 import { createPrivateKey } from "node:crypto";
 import { authConfig } from "../lib/auth/config";
 
-loadEnvConfig(process.cwd(), process.argv.includes("--development"));
+const development = process.argv.includes("--development");
+const urlVariable = development ? "APP_URL_DEVELOPMENT" : "APP_URL";
+loadEnvConfig(process.cwd(), development);
 
 async function main() {
   let config;
   try {
-    config = authConfig();
+    config = authConfig(development ? "development" : "production");
     createPrivateKey(process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"));
   } catch {
-    throw new Error("Configuração local inválida. Confira APP_URL, as variáveis Firebase, os IDs de projeto e o formato da chave privada.");
+    throw new Error(`Configuração local inválida. Confira ${urlVariable}, as variáveis Firebase, os IDs de projeto e o formato da chave privada.`);
   }
   console.log("Configuração local e formato da chave privada válidos.");
   const response = await fetch(`https://identitytoolkit.googleapis.com/v1/projects?key=${encodeURIComponent(process.env.NEXT_PUBLIC_FIREBASE_API_KEY!)}`, { signal: AbortSignal.timeout(15000) });
@@ -23,9 +25,9 @@ async function main() {
   }
   const hostname = new URL(config.origin).hostname;
   if (!body.authorizedDomains?.includes(hostname)) {
-    throw new Error("O domínio de APP_URL não está em Authentication > Settings > Authorized domains.");
+    throw new Error(`O domínio de ${urlVariable} não está em Authentication > Settings > Authorized domains.`);
   }
-  console.log("Firebase Authentication disponível e domínio de APP_URL autorizado. Valide o provedor Google entrando no navegador; este diagnóstico não autentica um usuário nem valida as permissões da conta de serviço.");
+  console.log(`Firebase Authentication disponível e domínio de ${urlVariable} autorizado. Valide o provedor Google entrando no navegador; este diagnóstico não autentica um usuário nem valida as permissões da conta de serviço.`);
 }
 
 main().catch(error => {

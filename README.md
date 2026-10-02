@@ -116,7 +116,7 @@ Mantenha a mesma `DATA_ENCRYPTION_KEY` enquanto houver dados criptografados; tro
 
 O endpoint `POST /api/mcp` expõe ferramentas para consultar referências e administrar
 receitas, despesas e compras de cartão. Ele aceita apenas conexões loopback,
-exige o cookie Firebase e Origin igual a APP_URL. Faça login e configure os
+exige o cookie Firebase e Origin igual à URL do ambiente. Faça login e configure os
 cabeçalhos conforme [a documentação MCP](docs/mcp.md#configuração-rápida).
 
 As ferramentas esperam datas `YYYY-MM-DD`, meses `YYYY-MM`, valores inteiros em
@@ -149,8 +149,16 @@ Preencha as variáveis Firebase em `.env` conforme `.example.env`. Habilite o
 Google no Firebase Authentication e registre os domínios autorizados. Os IDs de
 projeto público e Admin devem coincidir; somente e-mails verificados cadastrados na tabela `authorized_users`
 podem entrar. A autorização é consultada no banco a cada requisição fora do modo demo. Aplique `npm run db:migrate` para criar a tabela; ela começa vazia
-e não há cadastro público. APP_URL é a origem canônica (HTTP somente em loopback, HTTPS remoto).
-Para `npm run dev`, use `http://127.0.0.1:3000`. Docker recebe as variáveis públicas
+e não há cadastro público. A origem canônica depende do ambiente (HTTP somente em loopback, HTTPS remoto):
+
+```env
+APP_URL="http://127.0.0.1:3007"
+APP_URL_DEVELOPMENT="http://localhost:3000"
+```
+
+`npm run dev` usa `APP_URL_DEVELOPMENT`; o build de produção, Docker e launcher Linux usam `APP_URL`.
+Configure as duas variáveis: não há fallback entre ambientes. Autorize os dois hosts no Firebase.
+Para `npm run dev`, use `http://localhost:3000`. Docker recebe as variáveis públicas
 no build; refaça a imagem quando mudarem. Credenciais Admin são usadas apenas no
 runtime. Nunca versione a chave privada.
 
@@ -170,7 +178,7 @@ pessoais. Desative `DEMO_MODE` para voltar a exigir autenticação.
 ### Diagnóstico do login
 
 Execute `npm run auth:check` (ou `npm run auth:check -- --development` para
-usar `.env.development`). O comando verifica a configuração local, o formato da
+usar `APP_URL_DEVELOPMENT` e carregar também `.env.development`). O comando verifica a configuração local, o formato da
 chave privada e a disponibilidade do Authentication para a API key, sem imprimir
 credenciais. Ele não substitui o teste real de login.
 
@@ -187,8 +195,8 @@ Se aparecer `CONFIGURATION_NOT_FOUND`:
 Os launchers leem `.env*` com a mesma precedência do Next em produção e usam
 `APP_URL` como origem canônica. No Docker, ajuste também `APP_PORT` para a porta
 externa de `APP_URL` (padrão 3007). Em desenvolvimento, acesse
-`http://127.0.0.1:3000` com `APP_URL` configurada para essa origem.
+`http://localhost:3000` com `APP_URL_DEVELOPMENT` configurada para essa origem.
 
 Em desenvolvimento, `localhost`, `127.0.0.1` e `[::1]` são aceitos na mesma porta
-e protocolo de `APP_URL`. Em produção, a origem canônica continua obrigatória.
+e protocolo de `APP_URL_DEVELOPMENT`. Em produção, a origem canônica continua obrigatória.
 O endpoint de HMR do Next é liberado somente em desenvolvimento.

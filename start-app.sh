@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# The Linux launcher always uses the production URL and dotenv files.
+export NODE_ENV=production
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "$SCRIPT_DIR"
 
