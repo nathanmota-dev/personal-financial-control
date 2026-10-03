@@ -11,17 +11,17 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
 
   return (
     <aside className="space-y-5">
-      <section className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-5 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-6">
+      <section className="rounded-[20px] border border-border bg-card p-5 shadow-none sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content">Planejamento</p>
-            <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Próximas faturas</h2>
+            <p className="text-[0.68rem] font-semibold text-content">Planejamento</p>
+            <h2 className="mt-1 text-xl font-semibold text-content-strong">Próximas faturas</h2>
           </div>
           <CalendarRange className="size-5 text-brand" />
         </div>
         <div className="mt-5 space-y-2">
           {upcomingPoints.map((point) => (
-            <div key={point.month} className="flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-surface/25 px-3.5 py-3">
+            <div key={point.month} className="flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-muted/30 px-3.5 py-3">
               <div>
                 <p className="text-sm font-medium text-content-strong">{formatCreditCardMonth(point.month)}</p>
                 <p className="mt-0.5 text-xs text-content-subtle">{point.entryCount ? `${point.entryCount} parcela${point.entryCount === 1 ? "" : "s"}` : "Sem lançamentos previstos"}</p>
@@ -32,11 +32,11 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-5 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-6">
+      <section className="rounded-[20px] border border-border bg-card p-5 shadow-none sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-content">Compromissos</p>
-            <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Parcelas em aberto</h2>
+            <p className="text-[0.68rem] font-semibold text-content">Compromissos</p>
+            <h2 className="mt-1 text-xl font-semibold text-content-strong">Parcelas em aberto</h2>
           </div>
           <Layers3 className="size-5 text-brand" />
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CreditCardPurchaseDialogProps } from "@/lib/interfaces/finance-fields";
 import { useRouter } from "next/navigation";
 import { useId, useState, useTransition } from "react";
 import { Pencil, Plus } from "lucide-react";
@@ -10,6 +10,7 @@ import {
   createCreditCardChargeAction,
   updateCreditCardChargeAction,
 } from "@/app/actions/finance";
+import { FinanceField } from "@/components/finance/finance-field";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,13 +22,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { DatePickerField } from "@/components/ui/date-picker-field";
+import { FormSelect } from "@/components/finance/form-select";
+import { SelectItem } from "@/components/ui/select";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type {
-  CreditCardCategoryOption,
-  CreditCardChargeForEdit,
-} from "@/lib/interfaces/credit-card";
+
 import { extractErrorMessage, moneyInputToCents } from "@/lib/finance-ui";
 
 function centsToInputValue(value: number) {
@@ -41,14 +42,7 @@ export function CreditCardPurchaseDialog({
   disabled,
   charge,
   trigger,
-}: {
-  accountId: string;
-  categories: CreditCardCategoryOption[];
-  month: string;
-  disabled?: boolean;
-  charge?: CreditCardChargeForEdit;
-  trigger?: ReactNode;
-}) {
+}: CreditCardPurchaseDialogProps) {
   const defaultDate = charge?.purchaseDate ?? `${month}-01`;
   const purchaseDateFieldId = useId();
   const router = useRouter();
@@ -97,38 +91,52 @@ export function CreditCardPurchaseDialog({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button disabled={disabled} variant={isEditing ? "outline" : "default"} size={isEditing ? "sm" : "default"}>
-            {isEditing ? <Pencil className="size-4" /> : <Plus className="size-4" />}
+          <Button
+            disabled={disabled}
+            variant={isEditing ? "outline" : "default"}
+            size={isEditing ? "sm" : "default"}
+          >
+            {isEditing ? (
+              <Pencil className="size-4" />
+            ) : (
+              <Plus className="size-4" />
+            )}
             {isEditing ? "Editar" : "Nova compra"}
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-2xl border-input bg-surface">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Editar compra no cartão" : "Nova compra no cartão"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? "Editar compra no cartão" : "Nova compra no cartão"}
+          </DialogTitle>
           <DialogDescription>
-            O fechamento do cartão define automaticamente em qual fatura cada parcela entra.
+            O fechamento do cartão define automaticamente em qual fatura cada
+            parcela entra.
           </DialogDescription>
         </DialogHeader>
         {categories.length ? (
           <form
-            action={(formData) => startTransition(() => void onSubmit(formData))}
+            action={(formData) =>
+              startTransition(() => void onSubmit(formData))
+            }
             className="grid gap-4"
           >
             <div className="grid gap-4 md:grid-cols-2">
-              <select
-                name="categoryId"
-                defaultValue={defaultCategoryId}
-                className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <FinanceField label="Categoria">
+                <FormSelect name="categoryId" defaultValue={defaultCategoryId}>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </FormSelect>
+              </FinanceField>
               <div className="grid gap-2">
-                <Label htmlFor={purchaseDateFieldId} className="text-xs uppercase tracking-[0.16em] text-content">
+                <Label
+                  htmlFor={purchaseDateFieldId}
+                  className="text-xs font-medium text-content"
+                >
                   Data da compra
                 </Label>
                 <DatePickerField
@@ -141,36 +149,58 @@ export function CreditCardPurchaseDialog({
                   }}
                 />
               </div>
-              <Input
-                name="amount"
-                placeholder="0,00"
-                defaultValue={charge ? centsToInputValue(charge.totalAmountCents) : ""}
-              />
-              <Input
-                name="installmentCount"
-                type="number"
-                min="1"
-                max="60"
-                defaultValue={String(charge?.installmentCount ?? 1)}
-                placeholder="Quantidade de parcelas"
-              />
-              <Input
-                name="description"
+              <FinanceField label="Valor total (R$)">
+                <MoneyInput
+                  name="amount"
+                  placeholder="0,00"
+                  defaultValue={
+                    charge ? centsToInputValue(charge.totalAmountCents) : ""
+                  }
+                />
+              </FinanceField>
+              <FinanceField label="Parcelas">
+                <Input
+                  name="installmentCount"
+                  type="number"
+                  min="1"
+                  max="60"
+                  defaultValue={String(charge?.installmentCount ?? 1)}
+                  placeholder="Quantidade de parcelas"
+                />
+              </FinanceField>
+              <FinanceField
+                label="Descrição da compra"
                 className="md:col-span-2"
-                placeholder="Descrição da compra"
-                defaultValue={charge?.description ?? ""}
-              />
+              >
+                <Input
+                  name="description"
+
+                  placeholder="Descrição da compra"
+                  defaultValue={charge?.description ?? ""}
+                />
+              </FinanceField>
             </div>
-            <Textarea name="notes" defaultValue={charge?.notes ?? ""} placeholder="Observações" />
+            <FinanceField label="Observações">
+              <Textarea
+                name="notes"
+                defaultValue={charge?.notes ?? ""}
+                placeholder="Observações"
+              />
+            </FinanceField>
             <DialogFooter>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Salvando..." : isEditing ? "Salvar alterações" : "Criar compra"}
+                {isPending
+                  ? "Salvando..."
+                  : isEditing
+                    ? "Salvar alterações"
+                    : "Criar compra"}
               </Button>
             </DialogFooter>
           </form>
         ) : (
           <p className="text-sm leading-6 text-content">
-            Crie uma categoria de gasto fixo ou variável antes de lançar compras no cartão.
+            Crie uma categoria de gasto fixo ou variável antes de lançar compras
+            no cartão.
           </p>
         )}
       </DialogContent>

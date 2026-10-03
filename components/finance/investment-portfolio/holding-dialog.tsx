@@ -1,4 +1,5 @@
 "use client";
+import { MoneyInput } from "@/components/finance/money-input";
 
 import {
   Dialog,
@@ -33,7 +34,7 @@ export function HoldingDialog({
 }: HoldingDialogProps) {
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(760px,calc(100vh-2rem))] overflow-y-auto border-border bg-surface text-content-strong sm:max-w-2xl">
+      <DialogContent className="max-h-[min(760px,calc(100vh-2rem))] overflow-y-auto border-border bg-card text-content-strong sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{state?.mode === "edit" ? "Editar ativo" : "Cadastrar ativo"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
@@ -93,7 +94,7 @@ export function HoldingDialog({
                   }))
                 }
               >
-                <SelectTrigger id="holding-asset-class" className="w-full border-input bg-surface-raised/60">
+                <SelectTrigger id="holding-asset-class" className="w-full border-input bg-card">
                   <SelectValue placeholder="Selecione a classe" />
                 </SelectTrigger>
                 <SelectContent className="border-border bg-surface text-content-strong">
@@ -115,7 +116,7 @@ export function HoldingDialog({
                   }))
                 }
               >
-                <SelectTrigger id="holding-instrument-type" className="w-full border-input bg-surface-raised/60">
+                <SelectTrigger id="holding-instrument-type" className="w-full border-input bg-card">
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent className="border-border bg-surface text-content-strong">
@@ -131,7 +132,7 @@ export function HoldingDialog({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <PortfolioField label="Valor atual (R$)" htmlFor="holding-current-value">
-              <Input
+              <MoneyInput
                 id="holding-current-value"
                 value={form.currentValue}
                 onChange={(event) =>

@@ -37,17 +37,17 @@ export function InvestmentContributionChart({
   const netMovementCents = history.totalContributionCents - history.totalWithdrawalCents;
 
   return (
-    <Card className="h-full overflow-hidden rounded-[1.75rem] border-border bg-surface/75 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .28)]">
+    <Card className="h-full overflow-hidden rounded-[20px] border-border bg-card shadow-none">
       <CardHeader className="border-b border-border/80 pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-brand">
               <WalletCards className="size-4" />
-              <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
+              <span className="text-[0.68rem] font-semibold">
                 Movimentações reais
               </span>
             </div>
-            <h2 className="font-heading text-xl font-semibold text-content-strong">
+            <h2 className="text-xl font-semibold text-content-strong">
               Aportes e resgates
             </h2>
             <p className="mt-1 text-sm leading-6 text-content">
@@ -97,7 +97,7 @@ export function InvestmentContributionChart({
                   <stop offset="100%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
               <XAxis
                 dataKey="month"
                 axisLine={false}
@@ -152,11 +152,11 @@ export function InvestmentContributionChart({
             </ComposedChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-input bg-surface-raised/35 px-6 text-center">
+          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[20px] border border-dashed border-input bg-card px-6 text-center">
             <div className="rounded-full border border-brand/15 bg-brand/10 p-3 text-brand">
               <ArrowDownToLine className="size-6" />
             </div>
-            <p className="mt-4 font-heading text-lg font-semibold text-content-strong">
+            <p className="mt-4 text-lg font-semibold text-content-strong">
               Nenhuma movimentação realizada
             </p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-content">

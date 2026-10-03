@@ -42,7 +42,7 @@ export function HoldingsTable({
         <div>
           <div className="mb-2 flex items-center gap-2 text-brand">
             <Coins className="size-4" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
+            <span className="text-[0.68rem] font-semibold">
               Registro manual
             </span>
           </div>
@@ -75,7 +75,7 @@ export function HoldingsTable({
             <TableBody>
               {dashboard.holdings.length ? (
                 dashboard.holdings.map((holding) => (
-                  <TableRow key={holding.id} className="border-border/70 hover:bg-surface-raised/45">
+                  <TableRow key={holding.id} className="border-border/70 hover:bg-card">
                     <TableCell className="max-w-[230px] pl-6">
                       <div className="min-w-0">
                         <p className="truncate font-medium text-content-strong">{holding.name}</p>
@@ -140,7 +140,7 @@ export function HoldingsTable({
                 <TableRow className="hover:bg-transparent">
                   <TableCell colSpan={7} className="px-6 py-12 text-center">
                     <Coins className="mx-auto size-7 text-content-subtle" />
-                    <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
+                    <p className="mt-3 text-lg font-semibold text-content-strong">
                       Nenhuma posição cadastrada
                     </p>
                     <p className="mt-1 text-sm text-content">
@@ -156,10 +156,10 @@ export function HoldingsTable({
         <div className="space-y-3 px-4 pb-4 md:hidden">
           {dashboard.holdings.length ? (
             dashboard.holdings.map((holding) => (
-              <article key={holding.id} className="rounded-2xl border border-border bg-surface-raised/45 p-4">
+              <article key={holding.id} className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate font-heading text-lg font-semibold text-content-strong">
+                    <p className="truncate text-lg font-semibold text-content-strong">
                       {holding.name}
                     </p>
                     <p className="mt-1 truncate text-xs text-content">
@@ -220,7 +220,7 @@ export function HoldingsTable({
           ) : (
             <div className="rounded-2xl border border-dashed border-input px-5 py-10 text-center">
               <Coins className="mx-auto size-7 text-content-subtle" />
-              <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
+              <p className="mt-3 text-lg font-semibold text-content-strong">
                 Nenhuma posição cadastrada
               </p>
               <Button type="button" variant="outline" className="mt-4" onClick={onCreate}>

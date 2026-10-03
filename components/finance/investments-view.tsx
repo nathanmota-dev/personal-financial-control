@@ -102,7 +102,7 @@ export function InvestmentsView({
     <div className="space-y-6">
       <PageHeader
         eyebrow="Investimentos"
-        title="Carteira consolidada e simulador"
+        title="Reserva de emergência"
         description="Acompanhe o saldo estimado, confira o valor real quando necessário e projete o crescimento com base nos lançamentos da sua vida financeira."
         actions={
           <div className="flex flex-wrap gap-2">
@@ -182,12 +182,12 @@ export function InvestmentsView({
               cards.map((card) => (
                 <div
                   key={card.months}
-                  className="rounded-[1.5rem] border border-border bg-surface-raised/70 p-4"
+                  className="rounded-[20px] border border-border bg-card p-4"
                 >
                   <p className="text-sm text-content">
                     {card.months} {card.months === 1 ? "mês" : "meses"}
                   </p>
-                  <p className="mt-2 font-heading text-3xl font-semibold tracking-tight text-brand">
+                  <p className="mt-2 text-3xl font-semibold tracking-tight text-brand">
                     {formatCurrency(card.value ?? 0)}
                   </p>
                 </div>
@@ -215,7 +215,7 @@ export function InvestmentsView({
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full justify-between border-input bg-surface/70 text-content-strong hover:bg-surface-raised"
+                    className="w-full justify-between border-input bg-card text-content-strong hover:bg-surface-raised"
                     disabled={!projection}
                   >
                     <span>
@@ -228,7 +228,7 @@ export function InvestmentsView({
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
-                  className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
+                  className="w-auto overflow-hidden rounded-[20px] border border-border bg-card p-0 text-content-strong shadow-none"
                 >
                   <MonthPicker
                     selectedMonth={selectedSimulationDate}
@@ -250,11 +250,11 @@ export function InvestmentsView({
 
             {projection ? (
               simulatedMonths && simulatedValue !== null ? (
-                <div className="rounded-[1.5rem] border border-brand/20 bg-surface/55 p-5">
-                  <p className="text-sm uppercase tracking-[0.24em] text-brand/80">
+                <div className="rounded-[20px] border border-brand/20 bg-muted/30 p-5">
+                  <p className="text-sm font-medium text-brand/80">
                     Valor projetado
                   </p>
-                  <p className="mt-3 font-heading text-3xl font-semibold tracking-tight text-brand">
+                  <p className="mt-3 text-3xl font-semibold tracking-tight text-brand">
                     {formatCurrency(simulatedValue)}
                   </p>
                   <p className="mt-2 text-sm text-content">

@@ -49,7 +49,7 @@ export function CreditCardTimelineChart({ points }: CreditCardTimelineChartProps
       config={{ amount: { label: "Fatura", color: "var(--chart-brand)" } }}
     >
       <LineChart data={data} margin={{ top: 22, right: 14, bottom: 4, left: 2 }}>
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
         <XAxis
           dataKey="month"
           axisLine={false}

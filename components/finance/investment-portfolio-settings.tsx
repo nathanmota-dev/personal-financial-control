@@ -151,7 +151,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
 
   if (!projection) {
     return (
-      <Card className="h-full rounded-[1.75rem] border-border bg-surface/75">
+      <Card className="h-full rounded-[20px] border-border bg-card">
         <CardHeader>
           <CardTitle>Configurar carteira</CardTitle>
           <p className="text-sm leading-6 text-content">
@@ -160,7 +160,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
           </p>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <InvestmentField
+          <InvestmentField monetary
             id="investment-initial-balance"
             label="Saldo real no checkpoint"
             value={initialBalance}
@@ -195,7 +195,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
 
   return (
     <>
-      <Card className="h-full rounded-[1.75rem] border-border bg-surface/75">
+      <Card className="h-full rounded-[20px] border-border bg-card">
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -211,15 +211,15 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
           </div>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <div className="grid gap-3 rounded-2xl border border-border bg-surface-raised/55 p-4 sm:grid-cols-2">
+          <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-content">Checkpoint</p>
+              <p className="text-xs font-medium text-content">Checkpoint</p>
               <p className="mt-1 font-semibold text-content-strong">
                 {formatCurrency(projection.checkpointBalanceCents)}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-content">Data</p>
+              <p className="text-xs font-medium text-content">Data</p>
               <p className="mt-1 font-semibold text-content-strong">
                 {formatDateLabel(projection.checkpointDate)}
               </p>
@@ -261,7 +261,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
       </Card>
 
       <Dialog open={isReconcileOpen} onOpenChange={setIsReconcileOpen}>
-        <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
+        <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Conferir saldo real</DialogTitle>
             <DialogDescription className="leading-6 text-content">
@@ -270,7 +270,7 @@ export function InvestmentPortfolioSettings({ projection }: InvestmentPortfolioS
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
-            <InvestmentField
+            <InvestmentField monetary
               id="investment-reconciled-balance"
               label="Saldo real"
               value={reconciledBalance}

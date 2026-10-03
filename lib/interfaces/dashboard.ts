@@ -31,3 +31,21 @@ export type CategorySpendingChartsProps = {
   categorySpending: CategorySpendingItem[];
   className?: string;
 };
+
+export type DashboardActionsProps = { month: string };
+export type DashboardData = {
+  dashboard: Awaited<
+    ReturnType<typeof import("@/lib/server/dashboard").getMonthlyDashboard>
+  >;
+  evolution: Awaited<
+    ReturnType<typeof import("@/lib/server/dashboard").getMonthlyEvolution>
+  >;
+  categorySpending: CategorySpendingItem[];
+  expenses: Awaited<
+    ReturnType<typeof import("@/lib/server/dashboard").getMonthlyExpenseFeed>
+  >;
+};
+export type DashboardDetailsProps = Pick<
+  DashboardData,
+  "dashboard" | "expenses"
+>;

@@ -20,7 +20,7 @@ export function ArchiveDialog({
 }: ArchiveDialogProps) {
   return (
     <Dialog open={Boolean(goal)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-md">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Arquivar meta</DialogTitle>
           <DialogDescription className="text-content">

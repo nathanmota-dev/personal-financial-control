@@ -60,14 +60,14 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
           description="A visão detalhada precisa de um único cartão ativo para organizar o ciclo e as parcelas."
           actions={<CreditCardMonthPicker month={overview.month} />}
         />
-        <div className="rounded-[2rem] border border-warning/20 bg-warning/[0.06] p-6">
-          <p className="font-heading text-xl font-semibold text-content-strong">Mais de um cartão ativo</p>
+        <div className="rounded-[20px] border border-warning/20 bg-warning/[0.06] p-6">
+          <p className="text-xl font-semibold text-content-strong">Mais de um cartão ativo</p>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-content">
             Selecione ou arquive um cartão nas configurações para liberar o acompanhamento detalhado da fatura.
           </p>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {overview.accounts.map((account) => (
-              <div key={account.id} className="rounded-2xl border border-border bg-surface/35 p-4">
+              <div key={account.id} className="rounded-2xl border border-border bg-muted/30 p-4">
                 <p className="font-medium text-content-strong">{account.name}</p>
                 <p className="mt-2 text-sm text-content">
                   Fecha dia {account.creditClosingDay ?? "—"} · vence dia {account.creditDueDay}
@@ -102,7 +102,6 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
         eyebrow="Cartão de crédito"
         title={overview.account.name}
         description="Fatura, evolução mensal e parcelas futuras em um só lugar."
-        className="border-border/90 bg-surface-raised/90 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .32)]"
         actions={
           <CreditCardPageActions
             month={overview.month}

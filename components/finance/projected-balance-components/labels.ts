@@ -78,7 +78,7 @@ export function formatAlertDetail(alert: ProjectionSummaryAlert) {
 
 export function getStatusTone(status: ProjectionStatus) {
   if (status === "safe") {
-    return "bg-warning/12 text-warning ring-warning/25";
+    return "bg-success-soft text-success ring-success/25";
   }
 
   if (status === "warning") {

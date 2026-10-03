@@ -38,7 +38,7 @@ export function RecurringCalendar({
       >
         <RecurringCalendarNav />
         {!events.length ? (
-          <div className="border-b border-border bg-surface/50 px-5 py-3 text-sm text-content">
+          <div className="border-b border-border bg-muted/30 px-5 py-3 text-sm text-content">
             Nenhuma recorrência ativa está prevista para este mês.
           </div>
         ) : null}

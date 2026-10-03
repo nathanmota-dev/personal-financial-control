@@ -1,5 +1,11 @@
-export interface LoginFormProps { destination: string; demoMode: boolean }
-export interface LogoutButtonProps { allDevices?: boolean; iconOnly?: boolean }
+export interface LoginFormProps {
+  destination: string;
+  demoMode: boolean;
+}
+export interface LogoutButtonProps {
+  allDevices?: boolean;
+  iconOnly?: boolean;
+}
 
 export interface SessionUser {
   name: string;
@@ -7,8 +13,11 @@ export interface SessionUser {
 }
 
 export interface UserControlsProps {
+  expanded?: boolean;
   demoMode: boolean;
   user: SessionUser;
 }
 
-export interface LoginPageProps { searchParams: Promise<{ next?: string }> }
+export interface LoginPageProps {
+  searchParams: Promise<{ next?: string }>;
+}

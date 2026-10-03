@@ -23,17 +23,17 @@ export function PurposeCard({
 
   return (
     <article
-      className="rounded-[1.35rem] border bg-surface-raised/45 p-4 transition-colors hover:bg-surface-raised/70"
+      className="rounded-xl border bg-card p-4 transition-colors hover:bg-card"
       style={{ borderColor: purpose.color + "55" }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span
-            className="mt-1.5 size-2.5 shrink-0 rounded-full shadow-[0_0_16px_currentColor]"
+            className="mt-1.5 size-2.5 shrink-0 rounded-full shadow-none"
             style={{ backgroundColor: purpose.color, color: purpose.color }}
           />
           <div className="min-w-0">
-            <h3 className="truncate font-heading text-lg font-semibold text-content-strong">
+            <h3 className="truncate text-lg font-semibold text-content-strong">
               {purpose.name}
             </h3>
             <p className="mt-0.5 text-xs text-content">
@@ -83,7 +83,7 @@ export function PurposeCard({
 
       <div className="mt-4 flex items-end justify-between gap-3">
         <div>
-          <p className="font-heading text-2xl font-semibold text-warning">
+          <p className="text-2xl font-semibold text-warning">
             {formatCurrency(purpose.allocatedCents)}
           </p>
           <p className="mt-1 text-xs text-content">{percentage}% do patrimônio de referência</p>

@@ -361,14 +361,14 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
           <Tabs defaultValue="active" className="min-w-0">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-heading text-xl font-semibold text-content-strong">
+                <h2 className="text-xl font-semibold text-content-strong">
                   Carteira por objetivo
                 </h2>
                 <p className="text-sm text-content">
                   {dashboard.summary.goalCount} metas ativas ou pausadas
                 </p>
               </div>
-              <TabsList className="border border-border bg-surface/70 text-content">
+              <TabsList className="border border-border bg-card text-content">
                 <TabsTrigger value="active">Atuais</TabsTrigger>
                 <TabsTrigger value="archived">
                   Arquivadas ({dashboard.summary.archivedGoalCount})

@@ -14,6 +14,7 @@ import {
   SetupCallout,
 } from "@/components/finance/setup-dialogs";
 import { Badge } from "@/components/ui/badge";
+import { StatusDotBadge } from "@/components/finance/status-dot-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -35,7 +36,6 @@ import {
   transactionStatusLabels,
   transactionTypeLabels,
 } from "@/lib/finance-ui";
-import { cn } from "@/lib/utils";
 
 export function TransactionsView({
   accounts,
@@ -72,8 +72,8 @@ export function TransactionsView({
     <div className="space-y-6">
       <PageHeader
         eyebrow="Lançamentos"
-        title={`Movimentações de ${formatMonthLabel(filters.month)}`}
-        description="Registre receitas e despesas mesmo quando ainda não souber a categoria. A categorização pode acontecer depois pelo filtro Sem categoria."
+        title="Lançamentos"
+        description={`Receitas, despesas e transferências de ${formatMonthLabel(filters.month)}.`}
         actions={
           <>
             <CategorySetupDialog />
@@ -99,7 +99,7 @@ export function TransactionsView({
         </TabsList>
 
         <TabsContent value="transactions">
-          <Card className="rounded-[1.75rem] border-border bg-surface/75">
+          <Card className="rounded-[20px] border-border bg-card">
             <CardHeader>
               <CardTitle>Lista principal</CardTitle>
             </CardHeader>
@@ -139,9 +139,9 @@ export function TransactionsView({
                             <TableCell>{transaction.category?.name ?? "Sem categoria"}</TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-2">
-                                <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>
+                                <StatusDotBadge tone={getTransactionTone(transaction.type)}>
                                   {transactionTypeLabels[transaction.type]}
-                                </Badge>
+                                </StatusDotBadge>
                                 {transaction.isGeneratedByFunding ? (
                                   <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
                                 ) : transaction.fundingSource === "investments" ? (
@@ -150,9 +150,9 @@ export function TransactionsView({
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge className={cn("ring-1", getStatusTone(transaction.status))}>
+                              <StatusDotBadge tone={getStatusTone(transaction.status)}>
                                 {transactionStatusLabels[transaction.status]}
-                              </Badge>
+                              </StatusDotBadge>
                             </TableCell>
                             <TableCell className="text-right font-semibold">{formatCurrency(transaction.amountCents)}</TableCell>
                             <TableCell className="text-right">
@@ -201,13 +201,13 @@ export function TransactionsView({
                         </div>
                         <p className="mt-2 text-xs text-content">{transaction.category?.name ?? "Sem categoria"}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
-                          <Badge className={cn("ring-1", getTransactionTone(transaction.type))}>{transactionTypeLabels[transaction.type]}</Badge>
+                          <StatusDotBadge tone={getTransactionTone(transaction.type)}>{transactionTypeLabels[transaction.type]}</StatusDotBadge>
                           {transaction.isGeneratedByFunding ? (
                             <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
                           ) : transaction.fundingSource === "investments" ? (
                             <Badge className="bg-brand/10 text-brand ring-1 ring-brand/20">Investimentos</Badge>
                           ) : null}
-                          <Badge className={cn("ring-1", getStatusTone(transaction.status))}>{transactionStatusLabels[transaction.status]}</Badge>
+                          <StatusDotBadge tone={getStatusTone(transaction.status)}>{transactionStatusLabels[transaction.status]}</StatusDotBadge>
                         </div>
                         {transaction.isGeneratedByFunding ? (
                           <p className="mt-4 text-xs text-content">Gerenciado pela despesa vinculada</p>
@@ -246,7 +246,7 @@ export function TransactionsView({
         </TabsContent>
 
         <TabsContent value="transfers">
-          <Card className="rounded-[1.75rem] border-border bg-surface/75">
+          <Card className="rounded-[20px] border-border bg-card">
             <CardHeader>
               <CardTitle>Transferências do mês</CardTitle>
             </CardHeader>

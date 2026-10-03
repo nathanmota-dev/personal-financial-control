@@ -18,14 +18,14 @@ function compactCurrency(cents: number) {
 export function CompoundInterestChart({ points }: CompoundInterestChartProps) {
   return (
     <ChartContainer
-      className="h-[360px] w-full rounded-2xl bg-surface/35 p-2 md:h-[430px]"
+      className="h-[360px] w-full rounded-xl bg-[var(--chart-surface)] p-2 md:h-[430px]"
       config={{
         balanceCents: { label: "Patrimônio", color: "var(--chart-brand)" },
-        investedCents: { label: "Total investido", color: "var(--chart-success)" },
+        investedCents: { label: "Total investido", color: "var(--chart-2)" },
       }}
     >
       <LineChart data={points} margin={{ top: 12, right: 12, left: 8, bottom: 4 }}>
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
         <XAxis
           dataKey="label"
           minTickGap={34}
@@ -44,7 +44,7 @@ export function CompoundInterestChart({ points }: CompoundInterestChartProps) {
               formatter={(value, name) => (
                 <>
                   <span className="text-muted-foreground">{String(name)}</span>
-                  <span className="font-mono font-medium">{formatCurrency(Number(value))}</span>
+                  <span className="tabular-nums font-medium">{formatCurrency(Number(value))}</span>
                 </>
               )}
             />

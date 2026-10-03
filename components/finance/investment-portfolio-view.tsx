@@ -374,7 +374,7 @@ export function InvestmentPortfolioView({ dashboard }: InvestmentPortfolioViewPr
     <div className="space-y-6">
       <PageHeader
         eyebrow="Investimentos / Carteira atual"
-        title="Seu patrimônio, em perspectiva"
+        title="Carteira atual"
         description="Classifique os ativos que já existem na carteira por finalidade, acompanhe o que ainda está livre e reconcilie tudo com o saldo global."
         actions={
           <div className="flex flex-wrap gap-2">

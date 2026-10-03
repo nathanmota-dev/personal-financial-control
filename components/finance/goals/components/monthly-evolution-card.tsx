@@ -34,7 +34,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
   }));
 
   return (
-    <Card className="rounded-[1.75rem] border-border bg-surface/75">
+    <Card className="rounded-[20px] border-border bg-card">
       <CardHeader>
         <CardTitle>Evolução mensal</CardTitle>
         <p className="text-sm text-content">Alocações, liberações e acumulado.</p>
@@ -49,7 +49,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
               data={data}
               margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
             >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
               <XAxis
                 dataKey="month"
                 tickFormatter={(value) => formatMonthLabel(String(value))}
@@ -101,7 +101,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
             </ComposedChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[280px] items-center justify-center rounded-[1.5rem] border border-dashed border-border bg-surface-raised/35 px-6 text-center text-sm text-content">
+          <div className="flex min-h-[280px] items-center justify-center rounded-[20px] border border-dashed border-border bg-card px-6 text-center text-sm text-content">
             Alocações e aportes aparecerão aqui ao longo dos meses.
           </div>
         )}

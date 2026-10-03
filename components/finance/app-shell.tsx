@@ -3,8 +3,13 @@
 import {
   FlaskConical,
   Menu,
+  ChartPie,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
+import { useState } from "react";
+import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { UserControls } from "@/components/auth/user-controls";
 import type { AppShellProps } from "@/lib/interfaces/app-shell";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
@@ -19,49 +24,77 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-export function AppShell({
-  children,
-  demoMode,
-  user,
-}: AppShellProps) {
+export function AppShell({ children, demoMode, user }: AppShellProps) {
+  const [collapsed, setCollapsed] = useState(false);
   return (
     <div className="min-h-screen bg-app-shell text-content-strong">
       <RecurringAutoGenerator demoMode={demoMode} />
-      <div className="mx-auto flex min-h-screen max-w-[1600px] gap-6 p-4 md:p-6">
-        <aside className="hidden w-72 shrink-0 lg:block">
-          <div className="sticky top-6 flex h-[calc(100dvh-3rem)] flex-col overflow-hidden rounded-[2rem] border border-brand/40 bg-sidebar-shell px-6 py-7 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .55)]">
-            <div className="shrink-0 space-y-3">
-              <p className="text-[0.72rem] font-semibold uppercase tracking-[0.32em] text-brand">
-                Controle Financeiro
-              </p>
-              <div>
-                <h2 className="font-heading text-2xl font-semibold tracking-tight">
-                  Controle diário sem depender da planilha
-                </h2>
-              </div>
+      <div className="flex min-h-screen">
+        <aside
+          className={
+            collapsed
+              ? "hidden lg:block w-[64px] shrink-0 bg-sidebar"
+              : "hidden w-[238px] shrink-0 bg-sidebar lg:block"
+          }
+        >
+          <div className="sticky top-0 flex h-dvh max-h-[1056px] flex-col">
+            <div className="flex h-[82px] shrink-0 items-start gap-[11px] pl-6 pr-[14px] pt-6">
+              {!collapsed && (
+                <>
+                  <span className="flex size-[30px] shrink-0 items-center justify-center rounded-[7px] bg-orange text-white">
+                    <ChartPie className="size-[18px]" />
+                  </span>
+                  <span className="pt-0.5 text-xl font-semibold tracking-tight">
+                    finance
+                  </span>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => setCollapsed(!collapsed)}
+                aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+                className={
+                  collapsed
+                    ? "-ml-2 flex size-[30px] items-center justify-center rounded-full bg-card"
+                    : "ml-auto flex size-[30px] shrink-0 items-center justify-center rounded-full bg-card"
+                }
+              >
+                {collapsed ? (
+                  <PanelLeftOpen className="size-4" />
+                ) : (
+                  <PanelLeftClose className="size-4" />
+                )}
+              </button>
             </div>
-
-            <SidebarNavigation />
-            <div className="mt-4 shrink-0 border-t border-border pt-4">
-              <UserControls user={user} demoMode={demoMode} />
-            </div>
+            {!collapsed && (
+              <>
+                <SidebarNavigation />
+                <SidebarFooter user={user} demoMode={demoMode} />
+              </>
+            )}
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-6">
-          <header className="flex items-center justify-between gap-2 rounded-[1.75rem] border border-border bg-surface/75 px-4 py-3 shadow-[0_18px_50px_rgb(var(--surface-rgb) / .35)] backdrop-blur md:px-6 lg:hidden">
+        <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8">
+          <header className="flex items-center justify-between gap-2 rounded-[20px] border border-border bg-card px-4 py-3 md:px-6 lg:hidden">
             <div className="min-w-0">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[0.72rem] sm:tracking-[0.32em]">
                 Controle Financeiro
               </p>
-              <p className="hidden text-sm text-content sm:block">Navegação principal</p>
+              <p className="hidden text-sm text-content sm:block">
+                Navegação principal
+              </p>
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
               <UserControls user={user} demoMode={demoMode} />
               <Drawer direction="left">
                 <DrawerTrigger asChild>
-                  <Button variant="outline" size="icon-sm" aria-label="Abrir menu">
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Abrir menu"
+                  >
                     <Menu className="size-4" />
                   </Button>
                 </DrawerTrigger>
@@ -73,6 +106,7 @@ export function AppShell({
                     </DrawerDescription>
                   </DrawerHeader>
                   <SidebarNavigation mobile />
+                  <SidebarFooter user={user} demoMode={demoMode} />
                 </DrawerContent>
               </Drawer>
             </div>
@@ -91,7 +125,8 @@ export function AppShell({
                   </p>
                 </div>
                 <p className="text-xs text-warning/60 sm:text-right">
-                  Alterações temporárias e compartilhadas. Não insira dados pessoais.
+                  Alterações temporárias e compartilhadas. Não insira dados
+                  pessoais.
                 </p>
               </div>
             ) : null}

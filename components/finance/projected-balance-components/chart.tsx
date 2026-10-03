@@ -53,7 +53,7 @@ export function ProjectedBalanceChart({
   );
 
   return (
-    <Card className="rounded-[1.75rem] border-border bg-surface/75">
+    <Card className="rounded-[20px] border-border bg-card">
       <CardHeader>
         <CardTitle>Evolução diária</CardTitle>
       </CardHeader>
@@ -67,7 +67,7 @@ export function ProjectedBalanceChart({
           }}
         >
           <LineChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
             <XAxis
               dataKey="date"
               axisLine={false}

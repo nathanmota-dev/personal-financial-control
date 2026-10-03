@@ -39,17 +39,17 @@ export function CreditCardTransactionsPanel({
   }, [categoryFilter, entries, query]);
 
   return (
-    <section className="min-w-0 overflow-hidden rounded-[2rem] border border-border/90 bg-surface-raised/90 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)]">
-      <div className="border-b border-border/90 px-5 py-5 sm:px-6">
+    <section className="min-w-0 overflow-hidden rounded-[20px] border border-border bg-card shadow-none">
+      <div className="border-b border-border px-5 py-5 sm:px-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="font-heading text-2xl font-semibold text-content-strong">Extrato da fatura</h2>
+              <h2 className="text-2xl font-semibold text-content-strong">Extrato da fatura</h2>
               <Badge variant="outline" className="border-input text-content">{entries.length}</Badge>
             </div>
             <p className="mt-1 text-sm text-content">Compras, parcelas e ajustes lançados no ciclo selecionado.</p>
           </div>
-          <div className="flex rounded-xl border border-border bg-surface/50 p-1">
+          <div className="flex rounded-xl border border-border bg-muted/30 p-1">
             <ViewToggle
               active={view === "transactions"}
               icon={<ArrowDownUp className="size-3.5" />}
@@ -74,7 +74,7 @@ export function CreditCardTransactionsPanel({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Busque por uma transação"
-                className="h-10 rounded-xl border-border bg-surface/50 pl-9 text-sm placeholder:text-content-subtle"
+                className="h-10 rounded-xl border-border bg-muted/30 pl-9 text-sm placeholder:text-content-subtle"
               />
             </label>
             <NativeSelect
@@ -169,9 +169,9 @@ function CreditCardTransactionRow({
     : null;
 
   return (
-    <article className="group flex gap-3 px-5 py-4 transition-colors hover:bg-surface-raised/45 sm:px-6">
+    <article className="group flex gap-3 px-5 py-4 transition-colors hover:bg-card sm:px-6">
       <div className="w-12 shrink-0 pt-0.5 text-center">
-        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-content-subtle">
+        <p className="text-[0.68rem] font-semibold text-content-subtle">
           {formatCreditCardMonth(entry.purchaseDate.slice(0, 7)).split(" ")[0]}
         </p>
         <p className="mt-0.5 text-xl font-semibold leading-none text-content">
@@ -230,7 +230,7 @@ function CategoryBreakdown({
   return (
     <div className="grid gap-3 p-5 sm:grid-cols-2 sm:p-6">
       {categoryTotals.map((category) => (
-        <div key={category.categoryId} className="rounded-2xl border border-border bg-surface/35 p-4">
+        <div key={category.categoryId} className="rounded-2xl border border-border bg-muted/30 p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate font-medium text-content-strong">{category.categoryName}</p>
@@ -239,7 +239,7 @@ function CategoryBreakdown({
             <p className="shrink-0 font-semibold text-brand">{formatCurrency(category.amountCents)}</p>
           </div>
           <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-elevated">
-            <div className="h-full rounded-full bg-gradient-to-r from-brand to-brand" style={{ width: `${Math.max((Math.abs(category.amountCents) / largest) * 100, 4)}%` }} />
+            <div className="h-full rounded-full bg-chart-1" style={{ width: `${Math.max((Math.abs(category.amountCents) / largest) * 100, 4)}%` }} />
           </div>
         </div>
       ))}

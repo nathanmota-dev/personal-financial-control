@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -32,7 +33,7 @@ export function PurposeDialog({
 }: PurposeDialogProps) {
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{state?.mode === "edit" ? "Editar caixinha" : "Nova caixinha"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
@@ -65,7 +66,7 @@ export function PurposeDialog({
               >
                 <SelectTrigger
                   id="purpose-color"
-                  className="w-full border-input bg-surface-raised/60"
+                  className="w-full border-input bg-card"
                 >
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
@@ -88,7 +89,7 @@ export function PurposeDialog({
           </div>
 
           <PortfolioField label="Alvo opcional (R$)" htmlFor="purpose-target">
-            <Input
+            <MoneyInput
               id="purpose-target"
               value={form.targetAmount}
               onChange={(event) =>

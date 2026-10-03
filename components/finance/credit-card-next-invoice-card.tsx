@@ -60,10 +60,10 @@ export function CreditCardNextInvoiceCard({
         <button
           type="button"
           aria-label={`Configurar vencimento da próxima fatura. Atualmente, dia ${creditDueDay}.`}
-          className="group w-full cursor-pointer rounded-2xl border border-input/70 bg-surface/35 px-4 py-3.5 text-left outline-none transition-colors hover:border-brand/45 hover:bg-surface/60 focus-visible:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/45"
+          className="group w-full cursor-pointer rounded-2xl border border-input/70 bg-muted/30 px-4 py-3.5 text-left outline-none transition-colors hover:border-brand/45 hover:bg-muted/30 focus-visible:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/45"
         >
           <span className="flex items-center justify-between gap-3">
-            <span className="text-xs uppercase tracking-[0.16em] text-content">
+            <span className="text-xs font-medium text-content">
               Próxima fatura
             </span>
             <PencilLine
@@ -71,7 +71,7 @@ export function CreditCardNextInvoiceCard({
               className="size-3.5 text-content-subtle transition-colors group-hover:text-brand"
             />
           </span>
-          <span className="mt-1 block font-heading text-2xl font-semibold text-brand">
+          <span className="mt-1 block text-2xl font-semibold text-brand">
             {upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
           </span>
           <span className="mt-1 block text-xs text-content">
@@ -82,13 +82,13 @@ export function CreditCardNextInvoiceCard({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md gap-5 border-border/90 bg-surface-raised p-5 sm:p-6">
+      <DialogContent className="max-w-md gap-5 border-border bg-card p-5 sm:p-6">
         <DialogHeader className="gap-3">
           <div className="flex size-11 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand">
             <CalendarDays aria-hidden="true" className="size-5" strokeWidth={1.7} />
           </div>
           <div className="grid gap-2">
-            <DialogTitle className="font-heading text-xl font-semibold text-content-strong">
+            <DialogTitle className="text-xl font-semibold text-content-strong">
               Vencimento da fatura
             </DialogTitle>
             <DialogDescription className="leading-6 text-content">
@@ -98,11 +98,11 @@ export function CreditCardNextInvoiceCard({
         </DialogHeader>
 
         <div className="rounded-2xl border border-brand/20 bg-brand/[0.07] px-4 py-3">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand/80">
+          <p className="text-[0.65rem] font-semibold text-brand/80">
             Vencimento mensal
           </p>
           <p className="mt-1 flex items-baseline gap-2 text-content-strong">
-            <span className="font-heading text-3xl font-semibold tracking-tight">{selectedDay}</span>
+            <span className="text-3xl font-semibold tracking-tight">{selectedDay}</span>
             <span className="text-sm text-content">de cada mês</span>
           </p>
         </div>
@@ -122,7 +122,7 @@ export function CreditCardNextInvoiceCard({
                   "relative flex h-10 items-center justify-center rounded-xl border text-sm font-medium tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand/50",
                   isSelected
                     ? "border-brand/40 bg-brand/15 text-brand"
-                    : "border-transparent text-content hover:border-border hover:bg-surface/70 hover:text-content-strong"
+                    : "border-transparent text-content hover:border-border hover:bg-card hover:text-content-strong"
                 )}
               >
                 {day}

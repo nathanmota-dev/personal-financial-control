@@ -57,15 +57,15 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Carteira de longo prazo" title="Posições operacionais" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex gap-2"><Button variant="outline" disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-4 ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
+      <PageHeader eyebrow="Carteira de longo prazo" title="Carteira de longo prazo" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex flex-wrap gap-2"><Button variant="outline" disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-4 ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild><Button><Plus className="size-4" /> Cadastrar ativo</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Novo ativo</DialogTitle><DialogDescription>A posição nasce das operações registradas.</DialogDescription></DialogHeader>
             <div className="grid gap-4">
-              <Label>Nome<Input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></Label>
-              <div className="grid grid-cols-2 gap-3"><Label>Código<Input value={form.ticker} onChange={(event) => setForm({ ...form, ticker: event.target.value.toUpperCase() })} /></Label><Label>Instituição<Input value={form.institutionName} onChange={(event) => setForm({ ...form, institutionName: event.target.value })} /></Label></div>
-              <Label>Tipo de ativo<Select value={type} onValueChange={(value) => setType(value as typeof type)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{supportedTypes.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></Label>
+              <Label className="grid min-w-0 gap-2 [&>input]:font-normal [&>button]:w-full">Nome<Input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></Label>
+              <div className="grid grid-cols-2 gap-3"><Label className="grid min-w-0 gap-2 [&>input]:font-normal [&>button]:w-full">Código<Input value={form.ticker} onChange={(event) => setForm({ ...form, ticker: event.target.value.toUpperCase() })} /></Label><Label className="grid min-w-0 gap-2 [&>input]:font-normal [&>button]:w-full">Instituição<Input value={form.institutionName} onChange={(event) => setForm({ ...form, institutionName: event.target.value })} /></Label></div>
+              <Label className="grid min-w-0 gap-2 [&>input]:font-normal [&>button]:w-full">Tipo de ativo<Select value={type} onValueChange={(value) => setType(value as typeof type)}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>{supportedTypes.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent></Select></Label>
               <Button disabled={pending || !form.name.trim()} onClick={submit}>{pending ? "Salvando..." : "Criar ativo"}</Button>
             </div>
           </DialogContent>
@@ -74,15 +74,15 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
       <section className={`${financePanelClassName} overflow-hidden`}>
         <div className="grid gap-4 border-b border-border p-5 md:grid-cols-[1fr_220px_auto] md:items-center">
           <div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content-muted" /><Input className="pl-9" placeholder="Buscar ativo, código ou instituição" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
-          <Select value={assetClass} onValueChange={setAssetClass}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas as classes</SelectItem>{Object.entries(investmentAssetClassLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-          <div className="rounded-xl border border-border px-4 py-2 text-right"><p className="text-[10px] uppercase text-content-muted">Total</p><p className="font-semibold text-brand">{formatCurrency(total)}</p></div>
+          <Select value={assetClass} onValueChange={setAssetClass}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas as classes</SelectItem>{Object.entries(investmentAssetClassLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
+          <div className="rounded-xl border border-border px-4 py-2 text-right"><p className="text-[10px] text-content-muted">Total</p><p className="font-semibold text-brand">{formatCurrency(total)}</p></div>
         </div>
         <div className="divide-y divide-border">{filtered.length ? filtered.map((item) => (
           <Link key={item.id} href={`/investments/assets/${item.id}`} className="grid gap-3 p-5 transition hover:bg-brand/[.04] md:grid-cols-[1.3fr_.7fr_.7fr_.5fr_auto] md:items-center">
             <div><strong className="text-content-strong">{item.name}</strong><p className="mt-1 text-xs text-content-muted">{item.ticker ?? "Sem código"} · {item.institutionName ?? "Instituição não informada"}</p></div>
-            <div><p className="text-[10px] uppercase text-content-muted">Valor atual</p><p className="font-mono text-sm">{formatCurrency(item.currentValueCents)}</p></div>
-            <div><p className="text-[10px] uppercase text-content-muted">Resultado</p><p className={item.resultCents === null ? "text-content-muted" : item.resultCents >= 0 ? "text-success" : "text-danger"}>{item.resultCents === null ? "Custo não informado" : formatCurrency(item.resultCents)}</p></div>
-            <div><p className="text-[10px] uppercase text-content-muted">Participação</p><p className="font-mono text-sm">{item.participationPercentage.toFixed(1)}%</p></div><ArrowRight className="size-4 text-content-muted" />
+            <div><p className="text-[10px] text-content-muted">Valor atual</p><p className="tabular-nums text-sm">{formatCurrency(item.currentValueCents)}</p></div>
+            <div><p className="text-[10px] text-content-muted">Resultado</p><p className={item.resultCents === null ? "text-content-muted" : item.resultCents >= 0 ? "text-success" : "text-danger"}>{item.resultCents === null ? "Custo não informado" : formatCurrency(item.resultCents)}</p></div>
+            <div><p className="text-[10px] text-content-muted">Participação</p><p className="tabular-nums text-sm">{item.participationPercentage.toFixed(1)}%</p></div><ArrowRight className="size-4 text-content-muted" />
           </Link>
         )) : <div className="p-12 text-center text-sm text-content-muted">Nenhuma posição encontrada.</div>}</div>
       </section>

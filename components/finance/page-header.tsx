@@ -1,43 +1,13 @@
+import type { PageHeaderProps } from "@/lib/interfaces/finance-presentation";
 import { cn } from "@/lib/utils";
 
-export function PageHeader({
-  eyebrow,
-  title,
-  description,
-  actions,
-  className,
-}: {
-  eyebrow?: string;
-  title: string;
-  description: string;
-  actions?: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <header
-      className={cn(
-        "flex flex-col gap-4 rounded-[1.75rem] border border-border bg-surface/75 p-6 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .35)] backdrop-blur md:flex-row md:items-center md:justify-between",
-        className
-      )}
-    >
-      <div className="min-w-0 space-y-2">
-        {eyebrow ? (
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-brand">
-            {eyebrow}
-          </p>
-        ) : null}
-        <div className="space-y-1">
-          <h1 className="font-heading text-3xl font-semibold tracking-tight text-content-strong">
-            {title}
-          </h1>
-          <p className="max-w-2xl text-sm leading-6 text-content">{description}</p>
-        </div>
-      </div>
-      {actions ? (
-        <div className="flex w-full flex-wrap items-center gap-3 md:w-auto md:justify-end lg:shrink-0 lg:flex-nowrap">
-          {actions}
-        </div>
-      ) : null}
-    </header>
-  );
+export function PageHeader({ eyebrow, title, description, actions, className }: PageHeaderProps) {
+  return <header className={cn("flex min-h-[104px] flex-wrap items-start justify-between gap-x-8 gap-y-4 pt-[17px] pb-2", className)}>
+    <div className="min-w-0 flex-1 basis-[320px]">
+      {eyebrow && <p className="sr-only">{eyebrow}</p>}
+      <h1 className="text-[28px] leading-tight font-semibold tracking-[-1px] text-content-strong sm:text-[35px]">{title}</h1>
+      <p className="mt-2 max-w-2xl text-xs leading-5 text-content">{description}</p>
+    </div>
+    {actions && <div className="flex max-w-full flex-wrap items-center gap-3 pt-[5px] [&>div]:max-w-full [&>div]:flex-wrap">{actions}</div>}
+  </header>;
 }

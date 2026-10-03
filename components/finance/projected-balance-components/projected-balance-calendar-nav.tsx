@@ -25,7 +25,7 @@ export function ProjectedBalanceCalendarNav({
           <CalendarDays className="size-5" aria-hidden="true" />
         </div>
         <div>
-          <p className="font-heading text-lg font-semibold text-content-strong">
+          <p className="text-lg font-semibold text-content-strong">
             {formatMonthLabel(month)}
           </p>
           <p className="text-xs text-content-muted">Mapa diário do caixa disponível</p>

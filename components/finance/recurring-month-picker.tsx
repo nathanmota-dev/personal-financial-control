@@ -60,7 +60,7 @@ export function RecurringMonthPicker({
             type="button"
             variant="outline"
             className={cn(
-              "h-10 min-w-0 flex-1 justify-between rounded-xl border-input bg-surface/80 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20",
+              "h-10 min-w-0 flex-1 justify-between rounded-xl border-input bg-card pl-4 text-left text-sm text-content-strong shadow-none hover:bg-card focus-visible:border-brand/70 focus-visible:ring-brand/20",
               className
             )}
             aria-label={month ? formatMonthLabel(month) : placeholder}
@@ -73,7 +73,7 @@ export function RecurringMonthPicker({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
+          className="w-auto overflow-hidden rounded-[20px] border border-border bg-card p-0 text-content-strong shadow-none"
         >
           <MonthPicker
             selectedMonth={month ? parseMonthValue(month) : undefined}
@@ -98,7 +98,7 @@ export function RecurringMonthPicker({
           variant="outline"
           size="icon-sm"
           aria-label="Remover mês de encerramento"
-          className="border-input bg-surface/80 text-content hover:bg-surface-raised hover:text-content-strong"
+          className="border-input bg-card text-content hover:bg-surface-raised hover:text-content-strong"
           onClick={() => onMonthChange(undefined)}
         >
           <X className="size-4" />

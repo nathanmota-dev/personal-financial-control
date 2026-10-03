@@ -32,7 +32,7 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
       <CardHeader>
         <div className="mb-2 flex items-center gap-2 text-brand">
           <BarChart3 className="size-4" />
-          <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
+          <span className="text-[0.68rem] font-semibold">
             Composição
           </span>
         </div>
@@ -62,8 +62,7 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
                   />
                 }
               />
-              <Pie
-                data={data}
+              <Pie isAnimationActive={false} data={data}
                 dataKey="amount"
                 nameKey="label"
                 innerRadius={58}
@@ -79,15 +78,15 @@ export function DistributionChart({ dashboard }: DistributionChartProps) {
             </PieChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[236px] items-center justify-center rounded-2xl border border-dashed border-input bg-surface-raised/35 px-6 text-center text-sm leading-6 text-content">
+          <div className="flex min-h-[236px] items-center justify-center rounded-2xl border border-dashed border-input bg-card px-6 text-center text-sm leading-6 text-content">
             Cadastre um ativo para visualizar a composição patrimonial.
           </div>
         )}
 
-        <div className="overflow-hidden rounded-2xl border border-border/80 bg-surface-raised/35">
+        <div className="overflow-hidden rounded-2xl border border-border/80 bg-card">
           <table className="w-full text-sm">
             <caption className="sr-only">Tabela acessível da distribuição por tipo de ativo</caption>
-            <thead className="border-b border-border/80 text-left text-xs uppercase tracking-[0.14em] text-content">
+            <thead className="border-b border-border/80 text-left text-xs font-medium text-content">
               <tr>
                 <th className="px-4 py-3 font-medium">Tipo</th>
                 <th className="px-4 py-3 text-right font-medium">Valor</th>

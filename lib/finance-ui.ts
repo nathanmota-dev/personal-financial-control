@@ -212,7 +212,7 @@ export function extractErrorMessage(error: unknown) {
 
 export function getTransactionTone(type: TransactionType) {
   if (type === "income") {
-    return "bg-warning/12 text-warning ring-warning/20";
+    return "bg-success-soft text-success ring-success/20";
   }
 
   if (type === "investment_contribution") {
@@ -228,7 +228,7 @@ export function getTransactionTone(type: TransactionType) {
 
 export function getStatusTone(status: TransactionStatus | RecurringStatus) {
   if (status === "posted" || status === "active") {
-    return "bg-warning/12 text-warning ring-warning/20";
+    return "bg-success-soft text-success ring-success/20";
   }
 
   if (status === "pending" || status === "paused") {

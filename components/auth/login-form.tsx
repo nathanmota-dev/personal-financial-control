@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { GoogleIcon } from "@/components/auth/google-icon";
 import { useRef, useState } from "react";
 import { loginErrorMessage } from "@/lib/auth/login-errors";
 import type { LoginFormProps } from "@/lib/interfaces/auth";
@@ -27,6 +28,16 @@ export function LoginForm({ destination, demoMode }: LoginFormProps) {
       }
     }
   }
-  if (demoMode) return <div className="mt-10"><Link href={destination} className="flex w-full items-center justify-center rounded-2xl border border-brand/40 bg-brand px-6 py-4 font-semibold text-surface transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">Explorar demo</Link></div>;
-  return <div className="mt-10"><button onClick={login} disabled={busy} className="flex cursor-pointer disabled:cursor-not-allowed w-full items-center justify-center gap-3 rounded-2xl border border-brand/40 bg-brand px-6 py-4 font-semibold text-surface transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand disabled:opacity-60"><span aria-hidden="true" className="text-xl">G</span>{busy ? "Entrando…" : "Continuar com Google"}</button><p role="status" aria-live="polite" className="mt-4 min-h-12 text-sm text-content">{error}</p></div>;
+  const buttonClassName = "flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-border bg-primary px-5 py-3.5 text-sm font-medium text-primary-foreground transition hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-60";
+  return (
+    <div className="mt-8">
+      {demoMode ? <Link href={destination} className={buttonClassName}>Explorar demo</Link> : (
+        <button type="button" onClick={login} disabled={busy} aria-busy={busy} className={buttonClassName}>
+          <span className="rounded-full bg-white p-1"><GoogleIcon /></span>
+          {busy ? "Entrando…" : "Continuar com Google"}
+        </button>
+      )}
+      <p role="status" aria-live="polite" className={error ? "mt-4 text-sm text-danger" : "sr-only"}>{error}</p>
+    </div>
+  );
 }

@@ -37,7 +37,7 @@ export function ContributionDialog({
 
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Registrar aporte</DialogTitle>
           <DialogDescription className="text-content">
@@ -56,7 +56,7 @@ export function ContributionDialog({
             onSubmit();
           }}
         >
-          <LabeledInput
+          <LabeledInput monetary
             id="goal-contribution-amount"
             label="Valor do aporte"
             value={form.amount}
@@ -109,7 +109,7 @@ export function ContributionDialog({
               onChange={(event) =>
                 setForm((current) => ({ ...current, notes: event.target.value }))
               }
-              className="min-h-20 border-input bg-surface/70 text-content-strong"
+              className="min-h-20 border-input bg-card text-content-strong"
             />
           </div>
           <DialogFooter>

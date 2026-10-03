@@ -31,7 +31,7 @@ export function RecurringCalendarEventItem({
     <li className="py-1 first:pt-0 last:pb-0">
       <div
         className={cn(
-          "min-w-0 rounded-xl border p-1.5 text-xs shadow-[0_8px_20px_rgb(var(--surface-rgb) / .14)]",
+          "min-w-0 rounded-xl border p-1.5 text-xs shadow-none",
           eventTone[event.type]
         )}
         title={`${event.description} • ${event.categoryName} • ${event.accountName} • ${transactionTypeLabels[event.type]}`}
@@ -55,7 +55,7 @@ export function RecurringCalendarEventItem({
           </div>
           {event.isGenerated ? (
             <span
-              className="flex size-4 shrink-0 items-center justify-center rounded-full border border-input bg-surface/30 text-content-strong"
+              className="flex size-4 shrink-0 items-center justify-center rounded-full border border-input bg-muted/30 text-content-strong"
               title="Lançamento já gerado"
             >
               <Check className="size-3" aria-hidden="true" />
@@ -66,7 +66,7 @@ export function RecurringCalendarEventItem({
           <span className="min-w-0 truncate text-[0.62rem] font-medium text-content/80">
             {event.accountName}
           </span>
-          <span className="shrink-0 font-mono text-[0.68rem] font-semibold tabular-nums text-content-strong">
+          <span className="shrink-0 tabular-nums text-[0.68rem] font-semibold tabular-nums text-content-strong">
             {formatCurrency(event.amountCents)}
           </span>
         </div>

@@ -81,7 +81,7 @@ export function DatePickerField({
             aria-haspopup="dialog"
             aria-label={label ?? placeholder}
             className={cn(
-              "h-11 min-w-0 flex-1 justify-between rounded-xl border-input bg-surface/80 px-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20",
+              "h-10 min-w-0 flex-1 justify-between rounded-[10px] border-input bg-card px-4 text-left text-sm text-content-strong shadow-none hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20",
               className
             )}
           >
@@ -93,7 +93,7 @@ export function DatePickerField({
         </PopoverTrigger>
         <PopoverContent
           align={align}
-          className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
+          className="w-auto overflow-hidden rounded-xl border border-border bg-popover p-0 text-content-strong shadow-none"
         >
           <Calendar
             mode="single"
@@ -111,7 +111,7 @@ export function DatePickerField({
           variant="outline"
           size="icon-sm"
           aria-label="Remover data"
-          className="border-input bg-surface/80 text-content hover:bg-surface-raised hover:text-content-strong"
+          className="border-input bg-card text-content hover:bg-surface-raised hover:text-content-strong"
           onClick={handleClear}
         >
           <X className="size-4" aria-hidden="true" />

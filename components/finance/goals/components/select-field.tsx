@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -22,11 +23,14 @@ export function SelectField({
   onValueChange,
   options,
 }: SelectFieldProps) {
+  const id = useId();
   return (
     <div className="space-y-2">
-      <Label className="text-content-strong">{label}</Label>
+      <Label htmlFor={id} className="text-content-strong">
+        {label}
+      </Label>
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
+        <SelectTrigger id={id} className={SELECT_TRIGGER_CLASSNAME}>
           <SelectValue placeholder="Selecionar" />
         </SelectTrigger>
         <SelectContent className={SELECT_CONTENT_CLASSNAME}>
