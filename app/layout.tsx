@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Inter } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 import { themeInitializationScript } from "@/lib/theme-script";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Finance",
-  description: "Painel financeiro pessoal com dashboard, lançamentos, recorrências e carteira.",
+  description:
+    "Painel financeiro pessoal com dashboard, lançamentos, recorrências e carteira.",
   other: {
     google: "notranslate",
   },
@@ -23,7 +31,7 @@ export default function RootLayout({
       lang="pt-BR"
       translate="no"
       suppressHydrationWarning
-      className="h-full notranslate"
+      className={`${inter.variable} h-full notranslate`}
     >
       <body
         translate="no"

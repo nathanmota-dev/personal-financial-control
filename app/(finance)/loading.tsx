@@ -3,20 +3,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export default function Loading() {
   return (
     <div className="space-y-6">
-      <Card className="rounded-[1.75rem] border-border bg-surface/75 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .35)] backdrop-blur">
+      <Card className="rounded-[20px] border-border bg-card shadow-none ">
         <CardHeader className="gap-4">
           <div className="h-3 w-24 animate-pulse rounded-full bg-brand/30" />
           <div className="space-y-3">
             <div className="h-10 w-full max-w-md animate-pulse rounded-full bg-surface-elevated" />
             <div className="h-4 w-full max-w-2xl animate-pulse rounded-full bg-surface-raised" />
-            <div className="h-4 w-3/4 max-w-xl animate-pulse rounded-full bg-surface-raised/90" />
+            <div className="h-4 w-3/4 max-w-xl animate-pulse rounded-full bg-card" />
           </div>
         </CardHeader>
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {Array.from({ length: 5 }).map((_, index) => (
-          <Card key={index} className="rounded-[1.5rem] border-border bg-surface/75">
+          <Card key={index} className="rounded-[20px] border-border bg-card">
             <CardContent className="space-y-3 pt-6">
               <div className="flex items-center justify-between">
                 <div className="h-4 w-24 animate-pulse rounded-full bg-surface-elevated" />
@@ -30,18 +30,18 @@ export default function Loading() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="rounded-[1.75rem] border-border bg-surface/75">
+        <Card className="rounded-[20px] border-border bg-card">
           <CardHeader className="space-y-3">
             <div className="h-6 w-48 animate-pulse rounded-full bg-surface-elevated" />
             <div className="h-4 w-64 animate-pulse rounded-full bg-surface-raised" />
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="h-72 animate-pulse rounded-[1.5rem] bg-[linear-gradient(180deg,rgb(var(--brand-deep-rgb) / .15)_0%,rgb(var(--surface-raised-rgb) / .92)_100%)]" />
+            <div className="h-72 animate-pulse rounded-[20px] bg-card" />
           </CardContent>
         </Card>
 
         <div className="grid gap-6">
-          <Card className="rounded-[1.75rem] border-border bg-surface/75">
+          <Card className="rounded-[20px] border-border bg-card">
             <CardHeader className="space-y-3">
               <div className="h-6 w-40 animate-pulse rounded-full bg-surface-elevated" />
               <div className="h-4 w-32 animate-pulse rounded-full bg-surface-raised" />
@@ -62,7 +62,7 @@ export default function Loading() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[1.75rem] border-border bg-surface/75">
+          <Card className="rounded-[20px] border-border bg-card">
             <CardHeader className="space-y-3">
               <div className="h-6 w-44 animate-pulse rounded-full bg-surface-elevated" />
               <div className="h-4 w-36 animate-pulse rounded-full bg-surface-raised" />
