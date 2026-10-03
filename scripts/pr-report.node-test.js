@@ -22,3 +22,15 @@ test("report sanitizes table values and bounds comment size without losing failu
   const body = R.render({ number: 3, sha: "abc", state: "FAIL", workflows: [{ name: "name|@everyone", state: "FAIL" }], details: ["x".repeat(70000)] });
   assert.ok(body.length < 60000); assert.match(body, /\*\*FAIL\*\*/); assert.match(body, /truncated/); assert.match(body, /name\\\|&#64;everyone/);
 });
+test("report follows the consolidated format with one uninterrupted table for all workflows", () => {
+  const workflows = ["PR Quality Gate", "Performance", "Backend CI", "Frontend CI", "E2E"].map((name) => ({
+    name, state: "PASS", url: `https://github.com/test/repo/actions/runs/1`,
+    manifest: W.manifest(name, [{ name: "Tests", outcome: "success" }]),
+  }));
+  const body = R.render({ number: 3, sha: "abc", state: "PASS", workflows, details: ["# Quality Gate\n\nCoverage", "# Performance\n\nSpeed"] });
+  assert.match(body, /# Quality and performance report/); assert.match(body, /## Workflow checks/);
+  assert.match(body, /Quality Gate overall: \*\*PASS\*\*/); assert.match(body, /E2E overall: \*\*PASS\*\*/);
+  const table = body.slice(body.indexOf("| Workflow"), body.indexOf("[Quality Gate run]"));
+  assert.ok(table.trim().split("\n").every((line) => line.startsWith("|")));
+  assert.match(body, /## Quality Gate/); assert.match(body, /## Performance/);
+});

@@ -92,6 +92,15 @@ function validateConfig(config) {
   const names = new Set();
   if (config.qualityMode !== undefined && !["strict", "no-regression"].includes(config.qualityMode)) throw new InputError("Unknown quality mode.");
   if (config.localBenchmarkBaselinePath !== undefined && typeof config.localBenchmarkBaselinePath !== "string") throw new InputError("Invalid local benchmark baseline path.");
+  for (const [workflow, entries] of Object.entries(config.ci?.workflows || {})) {
+    if (!["backend", "frontend", "e2e"].includes(workflow) || !Array.isArray(entries) || !entries.length) throw new InputError("Invalid CI workflow.");
+    for (const entry of entries) {
+      if (typeof entry.name !== "string" || !entry.name || (entry.blocking !== undefined && typeof entry.blocking !== "boolean")) throw new InputError("Invalid CI check.");
+      for (const command of [entry.command, ...entry.ciCommand ? [entry.ciCommand] : []]) {
+        if (!Array.isArray(command) || !command.length || command.some((part) => typeof part !== "string" || !part || /[\r\n]/.test(part))) throw new InputError("Invalid CI command.");
+      }
+    }
+  }
   for (const project of config.projects) {
     if (!/^[a-z][a-z0-9-]*$/.test(project.name) || names.has(project.name)) throw new InputError("Invalid or duplicate project name.");
     names.add(project.name);

@@ -10,7 +10,7 @@ const R = require("./pr-report.js");
 function download(root, repository, number, workflow, run) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "pr-gate-artifact-"));
   try {
-    const key = workflow === "PR Quality Gate" ? "quality" : "performance";
+    const definition = P.workflowDefinition(workflow), key = definition.key;
     const result = C.execute(["gh", "run", "download", String(run.id), "--repo", repository,
       "--name", P.artifactName(key, number, run), "--dir", directory], root);
     if (result.status !== 0) throw new C.InputError(`Artifact unavailable: ${workflow}`);
@@ -23,32 +23,40 @@ function download(root, repository, number, workflow, run) {
       }
       return null;
     }
-    const stem = key === "quality" ? "quality-gate" : "performance";
-    const manifestPath = find(`${key}-workflow.json`), reportPath = find(`${stem}.md`), metricPath = find(`${stem}.json`);
+    const manifestPath = find(`${key}-workflow.json`);
+    if (!manifestPath) throw new C.InputError(`Incomplete artifacts: ${workflow}`);
+    if (!definition.metrics) return { manifest: C.readJson(manifestPath) };
+    const reportPath = find(`${definition.stem}.md`), metricPath = find(`${definition.stem}.json`);
     if (!manifestPath || !reportPath || !metricPath) throw new C.InputError(`Incomplete artifacts: ${workflow}`);
     if (fs.statSync(reportPath).size > 5 * 1024 * 1024) throw new C.InputError("Report artifact too large.");
     return { manifest: C.readJson(manifestPath), metrics: C.readJson(metricPath), report: fs.readFileSync(reportPath, "utf8") };
   } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 }
-async function waitForPerformance({ github, context, core, timeoutMs = 600000, intervalMs = 15000,
+async function waitForWorkflows({ github, context, core, timeoutMs = 600000, intervalMs = 15000,
+  workflows = P.WORKFLOW_DEFINITIONS.filter((workflow) => workflow.key !== "quality"),
   now = Date.now, sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) }) {
   const pr = context.payload.pull_request, deadline = now() + timeoutMs;
+  let pending = workflows.map((workflow) => workflow.name);
   while (now() < deadline) {
     const current = await github.rest.pulls.get({ ...context.repo, pull_number: pr.number });
-    if (current.data.state !== "open" || current.data.head.sha !== pr.head.sha) return true;
-    const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
-      ...context.repo, workflow_id: "performance.yml", event: "pull_request", head_sha: pr.head.sha, per_page: 100,
-    });
-    const scoped = runs.map((run) => ({ ...run, pull_requests: run.pull_requests?.length ? run.pull_requests : [pr] }));
-    const run = P.latestRun(scoped, pr.number, pr.head.sha);
-    if (run?.status === "completed") return true;
-    core.info("Waiting for the current SHA's latest performance attempt.");
+    if (current.data.state !== "open" || current.data.head.sha !== pr.head.sha) return { timedOut: [] };
+    pending = [];
+    for (const workflow of workflows) {
+      const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+        ...context.repo, workflow_id: workflow.file, event: "pull_request", head_sha: pr.head.sha, per_page: 100,
+      });
+      const scoped = runs.map((run) => ({ ...run, pull_requests: run.pull_requests?.length ? run.pull_requests : [pr] }));
+      const run = P.latestRun(scoped, pr.number, pr.head.sha);
+      if (run?.status !== "completed") pending.push(workflow.name);
+    }
+    if (!pending.length) return { timedOut: [] };
+    core.info(`Waiting for the current SHA's latest attempts: ${pending.join(", ")}.`);
     await sleep(Math.min(intervalMs, Math.max(0, deadline - now())));
   }
-  return false;
+  return { timedOut: pending };
 }
 async function reconcileAndPublish({ github, context, core, root = process.cwd(), downloadReport = download,
-  currentEvaluation, performanceTimedOut = false }) {
+  currentEvaluation, timedOutWorkflows = [] }) {
   const repo = context.repo, event = context.payload.workflow_run, sha = event.head_sha;
   const associated = await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, { ...repo, commit_sha: sha, per_page: 100 });
   const pr = [...associated, ...(event.pull_requests || [])].find((item) => item.state === "open" && item.head?.sha === sha);
@@ -74,20 +82,22 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
   const details = [];
   for (const workflow of workflows) {
     workflow.state = P.classify(workflow.run, running || context.payload.action !== "completed");
-    if (performanceTimedOut && workflow.name === "Performance") {
+    if (timedOutWorkflows.includes(workflow.name)) {
       workflow.state = "FAIL";
-      details.push("## Performance\n\n**FAIL** — Timed out waiting for the matching performance workflow.");
+      details.push(`## ${C.escape(workflow.name)}\n\n**FAIL** — Timed out waiting for the matching workflow.`);
     }
     if (workflow.run?.status !== "completed") continue;
     try {
       const data = await downloadReport(root, `${repo.owner}/${repo.repo}`, pr.number, workflow.name, workflow.run);
       if (!P.correctArtifact(data.manifest, sha, workflow.run)) throw new C.InputError("Artifact provenance mismatch.");
-      if (!data.metrics || !P.correctArtifact({ ...data.metrics, checks: [] }, sha, workflow.run)) throw new C.InputError("Metric artifact provenance mismatch.");
-      if (!["pass", "bootstrap", "fail", "error"].includes(data.metrics.status)) throw new C.InputError("Unknown metric report status.");
+      if (P.workflowDefinition(workflow.name).metrics) {
+        if (!data.metrics || !P.correctArtifact({ ...data.metrics, checks: [] }, sha, workflow.run)) throw new C.InputError("Metric artifact provenance mismatch.");
+        if (!["pass", "bootstrap", "fail", "error"].includes(data.metrics.status)) throw new C.InputError("Unknown metric report status.");
+      }
       workflow.manifest = data.manifest;
       const actual = W.overall(data.manifest.checks.map(W.normalize));
-      if (actual !== "PASS" || ["fail", "error"].includes(data.metrics.status)) workflow.state = "FAIL";
-      details.push(data.report);
+      if (actual !== "PASS" || ["fail", "error"].includes(data.metrics?.status)) workflow.state = "FAIL";
+      if (data.report) details.push(data.report);
     } catch (error) {
       workflow.state = "FAIL";
       details.push(`## ${workflow.name}\n\n**FAIL** — ${C.escape(error.message)}. Inspect the linked workflow.`);
@@ -124,4 +134,4 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
     description: "All selected checks passed and the report was published", target_url: `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}` });
   return { state, body };
 }
-module.exports = { download, waitForPerformance, reconcileAndPublish };
+module.exports = { download, waitForWorkflows, reconcileAndPublish };

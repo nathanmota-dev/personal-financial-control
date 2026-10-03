@@ -33,3 +33,10 @@ test("no-regression mode is explicit and local benchmark paths cannot escape", (
   H.write(root, "scripts/quality-gate.config.json", { ...H.config(), localBenchmarkBaselinePath: "../outside.json" });
   assert.throws(() => C.loadConfig({ root }), /escapes/);
 });
+test("registered CI checks reject unknown workflows and malformed commands", () => {
+  const valid = { name: "Tests", command: ["npm", "test"] };
+  assert.doesNotThrow(() => C.validateConfig({ ...H.config(), ci: { workflows: { backend: [valid] } } }));
+  for (const workflows of [{ unknown: [valid] }, { frontend: [] }, { backend: [{ ...valid, command: "npm test" }] }, { e2e: [{ ...valid, blocking: "no" }] }]) {
+    assert.throws(() => C.validateConfig({ ...H.config(), ci: { workflows } }), /Invalid CI/);
+  }
+});

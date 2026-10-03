@@ -4,6 +4,9 @@ on:
     workflows:
       - PR Quality Gate
       - Performance
+      - Backend CI
+      - Frontend CI
+      - E2E
     types:
       - requested
       - in_progress

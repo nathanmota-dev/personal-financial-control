@@ -34,3 +34,24 @@ test("browser setup failure blocks an existing E2E suite rather than skipping gr
   const result = Runner.run(root, config, "quality", {}, (command) => ({ status: command.includes("playwright") ? 1 : 0, stdout: "", stderr: "" }));
   assert.equal(result.overall, "FAIL"); assert.equal(result.checks.find((check) => check.name === "app e2e").result, "FAIL");
 });
+test("registered frontend/backend workflows expose every check and preserve warning audits", (t) => {
+  const root = H.temporary(t), config = H.config();
+  config.ci = { workflows: { backend: [
+    { name: "npm ci", command: ["npm", "ci"] },
+    { name: "High audit", command: ["npm", "audit"], blocking: false },
+    { name: "Backend tests", command: ["npm", "run", "test:backend"] },
+  ] } };
+  const result = Runner.run(root, config, "backend", {}, (command) => ({ status: command.includes("audit") ? 1 : 0, stdout: "", stderr: "" }));
+  assert.equal(result.overall, "PASS"); assert.equal(result.checks[1].result, "WARNING");
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root, "reports/backend-workflow.json"))).workflow, "Backend CI");
+  const failed = Runner.run(root, config, "backend", {}, () => ({ status: 1, stdout: "", stderr: "" }));
+  assert.equal(failed.overall, "FAIL"); assert.equal(failed.checks[2].outcome, "skipped");
+});
+test("quality runner installs the configured Playwright browser instead of choosing a different one", (t) => {
+  const root = H.temporary(t), config = H.config(), seen = [];
+  config.projects[0].commands.e2e = ["npm", "run", "test:e2e"];
+  config.projects[0].commands.browserSetup = ["npm", "exec", "--no", "--", "playwright", "install", "firefox"];
+  Runner.run(root, config, "quality", {}, (command) => { seen.push(command); return { status: 0, stdout: "", stderr: "" }; });
+  assert.ok(seen.some((command) => command.includes("firefox")));
+  assert.ok(!seen.some((command) => command.includes("chromium")));
+});

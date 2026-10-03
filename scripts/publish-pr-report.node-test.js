@@ -1,14 +1,17 @@
 "use strict";
 const test = require("node:test"), assert = require("node:assert/strict");
 const Publisher = require("./publish-pr-report.js"), R = require("./pr-report.js");
+const P = require("./pr-validation.js");
 function fixture(options = {}) {
   const calls = [], sha = "current-sha", pr = { number: 3, state: "open", head: { sha }, base: { sha: "base" } };
   const run = (id) => ({ id, event: "pull_request", head_sha: sha, run_attempt: 2, status: "completed", conclusion: "success", created_at: "2026-09-01T00:00:00Z", pull_requests: [{ number: 3, head: { sha } }], html_url: `https://github.com/test/repo/actions/runs/${id}` });
-  const runs = { 1: [run(11)], 2: [run(12)] };
+  const runs = Object.fromEntries(P.WORKFLOWS.map((name, index) => [index + 1, [run(index + 11)]]));
   if (options.cancelled) runs[2][0].conclusion = "cancelled";
   if (options.pending) runs[2][0].status = "in_progress";
   if (options.inline) runs[1][0].status = "in_progress";
   if (options.missing) runs[2] = [];
+  if (options.missingWorkflow) runs[P.WORKFLOWS.indexOf(options.missingWorkflow) + 1] = [];
+  if (options.failedWorkflow) runs[P.WORKFLOWS.indexOf(options.failedWorkflow) + 1][0].conclusion = "failure";
   function endpoint(kind) {
     const result = async (input) => {
       calls.push({ kind, input });
@@ -31,7 +34,7 @@ function fixture(options = {}) {
     },
     async paginate(method, args) {
       if (method.kind === "associated") return options.stale ? [{ ...pr, head: { sha: "new-sha" } }] : [pr];
-      if (method.kind === "workflows") return [{ id: 1, name: "PR Quality Gate" }, { id: 2, name: "Performance" }];
+      if (method.kind === "workflows") return P.WORKFLOWS.map((name, index) => ({ id: index + 1, name }));
       if (method.kind === "runs") return runs[args.workflow_id];
       if (method.kind === "files") return options.files || [];
       if (method.kind === "comments") return options.comments || [];
@@ -41,10 +44,12 @@ function fixture(options = {}) {
   const context = { repo: { owner: "test", repo: "repo" }, payload: { action: "completed", workflow_run: { head_sha: sha, pull_requests: [] } }, serverUrl: "https://github.com", runId: options.inline ? 11 : 50 };
   async function downloadReport(root, repository, number, workflow, selected) {
     if (options.artifactMissing) throw new Error("Report artifact missing");
-    return { manifest: { schemaVersion: 1, headSha: sha, runId: selected.id, runAttempt: options.oldArtifact ? 1 : 2, overall: "PASS", checks: [
+    const manifest = { schemaVersion: 1, headSha: sha, runId: selected.id, runAttempt: options.oldArtifact ? 1 : 2, overall: "PASS", checks: [
       { name: "required metric check", outcome: options.skipped ? "skipped" : "success", selected: true, blocking: true },
       { name: "high audit", outcome: "failure", selected: true, blocking: false },
-    ] }, metrics: { schemaVersion: 1, headSha: options.oldMetrics ? "old-sha" : sha, runId: selected.id, runAttempt: 2, status: options.failedMetrics ? "fail" : "pass" }, report: `# ${workflow}\n\nDetailed coverage and performance measurements.` };
+    ] };
+    if (!P.workflowDefinition(workflow).metrics) return { manifest };
+    return { manifest, metrics: { schemaVersion: 1, headSha: options.oldMetrics ? "old-sha" : sha, runId: selected.id, runAttempt: 2, status: options.failedMetrics ? "fail" : "pass" }, report: `# ${workflow}\n\nDetailed coverage and performance measurements.` };
   }
   return { calls, args: { github, context, core: { info() {} }, downloadReport } };
 }
@@ -112,7 +117,7 @@ test("inline report cannot hide failed quality checks or borrow another attempt'
 });
 test("performance timeout publishes failure rather than leaving a pending report", async () => {
   const { args } = fixture({ inline: true, pending: true });
-  const result = await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion: "success", attempt: 2 }, performanceTimedOut: true });
+  const result = await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion: "success", attempt: 2 }, timedOutWorkflows: ["Performance"] });
   assert.equal(result.state, "FAIL"); assert.match(result.body, /Timed out/);
 });
 function waitingFixture(sequences, options = {}) {
@@ -121,6 +126,7 @@ function waitingFixture(sequences, options = {}) {
   const args = {
     context: { repo: { owner: "test", repo: "repo" }, payload: { pull_request: pr } },
     core: { info() {} }, timeoutMs: 3, intervalMs: 1, now: () => elapsed,
+    workflows: [P.workflowDefinition("Performance")],
     sleep: async (ms) => { elapsed += ms; },
     github: {
       rest: { pulls: { get: async () => ({ data: options.stale ? { ...pr, head: { sha: "new-sha" } } : pr }) }, actions: { listWorkflowRuns() {} } },
@@ -140,11 +146,26 @@ function performanceRun(id, status, attempt = 1) {
 test("inline publisher waits through missing and running performance work for the latest attempt", async () => {
   const old = performanceRun(1, "completed"), running = performanceRun(2, "in_progress", 2);
   const { args, polls } = waitingFixture([[], [old, running], [old, { ...running, status: "completed", conclusion: "failure" }]]);
-  assert.equal(await Publisher.waitForPerformance(args), true); assert.equal(polls(), 3);
+  assert.deepEqual(await Publisher.waitForWorkflows(args), { timedOut: [] }); assert.equal(polls(), 3);
 });
 test("inline publisher stops waiting at the deadline or when the PR head changes", async () => {
   const waiting = waitingFixture([[]]);
-  assert.equal(await Publisher.waitForPerformance(waiting.args), false); assert.equal(waiting.polls(), 3);
+  assert.deepEqual(await Publisher.waitForWorkflows(waiting.args), { timedOut: ["Performance"] }); assert.equal(waiting.polls(), 3);
   const stale = waitingFixture([[]], { stale: true });
-  assert.equal(await Publisher.waitForPerformance(stale.args), true); assert.equal(stale.polls(), 0);
+  assert.deepEqual(await Publisher.waitForWorkflows(stale.args), { timedOut: [] }); assert.equal(stale.polls(), 0);
+});
+test("backend, frontend and E2E are required and cannot be hidden by passing quality metrics", async () => {
+  for (const name of ["Backend CI", "Frontend CI", "E2E"]) {
+    const passed = await Publisher.reconcileAndPublish(fixture().args);
+    assert.match(passed.body, new RegExp(`${name} overall: \\*\\*PASS`));
+    for (const options of [{ failedWorkflow: name }, { missingWorkflow: name }]) {
+      assert.equal((await Publisher.reconcileAndPublish(fixture(options).args)).state, "FAIL");
+    }
+  }
+});
+test("initial report waits for every required workflow and names only timed out workflows", async () => {
+  const waiting = waitingFixture([[]]);
+  delete waiting.args.workflows;
+  waiting.args.github.paginate = async (method, input) => [performanceRun(1, input.workflow_id === "e2e.yml" ? "in_progress" : "completed")];
+  assert.deepEqual(await Publisher.waitForWorkflows(waiting.args), { timedOut: ["E2E"] });
 });

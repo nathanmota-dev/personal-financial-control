@@ -103,7 +103,7 @@ jobs:
         if: steps.publisher.outputs.bootstrap == 'true'
         with:
           node-version: "24"
-      - name: Wait for performance and publish the current PR report
+      - name: Wait for all checks and publish the current PR report
         if: steps.publisher.outputs.bootstrap == 'true'
         uses: actions/github-script@v7
         env:
@@ -111,8 +111,8 @@ jobs:
           QUALITY_RESULT: ${{ needs.evaluate.result }}
         with:
           script: |
-            const { waitForPerformance, reconcileAndPublish } = require('./scripts/publish-pr-report.js');
-            const completed = await waitForPerformance({ github, context, core });
+            const { waitForWorkflows, reconcileAndPublish } = require('./scripts/publish-pr-report.js');
+            const { timedOut } = await waitForWorkflows({ github, context, core });
             const reportContext = {
               ...context,
               repo: context.repo,
@@ -128,6 +128,6 @@ jobs:
                 conclusion: process.env.QUALITY_RESULT,
                 attempt: Number(process.env.GITHUB_RUN_ATTEMPT),
               },
-              performanceTimedOut: !completed,
+              timedOutWorkflows: timedOut,
             });
             if (result?.state === 'FAIL') core.setFailed('PR validation failed; inspect the published report.');

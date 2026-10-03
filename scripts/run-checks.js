@@ -67,7 +67,9 @@ function run(root, config, workflow, options = {}, executor = C.execute) {
         if (!command) { checks.push({ name: `${project.name} ${key}`, selected: false, blocking: false, outcome: "skipped" }); continue; }
         if (key === "coverage") fs.rmSync(C.inside(root, project.coveragePath), { force: true });
         if (installed && key === "e2e") {
-          const browserReady = step(`${project.name} Playwright browser`, ["npm", "exec", "--no", "--", "playwright", "install", "--with-deps", "chromium"], project.directory);
+          const browserCommand = [...(project.commands.browserSetup || ["npm", "exec", "--no", "--", "playwright", "install", "chromium"])];
+          if (process.env.CI === "true") browserCommand.splice(browserCommand.indexOf("install") + 1, 0, "--with-deps");
+          const browserReady = step(`${project.name} Playwright browser`, browserCommand, project.directory);
           if (!browserReady) { checks.push({ name: `${project.name} e2e`, selected: true, blocking: true, outcome: "skipped" }); continue; }
         }
         if (installed) step(`${project.name} ${key}`, command, project.directory);
@@ -108,8 +110,23 @@ function run(root, config, workflow, options = {}, executor = C.execute) {
     step("Benchmark gate tests", [process.execPath, "--test", path.join(__dirname, "benchmark-gate.node-test.js")], ".");
     for (const file of ["performance.md", "performance.json", "benchmark-candidate-baseline.json"]) fs.rmSync(C.inside(root, `reports/${file}`), { force: true });
     step("Benchmark comparison", node("benchmark-gate.js", ["--projects", selected.join(","), ...bootstrap ? ["--bootstrap"] : []]), ".");
+  } else if (["backend", "frontend", "e2e"].includes(workflow) && config.ci?.workflows?.[workflow]) {
+    let installed = true;
+    for (const entry of config.ci.workflows[workflow]) {
+      if (!installed) {
+        checks.push({ name: entry.name, selected: true, blocking: entry.blocking !== false, outcome: "skipped" });
+        continue;
+      }
+      const command = process.env.CI === "true" && entry.ciCommand ? entry.ciCommand : entry.command;
+      const passed = step(entry.name, command, ".", entry.blocking !== false);
+      if (entry.command[0] === "npm" && entry.command[1] === "ci") installed = passed;
+    }
+    if (workflow === "e2e") for (const folder of ["test-results", "playwright-report"]) {
+      const input = C.inside(root, folder);
+      if (fs.existsSync(input)) fs.cpSync(input, C.inside(root, `reports/e2e/${folder}`), { recursive: true });
+    }
   } else throw new C.InputError(`Unknown workflow: ${workflow}`);
-  return W.write(root, workflow === "quality" ? "Quality Gate" : "Performance", checks);
+  return W.write(root, P.workflowDefinition(workflow).displayName, checks);
 }
 function runCli(args = process.argv.slice(2)) {
   let root = process.cwd(), workflow = "quality";
@@ -120,7 +137,7 @@ function runCli(args = process.argv.slice(2)) {
     const result = run(root, config, workflow, options);
     return result.overall === "PASS" ? 0 : 1;
   } catch (error) {
-    W.write(root, workflow === "quality" ? "Quality Gate" : "Performance", [{ name: "Workflow input", outcome: "failure", blocking: true, selected: true, details: [error.message] }]);
+    W.write(root, P.workflowDefinition(workflow)?.displayName || "Quality Gate", [{ name: "Workflow input", outcome: "failure", blocking: true, selected: true, details: [error.message] }]);
     process.stderr.write(error.message + "\n"); return 2;
   }
 }

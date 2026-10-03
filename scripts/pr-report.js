@@ -6,17 +6,20 @@ const W = require("./workflow-report.js");
 const MARKER = "<!-- quality-gate-safe-delivery-pr-report -->";
 
 function render({ number, sha, state, workflows = [], details = [] }) {
-  const lines = [MARKER, "# PR Validation", "", `**${state}** · PR #${number} · commit \`${C.escape(sha.slice(0, 12))}\``, "",
-    "| Workflow | Check | Result | Selected | Blocking |", "|---|---|---|---|---|"];
+  const lines = [MARKER, "# Quality and performance report", "", `**${state}** · PR #${number} · commit \`${C.escape(sha.slice(0, 12))}\``, "", "## Workflow checks", ""];
+  const display = (workflow) => workflow.name === "PR Quality Gate" ? "Quality Gate" : workflow.name;
+  for (const workflow of workflows) lines.push(`- ${C.escape(display(workflow))} overall: **${workflow.state}**.`);
+  lines.push("", "| Workflow | Check | Result | Selected | Blocking |", "|---|---|---|---|---|");
   for (const workflow of workflows) {
-    lines.push(`| ${C.escape(workflow.name)} | Workflow conclusion | ${workflow.state} | Yes | Yes |`);
+    lines.push(`| ${C.escape(display(workflow))} | Workflow conclusion | ${workflow.state} | Yes | Yes |`);
     for (const raw of workflow.manifest?.checks || []) {
       const check = W.normalize(raw);
-      lines.push(`| ${C.escape(workflow.name)} | ${C.escape(check.name)} | ${check.result} | ${check.selected ? "Yes" : "No"} | ${check.blocking ? "Yes" : "No (warning)"} |`);
+      lines.push(`| ${C.escape(display(workflow))} | ${C.escape(check.name)} | ${check.result} | ${check.selected ? "Yes" : "No"} | ${check.blocking ? "Yes" : "No (warning)"} |`);
     }
-    if (workflow.url) lines.push("", `[${C.escape(workflow.name)} run](${workflow.url})`, "");
   }
-  for (const detail of details) lines.push("", detail.trim());
+  lines.push("");
+  for (const workflow of workflows) if (workflow.url) lines.push(`[${C.escape(display(workflow))} run](${workflow.url})`, "");
+  for (const detail of details) lines.push("", detail.trim().replace(/^# (Quality Gate|Performance)$/m, "## $1"));
   const text = lines.join("\n").replace(/\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?/gu, "");
   if (text.length <= 60000) return text + "\n";
   return text.slice(0, 59000) + "\n\nReport truncated; full diagnostics are available in the linked workflow artifacts.\n";

@@ -1,0 +1,49 @@
+name: Frontend CI
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: frontend-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    name: Frontend build, audit, lint, typecheck and tests
+    runs-on: ubuntu-22.04
+    env:
+      CI: "true"
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            scripts/package-lock.json
+      - name: Select trusted check configuration
+        shell: bash
+        run: |
+          if git cat-file -e "${PR_BASE_SHA}:scripts/quality-gate.config.json"; then
+            git show "${PR_BASE_SHA}:scripts/quality-gate.config.json" > "$RUNNER_TEMP/quality-gate.config.json"
+            echo "QUALITY_GATE_CONFIG_PATH=$RUNNER_TEMP/quality-gate.config.json" >> "$GITHUB_ENV"
+          fi
+      - name: Install gate tools
+        run: npm ci --prefix scripts
+      - name: Run frontend checks and collect outcomes
+        run: node scripts/run-checks.js --root . --workflow frontend
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: reports/

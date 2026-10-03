@@ -19,6 +19,8 @@ const eslintConfig = defineConfig([
     // Generated diagnostics and coverage reports.
     "reports/**",
     "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
     // Generated from the linted TypeScript migration entry point.
     "scripts/migrate.mjs",
   ]),

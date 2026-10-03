@@ -45,3 +45,6 @@ next-env.d.ts
 /reports/
 /scripts/node_modules/
 /coverage/
+/playwright-report/
+/test-results/
+/.tmp/

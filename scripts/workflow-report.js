@@ -1,6 +1,7 @@
 "use strict";
 const fs = require("node:fs");
 const C = require("./config.js");
+const P = require("./pr-validation.js");
 
 function normalize(check) {
   const selected = check.selected !== false, blocking = check.blocking !== false;
@@ -22,7 +23,8 @@ function manifest(workflow, checks) {
 }
 function write(root, workflow, checks) {
   const result = manifest(workflow, checks);
-  const key = workflow === "Quality Gate" ? "quality" : "performance";
+  const key = P.workflowDefinition(workflow)?.key;
+  if (!key) throw new C.InputError(`Unknown report workflow: ${workflow}`);
   C.writeJson(C.inside(root, `reports/${key}-workflow.json`), result);
   const lines = [`# ${workflow} workflow checks`, "", `**${result.overall}**`, "", "| Check | Result | Selected | Blocking |", "|---|---|---|---|"];
   for (const check of result.checks) lines.push(`| ${C.escape(check.name)} | ${check.result} | ${check.selected ? "Yes" : "No"} | ${check.blocking ? "Yes" : "No (warning)"} |`);
