@@ -4,7 +4,9 @@ Personal Financial app using Next.js, Tailwind Css, Drizzle, SQLite, Turso, Zod,
 
 ---
 
-Always after finish one task, run 'npm run build' and 'npm run lint' and 'npm run test'. Don't run tests only the files changed, run tests on all files.
+After every task, use [quality-gate-safe-delivery](.agents/skills/quality-gate-safe-delivery/SKILL.md). Run `npm run build`, `npm run lint`, `npm run test` (the full suite), `npm run quality:check` and `npm run quality:performance` sequentially. The gate covers type checking, coverage, audits, duplication, code size, helper tests, Playwright E2E and benchmarks; inspect the quality and performance reports before reporting results. Preserve the configured `no-regression` policy and baselines.
+
+When naming branches, committing, pushing or opening/updating pull requests, follow [git-pr-conventions](.agents/skills/git-pr-conventions/SKILL.md).
 
 ---
 

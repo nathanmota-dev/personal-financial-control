@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "setupVersion": 1,
+  "mode": "managed",
+  "qualityMode": "no-regression",
+  "localBenchmarkBaselinePath": "scripts/benchmark-baseline.local.json",
+  "projects": [
+    {
+      "name": "app",
+      "directory": ".",
+      "installDirectory": ".",
+      "sourceRoots": [
+        "app",
+        "components",
+        "hooks",
+        "lib",
+        "proxy.ts"
+      ],
+      "coveragePath": "coverage/coverage-summary.json",
+      "benchmarkPath": "reports/benchmarks/app.json",
+      "commands": {
+        "lint": [
+          "npm",
+          "run",
+          "lint",
+          "--",
+          "--max-warnings=0"
+        ],
+        "typecheck": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "build": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "coverage": [
+          "npm",
+          "run",
+          "test:coverage:ci"
+        ],
+        "e2e": ["npm", "run", "test:e2e"],
+        "browserSetup": ["npm", "exec", "--no", "--", "playwright", "install", "chromium"],
+        "benchmark": [
+          "npm",
+          "run",
+          "benchmark:ci"
+        ]
+      }
+    }
+  ],
+  "policy": {
+    "maxFileLines": 350,
+    "maxFunctionLines": 100,
+    "minimumCoverage": 80,
+    "maxRegressionPercent": 20,
+    "duplication": {
+      "minLines": 5,
+      "minTokens": 50,
+      "maxLines": 10000,
+      "mode": "strict",
+      "crossFormats": "js-ts"
+    }
+  },
+  "baseBranch": "main",
+  "nodeVersion": "24",
+  "ci": {
+    "workflows": {
+      "backend": [
+        { "name": "npm ci", "command": ["npm", "ci"] },
+        { "name": "Critical npm audit", "command": ["npm", "audit", "--audit-level=critical"] },
+        { "name": "High npm audit", "command": ["npm", "audit", "--audit-level=high"], "blocking": false },
+        { "name": "Backend lint", "command": ["npm", "run", "lint:backend"] },
+        { "name": "Typecheck", "command": ["npm", "run", "typecheck"] },
+        { "name": "Backend unit and integration tests", "command": ["npm", "run", "test:backend"] }
+      ],
+      "frontend": [
+        { "name": "npm ci", "command": ["npm", "ci"] },
+        { "name": "Critical npm audit", "command": ["npm", "audit", "--audit-level=critical"] },
+        { "name": "High npm audit", "command": ["npm", "audit", "--audit-level=high"], "blocking": false },
+        { "name": "Next.js build", "command": ["npm", "run", "build"] },
+        { "name": "Frontend lint", "command": ["npm", "run", "lint:frontend"] },
+        { "name": "Typecheck", "command": ["npm", "run", "typecheck"] },
+        { "name": "Frontend unit tests", "command": ["npm", "run", "test:frontend"] }
+      ],
+      "e2e": [
+        { "name": "npm ci", "command": ["npm", "ci"] },
+        { "name": "Playwright browser installation", "command": ["npm", "exec", "--no", "--", "playwright", "install", "chromium"], "ciCommand": ["npm", "exec", "--no", "--", "playwright", "install", "--with-deps", "chromium"] },
+        { "name": "Playwright E2E", "command": ["npm", "run", "test:e2e"] }
+      ]
+    }
+  }
+}

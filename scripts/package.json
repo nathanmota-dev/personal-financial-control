@@ -1,0 +1,9 @@
+{
+  "name": "quality-gate-safe-delivery-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test *.node-test.js" },
+  "dependencies": { "jscpd": "5.0.16", "typescript": "5.9.3", "yaml": "^2.8.1" }
+}
