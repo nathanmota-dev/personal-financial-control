@@ -202,6 +202,27 @@ describe("Firebase access boundary", () => {
       await expect((action as () => Promise<unknown>)()).rejects.toMatchObject({ status: 401 });
     }
   });
+  it("protects the client help page through the proxy and finance layout", async () => {
+    expect(readFileSync("app/(finance)/layout.tsx", "utf8")).toContain("await requirePageSession();");
+    const helpPage = readFileSync("app/(finance)/help/page.tsx", "utf8");
+    expect(helpPage.startsWith('"use client";')).toBe(true);
+    const helpRequest = (cookie?: string) => new NextRequest("http://127.0.0.1:3007/help", {
+      headers: { host: "127.0.0.1:3007", ...(cookie ? { cookie: `session=${cookie}` } : {}) },
+    });
+
+    const unauthenticated = await proxy(helpRequest());
+    expect(unauthenticated.status).toBe(307);
+    const destination = new URL(unauthenticated.headers.get("location")!);
+    expect(destination.pathname).toBe("/login");
+    expect(destination.searchParams.get("next")).toBe("/help");
+
+    const authenticated = await proxy(helpRequest("valid"));
+    expect(authenticated.headers.get("x-middleware-next")).toBe("1");
+    expect(sdk.verifySessionCookie).toHaveBeenCalledWith("valid", true);
+
+    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
+    expect((await proxy(helpRequest("revoked"))).status).toBe(307);
+  });
   it("every financial handler/action/page begins with a guard", () => {
     function files(directory: string): string[] { return readdirSync(directory, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(join(directory, entry.name)) : [join(directory, entry.name)]); }
     for (const file of files("app/api").filter(file => file.endsWith("route.ts") && !file.includes("session"))) {
@@ -211,7 +232,9 @@ describe("Firebase access boundary", () => {
     const actions = readFileSync("app/actions/finance.ts", "utf8");
     expect([...actions.matchAll(/export async function/g)]).toHaveLength(44);
     expect([...actions.matchAll(/await requireActionSession\(\)/g)]).toHaveLength(44);
-    for (const file of files("app/(finance)").filter(file => file.endsWith("page.tsx"))) expect(readFileSync(file, "utf8")).toContain("await requirePageSession();");
+    // The informational client help page uses the guarded layout and proxy,
+    // verified above. Pages that read financial data still require their own guard.
+    for (const file of files("app/(finance)").filter(file => file.endsWith("page.tsx") && file !== join("app/(finance)", "help", "page.tsx"))) expect(readFileSync(file, "utf8")).toContain("await requirePageSession();");
   });
 });
 
