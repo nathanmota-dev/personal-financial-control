@@ -47,7 +47,7 @@ const navigation: SidebarNavigationItem[] = [
   { href: "/calculators", label: "Calculadoras", icon: Calculator },
 ];
 
-export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
+export function SidebarNavigation({ mobile = false, onNavigate }: SidebarNavigationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
@@ -98,6 +98,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
             )}
             <Link
               href={href(item.href)}
+              onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "mb-[5px] flex h-[39px] items-center gap-[11px] rounded-[11px] px-[13px] text-sm transition-colors hover:bg-sidebar-accent",
@@ -115,6 +116,7 @@ export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
                   <Link
                     key={child.href}
                     href={child.href}
+                    onClick={onNavigate}
                     aria-current={pathname === child.href ? "page" : undefined}
                     className={cn(
                       "block rounded-lg px-2 py-2 text-xs hover:bg-sidebar-accent",

@@ -10,6 +10,7 @@ import { join } from "node:path";
 
 import { demoFixture } from "@/lib/demo/fixture";
 import { getServerEnv } from "@/lib/env";
+import type { FinanceDatabaseRuntime } from "@/lib/interfaces/database";
 import * as schema from "@/lib/db/schema";
 import {
   accounts,
@@ -41,6 +42,8 @@ export type AppDb = ReturnType<typeof createDatabase>;
 
 let cachedDatabase: AppDb | undefined;
 let demoDatabasePromise: Promise<AppDb> | undefined;
+// Next.js loads separate module instances for pages, actions and route handlers.
+const databaseRuntime = globalThis as FinanceDatabaseRuntime;
 
 export function getDatabase() {
   if (cachedDatabase) {
@@ -65,16 +68,16 @@ export async function getFinanceDatabase() {
     return getDatabase();
   }
 
-  if (!demoDatabasePromise) {
-    demoDatabasePromise = initializeDemoDatabase();
-  }
-
+  databaseRuntime.__pfcDemoDatabaseUrl ??= initializeDemoDatabase();
+  // Share the storage, keeping each bundle's Drizzle objects in its own runtime.
+  demoDatabasePromise ??= databaseRuntime.__pfcDemoDatabaseUrl.then(createDatabase);
   return demoDatabasePromise;
 }
 
 async function initializeDemoDatabase() {
   const demoDirectory = mkdtempSync(join(tmpdir(), "pfc-demo-"));
-  const database = createDatabase(`file:${join(demoDirectory, "demo.db")}`);
+  const url = `file:${join(demoDirectory, "demo.db")}`;
+  const database = createDatabase(url);
 
   try {
     await migrateDatabase(database.$client);
@@ -108,9 +111,11 @@ async function initializeDemoDatabase() {
       rmSync(demoDirectory, { recursive: true, force: true });
     });
 
-    return database;
+    return url;
   } catch (error) {
     rmSync(demoDirectory, { recursive: true, force: true });
     throw error;
+  } finally {
+    database.$client.close();
   }
 }

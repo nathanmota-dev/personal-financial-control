@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getFinanceDatabase } from "@/lib/db";
 import { accountIds, categoryIds } from "@/lib/demo/fixture";
@@ -91,5 +91,22 @@ describe("demo mode", () => {
     expect(projection.daily.length).toBe(30);
     expect(after).toBe(before + 1);
     expect((await getFinanceDatabase()).query.accounts).toBeDefined();
+  });
+
+  it("shares its database and mutations across module instances", async () => {
+    const database = await getFinanceDatabase();
+    const before = await listTransactions({ competenceMonth: "2026-07" });
+    vi.resetModules();
+    const reloaded = await import("@/lib/db");
+    const databases = await Promise.all([
+      reloaded.getFinanceDatabase(),
+      reloaded.getFinanceDatabase(),
+    ]);
+
+    expect(databases[0]).not.toBe(database);
+    expect(databases[1]).toBe(databases[0]);
+    const transactions = await import("@/lib/server/transactions");
+    expect(await transactions.listTransactions({ competenceMonth: "2026-07" }))
+      .toEqual(before);
   });
 });

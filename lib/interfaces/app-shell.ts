@@ -10,3 +10,5 @@ export interface AppShellProps {
 export interface FinanceLayoutProps {
   children: ReactNode;
 }
+
+export type MobileNavigationProps = Pick<AppShellProps, "user" | "demoMode">;
