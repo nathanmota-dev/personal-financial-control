@@ -486,6 +486,10 @@
   "components/finance/investments-view.tsx": [
     "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
   ],
+  "components/finance/mobile-navigation.tsx": [
+    "tests/frontend/app/(finance)/layout.cases.tsx",
+    "tests/frontend/components/finance/app-shell.cases.tsx"
+  ],
   "components/finance/money-input.tsx": [
     "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
@@ -2360,7 +2364,8 @@
     "tests/frontend/components/auth/logout-button.cases.tsx",
     "tests/frontend/components/auth/user-controls.cases.tsx",
     "tests/frontend/components/finance/app-shell.cases.tsx",
-    "tests/frontend/components/finance/sidebar-footer.cases.tsx"
+    "tests/frontend/components/finance/sidebar-footer.cases.tsx",
+    "tests/frontend/components/finance/sidebar-navigation.cases.tsx"
   ],
   "lib/interfaces/compound-interest.ts": [
     "tests/compound-interest.test.ts",
@@ -2394,6 +2399,61 @@
   "lib/interfaces/dashboard.ts": [
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx"
+  ],
+  "lib/interfaces/database.ts": [
+    "tests/accounts.test.ts",
+    "tests/auth-users.test.ts",
+    "tests/auth.test.ts",
+    "tests/categories.test.ts",
+    "tests/content-encryption.test.ts",
+    "tests/credit-card.test.ts",
+    "tests/dashboard.test.ts",
+    "tests/demo-mode.test.ts",
+    "tests/encrypted-money.test.ts",
+    "tests/finance-ui.test.ts",
+    "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
+    "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
+    "tests/frontend/app/(finance)/goals/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
+    "tests/frontend/app/(finance)/layout.cases.tsx",
+    "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
+    "tests/frontend/app/(finance)/recurring/page.cases.tsx",
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/app/(finance)/transactions/page.cases.tsx",
+    "tests/frontend/components/finance/app-shell.cases.tsx",
+    "tests/frontend/components/finance/credit-card-view.cases.tsx",
+    "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
+    "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
+    "tests/frontend/components/finance/setup-dialogs.cases.tsx",
+    "tests/frontend/components/finance/transaction-dialog.cases.tsx",
+    "tests/goals-api.test.ts",
+    "tests/goals.test.ts",
+    "tests/investment-operations.test.ts",
+    "tests/investment-portfolio.test.ts",
+    "tests/investments.test.ts",
+    "tests/mcp.test.ts",
+    "tests/projected-balance-query.test.ts",
+    "tests/projected-balance.test.ts",
+    "tests/recurring.test.ts",
+    "tests/transactions.test.ts",
+    "tests/transfers.test.ts",
+    "tests/unit/app/actions/finance.test.ts",
+    "tests/unit/app/api/accounts/route.test.ts",
+    "tests/unit/app/api/credit-card/bills/[invoiceMonth]/payments/route.test.ts",
+    "tests/unit/app/api/credit-card/bills/route.test.ts",
+    "tests/unit/app/api/credit-card/charges/[id]/route.test.ts",
+    "tests/unit/app/api/credit-card/charges/route.test.ts",
+    "tests/unit/app/api/goals/[id]/allocations/route.test.ts",
+    "tests/unit/app/api/goals/[id]/contributions/route.test.ts",
+    "tests/unit/app/api/goals/[id]/route.test.ts",
+    "tests/unit/app/api/goals/route.test.ts",
+    "tests/unit/app/api/import/financial-json/route.test.ts",
+    "tests/unit/app/api/projected-balance/route.test.ts",
+    "tests/unit/app/api/transactions/route.test.ts",
+    "tests/unit/lib/server/investment-operations.test.ts"
   ],
   "lib/interfaces/date-pickers.ts": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
@@ -2593,6 +2653,7 @@
   "lib/interfaces/sidebar-navigation.ts": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/components/finance/app-shell.cases.tsx",
+    "tests/frontend/components/finance/sidebar-footer.cases.tsx",
     "tests/frontend/components/finance/sidebar-navigation.cases.tsx"
   ],
   "lib/interfaces/transaction-funding.ts": [

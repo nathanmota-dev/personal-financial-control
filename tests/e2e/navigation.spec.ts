@@ -55,4 +55,21 @@ test("mobile menu opens and reaches a financial view", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Metas e planos futuros" }),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  await page.getByRole("dialog", { name: "Menu" })
+    .getByRole("link", { name: "Investimentos", exact: true }).click();
+  await expect(page).toHaveURL(/\/investments$/);
+  await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
+  await page.getByRole("button", { name: "Abrir menu" }).click();
+  await page.getByRole("dialog", { name: "Menu" })
+    .getByRole("link", { name: "Carteira de longo prazo", exact: true }).click();
+  await expect(page).toHaveURL(/\/investments\/portfolio$/);
+  await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
+  for (const [name, path] of [["Configurações", "/settings"], ["Ajuda", "/help"]]) {
+    await page.getByRole("button", { name: "Abrir menu" }).click();
+    await page.getByRole("dialog", { name: "Menu" })
+      .getByRole("link", { name, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`${path}$`));
+    await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
+  }
 });

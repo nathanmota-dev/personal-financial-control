@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { UserControlsProps } from "@/lib/interfaces/auth";
 
 export type SidebarNavigationItem = {
   href: string;
@@ -12,4 +13,8 @@ export type SidebarNavigationItem = {
 
 export type SidebarNavigationProps = {
   mobile?: boolean;
+  onNavigate?: () => void;
 };
+
+export type SidebarFooterProps = UserControlsProps &
+  Pick<SidebarNavigationProps, "onNavigate">;

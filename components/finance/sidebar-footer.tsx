@@ -5,14 +5,15 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CircleHelp, Settings } from "lucide-react";
 import { UserControls } from "@/components/auth/user-controls";
-import type { UserControlsProps } from "@/lib/interfaces/auth";
+import type { SidebarFooterProps } from "@/lib/interfaces/sidebar-navigation";
 
-export function SidebarFooter({ user, demoMode }: UserControlsProps) {
+export function SidebarFooter({ user, demoMode, onNavigate }: SidebarFooterProps) {
   const pathname = usePathname();
   return (
     <div className="shrink-0 pl-5 pr-4 pb-5 pt-4">
       <Link
         href="/settings"
+        onClick={onNavigate}
         aria-current={pathname === "/settings" ? "page" : undefined}
         className={cn("flex h-[42px] items-center gap-[11px] rounded-lg px-[9px] text-sm hover:bg-sidebar-accent", pathname === "/settings" ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary" : "text-sidebar-foreground")}
       >
@@ -21,6 +22,7 @@ export function SidebarFooter({ user, demoMode }: UserControlsProps) {
       </Link>
       <Link
         href="/help"
+        onClick={onNavigate}
         aria-current={pathname === "/help" ? "page" : undefined}
         className={cn(
           "flex h-[42px] items-center gap-[11px] rounded-lg px-[9px] text-sm hover:bg-sidebar-accent",

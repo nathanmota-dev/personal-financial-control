@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { expect, it } from "vitest";
 import { renderUI } from "../../helpers";
 import { AppShell } from "@/components/finance/app-shell";
@@ -18,4 +18,13 @@ it("collapses and expands navigation without losing page content", async () => {
   expect(screen.getByRole("navigation")).toBeVisible();
   await user.click(screen.getByRole("button", { name: "Abrir menu" }));
   expect(screen.getByRole("dialog", { name: "Menu" })).toBeVisible();
+  const link = within(screen.getByRole("dialog", { name: "Menu" }))
+    .getByRole("link", { name: "Metas" });
+  // JSDOM has no document navigation; exercise the menu's real click handler.
+  link.addEventListener("click", (event) => event.preventDefault());
+  await user.click(link);
+  await waitFor(() => {
+    expect(screen.getByRole("dialog", { name: "Menu" }))
+      .toHaveAttribute("data-state", "closed");
+  });
 });
