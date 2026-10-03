@@ -1,21 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
-  ArrowLeftRight,
   Calculator,
-  ChartLine,
   ChartNoAxesCombined,
-  ChevronRight,
   CreditCard,
-  PiggyBank,
-  ReceiptText,
-  Repeat,
-  Settings2,
+  Landmark,
+  LayoutDashboard,
+  ListPlus,
+  Repeat2,
+  Search,
   Target,
 } from "lucide-react";
-
 import type {
   SidebarNavigationItem,
   SidebarNavigationProps,
@@ -23,104 +21,113 @@ import type {
 import { cn } from "@/lib/utils";
 
 const navigation: SidebarNavigationItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: ChartNoAxesCombined },
-  { href: "/transactions", label: "Lançamentos", icon: ReceiptText },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/transactions", label: "Lançamentos", icon: ListPlus },
   { href: "/credit-card", label: "Cartão", icon: CreditCard },
-  { href: "/recurring", label: "Recorrentes", icon: Repeat },
-  { href: "/projected-balance", label: "Saldo Projetado", icon: ChartLine },
+  { href: "/recurring", label: "Recorrentes", icon: Repeat2 },
+  {
+    href: "/projected-balance",
+    label: "Saldo Projetado",
+    icon: ChartNoAxesCombined,
+  },
   {
     href: "/investments",
     label: "Investimentos",
-    icon: PiggyBank,
+    icon: Landmark,
     children: [
       { href: "/investments", label: "Visão geral" },
       { href: "/investments/portfolio", label: "Carteira de longo prazo" },
-      { href: "/investments/emergency-reserve", label: "Reserva de emergência" },
+      {
+        href: "/investments/emergency-reserve",
+        label: "Reserva de emergência",
+      },
     ],
   },
   { href: "/goals", label: "Metas", icon: Target },
   { href: "/calculators", label: "Calculadoras", icon: Calculator },
-  { href: "/settings", label: "Configurações", icon: Settings2 },
 ];
 
 export function SidebarNavigation({ mobile = false }: SidebarNavigationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  function buildNavigationHref(targetPath: string) {
-    const params = new URLSearchParams();
+  const [query, setQuery] = useState("");
+  function href(path: string) {
     const month = searchParams.get("month");
-
-    if (
-      month &&
-      ["/dashboard", "/transactions", "/credit-card", "/recurring"].includes(targetPath)
-    ) {
-      params.set("month", month);
-    }
-
-    return params.size ? targetPath + "?" + params.toString() : targetPath;
+    return month &&
+      ["/dashboard", "/transactions", "/credit-card", "/recurring"].includes(
+        path,
+      )
+      ? `${path}?${new URLSearchParams({ month })}`
+      : path;
   }
-
   return (
     <nav
+      aria-label="Navegação principal"
       className={cn(
-        "space-y-2",
-        mobile ? "p-4" : "mt-10 min-h-0 flex-1 overflow-y-auto overscroll-contain no-scrollbar"
+        "min-h-0 flex-1 overflow-y-auto pl-4 pr-[14px]",
+        mobile && "py-4",
       )}
     >
-      {navigation.map((item) => {
+      <label className="ml-1 mr-0.5 mb-[22px] flex h-[38px] items-center gap-2 rounded-[11px] bg-card px-3 text-content-muted">
+        <Search className="size-3.5 shrink-0" />
+        <input
+          aria-label="Buscar páginas"
+          placeholder="Buscar"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          className="min-w-0 flex-1 bg-transparent text-[12px] outline-none placeholder:text-content-muted"
+        />
+      </label>
+      {navigation.map((item, index) => {
         const Icon = item.icon;
-        const parentActive = pathname === item.href || pathname.startsWith(item.href + "/");
-        const hasChildren = Boolean(item.children?.length);
-
+        const active =
+          pathname === item.href || pathname.startsWith(item.href + "/");
+        if (
+          query &&
+          !`${item.label} ${item.children?.map((child) => child.label).join(" ") ?? ""}`
+            .toLocaleLowerCase("pt-BR")
+            .includes(query.toLocaleLowerCase("pt-BR"))
+        )
+          return null;
         return (
-          <div key={item.href} className="space-y-1.5">
+          <div key={item.href}>
+            {index === 4 && !query && (
+              <p className="mb-[11px] mt-[12px] px-[13px] text-xs text-content-subtle">
+                Análise
+              </p>
+            )}
             <Link
-              href={buildNavigationHref(item.href)}
+              href={href(item.href)}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center justify-between rounded-2xl border px-4 py-3 text-sm transition",
-                parentActive
-                  ? "border-brand/70 bg-brand text-background shadow-lg"
-                  : "border-border/60 text-content hover:border-brand/30 hover:bg-brand/10 hover:text-content-strong"
+                "mb-[5px] flex h-[39px] items-center gap-[11px] rounded-[11px] px-[13px] text-sm transition-colors hover:bg-sidebar-accent",
+                active
+                  ? "bg-sidebar-primary font-medium text-sidebar-primary-foreground hover:bg-sidebar-primary"
+                  : "text-sidebar-foreground",
               )}
             >
-              <span className="flex items-center gap-3">
-                <Icon className="size-4" />
-                {item.label}
-              </span>
-              <ChevronRight
-                className={cn(
-                  "size-4 opacity-60 transition-transform",
-                  hasChildren && parentActive && "rotate-90"
-                )}
-              />
+              <Icon className="size-[18px] shrink-0" strokeWidth={1.7} />
+              {item.label}
             </Link>
-
-            {item.children ? (
-              <div className="relative ml-5 space-y-1 pl-3 before:pointer-events-none before:absolute before:-top-1.5 before:bottom-4 before:left-0 before:border-l before:border-border/90 before:content-['']">
-                {item.children.map((child) => {
-                  const childActive = pathname === child.href;
-
-                  return (
-                    <Link
-                      key={child.href}
-                      href={buildNavigationHref(child.href)}
-                      className={cn(
-                        "relative flex items-center justify-between rounded-xl px-3 py-2 text-xs transition before:pointer-events-none before:absolute before:-left-3 before:top-0 before:h-1/2 before:w-3 before:rounded-bl-xl before:border-b before:border-l before:border-border/90 before:content-['']",
-                        childActive
-                          ? "bg-brand/12 font-semibold text-brand"
-                          : "text-content hover:bg-brand/8 hover:text-content-strong"
-                      )}
-                    >
-                      <span>{child.label}</span>
-                      {childActive ? (
-                        <ArrowLeftRight className="size-3.5 rotate-90 opacity-70" />
-                      ) : null}
-                    </Link>
-                  );
-                })}
+            {item.children && (active || query) && (
+              <div className="mb-2 ml-[22px] border-l border-border pl-3">
+                {item.children.map((child) => (
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    aria-current={pathname === child.href ? "page" : undefined}
+                    className={cn(
+                      "block rounded-lg px-2 py-2 text-xs hover:bg-sidebar-accent",
+                      pathname === child.href
+                        ? "font-semibold text-brand"
+                        : "text-content",
+                    )}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
               </div>
-            ) : null}
+            )}
           </div>
         );
       })}
