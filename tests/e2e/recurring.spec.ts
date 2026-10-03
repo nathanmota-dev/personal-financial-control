@@ -27,7 +27,10 @@ test("creates, pauses and removes a recurrence and avoids duplicate generation",
   await expect(card).toContainText("Pausada");
   const before = (
     await (
-      await request.get("/api/transactions?competenceMonth=2026-07")
+      // Recover a reset keep-alive connection without retrying HTTP errors.
+      await request.get("/api/transactions?competenceMonth=2026-07", {
+        maxRetries: 2,
+      })
     ).json()
   ).transactions.length;
   await page.reload();
@@ -36,7 +39,9 @@ test("creates, pauses and removes a recurrence and avoids duplicate generation",
   expect(
     (
       await (
-        await request.get("/api/transactions?competenceMonth=2026-07")
+        await request.get("/api/transactions?competenceMonth=2026-07", {
+          maxRetries: 2,
+        })
       ).json()
     ).transactions,
   ).toHaveLength(before);
