@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+import "./frontend/suite";
 import { describe, expect, it } from "vitest";
 
 import {
