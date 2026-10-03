@@ -26,7 +26,7 @@ export function PurposeCards({
         <div>
           <div className="mb-2 flex items-center gap-2 text-warning">
             <Target className="size-4" />
-            <span className="text-[0.68rem] font-semibold uppercase tracking-[0.22em]">
+            <span className="text-[0.68rem] font-semibold">
               Finalidades
             </span>
           </div>
@@ -54,9 +54,9 @@ export function PurposeCards({
             />
           ))
         ) : (
-          <div className="rounded-2xl border border-dashed border-input bg-surface-raised/35 px-5 py-8 text-center">
+          <div className="rounded-2xl border border-dashed border-input bg-card px-5 py-8 text-center">
             <CircleDollarSign className="mx-auto size-6 text-warning" />
-            <p className="mt-3 font-heading text-lg font-semibold text-content-strong">
+            <p className="mt-3 text-lg font-semibold text-content-strong">
               Nenhuma caixinha criada
             </p>
             <p className="mt-1 text-sm leading-6 text-content">
@@ -76,7 +76,7 @@ export function PurposeCards({
                 </p>
               </div>
             </div>
-            <p className="shrink-0 font-heading text-lg font-semibold text-warning">
+            <p className="shrink-0 text-lg font-semibold text-warning">
               {formatCurrency(dashboard.unclassifiedCents)}
             </p>
           </div>

@@ -75,7 +75,7 @@ export function DayDetailSheet({
 
               <div className="rounded-2xl border border-border p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="font-heading text-base font-semibold text-content-strong">
+                  <h3 className="text-base font-semibold text-content-strong">
                     Eventos do dia
                   </h3>
                   <StatusBadge status={day.status} />
@@ -153,7 +153,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
           <p
             className={cn(
               "font-semibold",
-              isPositive ? "text-warning" : "text-danger"
+              isPositive ? "text-success" : "text-danger"
             )}
           >
             {isPositive ? "+" : "-"}
@@ -169,16 +169,16 @@ function DetailMetric({ label, value, tone = "slate" }: DetailMetricProps) {
   const tones = {
     slate: "text-content-strong",
     cyan: "text-brand",
-    emerald: "text-warning",
+    emerald: "text-success",
     sky: "text-brand",
     blue: "text-brand",
     rose: "text-danger",
   } as const;
 
   return (
-    <div className="rounded-2xl border border-border bg-surface-raised/50 p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-content">{label}</p>
-      <p className={cn("mt-2 font-heading text-xl font-semibold", tones[tone])}>
+    <div className="rounded-2xl border border-border bg-card p-4">
+      <p className="text-xs font-medium text-content">{label}</p>
+      <p className={cn("mt-2 text-xl font-semibold", tones[tone])}>
         {value}
       </p>
     </div>

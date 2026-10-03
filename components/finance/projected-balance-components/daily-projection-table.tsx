@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 
 export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
   return (
-    <Card className="rounded-[1.75rem] border-border bg-surface/75">
+    <Card className="rounded-[20px] border-border bg-card">
         <CardHeader>
           <CardTitle>Projeção por dia</CardTitle>
         </CardHeader>
@@ -49,7 +49,7 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
                         onSelectDay(day);
                       }
                     }}
-                    className="cursor-pointer border-border hover:bg-surface-raised/80"
+                    className="cursor-pointer border-border hover:bg-card"
                   >
                     <TableCell className="font-medium text-content-strong">
                       {formatDateLabel(day.date)}
@@ -92,7 +92,7 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
                 key={day.date}
                 type="button"
                 onClick={() => onSelectDay(day)}
-                className="rounded-2xl border border-border p-4 text-left transition hover:bg-surface-raised/70"
+                className="rounded-2xl border border-border p-4 text-left transition hover:bg-card"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>

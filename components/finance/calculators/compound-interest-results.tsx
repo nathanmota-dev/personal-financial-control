@@ -33,7 +33,7 @@ export function CompoundInterestResults({ simulation }: CompoundInterestResultsP
         />
       </div>
 
-      <Card className="gap-0 border-brand/20 bg-surface/80 shadow-[0_24px_80px_rgb(var(--surface-rgb)/.35)]">
+      <Card className="gap-0 border-border bg-card shadow-none">
         <CardHeader>
           <CardTitle id="simulation-result" className="text-xl text-content-strong">
             Evolução do patrimônio

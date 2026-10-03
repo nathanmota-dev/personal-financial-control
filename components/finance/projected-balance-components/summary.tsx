@@ -8,12 +8,10 @@ import {
 } from "lucide-react";
 
 import type {
-  MetricCardProps,
   ProjectionAlertsProps,
   ProjectionSummaryCardsProps,
 } from "@/app/interfaces/projected-balance";
-import { financeIconClassName } from "@/components/finance/finance-styles";
-import { Card, CardContent } from "@/components/ui/card";
+import { ProjectionMetricCard } from "./metric-card";
 import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
@@ -30,14 +28,14 @@ export function ProjectionSummaryCards({
 
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-      <MetricCard
+      <ProjectionMetricCard
         label="Saldo atual"
         value={formatCurrency(summary.initialBalanceCents)}
         description={selectedAccountName ?? "Consolidado das contas"}
         icon={<Wallet className="size-4" />}
         tone={summary.initialBalanceCents >= 0 ? "cyan" : "rose"}
       />
-      <MetricCard
+      <ProjectionMetricCard
         label="Disponível por dia"
         value={formatCurrency(summary.availablePerDayCents)}
         description={availableBlocked ? "Sem margem segura" : "Margem até o fim do período"}
@@ -50,14 +48,14 @@ export function ProjectionSummaryCards({
             : "emerald"
         }
       />
-      <MetricCard
+      <ProjectionMetricCard
         label="Saldo final projetado"
         value={formatCurrency(summary.finalProjectedBalanceCents)}
         description={`Até ${formatDateLabel(summary.endDate)}`}
         icon={<TrendingUp className="size-4" />}
         tone={summary.finalProjectedBalanceCents >= 0 ? "cyan" : "rose"}
       />
-      <MetricCard
+      <ProjectionMetricCard
         label="Menor saldo projetado"
         value={formatCurrency(summary.minimumProjectedBalanceCents)}
         description={formatDateLabel(summary.minimumProjectedBalanceDate)}
@@ -70,7 +68,7 @@ export function ProjectionSummaryCards({
               : "rose"
         }
       />
-      <MetricCard
+      <ProjectionMetricCard
         label={summary.nextIncomeDate ? "Próxima receita" : "Fim do período"}
         value={nextIncomeValue}
         description={
@@ -96,7 +94,7 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
         <div
           key={`${alert.code}-${alert.date ?? "period"}`}
           className={cn(
-            "flex gap-3 rounded-[1.25rem] border p-4 text-sm",
+            "flex gap-3 rounded-xl border p-4 text-sm",
             alert.code === "PROJECTED_BALANCE_NEGATIVE" ||
               alert.code === "CURRENT_BALANCE_NEGATIVE"
               ? "border-danger/25 bg-danger/10 text-danger"
@@ -111,30 +109,5 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
         </div>
       ))}
     </div>
-  );
-}
-
-function MetricCard({ label, value, description, icon, tone }: MetricCardProps) {
-  const tones = {
-    cyan: "text-brand bg-brand/10",
-    emerald: "text-warning bg-warning/10",
-    sky: "text-brand bg-brand/10",
-    amber: "text-warning bg-warning/10",
-    rose: "text-danger bg-danger/10",
-  } as const;
-
-  return (
-    <Card className="rounded-[1.5rem] border-border bg-surface/75">
-      <CardContent className="space-y-3 pt-6">
-        <div className={cn(financeIconClassName, tones[tone])}>{icon}</div>
-        <div>
-          <p className="text-sm text-content">{label}</p>
-          <p className={cn("font-heading text-2xl font-semibold tracking-tight", tones[tone])}>
-            {value}
-          </p>
-        </div>
-        <p className="text-sm leading-6 text-content">{description}</p>
-      </CardContent>
-    </Card>
   );
 }

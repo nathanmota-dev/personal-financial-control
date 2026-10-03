@@ -23,8 +23,8 @@ export function ProjectionSimulationPanel({
   onClearSimulations,
 }: ProjectionSimulationPanelProps) {
   return (
-    <Card className="rounded-[1.75rem] border-brand/15 bg-surface/75 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .22)]">
-      <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="rounded-[20px] border-border bg-card shadow-none">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
             <Sparkles className="size-4" aria-hidden="true" />
@@ -94,7 +94,7 @@ export function ProjectionSimulationPanel({
                     <Trash2 className="size-4" aria-hidden="true" />
                   </Button>
                 </div>
-                <p className="mt-3 font-mono text-sm font-semibold tabular-nums text-danger">
+                <p className="mt-3 tabular-nums text-sm font-semibold tabular-nums text-danger">
                   -{formatCurrency(simulation.amountCents)}
                 </p>
               </div>

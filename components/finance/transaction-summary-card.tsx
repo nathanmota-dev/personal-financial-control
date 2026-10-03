@@ -1,23 +1,16 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowDownLeft, ArrowUpRight, TrendingDown, TrendingUp } from "lucide-react";
+import { FinanceMetric } from "@/components/finance/finance-metric";
 import type { TransactionSummaryCardProps } from "@/lib/interfaces/transactions";
-import { cn } from "@/lib/utils";
 
-const tones = {
-  cyan: "text-brand bg-brand/10",
-  blue: "text-brand bg-brand/10",
-  sky: "text-brand bg-brand/10",
-  amber: "text-warning bg-warning/10",
+const metrics = {
+  cyan: { icon: TrendingUp, tone: "success", description: "Entradas no período selecionado" },
+  blue: { icon: TrendingDown, tone: "danger", description: "Saídas no período selecionado" },
+  sky: { icon: ArrowUpRight, tone: "brand", description: "Valores destinados a investimentos" },
+  amber: { icon: ArrowDownLeft, tone: "warning", description: "Valores resgatados dos investimentos" },
 } as const;
 
 export function TransactionSummaryCard({ label, value, tone }: TransactionSummaryCardProps) {
-  return (
-    <Card className="rounded-[1.5rem] border-border bg-surface/75">
-      <CardContent className="space-y-2 pt-6">
-        <p className="text-sm text-content">{label}</p>
-        <p className={cn("font-heading text-3xl font-semibold tracking-tight", tones[tone])}>
-          {value}
-        </p>
-      </CardContent>
-    </Card>
-  );
+  const metric = metrics[tone];
+  const Icon = metric.icon;
+  return <FinanceMetric label={label} value={value} description={metric.description} tone={metric.tone} icon={<Icon />} />;
 }

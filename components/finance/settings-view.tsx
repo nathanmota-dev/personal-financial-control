@@ -66,7 +66,7 @@ export function SettingsView({
       <PageHeader
         eyebrow="Configurações"
         title="Contas e categorias"
-        description="Esta página também abre vazia por padrão e serve como ponto de partida para cadastrar toda a base do app."
+        description="Gerencie suas contas, organize categorias e mantenha sua base financeira atualizada."
       />
 
       <Tabs defaultValue="accounts">
@@ -79,7 +79,7 @@ export function SettingsView({
           <div className="grid gap-4 md:grid-cols-2">
             {accounts.length ? (
               accounts.map((account) => (
-                <Card key={account.id} className="rounded-[1.75rem] border-border bg-surface/75">
+                <Card key={account.id} className="rounded-[20px] border-border bg-card">
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -149,7 +149,7 @@ export function SettingsView({
         <TabsContent value="categories">
           <div className="grid gap-6">
             {Object.entries(categoriesByGroup).map(([group, rows]) => (
-              <Card key={group} className="rounded-[1.75rem] border-border bg-surface/75">
+              <Card key={group} className="rounded-[20px] border-border bg-card">
                 <CardHeader>
                   <CardTitle>{categoryGroupLabels[group as keyof typeof categoryGroupLabels]}</CardTitle>
                 </CardHeader>

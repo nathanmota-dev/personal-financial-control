@@ -27,7 +27,7 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   if (reconciliation.state === "aligned" && overAllocatedCents === 0) {
     return (
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-warning/20 bg-warning/8 px-4 py-3 text-sm text-warning">
+      <div className="flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/8 px-4 py-3 text-sm text-warning">
         <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-warning" />
         <p className="leading-6">
           Os ativos cadastrados fecham com o saldo global em{" "}
@@ -44,7 +44,7 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   if (reconciliation.state === "not_configured") {
     return (
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-brand/20 bg-brand/8 px-4 py-3 text-sm text-brand">
+      <div className="flex items-start gap-3 rounded-xl border border-brand/20 bg-brand/8 px-4 py-3 text-sm text-brand">
         <Info className="mt-0.5 size-4 shrink-0 text-brand" />
         <p className="leading-6">
           A carteira global ainda não tem checkpoint. Os percentuais usam os{" "}
@@ -106,7 +106,7 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
 
   return (
     <>
-      <div className="flex items-start gap-3 rounded-[1.4rem] border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
+      <div className="flex items-start gap-3 rounded-xl border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
         <div className="flex min-w-0 flex-1 flex-col gap-3 leading-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">

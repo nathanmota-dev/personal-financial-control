@@ -30,7 +30,7 @@ export function DailyProjectionExplorer({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-heading text-xl font-semibold text-content-strong">
+          <p className="text-xl font-semibold text-content-strong">
             Leitura diária
           </p>
           <p className="mt-1 text-sm text-content">
@@ -39,7 +39,7 @@ export function DailyProjectionExplorer({
         </div>
         <TabsList
           variant="line"
-          className="h-10 w-full rounded-xl border border-border bg-surface/50 p-1 sm:w-auto"
+          className="h-10 w-full rounded-xl border border-border bg-muted/30 p-1 sm:w-auto"
         >
           <TabsTrigger
             value="calendar"

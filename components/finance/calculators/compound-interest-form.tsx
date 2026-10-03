@@ -22,7 +22,7 @@ export function CompoundInterestForm({
   onClear,
 }: CompoundInterestFormProps) {
   return (
-    <Card className="border-brand/20 bg-surface/80 shadow-[0_24px_80px_rgb(var(--surface-rgb)/.35)]">
+    <Card className="border-border bg-card shadow-none">
       <CardHeader>
         <CardTitle className="text-xl text-content-strong">Dados da simulação</CardTitle>
         <p className="text-sm leading-6 text-content">
@@ -57,7 +57,7 @@ export function CompoundInterestForm({
             <div className="space-y-2">
               <Label htmlFor="interest-rate">Taxa de juros</Label>
               <div className="flex gap-2">
-                <div className="flex min-w-0 flex-1 rounded-xl border border-input bg-surface-raised/45 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30">
+                <div className="flex min-w-0 flex-1 rounded-xl border border-input bg-card focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30">
                   <span className="flex items-center border-r border-input px-3 text-xs font-semibold text-content">%</span>
                   <Input
                     id="interest-rate"
@@ -65,7 +65,7 @@ export function CompoundInterestForm({
                     placeholder="0,00"
                     value={values.interestRate}
                     onChange={(event) => onChange({ ...values, interestRate: event.target.value })}
-                    className="h-11 border-0 bg-transparent shadow-none focus-visible:ring-0"
+                    className="h-10 border-0 bg-transparent shadow-none focus-visible:ring-0"
                   />
                 </div>
                 <Select
@@ -74,7 +74,7 @@ export function CompoundInterestForm({
                     onChange({ ...values, interestRatePeriod: value })
                   }
                 >
-                  <SelectTrigger className="h-11 w-28 rounded-xl bg-surface-raised/45">
+                  <SelectTrigger className="h-10 w-28 rounded-xl bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -98,7 +98,7 @@ export function CompoundInterestForm({
                   placeholder="0"
                   value={values.investmentPeriod}
                   onChange={(event) => onChange({ ...values, investmentPeriod: event.target.value })}
-                  className="h-11 min-w-0 flex-1 rounded-xl bg-surface-raised/45"
+                  className="h-10 min-w-0 flex-1 rounded-xl bg-card"
                 />
                 <Select
                   value={values.investmentPeriodUnit}
@@ -106,7 +106,7 @@ export function CompoundInterestForm({
                     onChange({ ...values, investmentPeriodUnit: value })
                   }
                 >
-                  <SelectTrigger className="h-11 w-28 rounded-xl bg-surface-raised/45">
+                  <SelectTrigger className="h-10 w-28 rounded-xl bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

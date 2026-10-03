@@ -16,7 +16,7 @@ import type { RecentAllocationsCardProps } from "../goals-types";
 
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
   return (
-    <Card className="rounded-[1.75rem] border-border bg-surface/75">
+    <Card className="rounded-[20px] border-border bg-card">
       <CardHeader>
         <CardTitle>Histórico recente</CardTitle>
         <p className="text-sm text-content">
@@ -38,7 +38,7 @@ export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps)
               {dashboard.recentAllocations.map((allocation) => (
                 <TableRow
                   key={allocation.id}
-                  className="border-border hover:bg-surface-raised/50"
+                  className="border-border hover:bg-card"
                 >
                   <TableCell className="text-content-strong">
                     <span className="inline-flex items-center gap-2">

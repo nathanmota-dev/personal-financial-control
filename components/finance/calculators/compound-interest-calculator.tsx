@@ -123,7 +123,7 @@ export function CompoundInterestCalculator() {
     <div className="space-y-6">
       <PageHeader
         eyebrow="Calculadoras · Juros compostos"
-        title="Quanto o seu dinheiro pode crescer?"
+        title="Juros compostos"
         description="Combine valor inicial, aportes mensais e taxa de juros para visualizar o efeito do tempo sobre o seu patrimônio."
         actions={
           <Button asChild variant="outline">

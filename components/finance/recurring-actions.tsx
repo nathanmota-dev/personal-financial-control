@@ -107,9 +107,9 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
           Excluir
         </Button>
       </DialogTrigger>
-      <DialogContent className="border-border bg-surface/95 sm:max-w-lg">
+      <DialogContent className="border-border bg-card sm:max-w-lg">
         <DialogHeader>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-danger">Ação definitiva</p>
+          <p className="text-[0.68rem] font-semibold text-danger">Ação definitiva</p>
           <DialogTitle className="text-2xl text-content-strong">Excluir recorrência?</DialogTitle>
           <DialogDescription>
             Escolha o que fazer com os lançamentos que foram gerados por esta regra. Lançamentos manuais nunca entram nesta exclusão.
@@ -121,7 +121,7 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
             type="button"
             variant="outline"
             disabled={isPending}
-            className="h-auto items-start justify-between gap-4 rounded-2xl border-input bg-surface-raised/55 px-4 py-4 text-left whitespace-normal hover:border-brand/40 hover:bg-brand/[0.06]"
+            className="h-auto items-start justify-between gap-4 rounded-2xl border-input bg-card px-4 py-4 text-left whitespace-normal hover:border-brand/40 hover:bg-brand/[0.06]"
             onClick={() => deleteWithMode("keep_history")}
           >
             <span>

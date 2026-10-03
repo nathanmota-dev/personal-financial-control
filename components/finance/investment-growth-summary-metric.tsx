@@ -13,8 +13,8 @@ export function InvestmentGrowthSummaryMetric({
 
   return (
     <div className={`rounded-2xl border px-3 py-2 ${tones[tone]}`}>
-      <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-75">{label}</p>
-      <p className="mt-1 font-heading text-lg font-semibold tracking-tight">{value}</p>
+      <p className="text-[0.68rem] font-medium opacity-75">{label}</p>
+      <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
     </div>
   );
 }

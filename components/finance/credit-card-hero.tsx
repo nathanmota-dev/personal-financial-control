@@ -18,20 +18,18 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
     : `dia ${overview.account.creditDueDay}`;
 
   return (
-    <section className="relative isolate overflow-hidden rounded-[2rem] border border-border/90 bg-surface-raised shadow-[0_28px_90px_rgb(var(--surface-rgb) / .42)]">
-      <div className="pointer-events-none absolute -right-24 -top-36 -z-10 size-[28rem] rounded-full bg-brand/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-48 left-1/3 -z-10 size-[24rem] rounded-full bg-brand-strong/10 blur-3xl" />
-      <div className="border-b border-border/90 px-5 py-5 sm:px-7 sm:py-6">
+    <section className="relative isolate overflow-hidden rounded-[20px] border border-border bg-surface-raised shadow-none">
+      <div className="border-b border-border px-5 py-5 sm:px-7 sm:py-6">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand shadow-[0_0_30px_rgb(var(--brand-rgb) / .12)]">
+            <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-[11px] bg-brand-soft text-brand shadow-none">
               <CreditCard className="size-6" strokeWidth={1.7} />
             </div>
             <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-brand/80">
+              <p className="text-[0.68rem] font-semibold text-brand/80">
                 Fatura selecionada · {formatCreditCardMonth(overview.month)}
               </p>
-              <h2 className="mt-1 font-heading text-2xl font-semibold tracking-tight text-content-strong sm:text-3xl">
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-content-strong sm:text-3xl">
                 {overview.account.name}
               </h2>
               <p className="mt-1 text-sm text-content">
@@ -44,7 +42,7 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
             className={cn(
               "w-fit rounded-full px-3 py-1 text-xs",
               isPaid
-                ? "border-warning/30 bg-warning/10 text-warning"
+                ? "border-success/20 bg-success-soft text-success"
                 : "border-warning/30 bg-warning/10 text-warning"
             )}
           >
@@ -57,7 +55,7 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
       <div className="grid gap-8 px-5 py-7 sm:px-7 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
         <div>
           <p className="text-sm text-content">Valor total da fatura</p>
-          <p className="mt-2 font-heading text-5xl font-semibold tracking-[-0.055em] text-content-strong sm:text-6xl">
+          <p className="mt-2 text-4xl font-semibold tracking-[-0.055em] text-content-strong sm:text-5xl">
             {formatCurrency(overview.invoice.totalAmountCents)}
           </p>
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-content">

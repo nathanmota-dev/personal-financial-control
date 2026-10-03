@@ -70,20 +70,20 @@ export function CreditCardMonthStrip({
 
   return (
     <section
-      className="rounded-[2rem] border border-border/90 bg-surface-raised/90 p-4 shadow-[0_20px_70px_rgb(var(--surface-rgb) / .3)] sm:p-5"
+      className="rounded-[20px] border border-border bg-card p-4 shadow-none sm:p-5"
       aria-busy={isLoading}
     >
       <div className="flex items-start justify-between gap-4 px-1">
         <div>
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-content">
+          <p className="text-[0.68rem] font-semibold text-content">
             Linha do tempo
           </p>
-          <h2 className="mt-1 font-heading text-xl font-semibold text-content-strong">Suas faturas</h2>
+          <h2 className="mt-1 text-xl font-semibold text-content-strong">Suas faturas</h2>
         </div>
         <CalendarDays className="size-5 text-content" />
       </div>
 
-      <div className="mt-4 rounded-2xl border border-border/70 bg-surface/25 px-2 py-2 sm:px-3">
+      <div className="mt-4 rounded-2xl border border-border/70 bg-muted/30 px-2 py-2 sm:px-3">
         <CreditCardTimelineChart points={visiblePoints} />
       </div>
 
@@ -95,7 +95,7 @@ export function CreditCardMonthStrip({
           aria-label="Mostrar faturas anteriores"
           disabled={activePageIndex === 0}
           onClick={showPreviousPage}
-          className="rounded-xl border-input bg-surface-raised/70 text-content hover:bg-surface-elevated hover:text-content-strong"
+          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
         >
           <ChevronLeft className="size-4" />
         </Button>
@@ -128,7 +128,7 @@ export function CreditCardMonthStrip({
           aria-label="Mostrar próximas faturas"
           disabled={activePageIndex >= maxPageIndex}
           onClick={showNextPage}
-          className="rounded-xl border-input bg-surface-raised/70 text-content hover:bg-surface-elevated hover:text-content-strong"
+          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
         >
           <ChevronRight className="size-4" />
         </Button>
@@ -163,8 +163,8 @@ function CreditCardMonthCard({
       className={cn(
         "min-w-0 rounded-2xl border px-3 py-3 text-left transition-all duration-200",
         selected
-          ? "border-brand/90 bg-brand/10 shadow-[0_0_24px_rgb(var(--brand-rgb) / .12)] ring-1 ring-brand/25"
-          : "border-border bg-surface/30 hover:border-input hover:bg-surface-raised/70"
+          ? "border-brand/90 bg-brand/10 shadow-none ring-1 ring-brand/25"
+          : "border-border bg-muted/30 hover:border-input hover:bg-card"
       )}
     >
       <div className="flex items-center justify-between gap-1">

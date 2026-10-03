@@ -63,10 +63,10 @@ export function InvestmentGrowthChart({
   }
 
   return (
-    <div className="rounded-[1.75rem] border border-border bg-surface/75 p-5 shadow-[0_24px_80px_rgb(var(--surface-rgb) / .35)]">
+    <div className="rounded-[20px] border border-border bg-card p-5 shadow-none">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h3 className="font-heading text-lg font-semibold text-content-strong">
+          <h3 className="text-lg font-semibold text-content-strong">
             Saldo estimado e movimentações
           </h3>
           <p className="mt-1 text-sm text-content">
@@ -100,7 +100,7 @@ export function InvestmentGrowthChart({
         }}
       >
         <AreaChart data={data} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
           <XAxis
             dataKey="competenceMonth"
             axisLine={false}

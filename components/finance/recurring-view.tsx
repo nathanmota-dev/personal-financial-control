@@ -31,8 +31,8 @@ export function RecurringView({
     <div className="space-y-6">
       <PageHeader
         eyebrow="Recorrentes"
-        title={`Agenda recorrente de ${formatMonthLabel(month)}`}
-        description="Modele compromissos mensais com nome, categoria e data de geração. O histórico pode ser preservado ou excluído quando uma regra deixar de existir."
+        title="Recorrentes"
+        description={`Organize seus compromissos mensais e acompanhe a agenda de ${formatMonthLabel(month)}.`}
         actions={
           <>
             <AccountSetupDialog />

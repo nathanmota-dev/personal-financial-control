@@ -6,25 +6,25 @@ export function RecurringSegmentedControl() {
   return (
     <TabsList
       aria-label="Visualização das recorrências"
-      className="!flex !h-auto w-full overflow-x-auto rounded-[1.35rem] border border-border bg-surface/80 p-1.5 shadow-[0_18px_50px_rgb(var(--surface-rgb) / .28)]"
+      className="!flex !h-auto max-w-full justify-start overflow-x-auto rounded-xl border border-border bg-card p-1.5 shadow-none"
     >
       <TabsTrigger
         value="recurring"
-        className="h-auto min-h-10 min-w-[9.5rem] flex-1 rounded-xl px-4 py-3 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-brand data-[state=active]:text-background data-[state=active]:shadow-[0_8px_24px_rgb(var(--brand-rgb) / .2)]"
+        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
       >
         <Repeat2 className="size-4" />
         <span>Recorrências</span>
       </TabsTrigger>
       <TabsTrigger
         value="category"
-        className="h-auto min-h-10 min-w-[9.5rem] flex-1 rounded-xl px-4 py-3 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-brand data-[state=active]:text-background data-[state=active]:shadow-[0_8px_24px_rgb(var(--brand-rgb) / .2)]"
+        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
       >
         <ChartPie className="size-4" />
         <span>Gastos por categoria</span>
       </TabsTrigger>
       <TabsTrigger
         value="calendar"
-        className="h-auto min-h-10 min-w-[9.5rem] flex-1 rounded-xl px-4 py-3 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-brand data-[state=active]:text-background data-[state=active]:shadow-[0_8px_24px_rgb(var(--brand-rgb) / .2)]"
+        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
       >
         <CalendarDays className="size-4" />
         <span>Calendário</span>

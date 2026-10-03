@@ -14,8 +14,8 @@ export function InvestmentHistoryMetric({
 
   return (
     <div className={`rounded-2xl border px-4 py-3 ${styles[tone]}`}>
-      <p className="text-[0.68rem] uppercase tracking-[0.18em] opacity-70">{label}</p>
-      <p className="mt-1 font-heading text-xl font-semibold tracking-tight">{value}</p>
+      <p className="text-[0.68rem] font-medium opacity-70">{label}</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight">{value}</p>
       {detail ? <p className="mt-1 text-xs opacity-65">{detail}</p> : null}
     </div>
   );
