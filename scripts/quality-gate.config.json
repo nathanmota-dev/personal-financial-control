@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "setupVersion": 1,
+  "mode": "managed",
+  "qualityMode": "no-regression",
+  "localBenchmarkBaselinePath": "scripts/benchmark-baseline.local.json",
+  "projects": [
+    {
+      "name": "app",
+      "directory": ".",
+      "installDirectory": ".",
+      "sourceRoots": [
+        "app",
+        "components",
+        "hooks",
+        "lib",
+        "proxy.ts"
+      ],
+      "coveragePath": "coverage/coverage-summary.json",
+      "benchmarkPath": "reports/benchmarks/app.json",
+      "commands": {
+        "lint": [
+          "npm",
+          "run",
+          "lint",
+          "--",
+          "--max-warnings=0"
+        ],
+        "typecheck": [
+          "npm",
+          "run",
+          "typecheck"
+        ],
+        "build": [
+          "npm",
+          "run",
+          "build"
+        ],
+        "coverage": [
+          "npm",
+          "run",
+          "test:coverage:ci"
+        ],
+        "benchmark": [
+          "npm",
+          "run",
+          "benchmark:ci"
+        ]
+      }
+    }
+  ],
+  "policy": {
+    "maxFileLines": 350,
+    "maxFunctionLines": 100,
+    "minimumCoverage": 80,
+    "maxRegressionPercent": 20,
+    "duplication": {
+      "minLines": 5,
+      "minTokens": 50,
+      "maxLines": 10000,
+      "mode": "strict",
+      "crossFormats": "js-ts"
+    }
+  },
+  "baseBranch": "main",
+  "nodeVersion": "24",
+  "ci": {}
+}

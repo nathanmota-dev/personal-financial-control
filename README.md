@@ -135,6 +135,10 @@ importação.
 
 ## Desenvolvimento
 
+O projeto inclui verificações de qualidade, cobertura e performance para PRs.
+Consulte [a documentação do quality gate](docs/quality-gate.md) para instalar as
+dependências dos helpers, executar os comandos e revisar os relatórios.
+
 Para executar o servidor de desenvolvimento:
 
 ```bash

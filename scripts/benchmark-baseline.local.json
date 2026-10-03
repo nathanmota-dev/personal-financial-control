@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "maxRegressionPercent": 20
+  },
+  "projects": {
+    "app": {
+      "benchmarks": {
+        "benchmarks/finance.bench.ts > Compound interest > 5 years with monthly contributions (60 months)": {
+          "hz": 966099.2087646796,
+          "mean": 0.0010350903829832014,
+          "median": 0.0008820000000469008,
+          "rme": 0.42345020013050316,
+          "sampleCount": 966100
+        },
+        "benchmarks/finance.bench.ts > Compound interest > 50 years with monthly contributions (600 months)": {
+          "hz": 73868.53750908807,
+          "mean": 0.013537563267405555,
+          "median": 0.012113000000226748,
+          "rme": 1.774139388708071,
+          "sampleCount": 73869
+        },
+        "benchmarks/finance.bench.ts > Projected balance > 90 days with 100 distributed events": {
+          "hz": 13624.440498726166,
+          "mean": 0.07339750943119434,
+          "median": 0.06946300000026895,
+          "rme": 0.33814409832665204,
+          "sampleCount": 13625
+        },
+        "benchmarks/finance.bench.ts > Projected balance > 90 days with 5000 events sharing three dates": {
+          "hz": 106.38770683087657,
+          "mean": 9.399582242990627,
+          "median": 9.147985999999946,
+          "rme": 1.6928668791070536,
+          "sampleCount": 107
+        }
+      }
+    }
+  },
+  "runner": {
+    "kind": "local",
+    "cpuModel": "AMD Ryzen 5 7500F 6-Core Processor",
+    "platform": "linux",
+    "arch": "x64",
+    "nodeMajor": 24
+  },
+  "runtime": {
+    "node": "v24.18.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "headSha": "local",
+  "runId": "local",
+  "runAttempt": "1"
+}

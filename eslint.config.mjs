@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Installed agent skills include standalone tooling outside the app.
+    ".agents/skills/**",
+    // Standalone CommonJS gate helpers; application utilities stay linted.
+    "scripts/{setup,config,source-scan,quality-gate,benchmark-gate,workflow-report,run-checks,pr-validation,pr-report,publish-pr-report,select-projects,test-helpers}{,.node-test}.js",
+    // Generated diagnostics and coverage reports.
+    "reports/**",
+    "coverage/**",
     // Generated from the linted TypeScript migration entry point.
     "scripts/migrate.mjs",
   ]),

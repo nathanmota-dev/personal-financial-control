@@ -49,4 +49,39 @@ describe("server environment", () => {
 
     expect(() => getServerEnv()).toThrow("DATA_ENCRYPTION_KEY");
   });
+
+  it("prefers an explicit SQLite URL without forwarding remote tokens", () => {
+    process.env.DEMO_MODE = "off";
+    process.env.DATA_ENCRYPTION_KEY = "test-key";
+    process.env.DATABASE_URL = "file:./test-environment.db";
+    process.env.TURSO_DATABASE_URL = "libsql://test.invalid";
+    process.env.TURSO_AUTH_TOKEN = "test-turso-token";
+    process.env.TOKEN = "test-token";
+
+    expect(getServerEnv()).toMatchObject({
+      DATABASE_URL: "file:./test-environment.db",
+      TOKEN: undefined,
+    });
+  });
+
+  it("uses Turso credentials or the test SQLite fallback when no explicit URL exists", () => {
+    process.env.DEMO_MODE = "off";
+    process.env.DATA_ENCRYPTION_KEY = "test-key";
+    delete process.env.DATABASE_URL;
+    delete process.env.TOKEN;
+    process.env.TURSO_DATABASE_URL = "libsql://test.invalid";
+    process.env.TURSO_AUTH_TOKEN = "test-turso-token";
+
+    expect(getServerEnv()).toMatchObject({
+      DATABASE_URL: "libsql://test.invalid",
+      TOKEN: "test-turso-token",
+    });
+
+    delete process.env.TURSO_DATABASE_URL;
+    delete process.env.TURSO_AUTH_TOKEN;
+    expect(getServerEnv()).toMatchObject({
+      DATABASE_URL: "file:./.tmp/test.db",
+      TOKEN: undefined,
+    });
+  });
 });

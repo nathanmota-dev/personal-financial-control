@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.agents/skills/**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -41,3 +42,6 @@ yarn-error.log*
 next-env.d.ts
 .codex/
 .local/
+/reports/
+/scripts/node_modules/
+/coverage/

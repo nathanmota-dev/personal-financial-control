@@ -1,0 +1,58 @@
+name: PR Quality Gate
+on:
+  pull_request:
+    branches: [__BASE_BRANCH__]
+    types: [opened, synchronize, reopened, ready_for_review]
+permissions:
+  contents: read
+concurrency:
+  group: quality-gate-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  evaluate:
+    runs-on: ubuntu-22.04
+    env:
+      CI: "true"
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: __NODE_VERSION__
+      - name: Select trusted policy and baseline
+        shell: bash
+        run: |
+          if git cat-file -e "${PR_BASE_SHA}:scripts/quality-gate.config.json"; then
+            git show "${PR_BASE_SHA}:scripts/quality-gate.config.json" > "$RUNNER_TEMP/quality-gate.config.json"
+            echo "QUALITY_GATE_CONFIG_PATH=$RUNNER_TEMP/quality-gate.config.json" >> "$GITHUB_ENV"
+          fi
+          if git cat-file -e "${PR_BASE_SHA}:scripts/baseline.json"; then
+            git show "${PR_BASE_SHA}:scripts/baseline.json" > "$RUNNER_TEMP/quality-baseline.json"
+            echo "QUALITY_GATE_BASELINE_PATH=$RUNNER_TEMP/quality-baseline.json" >> "$GITHUB_ENV"
+            echo "QUALITY_GATE_BASELINE_LABEL=base@${PR_BASE_SHA}:scripts/baseline.json" >> "$GITHUB_ENV"
+          else
+            echo "QUALITY_GATE_BOOTSTRAP=true" >> "$GITHUB_ENV"
+          fi
+      - name: Install gate tools
+        run: npm ci --prefix scripts
+      - name: Run checks and collect reports
+        run: node scripts/run-checks.js --root . --workflow quality
+      - name: Publish metric summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f reports/quality-gate.md ]]; then
+            cat reports/quality-gate.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: reports/
