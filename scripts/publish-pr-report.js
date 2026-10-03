@@ -30,7 +30,25 @@ function download(root, repository, number, workflow, run) {
     return { manifest: C.readJson(manifestPath), metrics: C.readJson(metricPath), report: fs.readFileSync(reportPath, "utf8") };
   } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 }
-async function reconcileAndPublish({ github, context, core, root = process.cwd(), downloadReport = download }) {
+async function waitForPerformance({ github, context, core, timeoutMs = 600000, intervalMs = 15000,
+  now = Date.now, sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)) }) {
+  const pr = context.payload.pull_request, deadline = now() + timeoutMs;
+  while (now() < deadline) {
+    const current = await github.rest.pulls.get({ ...context.repo, pull_number: pr.number });
+    if (current.data.state !== "open" || current.data.head.sha !== pr.head.sha) return true;
+    const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+      ...context.repo, workflow_id: "performance.yml", event: "pull_request", head_sha: pr.head.sha, per_page: 100,
+    });
+    const scoped = runs.map((run) => ({ ...run, pull_requests: run.pull_requests?.length ? run.pull_requests : [pr] }));
+    const run = P.latestRun(scoped, pr.number, pr.head.sha);
+    if (run?.status === "completed") return true;
+    core.info("Waiting for the current SHA's latest performance attempt.");
+    await sleep(Math.min(intervalMs, Math.max(0, deadline - now())));
+  }
+  return false;
+}
+async function reconcileAndPublish({ github, context, core, root = process.cwd(), downloadReport = download,
+  currentEvaluation, performanceTimedOut = false }) {
   const repo = context.repo, event = context.payload.workflow_run, sha = event.head_sha;
   const associated = await github.paginate(github.rest.repos.listPullRequestsAssociatedWithCommit, { ...repo, commit_sha: sha, per_page: 100 });
   const pr = [...associated, ...(event.pull_requests || [])].find((item) => item.state === "open" && item.head?.sha === sha);
@@ -42,13 +60,24 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
     const runs = definition ? await github.paginate(github.rest.actions.listWorkflowRuns, { ...repo, workflow_id: definition.id, event: "pull_request", head_sha: sha, per_page: 100 }) : [];
     // GitHub sometimes omits pull_requests; the API association above establishes this PR/SHA.
     const scoped = runs.map((run) => ({ ...run, pull_requests: run.pull_requests?.length ? run.pull_requests : [{ number: pr.number, head: { sha } }] }));
-    const run = P.latestRun(scoped, pr.number, sha);
+    let run = P.latestRun(scoped, pr.number, sha);
+    // The inline publisher is still running, but its prerequisite gate job is finished.
+    // Only use needs.evaluate.result for this exact run and attempt, never another run.
+    if (currentEvaluation && name === "PR Quality Gate" && run?.status !== "completed"
+      && String(run?.id) === String(context.runId) && run.run_attempt === currentEvaluation.attempt
+      && ["success", "failure", "cancelled", "skipped"].includes(currentEvaluation.conclusion)) {
+      run = { ...run, status: "completed", conclusion: currentEvaluation.conclusion };
+    }
     workflows.push({ name, run, url: run?.html_url });
   }
   const running = workflows.some((workflow) => workflow.run && workflow.run.status !== "completed");
   const details = [];
   for (const workflow of workflows) {
     workflow.state = P.classify(workflow.run, running || context.payload.action !== "completed");
+    if (performanceTimedOut && workflow.name === "Performance") {
+      workflow.state = "FAIL";
+      details.push("## Performance\n\n**FAIL** — Timed out waiting for the matching performance workflow.");
+    }
     if (workflow.run?.status !== "completed") continue;
     try {
       const data = await downloadReport(root, `${repo.owner}/${repo.repo}`, pr.number, workflow.name, workflow.run);
@@ -95,4 +124,4 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
     description: "All selected checks passed and the report was published", target_url: `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}` });
   return { state, body };
 }
-module.exports = { download, reconcileAndPublish };
+module.exports = { download, waitForPerformance, reconcileAndPublish };

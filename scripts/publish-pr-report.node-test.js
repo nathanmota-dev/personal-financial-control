@@ -7,6 +7,7 @@ function fixture(options = {}) {
   const runs = { 1: [run(11)], 2: [run(12)] };
   if (options.cancelled) runs[2][0].conclusion = "cancelled";
   if (options.pending) runs[2][0].status = "in_progress";
+  if (options.inline) runs[1][0].status = "in_progress";
   if (options.missing) runs[2] = [];
   function endpoint(kind) {
     const result = async (input) => {
@@ -37,7 +38,7 @@ function fixture(options = {}) {
       throw new Error(`Unexpected endpoint ${method.kind}`);
     },
   };
-  const context = { repo: { owner: "test", repo: "repo" }, payload: { action: "completed", workflow_run: { head_sha: sha, pull_requests: [] } }, serverUrl: "https://github.com", runId: 50 };
+  const context = { repo: { owner: "test", repo: "repo" }, payload: { action: "completed", workflow_run: { head_sha: sha, pull_requests: [] } }, serverUrl: "https://github.com", runId: options.inline ? 11 : 50 };
   async function downloadReport(root, repository, number, workflow, selected) {
     if (options.artifactMissing) throw new Error("Report artifact missing");
     return { manifest: { schemaVersion: 1, headSha: sha, runId: selected.id, runAttempt: options.oldArtifact ? 1 : 2, overall: "PASS", checks: [
@@ -92,4 +93,58 @@ test("publication failure cannot leave a newly passing status", async () => {
   const { calls, args } = fixture({ publishError: true });
   await assert.rejects(Publisher.reconcileAndPublish(args), /Publication rejected/);
   assert.ok(calls.filter((call) => call.kind === "status").every((call) => call.input.state !== "success"));
+});
+test("inline report uses the finished quality job while its parent workflow is still running", async () => {
+  const { args } = fixture({ inline: true });
+  const result = await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion: "success", attempt: 2 } });
+  assert.equal(result.state, "PASS");
+});
+test("inline report cannot hide failed quality checks or borrow another attempt's result", async () => {
+  for (const conclusion of ["failure", "cancelled", "skipped"]) {
+    const { args } = fixture({ inline: true });
+    assert.equal((await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion, attempt: 2 } })).state, "FAIL");
+  }
+  for (const change of [{ attempt: 1 }, { runId: 99 }]) {
+    const { args } = fixture({ inline: true });
+    if (change.runId) args.context.runId = change.runId;
+    assert.equal((await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion: "success", attempt: change.attempt || 2 } })).state, "PENDING");
+  }
+});
+test("performance timeout publishes failure rather than leaving a pending report", async () => {
+  const { args } = fixture({ inline: true, pending: true });
+  const result = await Publisher.reconcileAndPublish({ ...args, currentEvaluation: { conclusion: "success", attempt: 2 }, performanceTimedOut: true });
+  assert.equal(result.state, "FAIL"); assert.match(result.body, /Timed out/);
+});
+function waitingFixture(sequences, options = {}) {
+  const pr = { number: 3, state: "open", head: { sha: "current-sha" } };
+  let polls = 0, elapsed = 0;
+  const args = {
+    context: { repo: { owner: "test", repo: "repo" }, payload: { pull_request: pr } },
+    core: { info() {} }, timeoutMs: 3, intervalMs: 1, now: () => elapsed,
+    sleep: async (ms) => { elapsed += ms; },
+    github: {
+      rest: { pulls: { get: async () => ({ data: options.stale ? { ...pr, head: { sha: "new-sha" } } : pr }) }, actions: { listWorkflowRuns() {} } },
+      async paginate(method, input) {
+        assert.equal(input.head_sha, pr.head.sha); assert.equal(input.event, "pull_request");
+        assert.equal(input.workflow_id, "performance.yml");
+        return sequences[Math.min(polls++, sequences.length - 1)];
+      },
+    },
+  };
+  return { args, polls: () => polls };
+}
+function performanceRun(id, status, attempt = 1) {
+  return { id, head_sha: "current-sha", event: "pull_request", status, run_attempt: attempt,
+    created_at: `2026-09-${String(id).padStart(2, "0")}T00:00:00Z`, pull_requests: [] };
+}
+test("inline publisher waits through missing and running performance work for the latest attempt", async () => {
+  const old = performanceRun(1, "completed"), running = performanceRun(2, "in_progress", 2);
+  const { args, polls } = waitingFixture([[], [old, running], [old, { ...running, status: "completed", conclusion: "failure" }]]);
+  assert.equal(await Publisher.waitForPerformance(args), true); assert.equal(polls(), 3);
+});
+test("inline publisher stops waiting at the deadline or when the PR head changes", async () => {
+  const waiting = waitingFixture([[]]);
+  assert.equal(await Publisher.waitForPerformance(waiting.args), false); assert.equal(waiting.polls(), 3);
+  const stale = waitingFixture([[]], { stale: true });
+  assert.equal(await Publisher.waitForPerformance(stale.args), true); assert.equal(stale.polls(), 0);
 });
