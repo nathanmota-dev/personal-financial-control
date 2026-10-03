@@ -1,4 +1,5 @@
 "use client";
+import { MoneyInput } from "@/components/finance/money-input";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -37,13 +38,13 @@ import { cn } from "@/lib/utils";
 import { EMPTY_FILTER_VALUE, periodLabels } from "./labels";
 
 const filterInputClassName =
-  "h-10 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] focus-visible:border-brand/70 focus-visible:ring-brand/20";
+  "h-10 rounded-xl border-input bg-card text-sm text-content-strong shadow-none focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const filterSelectTriggerClassName =
-  "h-10 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
+  "h-10 w-full rounded-xl border-input bg-card pr-11 pl-4 text-left text-sm text-content-strong shadow-none hover:bg-card focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
 const filterSelectContentClassName =
-  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
+  "rounded-xl border-border bg-card p-1 text-content-strong shadow-none";
 const filterSelectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
+  "min-h-10 rounded-lg px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
 
 export function ProjectionFilters({
   accounts,
@@ -115,7 +116,7 @@ export function ProjectionFilters({
   }
 
   return (
-    <Card className="rounded-[1.75rem] border-border bg-surface/75">
+    <Card className="rounded-[20px] border-border bg-card">
       <CardHeader className="gap-2">
         <div className="flex items-center gap-3">
           <div className={cn(financeIconClassName, "bg-brand/10 text-brand")}>
@@ -168,7 +169,7 @@ export function ProjectionFilters({
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="w-auto overflow-hidden rounded-[1.5rem] border border-border bg-surface/95 p-0 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]"
+                className="w-auto overflow-hidden rounded-[20px] border border-border bg-card p-0 text-content-strong shadow-none"
               >
                 <Calendar
                   mode="single"
@@ -234,7 +235,7 @@ export function ProjectionFilters({
 
           <FilterField label="Reserva mínima">
             <div className="flex gap-2">
-              <Input
+              <MoneyInput
                 inputMode="decimal"
                 value={reserveInput}
                 onChange={(event) => setReserveInput(event.target.value)}
@@ -243,7 +244,7 @@ export function ProjectionFilters({
                     applyReserve();
                   }
                 }}
-                className={cn(filterInputClassName, "font-mono")}
+                className={cn(filterInputClassName, "tabular-nums")}
                 placeholder="0,00"
               />
               <Button
@@ -253,7 +254,7 @@ export function ProjectionFilters({
                 onClick={applyReserve}
                 disabled={isPending}
                 aria-label="Aplicar reserva mínima"
-                className="h-10 border-input bg-surface/80 text-content-strong hover:bg-surface-raised"
+                className="h-10 border-input bg-card text-content-strong hover:bg-surface-raised"
               >
                 <Check className="size-4" />
               </Button>
@@ -296,7 +297,7 @@ export function ProjectionFilters({
 function FilterField({ label, children }: FilterFieldProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-xs uppercase tracking-[0.18em] text-content">
+      <Label className="text-xs font-medium text-content">
         {label}
       </Label>
       {children}
@@ -314,7 +315,7 @@ function ToggleFilter({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-2xl border border-border bg-surface-raised/40 p-4",
+        "flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-4",
         disabled && "opacity-60"
       )}
     >

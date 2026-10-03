@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -31,14 +32,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const fieldClassName =
-  "h-10 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
+  "h-10 rounded-xl border-input bg-card text-sm text-content-strong shadow-none placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const selectTriggerClassName =
-  "h-10 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20";
+  "h-10 w-full rounded-xl border-input bg-card pr-11 pl-4 text-left text-sm text-content-strong shadow-none hover:bg-card focus-visible:border-brand/70 focus-visible:ring-brand/20";
 const selectContentClassName =
-  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
+  "rounded-xl border-border bg-card p-1 text-content-strong shadow-none";
 const selectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
-const fieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-content";
+  "min-h-10 rounded-lg px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
+const fieldLabelClassName = "text-xs font-medium text-content";
 
 export function ProjectionSimulationDialog({
   accounts,
@@ -116,7 +117,7 @@ export function ProjectionSimulationDialog({
           Simular compra
         </Button>
       </DialogTrigger>
-      <DialogContent className="border-border bg-surface/95 text-content-strong sm:max-w-lg">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Simular compra</DialogTitle>
           <DialogDescription className="text-content">
@@ -145,11 +146,11 @@ export function ProjectionSimulationDialog({
               <Label htmlFor={`${formId}-amount`} className={fieldLabelClassName}>
                 Valor
               </Label>
-              <Input
+              <MoneyInput
                 id={`${formId}-amount`}
                 value={amount}
                 onChange={(event) => setAmount(event.target.value)}
-                className={cn(fieldClassName, "font-mono")}
+                className={cn(fieldClassName, "tabular-nums")}
                 inputMode="decimal"
                 placeholder={centsToMoneyInput(0)}
               />

@@ -29,7 +29,7 @@ export function AllocationDialog({
 
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-lg">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{isRelease ? "Liberar saldo" : "Alocar saldo"}</DialogTitle>
           <DialogDescription className="text-content">
@@ -44,7 +44,7 @@ export function AllocationDialog({
             onSubmit();
           }}
         >
-          <LabeledInput
+          <LabeledInput monetary
             id="goal-allocation-amount"
             label="Valor"
             value={form.amount}
@@ -62,7 +62,7 @@ export function AllocationDialog({
               setForm((current) => ({ ...current, occurredOn: event.target.value }))
             }
           />
-          <div className="rounded-2xl border border-border bg-surface-raised/50 px-4 py-3 text-sm text-content">
+          <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-content">
             {isRelease
               ? `Alocado nesta meta: ${formatCurrency(state?.goal.allocatedCents ?? 0)}`
               : `Reserva livre: ${formatCurrency(freeReserveCents)}`}
@@ -77,7 +77,7 @@ export function AllocationDialog({
               onChange={(event) =>
                 setForm((current) => ({ ...current, notes: event.target.value }))
               }
-              className="min-h-20 border-input bg-surface/70 text-content-strong"
+              className="min-h-20 border-input bg-card text-content-strong"
             />
           </div>
           <DialogFooter>

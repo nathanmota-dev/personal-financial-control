@@ -23,6 +23,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FormSelect } from "@/components/finance/form-select";
+import { SelectItem } from "@/components/ui/select";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -43,7 +46,6 @@ import type {
 import {
   centsToMoneyInput,
   formatCurrency,
-  formatMoneyInput,
   moneyInputToCents,
   transactionTypeLabels,
 } from "@/lib/finance-ui";
@@ -52,26 +54,28 @@ import { needsInvestmentReductionConfirmation } from "@/lib/transaction-reductio
 import { transactionSaveDestination } from "@/lib/transaction-navigation";
 
 const NO_CATEGORY_VALUE = "__no-category__";
-const fieldClassName =
-  "h-11 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
-const selectClassName =
-  "h-11 w-full rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] outline-none transition-colors focus:border-brand/70 focus:ring-2 focus:ring-brand/20";
-const labelClassName = "text-xs uppercase tracking-[0.16em] text-content";
+const fieldClassName = "";
+const selectClassName = "w-full";
+const labelClassName = "text-xs font-medium text-content";
 
 function compatibleCategories(
   categories: TransactionCategoryOption[],
-  type: TransactionRow["type"]
+  type: TransactionRow["type"],
 ) {
-  return categories.filter((category) => isTransactionCategoryCompatible(category.group, type));
+  return categories.filter((category) =>
+    isTransactionCategoryCompatible(category.group, type),
+  );
 }
 
 function categoryValue(
   categories: TransactionCategoryOption[],
   type: TransactionRow["type"],
-  currentCategoryId?: string | null
+  currentCategoryId?: string | null,
 ) {
   const category = categories.find(
-    (option) => option.id === currentCategoryId && isTransactionCategoryCompatible(option.group, type)
+    (option) =>
+      option.id === currentCategoryId &&
+      isTransactionCategoryCompatible(option.group, type),
   );
 
   if (category) {
@@ -80,21 +84,29 @@ function categoryValue(
 
   return type === "income" || type === "expense"
     ? NO_CATEGORY_VALUE
-    : compatibleCategories(categories, type)[0]?.id ?? NO_CATEGORY_VALUE;
+    : (compatibleCategories(categories, type)[0]?.id ?? NO_CATEGORY_VALUE);
 }
 
 function accountValue(
   accounts: TransactionAccountOption[],
   type: TransactionRow["type"],
-  currentAccountId?: string
+  currentAccountId?: string,
 ) {
-  const available = type === "expense" || investmentType(type)
-    ? accounts.filter((account) =>
-        account.type === "checking" || account.type === "savings" || account.type === "cash"
-      )
-    : accounts;
+  const available =
+    type === "expense" || investmentType(type)
+      ? accounts.filter(
+          (account) =>
+            account.type === "checking" ||
+            account.type === "savings" ||
+            account.type === "cash",
+        )
+      : accounts;
 
-  return available.find((account) => account.id === currentAccountId)?.id ?? available[0]?.id ?? "";
+  return (
+    available.find((account) => account.id === currentAccountId)?.id ??
+    available[0]?.id ??
+    ""
+  );
 }
 
 function investmentType(type: TransactionRow["type"]) {
@@ -115,33 +127,41 @@ export function TransactionDialog({
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const initialType = transaction?.type ?? "expense";
-  const [selectedType, setSelectedType] = useState<TransactionRow["type"]>(initialType);
+  const [selectedType, setSelectedType] =
+    useState<TransactionRow["type"]>(initialType);
   const [selectedAccountId, setSelectedAccountId] = useState(() =>
-    accountValue(accounts, initialType, transaction?.accountId)
+    accountValue(accounts, initialType, transaction?.accountId),
   );
   const [selectedCategoryId, setSelectedCategoryId] = useState(() =>
-    categoryValue(categories, initialType, transaction?.categoryId)
+    categoryValue(categories, initialType, transaction?.categoryId),
   );
   const [transactionDate, setTransactionDate] = useState(
-    transaction?.transactionDate ?? `${month}-01`
+    transaction?.transactionDate ?? `${month}-01`,
   );
   const [competenceMonth, setCompetenceMonth] = useState(
-    transaction?.competenceMonth ?? month
+    transaction?.competenceMonth ?? month,
   );
   const [fundingSource, setFundingSource] = useState<TransactionFundingSource>(
-    transaction?.fundingSource ?? "account"
+    transaction?.fundingSource ?? "account",
   );
   const [isReductionOpen, setIsReductionOpen] = useState(false);
-  const [reductionSources, setReductionSources] = useState<InvestmentReductionSource[]>([]);
+  const [reductionSources, setReductionSources] = useState<
+    InvestmentReductionSource[]
+  >([]);
   const [reductionAmountCents, setReductionAmountCents] = useState(0);
-  const [previousSelections, setPreviousSelections] = useState<InvestmentReductionSelection[]>([]);
-  const [pendingPayload, setPendingPayload] = useState<TransactionMutationPayload | null>(null);
+  const [previousSelections, setPreviousSelections] = useState<
+    InvestmentReductionSelection[]
+  >([]);
+  const [pendingPayload, setPendingPayload] =
+    useState<TransactionMutationPayload | null>(null);
 
   function resetFormState() {
     const type = transaction?.type ?? "expense";
     setSelectedType(type);
     setSelectedAccountId(accountValue(accounts, type, transaction?.accountId));
-    setSelectedCategoryId(categoryValue(categories, type, transaction?.categoryId));
+    setSelectedCategoryId(
+      categoryValue(categories, type, transaction?.categoryId),
+    );
     setTransactionDate(transaction?.transactionDate ?? `${month}-01`);
     setCompetenceMonth(transaction?.competenceMonth ?? month);
     setFundingSource(transaction?.fundingSource ?? "account");
@@ -160,22 +180,34 @@ export function TransactionDialog({
     setSelectedType(nextType);
     setFundingSource(nextType === "expense" ? fundingSource : "account");
     setSelectedAccountId(accountValue(accounts, nextType, selectedAccountId));
-    const currentCategoryId = selectedCategoryId === NO_CATEGORY_VALUE ? null : selectedCategoryId;
-    setSelectedCategoryId(categoryValue(categories, nextType, currentCategoryId));
+    const currentCategoryId =
+      selectedCategoryId === NO_CATEGORY_VALUE ? null : selectedCategoryId;
+    setSelectedCategoryId(
+      categoryValue(categories, nextType, currentCategoryId),
+    );
   }
 
   async function onSubmit(formData: FormData) {
     setFormError(null);
     const accountId = String(formData.get("accountId") ?? "").trim();
-    const categoryValueFromForm = String(formData.get("categoryId") ?? "").trim();
-    const categoryId = categoryValueFromForm && categoryValueFromForm !== NO_CATEGORY_VALUE
-      ? categoryValueFromForm
-      : null;
+    const categoryValueFromForm = String(
+      formData.get("categoryId") ?? "",
+    ).trim();
+    const categoryId =
+      categoryValueFromForm && categoryValueFromForm !== NO_CATEGORY_VALUE
+        ? categoryValueFromForm
+        : null;
     const description = String(formData.get("description") ?? "").trim();
     const rawAmount = String(formData.get("amount") ?? "").trim();
-    const type = String(formData.get("type")) as TransactionMutationPayload["type"];
-    const status = String(formData.get("status")) as TransactionMutationPayload["status"];
-    const requestedFundingSource = String(formData.get("fundingSource") ?? "account") as TransactionFundingSource;
+    const type = String(
+      formData.get("type"),
+    ) as TransactionMutationPayload["type"];
+    const status = String(
+      formData.get("status"),
+    ) as TransactionMutationPayload["status"];
+    const requestedFundingSource = String(
+      formData.get("fundingSource") ?? "account",
+    ) as TransactionFundingSource;
     const transactionDate = String(formData.get("transactionDate") ?? "");
     const competenceMonth = String(formData.get("competenceMonth") ?? "");
 
@@ -222,20 +254,27 @@ export function TransactionDialog({
       competenceMonth,
       description,
       notes: String(formData.get("notes") ?? ""),
-      fundingSource: type === "expense" && !transaction?.recurringTemplateId
-        ? requestedFundingSource
-        : "account",
+      fundingSource:
+        type === "expense" && !transaction?.recurringTemplateId
+          ? requestedFundingSource
+          : "account",
     };
 
     try {
-      if (needsInvestmentReductionConfirmation(payload, transaction, todayDate())) {
+      if (
+        needsInvestmentReductionConfirmation(payload, transaction, todayDate())
+      ) {
         const sourceResult = await getInvestmentReductionSourcesAction({
-          transactionId: transaction?.fundingLink?.withdrawalTransactionId ?? transaction?.id,
+          transactionId:
+            transaction?.fundingLink?.withdrawalTransactionId ??
+            transaction?.id,
         });
 
         if (
-          (sourceResult.sources.length > 0 || sourceResult.previousSelections.length > 0) &&
-          (!sourceResult.checkpointDate || payload.transactionDate > sourceResult.checkpointDate)
+          (sourceResult.sources.length > 0 ||
+            sourceResult.previousSelections.length > 0) &&
+          (!sourceResult.checkpointDate ||
+            payload.transactionDate > sourceResult.checkpointDate)
         ) {
           setReductionSources(sourceResult.sources);
           setReductionAmountCents(payload.amountCents);
@@ -248,7 +287,10 @@ export function TransactionDialog({
 
       await persistTransaction(payload);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Não foi possível salvar o lançamento.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o lançamento.";
       showError(message);
     }
   }
@@ -260,9 +302,11 @@ export function TransactionDialog({
 
   async function persistTransaction(
     payload: TransactionMutationPayload,
-    sourceSelections?: InvestmentReductionSelection[]
+    sourceSelections?: InvestmentReductionSelection[],
   ) {
-    const nextPayload = sourceSelections ? { ...payload, sourceSelections } : payload;
+    const nextPayload = sourceSelections
+      ? { ...payload, sourceSelections }
+      : payload;
     const result = transaction
       ? await updateTransactionAction({ id: transaction.id, ...nextPayload })
       : await createTransactionAction(nextPayload);
@@ -272,7 +316,9 @@ export function TransactionDialog({
       return;
     }
 
-    toast.success(transaction ? "Lançamento atualizado." : "Lançamento criado.");
+    toast.success(
+      transaction ? "Lançamento atualizado." : "Lançamento criado.",
+    );
     clearReductionState();
     setOpen(false);
     const destination = transactionSaveDestination({
@@ -295,7 +341,11 @@ export function TransactionDialog({
     try {
       await persistTransaction(pendingPayload, selections);
     } catch (error) {
-      showError(error instanceof Error ? error.message : "Não foi possível salvar o lançamento.");
+      showError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o lançamento.",
+      );
     }
   }
 
@@ -307,15 +357,20 @@ export function TransactionDialog({
   }
 
   const filteredCategories = compatibleCategories(categories, selectedType);
-  const filteredAccounts = selectedType === "expense" || investmentType(selectedType)
-    ? accounts.filter((account) =>
-        account.type === "checking" || account.type === "savings" || account.type === "cash"
-      )
-    : accounts;
+  const filteredAccounts =
+    selectedType === "expense" || investmentType(selectedType)
+      ? accounts.filter(
+          (account) =>
+            account.type === "checking" ||
+            account.type === "savings" ||
+            account.type === "cash",
+        )
+      : accounts;
   const categoryRequired = investmentType(selectedType);
   const isExpense = selectedType === "expense";
   const isManualExpense = isExpense && !transaction?.recurringTemplateId;
-  const isInvestmentExpense = isManualExpense && fundingSource === "investments";
+  const isInvestmentExpense =
+    isManualExpense && fundingSource === "investments";
 
   return (
     <>
@@ -328,49 +383,80 @@ export function TransactionDialog({
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-surface/95 sm:max-w-2xl">
-          <DialogHeader className="border-b border-border pb-5">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-brand">Registro manual</p>
-            <DialogTitle className="text-2xl text-content-strong">
+        <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-card sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
               {transaction ? "Editar lançamento" : "Novo lançamento"}
             </DialogTitle>
             <DialogDescription>
-              Receitas e despesas podem ficar sem categoria agora e ser organizadas depois. Aportes e resgates continuam exigindo categoria.
+              Receitas e despesas podem ficar sem categoria agora e ser
+              organizadas depois. Aportes e resgates continuam exigindo
+              categoria.
             </DialogDescription>
           </DialogHeader>
           {accounts.length ? (
             <form
               key={`${transaction?.id ?? "new"}-${open}`}
-              action={(formData) => startTransition(() => void onSubmit(formData))}
+              action={(formData) =>
+                startTransition(() => void onSubmit(formData))
+              }
               className="grid gap-5"
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-type`} className={labelClassName}>Tipo</Label>
-                  <select id={`${formId}-type`} name="type" value={selectedType} onChange={(event) => handleTypeChange(event.target.value)} className={selectClassName}>
-                    {Object.entries(transactionTypeLabels).map(([value, label]) => (
-                      <option key={value} value={value}>{label}</option>
-                    ))}
-                  </select>
+                  <Label htmlFor={`${formId}-type`} className={labelClassName}>
+                    Tipo
+                  </Label>
+                  <FormSelect
+                    id={`${formId}-type`}
+                    name="type"
+                    value={selectedType}
+                    onValueChange={handleTypeChange}
+                    className={selectClassName}
+                  >
+                    {Object.entries(transactionTypeLabels).map(
+                      ([value, label]) => (
+                        <SelectItem key={value} value={value}>
+                          {label}
+                        </SelectItem>
+                      ),
+                    )}
+                  </FormSelect>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-status`} className={labelClassName}>Status</Label>
-                  <select id={`${formId}-status`} name="status" defaultValue={transaction?.status ?? "posted"} className={selectClassName}>
-                    <option value="pending">Pendente</option>
-                    <option value="posted">Lançado</option>
-                    <option value="cancelled">Cancelado</option>
-                  </select>
+                  <Label
+                    htmlFor={`${formId}-status`}
+                    className={labelClassName}
+                  >
+                    Status
+                  </Label>
+                  <FormSelect
+                    id={`${formId}-status`}
+                    name="status"
+                    defaultValue={transaction?.status ?? "posted"}
+                    className={selectClassName}
+                  >
+                    <SelectItem value="pending">Pendente</SelectItem>
+                    <SelectItem value="posted">Lançado</SelectItem>
+                    <SelectItem value="cancelled">Cancelado</SelectItem>
+                  </FormSelect>
                 </div>
                 {isManualExpense ? (
                   <fieldset className="space-y-2 md:col-span-2">
-                    <legend className={labelClassName}>Origem da despesa</legend>
-                    <div className="grid gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Origem da despesa">
+                    <legend className={labelClassName}>
+                      Origem da despesa
+                    </legend>
+                    <div
+                      className="grid gap-3 sm:grid-cols-2"
+                      role="radiogroup"
+                      aria-label="Origem da despesa"
+                    >
                       <label
                         className={cn(
                           "flex cursor-pointer gap-3 rounded-2xl border p-3 transition-colors",
                           fundingSource === "account"
                             ? "border-brand/35 bg-brand/[0.08]"
-                            : "border-border bg-surface-raised/50 hover:border-input"
+                            : "border-border bg-card hover:border-input",
                         )}
                       >
                         <input
@@ -382,8 +468,13 @@ export function TransactionDialog({
                           className="mt-1 accent-brand"
                         />
                         <span>
-                          <span className="block text-sm font-medium text-content-strong">Saldo em conta</span>
-                          <span className="mt-1 block text-xs leading-5 text-content">A despesa reduz diretamente o saldo líquido da conta.</span>
+                          <span className="block text-sm font-medium text-content-strong">
+                            Saldo em conta
+                          </span>
+                          <span className="mt-1 block text-xs leading-5 text-content">
+                            A despesa reduz diretamente o saldo líquido da
+                            conta.
+                          </span>
                         </span>
                       </label>
                       <label
@@ -391,7 +482,7 @@ export function TransactionDialog({
                           "flex cursor-pointer gap-3 rounded-2xl border p-3 transition-colors",
                           fundingSource === "investments"
                             ? "border-warning/35 bg-warning/[0.08]"
-                            : "border-border bg-surface-raised/50 hover:border-input"
+                            : "border-border bg-card hover:border-input",
                         )}
                       >
                         <input
@@ -403,88 +494,206 @@ export function TransactionDialog({
                           className="mt-1 accent-warning"
                         />
                         <span>
-                          <span className="block text-sm font-medium text-content-strong">Investimentos</span>
-                          <span className="mt-1 block text-xs leading-5 text-content">Cria um resgate automático e registra de quais ativos ele saiu.</span>
+                          <span className="block text-sm font-medium text-content-strong">
+                            Investimentos
+                          </span>
+                          <span className="mt-1 block text-xs leading-5 text-content">
+                            Cria um resgate automático e registra de quais
+                            ativos ele saiu.
+                          </span>
                         </span>
                       </label>
                     </div>
                   </fieldset>
                 ) : null}
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-account`} className={labelClassName}>
-                    {isInvestmentExpense ? "Conta do resgate e da despesa" : "Conta"}
+                  <Label
+                    htmlFor={`${formId}-account`}
+                    className={labelClassName}
+                  >
+                    {isInvestmentExpense
+                      ? "Conta do resgate e da despesa"
+                      : "Conta"}
                   </Label>
-                  <select id={`${formId}-account`} name="accountId" value={selectedAccountId} onChange={(event) => setSelectedAccountId(event.target.value)} className={selectClassName} required>
+                  <FormSelect
+                    id={`${formId}-account`}
+                    name="accountId"
+                    value={selectedAccountId}
+                    onValueChange={setSelectedAccountId}
+                    className={selectClassName}
+                    required
+                  >
                     {filteredAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name} · saldo atual {formatCurrency(account.currentBalanceCents)}
-                      </option>
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} · saldo atual{" "}
+                        {formatCurrency(account.currentBalanceCents)}
+                      </SelectItem>
                     ))}
-                  </select>
+                  </FormSelect>
                   {isInvestmentExpense ? (
-                    <p className="text-xs text-content">O resgate entra nesta conta e a despesa sai dela, mantendo o efeito líquido zerado.</p>
+                    <p className="text-xs text-content">
+                      O resgate entra nesta conta e a despesa sai dela, mantendo
+                      o efeito líquido zerado.
+                    </p>
                   ) : null}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-category`} className={labelClassName}>Categoria</Label>
-                  <select id={`${formId}-category`} name="categoryId" value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)} className={selectClassName} required={categoryRequired}>
-                    {!categoryRequired ? <option value={NO_CATEGORY_VALUE}>Sem categoria</option> : null}
-                    {!filteredCategories.length && categoryRequired ? <option value={NO_CATEGORY_VALUE}>Nenhuma categoria compatível</option> : null}
-                    {filteredCategories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-                  </select>
+                  <Label
+                    htmlFor={`${formId}-category`}
+                    className={labelClassName}
+                  >
+                    Categoria
+                  </Label>
+                  <FormSelect
+                    id={`${formId}-category`}
+                    name="categoryId"
+                    value={selectedCategoryId}
+                    onValueChange={setSelectedCategoryId}
+                    className={selectClassName}
+                    required={categoryRequired}
+                  >
+                    {!categoryRequired ? (
+                      <SelectItem value={NO_CATEGORY_VALUE}>
+                        Sem categoria
+                      </SelectItem>
+                    ) : null}
+                    {!filteredCategories.length && categoryRequired ? (
+                      <SelectItem value={NO_CATEGORY_VALUE}>
+                        Nenhuma categoria compatível
+                      </SelectItem>
+                    ) : null}
+                    {filteredCategories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </FormSelect>
                   <p className="text-xs text-content">
-                    {categoryRequired ? "Obrigatória para movimentações de investimento." : "Opcional; você pode categorizar depois."}
+                    {categoryRequired
+                      ? "Obrigatória para movimentações de investimento."
+                      : "Opcional; você pode categorizar depois."}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-amount`} className={labelClassName}>Valor</Label>
-                  <Input id={`${formId}-amount`} name="amount" inputMode="decimal" defaultValue={transaction ? centsToMoneyInput(transaction.amountCents) : ""} onBlur={(event) => { event.currentTarget.value = formatMoneyInput(event.currentTarget.value); }} placeholder="0,00" className={cn(fieldClassName, "font-mono")} required />
+                  <Label
+                    htmlFor={`${formId}-amount`}
+                    className={labelClassName}
+                  >
+                    Valor
+                  </Label>
+                  <MoneyInput
+                    id={`${formId}-amount`}
+                    name="amount"
+                    inputMode="decimal"
+                    defaultValue={
+                      transaction
+                        ? centsToMoneyInput(transaction.amountCents)
+                        : ""
+                    }
+                    placeholder="0,00"
+                    className={cn(fieldClassName, "tabular-nums")}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-date`} className={labelClassName}>Data</Label>
+                  <Label htmlFor={`${formId}-date`} className={labelClassName}>
+                    Data
+                  </Label>
                   <DatePickerField
                     id={`${formId}-date`}
                     name="transactionDate"
                     value={transactionDate}
                     required
-                    onDateChange={(nextDate) => { if (nextDate) setTransactionDate(nextDate); }}
+                    onDateChange={(nextDate) => {
+                      if (nextDate) setTransactionDate(nextDate);
+                    }}
                     className={fieldClassName}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-competence`} className={labelClassName}>Competência</Label>
+                  <Label
+                    htmlFor={`${formId}-competence`}
+                    className={labelClassName}
+                  >
+                    Competência
+                  </Label>
                   <MonthPickerField
                     id={`${formId}-competence`}
                     name="competenceMonth"
                     value={competenceMonth}
                     required
-                    onMonthChange={(nextMonth) => { if (nextMonth) setCompetenceMonth(nextMonth); }}
+                    onMonthChange={(nextMonth) => {
+                      if (nextMonth) setCompetenceMonth(nextMonth);
+                    }}
                     className={fieldClassName}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor={`${formId}-description`} className={labelClassName}>Descrição</Label>
-                  <Input id={`${formId}-description`} name="description" defaultValue={transaction?.description ?? ""} placeholder="Ex.: mercado, salário ou assinatura" className={fieldClassName} required />
+                  <Label
+                    htmlFor={`${formId}-description`}
+                    className={labelClassName}
+                  >
+                    Descrição
+                  </Label>
+                  <Input
+                    id={`${formId}-description`}
+                    name="description"
+                    defaultValue={transaction?.description ?? ""}
+                    placeholder="Ex.: mercado, salário ou assinatura"
+                    className={fieldClassName}
+                    required
+                  />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-notes`} className={labelClassName}>Observações <span className="normal-case tracking-normal text-content-subtle">(opcional)</span></Label>
-                <Textarea id={`${formId}-notes`} name="notes" defaultValue={transaction?.notes ?? ""} placeholder="Contexto adicional para este lançamento" className="min-h-20 rounded-xl border-input bg-surface/80 text-sm text-content-strong placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20" />
+                <Label htmlFor={`${formId}-notes`} className={labelClassName}>
+                  Observações{" "}
+                  <span className="normal-case tracking-normal text-content-subtle">
+                    (opcional)
+                  </span>
+                </Label>
+                <Textarea
+                  id={`${formId}-notes`}
+                  name="notes"
+                  defaultValue={transaction?.notes ?? ""}
+                  placeholder="Contexto adicional para este lançamento"
+                  className="min-h-20 rounded-xl border-input bg-card text-sm text-content-strong placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20"
+                />
               </div>
-              {formError ? <p className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">{formError}</p> : null}
+              {formError ? (
+                <p
+                  className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger"
+                  role="alert"
+                >
+                  {formError}
+                </p>
+              ) : null}
               <DialogFooter>
-                <Button type="submit" disabled={isPending} className="min-w-40">{isPending ? "Salvando..." : transaction ? "Salvar alterações" : "Criar lançamento"}</Button>
+                <Button type="submit" disabled={isPending} className="min-w-40">
+                  {isPending
+                    ? "Salvando..."
+                    : transaction
+                      ? "Salvar alterações"
+                      : "Criar lançamento"}
+                </Button>
               </DialogFooter>
             </form>
           ) : (
-            <SetupCallout title="Sem contas cadastradas" description="Crie pelo menos uma conta antes de registrar uma movimentação." />
+            <SetupCallout
+              title="Sem contas cadastradas"
+              description="Crie pelo menos uma conta antes de registrar uma movimentação."
+            />
           )}
         </DialogContent>
       </Dialog>
       <InvestmentReductionDialog
         key={`transaction-reduction-${isReductionOpen}-${transaction?.id ?? "new"}-${reductionAmountCents}-${previousSelections.map((selection) => `${selection.sourceId}:${selection.amountCents}`).join("|")}`}
         open={isReductionOpen}
-        title={transaction ? "Redistribuir a origem do resgate" : "De onde saiu o resgate?"}
+        title={
+          transaction
+            ? "Redistribuir a origem do resgate"
+            : "De onde saiu o resgate?"
+        }
         description="Selecione os ativos, saldos livres ou patrimônio não cadastrado que deram origem a este resgate."
         amountCents={reductionAmountCents}
         sources={reductionSources}
@@ -492,7 +701,9 @@ export function TransactionDialog({
         isPending={isPending}
         onOpenChange={setIsReductionOpen}
         onCancel={clearReductionState}
-        onConfirm={(selections) => startTransition(() => void confirmReduction(selections))}
+        onConfirm={(selections) =>
+          startTransition(() => void confirmReduction(selections))
+        }
         confirmLabel={transaction ? "Salvar resgate" : "Criar resgate"}
         footerNote="A seleção fica registrada para que uma futura edição ou exclusão restaure os valores corretos."
       />

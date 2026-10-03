@@ -1,4 +1,5 @@
 "use client";
+import { MoneyInput } from "@/components/finance/money-input";
 
 import {
   Dialog,
@@ -38,7 +39,7 @@ export function AllocationDialog({
 }: AllocationDialogProps) {
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-border bg-surface text-content-strong sm:max-w-xl">
+      <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-border bg-card text-content-strong sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{isExisting ? "Editar alocação" : "Alocar ativo"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
@@ -60,7 +61,7 @@ export function AllocationDialog({
               onValueChange={onHoldingChange}
               disabled={isExisting}
             >
-              <SelectTrigger id="allocation-holding" className="w-full border-input bg-surface-raised/60">
+              <SelectTrigger id="allocation-holding" className="w-full border-input bg-card">
                 <SelectValue placeholder="Selecione um ativo" />
               </SelectTrigger>
               <SelectContent className="border-border bg-surface text-content-strong">
@@ -81,7 +82,7 @@ export function AllocationDialog({
               }
               disabled={isExisting}
             >
-              <SelectTrigger id="allocation-purpose" className="w-full border-input bg-surface-raised/60">
+              <SelectTrigger id="allocation-purpose" className="w-full border-input bg-card">
                 <SelectValue placeholder="Selecione uma finalidade" />
               </SelectTrigger>
               <SelectContent className="border-border bg-surface text-content-strong">
@@ -96,7 +97,7 @@ export function AllocationDialog({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <PortfolioField label="Valor alocado (R$)" htmlFor="allocation-amount">
-              <Input
+              <MoneyInput
                 id="allocation-amount"
                 value={form.amount}
                 onChange={(event) =>
@@ -122,7 +123,7 @@ export function AllocationDialog({
           <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-sm">
             <div className="flex items-center justify-between gap-3">
               <span className="text-content">Valor ainda livre neste ativo</span>
-              <strong className="font-heading text-lg text-brand">
+              <strong className="text-lg text-brand">
                 {formatCurrency(Math.max(availableCents, 0))}
               </strong>
             </div>

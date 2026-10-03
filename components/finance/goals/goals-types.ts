@@ -163,6 +163,7 @@ export type SelectFieldProps = {
 };
 
 export type LabeledInputProps = ComponentProps<typeof Input> & {
+  monetary?: boolean;
   id: string;
   label: string;
 };

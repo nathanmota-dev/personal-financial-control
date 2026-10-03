@@ -41,7 +41,7 @@ export function GoalFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-surface text-content-strong sm:max-w-2xl">
+      <DialogContent className="border-border bg-card text-content-strong sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{isCreate ? "Nova meta" : "Editar meta"}</DialogTitle>
           <DialogDescription className="text-content">
@@ -79,7 +79,7 @@ export function GoalFormDialog({
                 label: GOAL_CATEGORY_LABELS[category],
               }))}
             />
-            <LabeledInput
+            <LabeledInput monetary
               id="goal-target"
               label="Valor alvo"
               value={form.targetAmount}
@@ -100,7 +100,7 @@ export function GoalFormDialog({
                 className="w-full"
               />
             </div>
-            <LabeledInput
+            <LabeledInput monetary
               id="goal-planned-monthly"
               label="Aporte mensal planejado"
               value={form.plannedMonthlyContribution}
@@ -135,7 +135,7 @@ export function GoalFormDialog({
               }))}
             />
             {isCreate ? (
-              <LabeledInput
+              <LabeledInput monetary
                 id="goal-initial-allocation"
                 label="Alocação inicial"
                 value={form.initialAllocation}
@@ -179,7 +179,7 @@ export function GoalFormDialog({
               onChange={(event) =>
                 setForm((state) => ({ ...state, notes: event.target.value }))
               }
-              className="min-h-24 border-input bg-surface/70 text-content-strong"
+              className="min-h-24 border-input bg-card text-content-strong"
             />
           </div>
 

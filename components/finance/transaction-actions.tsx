@@ -10,6 +10,7 @@ import {
   deleteTransactionAction,
 } from "@/app/actions/finance";
 import { SetupCallout } from "@/components/finance/setup-dialogs";
+import { FinanceField } from "@/components/finance/finance-field";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +21,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FormSelect } from "@/components/finance/form-select";
+import { SelectItem } from "@/components/ui/select";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import type {
   DeleteTransactionDialogProps,
@@ -56,29 +60,80 @@ export function TransferDialog({ accounts, month }: TransferDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline">Nova transferência</Button>
       </DialogTrigger>
-      <DialogContent className="border border-border bg-surface-raised text-content-strong sm:max-w-lg">
+      <DialogContent className="border border-border bg-card text-content-strong sm:max-w-lg">
         <DialogHeader className="pr-8">
-          <DialogTitle className="text-xl font-semibold">Transferência entre contas</DialogTitle>
-          <DialogDescription>Você precisa de pelo menos duas contas para esta operação.</DialogDescription>
+          <DialogTitle className="text-xl font-semibold">
+            Transferência entre contas
+          </DialogTitle>
+          <DialogDescription>
+            Você precisa de pelo menos duas contas para esta operação.
+          </DialogDescription>
         </DialogHeader>
         {canTransfer ? (
-          <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
-            <select name="fromAccountId" defaultValue={accounts[0]?.id} className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong">
-              {accounts.map((account) => <option key={account.id} value={account.id}>Saída: {account.name}</option>)}
-            </select>
-            <select name="toAccountId" defaultValue={accounts[1]?.id ?? accounts[0]?.id} className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong">
-              {accounts.map((account) => <option key={account.id} value={account.id}>Entrada: {account.name}</option>)}
-            </select>
-            <Input name="amount" placeholder="0,00" required />
-            <Input name="transferDate" type="date" defaultValue={`${month}-01`} required />
-            <Input name="competenceMonth" type="month" defaultValue={month} required />
-            <Input name="description" placeholder="Descrição da transferência" required />
+          <form
+            action={(formData) =>
+              startTransition(() => void onSubmit(formData))
+            }
+            className="grid gap-4"
+          >
+            <FinanceField label="Conta de origem">
+              <FormSelect name="fromAccountId" defaultValue={accounts[0]?.id}>
+                {accounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    Saída: {account.name}
+                  </SelectItem>
+                ))}
+              </FormSelect>
+            </FinanceField>
+            <FinanceField label="Conta de destino">
+              <FormSelect
+                name="toAccountId"
+                defaultValue={accounts[1]?.id ?? accounts[0]?.id}
+              >
+                {accounts.map((account) => (
+                  <SelectItem key={account.id} value={account.id}>
+                    Entrada: {account.name}
+                  </SelectItem>
+                ))}
+              </FormSelect>
+            </FinanceField>
+            <FinanceField label="Valor (R$)">
+              <MoneyInput name="amount" placeholder="0,00" required />
+            </FinanceField>
+            <FinanceField label="Data da transferência">
+              <Input
+                name="transferDate"
+                type="date"
+                defaultValue={`${month}-01`}
+                required
+              />
+            </FinanceField>
+            <FinanceField label="Mês de competência">
+              <Input
+                name="competenceMonth"
+                type="month"
+                defaultValue={month}
+                required
+              />
+            </FinanceField>
+            <FinanceField label="Descrição">
+              <Input
+                name="description"
+                placeholder="Descrição da transferência"
+                required
+              />
+            </FinanceField>
             <DialogFooter>
-              <Button type="submit" disabled={isPending}>{isPending ? "Salvando..." : "Criar transferência"}</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Salvando..." : "Criar transferência"}
+              </Button>
             </DialogFooter>
           </form>
         ) : (
-          <SetupCallout title="Transferência indisponível" description="Cadastre pelo menos duas contas para movimentar saldo entre origem e destino." />
+          <SetupCallout
+            title="Transferência indisponível"
+            description="Cadastre pelo menos duas contas para movimentar saldo entre origem e destino."
+          />
         )}
       </DialogContent>
     </Dialog>
@@ -107,17 +162,25 @@ export function DeleteTransactionDialog({ id }: DeleteTransactionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="icon-sm" aria-label="Excluir lançamento">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label="Excluir lançamento"
+        >
           <Trash2 className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Excluir lançamento</DialogTitle>
-          <DialogDescription>Esta ação remove o registro em definitivo.</DialogDescription>
+          <DialogDescription>
+            Esta ação remove o registro em definitivo.
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
           <Button variant="destructive" disabled={isPending} onClick={onDelete}>
             {isPending ? "Excluindo..." : "Excluir"}
           </Button>

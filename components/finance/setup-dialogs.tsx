@@ -11,6 +11,7 @@ import {
   updateAccountAction,
   updateCategoryAction,
 } from "@/app/actions/finance";
+import { FinanceField } from "@/components/finance/finance-field";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +22,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { FormSelect } from "@/components/finance/form-select";
+import { SelectItem } from "@/components/ui/select";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import {
   accountTypeLabels,
@@ -30,45 +34,43 @@ import {
   moneyInputToCents,
 } from "@/lib/finance-ui";
 
-type AccountRow = {
-  id: string;
-  name: string;
-  type: "checking" | "savings" | "cash" | "credit" | "investment";
-  initialBalanceCents: number;
-  creditClosingDay: number | null;
-  creditDueDay: number;
-};
-
-type CategoryRow = {
-  id: string;
-  name: string;
-  group: "income" | "fixed_expense" | "variable_expense" | "investment";
-};
+import type {
+  AccountRow,
+  CategoryRow,
+  AccountSetupDialogProps,
+  CategorySetupDialogProps,
+  SetupCalloutProps,
+} from "@/lib/interfaces/finance-fields";
 
 export function AccountSetupDialog({
   account,
   trigger,
-}: {
-  account?: AccountRow;
-  trigger?: React.ReactNode;
-}) {
+}: AccountSetupDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [selectedAccountType, setSelectedAccountType] = useState<AccountRow["type"]>(
-    account?.type ?? "checking"
-  );
+  const [selectedAccountType, setSelectedAccountType] = useState<
+    AccountRow["type"]
+  >(account?.type ?? "checking");
 
   async function onSubmit(formData: FormData) {
     const type = String(formData.get("type")) as AccountRow["type"];
-    const creditClosingDay = String(formData.get("creditClosingDay") ?? "").trim();
+    const creditClosingDay = String(
+      formData.get("creditClosingDay") ?? "",
+    ).trim();
     const creditDueDay = String(formData.get("creditDueDay") ?? "").trim();
     const payload = {
       name: String(formData.get("name")),
       type,
-      initialBalanceCents: moneyInputToCents(String(formData.get("initialBalance"))),
-      creditClosingDay: type === "credit" && creditClosingDay ? Number(creditClosingDay) : undefined,
-      creditDueDay: type === "credit" && creditDueDay ? Number(creditDueDay) : undefined,
+      initialBalanceCents: moneyInputToCents(
+        String(formData.get("initialBalance")),
+      ),
+      creditClosingDay:
+        type === "credit" && creditClosingDay
+          ? Number(creditClosingDay)
+          : undefined,
+      creditDueDay:
+        type === "credit" && creditDueDay ? Number(creditDueDay) : undefined,
     };
 
     try {
@@ -108,50 +110,78 @@ export function AccountSetupDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{account ? "Editar conta" : "Nova conta"}</DialogTitle>
-          <DialogDescription>Crie a base para lançamentos, transferências e recorrências.</DialogDescription>
+          <DialogDescription>
+            Crie a base para lançamentos, transferências e recorrências.
+          </DialogDescription>
         </DialogHeader>
-        <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
-          <Input name="name" defaultValue={account?.name ?? ""} placeholder="Nome da conta" />
-          <select
-            name="type"
-            value={selectedAccountType}
-            onChange={(event) => setSelectedAccountType(event.target.value as AccountRow["type"])}
-            className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
-          >
-            {Object.entries(accountTypeLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <Input
-            name="initialBalance"
-            defaultValue={account ? centsToMoneyInput(account.initialBalanceCents) : "0,00"}
-            placeholder="0,00"
-          />
+        <form
+          action={(formData) => startTransition(() => void onSubmit(formData))}
+          className="grid gap-4"
+        >
+          <FinanceField label="Nome">
+            <Input
+              name="name"
+              defaultValue={account?.name ?? ""}
+              placeholder="Nome da conta"
+            />
+          </FinanceField>
+          <FinanceField label="Tipo de conta">
+            <FormSelect
+              name="type"
+              value={selectedAccountType}
+              onValueChange={(value) =>
+                setSelectedAccountType(value as AccountRow["type"])
+              }
+            >
+              {Object.entries(accountTypeLabels).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </FormSelect>
+          </FinanceField>
+          <FinanceField label="Saldo inicial (R$)">
+            <MoneyInput
+              name="initialBalance"
+              defaultValue={
+                account
+                  ? centsToMoneyInput(account.initialBalanceCents)
+                  : "0,00"
+              }
+              placeholder="0,00"
+            />
+          </FinanceField>
           {selectedAccountType === "credit" ? (
             <div className="grid gap-4 md:grid-cols-2">
-              <Input
-                name="creditClosingDay"
-                type="number"
-                min="1"
-                max="31"
-                defaultValue={account?.creditClosingDay ?? ""}
-                placeholder="Dia do fechamento"
-              />
-              <Input
-                name="creditDueDay"
-                type="number"
-                min="1"
-                max="31"
-                defaultValue={account?.creditDueDay ?? 10}
-                placeholder="Dia do vencimento"
-              />
+              <FinanceField label="Dia do fechamento">
+                <Input
+                  name="creditClosingDay"
+                  type="number"
+                  min="1"
+                  max="31"
+                  defaultValue={account?.creditClosingDay ?? ""}
+                  placeholder="Dia do fechamento"
+                />
+              </FinanceField>
+              <FinanceField label="Dia do vencimento">
+                <Input
+                  name="creditDueDay"
+                  type="number"
+                  min="1"
+                  max="31"
+                  defaultValue={account?.creditDueDay ?? 10}
+                  placeholder="Dia do vencimento"
+                />
+              </FinanceField>
             </div>
           ) : null}
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Salvando..." : account ? "Salvar alterações" : "Criar conta"}
+              {isPending
+                ? "Salvando..."
+                : account
+                  ? "Salvar alterações"
+                  : "Criar conta"}
             </Button>
           </DialogFooter>
         </form>
@@ -163,10 +193,7 @@ export function AccountSetupDialog({
 export function CategorySetupDialog({
   category,
   trigger,
-}: {
-  category?: CategoryRow;
-  trigger?: React.ReactNode;
-}) {
+}: CategorySetupDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -205,25 +232,43 @@ export function CategorySetupDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{category ? "Editar categoria" : "Nova categoria"}</DialogTitle>
-          <DialogDescription>Escolha o grupo correto para combinar com os tipos de lançamento.</DialogDescription>
+          <DialogTitle>
+            {category ? "Editar categoria" : "Nova categoria"}
+          </DialogTitle>
+          <DialogDescription>
+            Escolha o grupo correto para combinar com os tipos de lançamento.
+          </DialogDescription>
         </DialogHeader>
-        <form action={(formData) => startTransition(() => void onSubmit(formData))} className="grid gap-4">
-          <Input name="name" defaultValue={category?.name ?? ""} placeholder="Nome da categoria" />
-          <select
-            name="group"
-            defaultValue={category?.group ?? "variable_expense"}
-            className="h-10 rounded-xl border border-input bg-surface/80 px-3 text-sm text-content-strong"
-          >
-            {Object.entries(categoryGroupLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+        <form
+          action={(formData) => startTransition(() => void onSubmit(formData))}
+          className="grid gap-4"
+        >
+          <FinanceField label="Nome">
+            <Input
+              name="name"
+              defaultValue={category?.name ?? ""}
+              placeholder="Nome da categoria"
+            />
+          </FinanceField>
+          <FinanceField label="Grupo">
+            <FormSelect
+              name="group"
+              defaultValue={category?.group ?? "variable_expense"}
+            >
+              {Object.entries(categoryGroupLabels).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </FormSelect>
+          </FinanceField>
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Salvando..." : category ? "Salvar alterações" : "Criar categoria"}
+              {isPending
+                ? "Salvando..."
+                : category
+                  ? "Salvar alterações"
+                  : "Criar categoria"}
             </Button>
           </DialogFooter>
         </form>
@@ -232,13 +277,7 @@ export function CategorySetupDialog({
   );
 }
 
-export function SetupCallout({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export function SetupCallout({ title, description }: SetupCalloutProps) {
   return (
     <div className="rounded-2xl border border-brand/20 bg-brand-soft p-4 text-sm text-content">
       <p className="font-medium text-content-strong">{title}</p>

@@ -24,6 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
@@ -45,34 +46,36 @@ import {
 } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
-const recurringFieldClassName =
-  "h-11 rounded-xl border-input bg-surface/80 text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] placeholder:text-content-subtle focus-visible:border-brand/70 focus-visible:ring-brand/20";
-const recurringSelectTriggerClassName =
-  "h-11 w-full rounded-xl border-input bg-surface/80 pr-11 pl-4 text-left text-sm text-content-strong shadow-[inset_0_1px_0_rgb(var(--content-rgb) / .08)] hover:bg-surface-raised/90 focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
-const recurringSelectContentClassName =
-  "rounded-[1.25rem] border-border bg-surface/96 p-1 text-content-strong shadow-[0_24px_80px_rgb(var(--surface-rgb) / .45)]";
-const recurringSelectItemClassName =
-  "min-h-10 rounded-[0.9rem] px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
-const recurringFieldLabelClassName = "text-xs uppercase tracking-[0.16em] text-content";
+const recurringFieldClassName = "";
+const recurringSelectTriggerClassName = "w-full";
+const recurringSelectContentClassName = "";
+const recurringSelectItemClassName = "";
+const recurringFieldLabelClassName = "text-xs font-medium text-content";
 
 function compatibleCategories(
   categories: RecurringDialogProps["categories"],
-  type: RecurringTemplateRow["type"]
+  type: RecurringTemplateRow["type"],
 ) {
-  return categories.filter((category) => isRecurringCategoryCompatible(category.group, type));
+  return categories.filter((category) =>
+    isRecurringCategoryCompatible(category.group, type),
+  );
 }
 
 function defaultCategoryId(
   categories: RecurringDialogProps["categories"],
   type: RecurringTemplateRow["type"],
-  currentCategoryId?: string | null
+  currentCategoryId?: string | null,
 ) {
   const available = compatibleCategories(categories, type);
-  const current = available.find((category) => category.id === currentCategoryId);
+  const current = available.find(
+    (category) => category.id === currentCategoryId,
+  );
 
   return (
     current?.id ??
-    available.find((category) => category.name === recurringDefaultCategoryNames[type])?.id ??
+    available.find(
+      (category) => category.name === recurringDefaultCategoryNames[type],
+    )?.id ??
     available[0]?.id ??
     ""
   );
@@ -81,15 +84,23 @@ function defaultCategoryId(
 function defaultAccountId(
   accounts: RecurringDialogProps["accounts"],
   type: RecurringTemplateRow["type"],
-  currentAccountId?: string
+  currentAccountId?: string,
 ) {
-  const available = type === "investment_contribution"
-    ? accounts.filter((account) =>
-        account.type === "checking" || account.type === "savings" || account.type === "cash"
-      )
-    : accounts;
+  const available =
+    type === "investment_contribution"
+      ? accounts.filter(
+          (account) =>
+            account.type === "checking" ||
+            account.type === "savings" ||
+            account.type === "cash",
+        )
+      : accounts;
 
-  return available.find((account) => account.id === currentAccountId)?.id ?? available[0]?.id ?? "";
+  return (
+    available.find((account) => account.id === currentAccountId)?.id ??
+    available[0]?.id ??
+    ""
+  );
 }
 
 export function RecurringDialog({
@@ -105,15 +116,25 @@ export function RecurringDialog({
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [startMonth, setStartMonth] = useState(template?.startMonth ?? month);
-  const [endMonth, setEndMonth] = useState<string | undefined>(template?.endMonth ?? undefined);
-  const [selectedType, setSelectedType] = useState<RecurringTemplateRow["type"]>(
-    template?.type ?? "expense"
+  const [endMonth, setEndMonth] = useState<string | undefined>(
+    template?.endMonth ?? undefined,
   );
+  const [selectedType, setSelectedType] = useState<
+    RecurringTemplateRow["type"]
+  >(template?.type ?? "expense");
   const [selectedAccountId, setSelectedAccountId] = useState(() =>
-    defaultAccountId(accounts, template?.type ?? "expense", template?.accountId)
+    defaultAccountId(
+      accounts,
+      template?.type ?? "expense",
+      template?.accountId,
+    ),
   );
   const [selectedCategoryId, setSelectedCategoryId] = useState(() =>
-    defaultCategoryId(categories, template?.type ?? "expense", template?.categoryId)
+    defaultCategoryId(
+      categories,
+      template?.type ?? "expense",
+      template?.categoryId,
+    ),
   );
   const hasSetup = accounts.length > 0 && categories.length > 0;
 
@@ -121,7 +142,9 @@ export function RecurringDialog({
     const type = template?.type ?? "expense";
     setSelectedType(type);
     setSelectedAccountId(defaultAccountId(accounts, type, template?.accountId));
-    setSelectedCategoryId(defaultCategoryId(categories, type, template?.categoryId));
+    setSelectedCategoryId(
+      defaultCategoryId(categories, type, template?.categoryId),
+    );
     setStartMonth(template?.startMonth ?? month);
     setEndMonth(template?.endMonth ?? undefined);
     setFormError(null);
@@ -137,8 +160,12 @@ export function RecurringDialog({
   function handleTypeChange(value: string) {
     const nextType = value as RecurringTemplateRow["type"];
     setSelectedType(nextType);
-    setSelectedAccountId(defaultAccountId(accounts, nextType, selectedAccountId));
-    setSelectedCategoryId(defaultCategoryId(categories, nextType, selectedCategoryId));
+    setSelectedAccountId(
+      defaultAccountId(accounts, nextType, selectedAccountId),
+    );
+    setSelectedCategoryId(
+      defaultCategoryId(categories, nextType, selectedCategoryId),
+    );
   }
 
   async function onSubmit(formData: FormData) {
@@ -209,11 +236,15 @@ export function RecurringDialog({
   }
 
   const filteredCategories = compatibleCategories(categories, selectedType);
-  const filteredAccounts = selectedType === "investment_contribution"
-    ? accounts.filter((account) =>
-        account.type === "checking" || account.type === "savings" || account.type === "cash"
-      )
-    : accounts;
+  const filteredAccounts =
+    selectedType === "investment_contribution"
+      ? accounts.filter(
+          (account) =>
+            account.type === "checking" ||
+            account.type === "savings" ||
+            account.type === "cash",
+        )
+      : accounts;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -225,26 +256,29 @@ export function RecurringDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-surface/95 sm:max-w-2xl">
-        <DialogHeader className="border-b border-border pb-5">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-brand">
-            Agenda financeira
-          </p>
-          <DialogTitle className="text-2xl text-content-strong">
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-card sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
             {template ? "Editar recorrência" : "Nova recorrência"}
           </DialogTitle>
           <DialogDescription>
-            Defina o compromisso que deve reaparecer todo mês. A categoria fica registrada em cada lançamento gerado.
+            Defina o compromisso que deve reaparecer todo mês. A categoria fica
+            registrada em cada lançamento gerado.
           </DialogDescription>
         </DialogHeader>
         {hasSetup ? (
           <form
             key={`${template?.id ?? "new"}-${open}`}
-            action={(formData) => startTransition(() => void onSubmit(formData))}
+            action={(formData) =>
+              startTransition(() => void onSubmit(formData))
+            }
             className="grid gap-5"
           >
-            <div className="rounded-2xl border border-brand/20 bg-brand/[0.06] p-4 shadow-[inset_0_1px_0_rgb(var(--brand-rgb) / .08)]">
-              <Label htmlFor={`${formId}-name`} className={recurringFieldLabelClassName}>
+            <div className="space-y-2">
+              <Label
+                htmlFor={`${formId}-name`}
+                className={recurringFieldLabelClassName}
+              >
                 Nome da recorrência
               </Label>
               <Input
@@ -254,7 +288,7 @@ export function RecurringDialog({
                 required
                 defaultValue={template?.description ?? ""}
                 placeholder="Ex.: aluguel, academia ou salário"
-                className={cn(recurringFieldClassName, "mt-2 h-12 border-brand/30 bg-surface/70 text-base")}
+                className={cn(recurringFieldClassName, "")}
               />
               <p className="mt-2 text-xs leading-5 text-content">
                 Este nome identifica a regra e os lançamentos gerados por ela.
@@ -263,58 +297,119 @@ export function RecurringDialog({
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-type`} className={recurringFieldLabelClassName}>
+                <Label
+                  htmlFor={`${formId}-type`}
+                  className={recurringFieldLabelClassName}
+                >
                   Tipo de recorrência
                 </Label>
-                <Select name="type" value={selectedType} onValueChange={handleTypeChange}>
-                  <SelectTrigger id={`${formId}-type`} className={recurringSelectTriggerClassName}>
+                <Select
+                  name="type"
+                  value={selectedType}
+                  onValueChange={handleTypeChange}
+                >
+                  <SelectTrigger
+                    id={`${formId}-type`}
+                    className={recurringSelectTriggerClassName}
+                  >
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
-                    <SelectItem value="income" className={recurringSelectItemClassName}>Receita</SelectItem>
-                    <SelectItem value="expense" className={recurringSelectItemClassName}>Despesa</SelectItem>
-                    <SelectItem value="investment_contribution" className={recurringSelectItemClassName}>Aporte</SelectItem>
+                    <SelectItem
+                      value="income"
+                      className={recurringSelectItemClassName}
+                    >
+                      Receita
+                    </SelectItem>
+                    <SelectItem
+                      value="expense"
+                      className={recurringSelectItemClassName}
+                    >
+                      Despesa
+                    </SelectItem>
+                    <SelectItem
+                      value="investment_contribution"
+                      className={recurringSelectItemClassName}
+                    >
+                      Aporte
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-status`} className={recurringFieldLabelClassName}>
+                <Label
+                  htmlFor={`${formId}-status`}
+                  className={recurringFieldLabelClassName}
+                >
                   Status da recorrência
                 </Label>
                 {template?.status === "ended" ? (
                   <>
                     <input type="hidden" name="status" value="ended" />
-                    <div className={cn(recurringFieldClassName, "flex items-center px-4 text-content")}>
+                    <div
+                      className={cn(
+                        recurringFieldClassName,
+                        "flex items-center px-4 text-content",
+                      )}
+                    >
                       Encerrada (registro antigo)
                     </div>
                   </>
                 ) : (
-                  <Select name="status" defaultValue={template?.status ?? "active"}>
-                    <SelectTrigger id={`${formId}-status`} className={recurringSelectTriggerClassName}>
+                  <Select
+                    name="status"
+                    defaultValue={template?.status ?? "active"}
+                  >
+                    <SelectTrigger
+                      id={`${formId}-status`}
+                      className={recurringSelectTriggerClassName}
+                    >
                       <SelectValue placeholder="Selecione o status" />
                     </SelectTrigger>
                     <SelectContent className={recurringSelectContentClassName}>
-                      <SelectItem value="active" className={recurringSelectItemClassName}>Ativa</SelectItem>
-                      <SelectItem value="paused" className={recurringSelectItemClassName}>Pausada</SelectItem>
+                      <SelectItem
+                        value="active"
+                        className={recurringSelectItemClassName}
+                      >
+                        Ativa
+                      </SelectItem>
+                      <SelectItem
+                        value="paused"
+                        className={recurringSelectItemClassName}
+                      >
+                        Pausada
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-account`} className={recurringFieldLabelClassName}>Conta de origem</Label>
+                <Label
+                  htmlFor={`${formId}-account`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Conta de origem
+                </Label>
                 <Select
                   name="accountId"
                   value={selectedAccountId || undefined}
                   onValueChange={setSelectedAccountId}
                 >
-                  <SelectTrigger id={`${formId}-account`} className={recurringSelectTriggerClassName}>
+                  <SelectTrigger
+                    id={`${formId}-account`}
+                    className={recurringSelectTriggerClassName}
+                  >
                     <SelectValue placeholder="Selecione a conta" />
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
                     {filteredAccounts.map((account) => (
-                      <SelectItem key={account.id} value={account.id} className={recurringSelectItemClassName}>
+                      <SelectItem
+                        key={account.id}
+                        value={account.id}
+                        className={recurringSelectItemClassName}
+                      >
                         {account.name}
                       </SelectItem>
                     ))}
@@ -323,48 +418,84 @@ export function RecurringDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-category`} className={recurringFieldLabelClassName}>Categoria</Label>
+                <Label
+                  htmlFor={`${formId}-category`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Categoria
+                </Label>
                 <Select
                   name="categoryId"
                   value={selectedCategoryId || undefined}
                   onValueChange={setSelectedCategoryId}
                 >
-                  <SelectTrigger id={`${formId}-category`} className={recurringSelectTriggerClassName}>
+                  <SelectTrigger
+                    id={`${formId}-category`}
+                    className={recurringSelectTriggerClassName}
+                  >
                     <SelectValue placeholder="Selecione a categoria" />
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
                     {filteredCategories.map((category) => (
-                      <SelectItem key={category.id} value={category.id} className={recurringSelectItemClassName}>
+                      <SelectItem
+                        key={category.id}
+                        value={category.id}
+                        className={recurringSelectItemClassName}
+                      >
                         {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-content">
-                  {selectedType === "income" ? "Receitas começam em Salário." : selectedType === "investment_contribution" ? "Aportes começam em Investimentos." : "Despesas começam em Outros."}
+                  {selectedType === "income"
+                    ? "Receitas começam em Salário."
+                    : selectedType === "investment_contribution"
+                      ? "Aportes começam em Investimentos."
+                      : "Despesas começam em Outros."}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-amount`} className={recurringFieldLabelClassName}>Valor da recorrência</Label>
+                <Label
+                  htmlFor={`${formId}-amount`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Valor da recorrência
+                </Label>
                 <div className="relative">
-                  <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-semibold text-content">R$</span>
-                  <Input
+                  <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-semibold text-content">
+                    R$
+                  </span>
+                  <MoneyInput
                     id={`${formId}-amount`}
                     name="amount"
-                    type="text"
                     inputMode="decimal"
                     required
-                    defaultValue={template ? formatMoneyInput(centsToMoneyInput(template.amountCents)) : ""}
-                    onBlur={(event) => { event.currentTarget.value = formatMoneyInput(event.currentTarget.value); }}
+                    defaultValue={
+                      template
+                        ? formatMoneyInput(
+                            centsToMoneyInput(template.amountCents),
+                          )
+                        : ""
+                    }
+
                     placeholder="120,00"
-                    className={cn(recurringFieldClassName, "pl-12 text-right font-mono")}
+                    className={cn(
+                      recurringFieldClassName,
+                      "pl-12 text-right tabular-nums",
+                    )}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-day`} className={recurringFieldLabelClassName}>Dia do lançamento</Label>
+                <Label
+                  htmlFor={`${formId}-day`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Dia do lançamento
+                </Label>
                 <Input
                   id={`${formId}-day`}
                   name="dayOfMonth"
@@ -377,24 +508,39 @@ export function RecurringDialog({
                   placeholder="Ex.: 5"
                   className={recurringFieldClassName}
                 />
-                <p className="text-xs text-content">Em meses menores, usamos o último dia disponível.</p>
+                <p className="text-xs text-content">
+                  Em meses menores, usamos o último dia disponível.
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-start-month`} className={recurringFieldLabelClassName}>Mês de início</Label>
+                <Label
+                  htmlFor={`${formId}-start-month`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Mês de início
+                </Label>
                 <MonthPickerField
                   id={`${formId}-start-month`}
                   name="startMonth"
                   value={startMonth}
                   placeholder="Selecione o mês de início"
                   required
-                  onMonthChange={(nextMonth) => { if (nextMonth) setStartMonth(nextMonth); }}
+                  onMonthChange={(nextMonth) => {
+                    if (nextMonth) setStartMonth(nextMonth);
+                  }}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor={`${formId}-end-month`} className={recurringFieldLabelClassName}>
-                  Mês de encerramento <span className="normal-case tracking-normal text-content-subtle">(opcional)</span>
+                <Label
+                  htmlFor={`${formId}-end-month`}
+                  className={recurringFieldLabelClassName}
+                >
+                  Mês de encerramento{" "}
+                  <span className="normal-case tracking-normal text-content-subtle">
+                    (opcional)
+                  </span>
                 </Label>
                 <MonthPickerField
                   id={`${formId}-end-month`}
@@ -407,16 +553,30 @@ export function RecurringDialog({
               </div>
             </div>
 
-            {formError ? <p className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger" role="alert">{formError}</p> : null}
+            {formError ? (
+              <p
+                className="rounded-xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm text-danger"
+                role="alert"
+              >
+                {formError}
+              </p>
+            ) : null}
 
             <DialogFooter>
               <Button type="submit" disabled={isPending} className="min-w-40">
-                {isPending ? "Salvando..." : template ? "Salvar alterações" : "Criar recorrência"}
+                {isPending
+                  ? "Salvando..."
+                  : template
+                    ? "Salvar alterações"
+                    : "Criar recorrência"}
               </Button>
             </DialogFooter>
           </form>
         ) : (
-          <SetupCallout title="Sem base inicial para recorrências" description="Crie conta e categoria antes de cadastrar uma recorrência." />
+          <SetupCallout
+            title="Sem base inicial para recorrências"
+            description="Crie conta e categoria antes de cadastrar uma recorrência."
+          />
         )}
       </DialogContent>
     </Dialog>

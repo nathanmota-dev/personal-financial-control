@@ -1,4 +1,5 @@
 "use client";
+import { MoneyInput } from "@/components/finance/money-input";
 
 import { useMemo, useState } from "react";
 import { ArrowDownRight, Check, CircleDollarSign, Layers3, ShieldAlert } from "lucide-react";
@@ -11,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type {
   InvestmentReductionDialogProps,
@@ -70,7 +70,7 @@ export function InvestmentReductionDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[min(92vh,760px)] overflow-hidden border-brand/15 bg-surface text-content-strong shadow-[0_30px_100px_rgb(var(--surface-rgb) / .72)] sm:max-w-2xl">
+      <DialogContent className="max-h-[min(92vh,760px)] overflow-hidden border-brand/15 bg-card text-content-strong shadow-none sm:max-w-2xl">
         <DialogHeader className="pr-8">
           <div className="flex items-start gap-3">
             <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-2xl border border-brand/20 bg-brand/10 text-brand">
@@ -86,16 +86,16 @@ export function InvestmentReductionDialog({
         </DialogHeader>
 
         <div className="grid min-h-0 gap-4 overflow-y-auto pr-1">
-          <div className="grid gap-3 rounded-[1.4rem] border border-brand/15 bg-[radial-gradient(circle_at_top_right,rgb(var(--brand-rgb) / .14),transparent_55%),rgb(var(--surface-raised-rgb) / .72)] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+          <div className="grid gap-3 rounded-xl border border-brand/15 bg-card p-4 sm:grid-cols-[1fr_auto] sm:items-center">
             <div>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-brand/70">
+              <p className="text-[0.68rem] font-semibold text-brand/70">
                 Redução a distribuir
               </p>
-              <p className="mt-1 font-heading text-3xl font-semibold tracking-tight text-brand">
+              <p className="mt-1 text-3xl font-semibold tracking-tight text-brand">
                 {formatCurrency(amountCents)}
               </p>
             </div>
-            <div className="rounded-xl border border-input/80 bg-surface/60 px-3 py-2 text-right">
+            <div className="rounded-xl border border-input/80 bg-muted/30 px-3 py-2 text-right">
               <p className="text-xs text-content">Selecionado</p>
               <p className="mt-1 font-semibold text-content-strong">{formatCurrency(selectedCents)}</p>
             </div>
@@ -106,7 +106,7 @@ export function InvestmentReductionDialog({
               <section key={group.label} className="space-y-2">
                 <div className="flex items-center gap-2 px-1">
                   <Layers3 className="size-4 text-content" />
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-content">
+                  <h3 className="text-xs font-semibold text-content">
                     {group.label}
                   </h3>
                 </div>
@@ -122,7 +122,7 @@ export function InvestmentReductionDialog({
                           "grid gap-3 rounded-2xl border px-3 py-3 transition-colors sm:grid-cols-[minmax(0,1fr)_150px] sm:items-center",
                           selectedSourceCents > 0 && !exceedsAvailable
                             ? "border-brand/30 bg-brand/[0.07]"
-                            : "border-border bg-surface-raised/50",
+                            : "border-border bg-card",
                           exceedsAvailable && "border-danger/40 bg-danger/[0.06]"
                         )}
                       >
@@ -142,14 +142,14 @@ export function InvestmentReductionDialog({
                           <Label htmlFor={`reduction-${source.id}`} className="text-xs text-content">
                             Quanto reduzir
                           </Label>
-                          <Input
+                          <MoneyInput
                             id={`reduction-${source.id}`}
                             inputMode="decimal"
                             value={amounts[source.id] ?? ""}
                             onChange={(event) => changeAmount(source, event.target.value)}
                             placeholder="0,00"
                             aria-invalid={exceedsAvailable}
-                            className="h-10 border-input bg-surface/80 text-right text-content-strong placeholder:text-content-subtle"
+                            className="h-10 border-input bg-card text-right text-content-strong placeholder:text-content-subtle"
                           />
                           {exceedsAvailable ? (
                             <p className="text-right text-[0.68rem] text-danger">Acima do disponível</p>

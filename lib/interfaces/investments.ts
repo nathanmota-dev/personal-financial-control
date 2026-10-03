@@ -66,6 +66,7 @@ export type InvestmentPortfolioSettingsProps = {
 };
 
 export type InvestmentFieldProps = {
+  monetary?: boolean;
   id: string;
   label: string;
   value: string;
