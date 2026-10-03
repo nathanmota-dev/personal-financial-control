@@ -62,6 +62,12 @@ Antes de iniciar fora do Docker, preencha no `.env` `TURSO_DATABASE_URL` e `TURS
 
 Se o projeto for movido para outra pasta, execute `./install-app.sh` novamente para atualizar o launcher.
 
+O launcher usa `assets/finance-icon-rounded.png`, uma cópia da arte original de
+`app/icon.png` com cantos arredondados e transparência. CSS do app não altera o
+ícone do menu do Linux. Para atualizar o ícone instalado, execute
+`./install-app.sh` novamente. Se o menu ainda mostrar a versão anterior, encerre
+a sessão do Linux e entre novamente para renovar o cache do ambiente gráfico.
+
 ### Escolher o navegador
 
 O navegador padrão está configurado no `.env`:

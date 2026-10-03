@@ -8,7 +8,7 @@ APPLICATIONS_DIR="$DATA_HOME/applications"
 DESKTOP_SOURCE="$SCRIPT_DIR/personal-financial-control.desktop"
 DESKTOP_TARGET="$APPLICATIONS_DIR/personal-financial-control.desktop"
 APP_EXEC="$SCRIPT_DIR/open-app.sh"
-APP_ICON="$SCRIPT_DIR/app/icon.png"
+APP_ICON="$SCRIPT_DIR/assets/finance-icon-rounded.png"
 
 log() {
   printf '[install-app] %s\n' "$1"
