@@ -66,7 +66,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8 min-[100.0625rem]:has-[.dashboard-page]:pt-14">
+        <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8 min-[100.0625rem]:pt-14">
           <header className="flex items-center justify-between gap-2 rounded-[20px] border border-border bg-card px-4 py-3 md:px-6 lg:hidden">
             <div className="min-w-0">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[0.72rem] sm:tracking-[0.32em]">
@@ -83,7 +83,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
             </div>
           </header>
 
-          <main className="flex-1">
+          <main className="min-w-0 flex-1 min-[100.0625rem]:[&>.space-y-6]:space-y-5">
             {demoMode ? (
               <div className="mb-6 flex flex-col gap-2 rounded-[1.5rem] border border-warning/25 bg-warning/10 px-5 py-4 text-warning shadow-[0_18px_50px_rgb(var(--surface-rgb) / .2)] sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">

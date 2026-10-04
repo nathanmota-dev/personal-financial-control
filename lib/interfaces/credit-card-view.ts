@@ -74,3 +74,17 @@ export type CreditCardSetupCardProps = {
   description: string;
   action: React.ReactNode;
 };
+
+export type CreditCardMonthCardProps = {
+  point: CreditCardMonthPoint;
+  previousPoint?: CreditCardMonthPoint;
+  selected: boolean;
+  onSelect: () => void;
+};
+
+export type CreditCardTransactionRowProps = {
+  accountId: string;
+  categories: CreditCardTransactionsPanelProps["categories"];
+  month: string;
+  entry: CreditCardTransactionsPanelProps["entries"][number];
+};

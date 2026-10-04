@@ -67,12 +67,12 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
               cards.map((card) => (
                 <div
                   key={card.months}
-                  className="rounded-[20px] border border-border bg-card p-4"
+                  className="rounded-xl border border-border bg-card p-4"
                 >
                   <p className="text-sm text-content">
                     {card.months} {card.months === 1 ? "mês" : "meses"}
                   </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-tight text-brand">
+                  <p className="mt-2 text-[27px] font-[650] tracking-[-0.8px] text-content-strong">
                     {formatCurrency(card.value ?? 0)}
                   </p>
                 </div>

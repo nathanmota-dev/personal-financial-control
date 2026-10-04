@@ -21,7 +21,7 @@ export function InvestmentContributionChart({
   const netMovementCents = history.totalContributionCents - history.totalWithdrawalCents;
 
   return (
-    <Card className="h-full overflow-hidden rounded-[20px] border-border bg-card shadow-none">
+    <Card className="h-full overflow-hidden rounded-xl border-border bg-card shadow-none">
       <CardHeader className="border-b border-border/80 pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -68,7 +68,7 @@ export function InvestmentContributionChart({
         {data.length ? (
           <InvestmentContributionChartChartContainer1 data={data} />
         ) : (
-          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[20px] border border-dashed border-input bg-card px-6 text-center">
+          <div className="flex min-h-[330px] flex-col items-center justify-center rounded-xl border border-dashed border-input bg-card px-6 text-center">
             <div className="rounded-full border border-brand/15 bg-brand/10 p-3 text-brand">
               <ArrowDownToLine className="size-6" />
             </div>

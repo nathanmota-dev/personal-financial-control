@@ -30,7 +30,7 @@ describe("compound interest calculator", () => {
     await user.click(screen.getByRole("button", { name: "Calcular" }));
     expect(screen.queryByRole("alert")).toBeNull();
     expect(
-      screen.getByText("Valor total final").closest("article"),
+      screen.getByText("Valor total final").closest('[data-slot="card"]'),
     ).toHaveTextContent("R$ 22,00");
     // MoneyInput applies a cents mask: 1000 => 10,00 and 100 => 1,00.
     await user.click(screen.getByRole("tab", { name: "Tabela" }));
@@ -56,10 +56,10 @@ describe("compound interest calculator", () => {
     await user.click(screen.getByRole("option", { name: "meses" }));
     await user.click(screen.getByRole("button", { name: "Calcular" }));
     expect(
-      screen.getByText("Valor total final").closest("article"),
+      screen.getByText("Valor total final").closest('[data-slot="card"]'),
     ).toHaveTextContent("R$ 1.020,10");
     expect(
-      screen.getByText("Total em juros").closest("article"),
+      screen.getByText("Total em juros").closest('[data-slot="card"]'),
     ).toHaveTextContent("R$ 20,10");
   });
   it.each([
@@ -97,7 +97,7 @@ describe("compound interest calculator", () => {
       expect(screen.getByLabelText("Valor inicial")).toHaveValue("1.000,00"),
     );
     expect(
-      screen.getByText("Valor total final").closest("article"),
+      screen.getByText("Valor total final").closest('[data-slot="card"]'),
     ).toHaveTextContent("R$ 2.200,00");
     unmount();
     localStorage.setItem(storageKey, "{invalid");

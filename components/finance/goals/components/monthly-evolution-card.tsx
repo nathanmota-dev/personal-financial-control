@@ -34,7 +34,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
   }));
 
   return (
-    <Card className="rounded-[20px] border-border bg-card">
+    <Card className="rounded-xl border-border bg-card">
       <CardHeader>
         <CardTitle>Evolução mensal</CardTitle>
         <p className="text-sm text-content">Alocações, liberações e acumulado.</p>
@@ -101,7 +101,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
             </ComposedChart>
           </ChartContainer>
         ) : (
-          <div className="flex min-h-[280px] items-center justify-center rounded-[20px] border border-dashed border-border bg-card px-6 text-center text-sm text-content">
+          <div className="flex min-h-[280px] items-center justify-center rounded-xl border border-dashed border-border bg-card px-6 text-center text-sm text-content">
             Alocações e aportes aparecerão aqui ao longo dos meses.
           </div>
         )}

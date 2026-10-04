@@ -52,7 +52,7 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
           description="A visão detalhada precisa de um único cartão ativo para organizar o ciclo e as parcelas."
           actions={<CreditCardMonthPicker month={overview.month} />}
         />
-        <div className="rounded-[20px] border border-warning/20 bg-warning/[0.06] p-6">
+        <div className="rounded-xl border border-warning/20 bg-warning/[0.06] p-6">
           <p className="text-xl font-semibold text-content-strong">Mais de um cartão ativo</p>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-content">
             Selecione ou arquive um cartão nas configurações para liberar o acompanhamento detalhado da fatura.

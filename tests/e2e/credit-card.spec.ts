@@ -14,6 +14,13 @@ test("creates and edits installment purchases and verifies future invoices", asy
     .getByRole("textbox", { name: "Descrição da compra" })
     .fill("Compra parcelada E2E");
   await saveDialog(dialog, "Criar compra");
+  await expect(page.getByRole("region", { name: "Resumo da fatura" }))
+    .toContainText("Estimativa para 08/2026");
+  const commitments = page.getByRole("complementary").filter({ has: page.getByRole("heading", { name: "Próximas faturas" }) });
+  await expect(commitments.getByText("Ago. de 26", { exact: true })).toBeVisible();
+  await expect(commitments.getByText("Set. de 26", { exact: true })).toBeVisible();
+  await expect(commitments.getByText("Out. de 26", { exact: true })).toBeVisible();
+  await expect(commitments.getByText("Mai. de 25", { exact: true })).toHaveCount(0);
   await expect(
     page
       .getByText("Compra parcelada E2E", { exact: true })

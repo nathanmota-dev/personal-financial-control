@@ -92,7 +92,7 @@ export function TransactionFilters({ accounts, categories, filters }: Transactio
     : filters.categoryId;
 
   return (
-    <Card className="rounded-[20px] border-border bg-card">
+    <Card className="rounded-xl border-border bg-card">
       <CardHeader>
         <CardTitle>Filtros</CardTitle>
       </CardHeader>

@@ -11,7 +11,7 @@ import { DailyProjectionTableDiv1 } from "./daily-projection-table-daily-project
 
 export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
   return (
-    <Card className="rounded-[20px] border-border bg-card">
+    <Card className="rounded-xl border-border bg-card">
         <CardHeader>
           <CardTitle>Projeção por dia</CardTitle>
         </CardHeader>

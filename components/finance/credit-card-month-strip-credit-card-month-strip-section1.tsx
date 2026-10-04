@@ -9,20 +9,18 @@ import { CalendarDays,ChevronLeft,ChevronRight } from "lucide-react";
 export function CreditCardMonthStripSection1({ isLoading, visiblePoints, activePageIndex, showPreviousPage, cardsViewportRef, pageStart, points, selectedMonth, onSelectMonth, maxPageIndex, showNextPage }: CreditCardMonthStripSection1Props) {
   return (
 <section
-      className="rounded-[20px] border border-border bg-card p-4 shadow-none sm:p-5"
+      className="rounded-xl border border-border bg-card px-[22px] py-5"
       aria-busy={isLoading}
     >
-      <div className="flex items-start justify-between gap-4 px-1">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[0.68rem] font-semibold text-content">
-            Linha do tempo
-          </p>
-          <h2 className="mt-1 text-xl font-semibold text-content-strong">Suas faturas</h2>
+          <h2 className="text-lg font-semibold text-content-strong">Suas faturas</h2>
+          <p className="mt-1 text-xs text-content-muted">Evolução mensal e seleção do período</p>
         </div>
         <CalendarDays className="size-5 text-content" />
       </div>
 
-      <div className="mt-4 rounded-2xl border border-border/70 bg-muted/30 px-2 py-2 sm:px-3">
+      <div className="mt-5 rounded-xl bg-[var(--chart-surface)] px-2 py-2 sm:px-3">
         <CreditCardTimelineChart points={visiblePoints} />
       </div>
 

@@ -2,7 +2,7 @@ import { LoadingFields, LoadingPage, LoadingRows, LoadingBar } from "./primitive
 
 export function PortfolioSkeleton() {
   return <LoadingPage label="carteira de longo prazo" actions={2}>
-    <div className="overflow-hidden rounded-[20px] border border-border bg-card">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="grid items-center gap-4 border-b border-border p-5 md:grid-cols-[1fr_220px_auto]">
         <LoadingBar className="h-10 w-full rounded-xl" /><LoadingFields count={1} className="sm:grid-cols-1" /><LoadingBar className="h-14 w-32 rounded-xl" />
       </div>

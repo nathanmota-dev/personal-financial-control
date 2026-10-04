@@ -6,15 +6,15 @@ export function InvestmentGrowthSummaryMetric({
   tone,
 }: InvestmentGrowthSummaryMetricProps) {
   const tones = {
-    cyan: "border-brand/20 bg-brand/10 text-brand",
-    amber: "border-warning/20 bg-warning/10 text-warning",
-    emerald: "border-warning/20 bg-warning/10 text-warning",
+    cyan: "text-brand",
+    amber: "text-warning",
+    emerald: "text-warning",
   } as const;
 
   return (
-    <div className={`rounded-2xl border px-3 py-2 ${tones[tone]}`}>
-      <p className="text-[0.68rem] font-medium opacity-75">{label}</p>
-      <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
+    <div className={`min-w-0 border-l-2 pl-3 ${tones[tone]}`}>
+      <p className="text-[11px] font-medium text-content-muted">{label}</p>
+      <p className="mt-1 text-lg font-semibold tracking-tight text-content-strong">{value}</p>
     </div>
   );
 }

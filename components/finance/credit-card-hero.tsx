@@ -1,12 +1,10 @@
-import { CalendarClock,CheckCircle2,CreditCard,ReceiptText } from "lucide-react";
+import { CreditCard } from "lucide-react";
 
 import { CreditCardHeroDetail } from "@/components/finance/credit-card-hero-detail";
 import { CreditCardNextInvoiceCard } from "@/components/finance/credit-card-next-invoice-card";
-import { Badge } from "@/components/ui/badge";
-import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { FinanceMetric } from "@/components/finance/finance-metric";
+import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 import type { CreditCardHeroProps } from "@/lib/interfaces/credit-card-view";
-import { cn } from "@/lib/utils";
 
 export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
   const isPaid = overview.invoice.bill?.status === "paid";
@@ -15,74 +13,32 @@ export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
     : "Fatura paga";
   const dueLabel = overview.invoice.bill?.dueDate
     ? formatDateLabel(overview.invoice.bill.dueDate)
-    : `dia ${overview.account.creditDueDay}`;
+    : `Dia ${overview.account.creditDueDay}`;
 
   return (
-    <section className="relative isolate overflow-hidden rounded-[20px] border border-border bg-surface-raised shadow-none">
-      <div className="border-b border-border px-5 py-5 sm:px-7 sm:py-6">
-        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-[11px] bg-brand-soft text-brand shadow-none">
-              <CreditCard className="size-6" strokeWidth={1.7} />
-            </div>
-            <div>
-              <p className="text-[0.68rem] font-semibold text-brand/80">
-                Fatura selecionada · {formatCreditCardMonth(overview.month)}
-              </p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-content-strong sm:text-3xl">
-                {overview.account.name}
-              </h2>
-              <p className="mt-1 text-sm text-content">
-                Fecha dia {overview.account.creditClosingDay ?? "—"} · vence dia {overview.account.creditDueDay}
-              </p>
-            </div>
-          </div>
-          <Badge
-            variant="outline"
-            className={cn(
-              "w-fit rounded-full px-3 py-1 text-xs",
-              isPaid
-                ? "border-success/20 bg-success-soft text-success"
-                : "border-warning/30 bg-warning/10 text-warning"
-            )}
-          >
-            <CheckCircle2 className="mr-1 size-3.5" />
-            {isPaid ? "Fatura paga" : "Em aberto"}
-          </Badge>
-        </div>
-      </div>
-
-      <div className="grid gap-8 px-5 py-7 sm:px-7 lg:grid-cols-[1.25fr_0.75fr] lg:items-end">
-        <div>
-          <p className="text-sm text-content">Valor total da fatura</p>
-          <p className="mt-2 text-4xl font-semibold tracking-[-0.055em] text-content-strong sm:text-5xl">
-            {formatCurrency(overview.invoice.totalAmountCents)}
-          </p>
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-content">
-            <span className="inline-flex items-center gap-2">
-              <CalendarClock className="size-4 text-brand" />
-              {isPaid ? paidLabel : `Vence em ${dueLabel}`}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <ReceiptText className="size-4 text-brand" />
-              {overview.invoice.purchaseCount} {overview.invoice.purchaseCount === 1 ? "compra" : "compras"}
-            </span>
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <CreditCardNextInvoiceCard
-            accountId={overview.account.id}
-            creditDueDay={overview.account.creditDueDay}
-            nextInvoice={nextInvoice}
-          />
-          <CreditCardHeroDetail
-            label="Compras e parcelas"
-            value={String(overview.invoice.purchaseCount)}
-            detail={overview.invoice.bill ? "Leitura baseada na fatura fechada" : "Leitura baseada nos lançamentos"}
-          />
-        </div>
-      </div>
+    <section aria-label="Resumo da fatura" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <FinanceMetric
+        label="Valor total da fatura"
+        value={formatCurrency(overview.invoice.totalAmountCents)}
+        description={isPaid ? paidLabel : "Em aberto"}
+        icon={<CreditCard />}
+        tone={isPaid ? "success" : "warning"}
+      />
+      <CreditCardHeroDetail
+        label="Vencimento"
+        value={dueLabel}
+        detail={`Fecha dia ${overview.account.creditClosingDay ?? "—"}`}
+      />
+      <CreditCardHeroDetail
+        label="Compras e parcelas"
+        value={String(overview.invoice.purchaseCount)}
+        detail={overview.invoice.bill ? "Leitura baseada na fatura fechada" : "Leitura baseada nos lançamentos"}
+      />
+      <CreditCardNextInvoiceCard
+        accountId={overview.account.id}
+        creditDueDay={overview.account.creditDueDay}
+        nextInvoice={nextInvoice}
+      />
     </section>
   );
 }

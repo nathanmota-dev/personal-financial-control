@@ -6,25 +6,26 @@ export function RecurringSegmentedControl() {
   return (
     <TabsList
       aria-label="Visualização das recorrências"
-      className="!flex !h-auto max-w-full justify-start overflow-x-auto rounded-xl border border-border bg-card p-1.5 shadow-none"
+      variant="line"
+      className="max-w-full justify-start overflow-x-auto"
     >
       <TabsTrigger
         value="recurring"
-        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+        className="shrink-0 px-3 text-xs sm:text-sm"
       >
         <Repeat2 className="size-4" />
         <span>Recorrências</span>
       </TabsTrigger>
       <TabsTrigger
         value="category"
-        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+        className="shrink-0 px-3 text-xs sm:text-sm"
       >
         <ChartPie className="size-4" />
         <span>Gastos por categoria</span>
       </TabsTrigger>
       <TabsTrigger
         value="calendar"
-        className="h-auto min-h-9 shrink-0 rounded-lg px-4 py-2 text-xs leading-5 text-content hover:text-content-strong sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
+        className="shrink-0 px-3 text-xs sm:text-sm"
       >
         <CalendarDays className="size-4" />
         <span>Calendário</span>

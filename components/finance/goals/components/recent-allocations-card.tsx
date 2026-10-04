@@ -16,7 +16,7 @@ import type { RecentAllocationsCardProps } from "../goals-types";
 
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
   return (
-    <Card className="rounded-[20px] border-border bg-card">
+    <Card className="rounded-xl border-border bg-card">
       <CardHeader>
         <CardTitle>Histórico recente</CardTitle>
         <p className="text-sm text-content">

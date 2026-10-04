@@ -25,6 +25,6 @@ test("reserve shows composition, changes its expected rate and confirms balance"
   await expect(
     page
       .getByText("Saldo estimado hoje", { exact: true })
-      .locator("xpath=ancestor::article"),
+      .locator('xpath=ancestor::*[@data-slot="card"]'),
   ).toContainText(/30\.000,00/);
 });

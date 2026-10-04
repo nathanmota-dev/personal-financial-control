@@ -16,7 +16,7 @@ import type { TransactionsViewTabsContent3Props } from "@/lib/interfaces/render/
 export function TransactionsViewTabsContent3({ transfers, accounts, filters }: TransactionsViewTabsContent3Props) {
   return (
 <TabsContent value="transfers">
-          <Card className="rounded-[20px] border-border bg-card">
+          <Card className="rounded-xl border-border bg-card">
             <CardHeader>
               <CardTitle>Transferências do mês</CardTitle>
             </CardHeader>
