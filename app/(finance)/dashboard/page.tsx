@@ -1,21 +1,14 @@
 import { requirePageSession } from "@/lib/auth/server";
-import { DashboardPageDiv3 } from "./page-dashboard-page-div3";
 
-import {
-buildRecentMonths,
-isValidMonth
-} from "@/lib/finance-ui";
-import type {
-DashboardData,
-DashboardPageProps,
-} from "@/lib/interfaces/dashboard";
-import {
-getCategorySpendingReport,
-getMonthlyDashboard,
-getMonthlyEvolution,
-getMonthlyExpenseFeed,
-} from "@/lib/server/dashboard";
+import { DashboardActions } from "@/components/finance/dashboard-actions";
+import { DashboardCharts } from "@/components/finance/dashboard-charts";
+import { isValidMonth } from "@/lib/finance-ui";
+import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
+import { getDashboardData } from "@/lib/server/dashboard";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
+import { DashboardMetrics } from "@/components/finance/dashboard-metrics";
+import { DashboardUncategorizedNotice } from "@/components/finance/dashboard-uncategorized-notice";
+import { DashboardDetails } from "@/components/finance/dashboard-details";
 
 export default async function DashboardPage({
   searchParams,
@@ -27,58 +20,52 @@ export default async function DashboardPage({
   const month = isValidMonth(monthParam)
     ? monthParam
     : getFinanceDefaultMonth();
-  let data: DashboardData | undefined;
-
-  try {
-    const months = buildRecentMonths(6, month).reverse();
-    const [dashboard, evolution, categorySpending, expenses] =
-      await Promise.all([
-        getMonthlyDashboard(month),
-        getMonthlyEvolution(months),
-        getCategorySpendingReport(month),
-        getMonthlyExpenseFeed(month),
-      ]);
-    data = { dashboard, evolution, categorySpending, expenses };
-  } catch {}
-
-  const resolved = data ?? {
-    dashboard: {
-      competenceMonth: month,
-      totals: {
-        incomeCents: 0,
-        fixedExpenseCents: 0,
-        variableExpenseCents: 0,
-        uncategorizedExpenseCents: 0,
-        investmentContributionCents: 0,
-        investmentWithdrawalCents: 0,
-        netInvestmentFlowCents: 0,
-        netResultCents: 0,
-      },
-      accountBalances: [],
-      investmentProjection: null,
-    },
-    evolution: buildRecentMonths(6, month)
-      .reverse()
-      .map((competenceMonth) => ({
-        competenceMonth,
-        totals: {
-          incomeCents: 0,
-          fixedExpenseCents: 0,
-          variableExpenseCents: 0,
-          uncategorizedExpenseCents: 0,
-          investmentContributionCents: 0,
-          investmentWithdrawalCents: 0,
-          netInvestmentFlowCents: 0,
-          netResultCents: 0,
-        },
-        accountBalances: [],
-        investmentProjection: null,
-      })),
-    categorySpending: [],
-    expenses: [],
-  };
+  const resolved = await getDashboardData(month);
 
   return (
-    <DashboardPageDiv3  month={month} resolved={resolved} />
+    <div className="space-y-6">
+      <header className="flex min-h-[104px] flex-wrap items-start justify-between gap-4 pt-[17px]">
+        <div>
+          <h1 className="text-[35px] leading-[44px] font-semibold tracking-[-1px]">
+            Visão mensal
+          </h1>
+          <p className="mt-2 text-xs text-content">
+            Acompanhe receitas, despesas, investimentos e o saldo disponível do
+            período.
+          </p>
+        </div>
+        <div className="pt-[5px]">
+          <DashboardActions month={month} />
+        </div>
+      </header>
+
+      <DashboardMetrics totals={resolved.dashboard.totals} comparisons={resolved.comparisons} />
+
+      <DashboardUncategorizedNotice amountCents={resolved.dashboard.totals.uncategorizedExpenseCents} month={month} />
+
+      <DashboardCharts
+        evolution={resolved.evolution.map((item) => ({
+          month: new Date(`${item.competenceMonth}-01T12:00:00`)
+            .toLocaleDateString("pt-BR", { month: "short" })
+            .replace(".", ""),
+          income: item.totals.incomeCents / 100,
+          expenses:
+            (item.totals.fixedExpenseCents +
+              item.totals.variableExpenseCents +
+              item.totals.uncategorizedExpenseCents) /
+            100,
+          investments: item.totals.netInvestmentFlowCents / 100,
+          net: item.totals.netResultCents / 100,
+        }))}
+        summary={resolved.chartSummary}
+        categorySpending={resolved.categorySpending}
+      />
+
+      <DashboardDetails
+        dashboard={resolved.dashboard}
+        expenses={resolved.expenses}
+        investmentOverview={resolved.investmentOverview}
+      />
+    </div>
   );
 }

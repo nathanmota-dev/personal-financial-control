@@ -1,5 +1,6 @@
-import { todayDate } from "@/lib/utils/finance-date";
 "use client";
+
+import { todayDate } from "@/lib/utils/finance-date";
 
 import { CheckCircle2,Info } from "lucide-react";
 import Link from "next/link";

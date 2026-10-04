@@ -1,13 +1,12 @@
-import {
-formatCurrency
-} from "@/lib/finance-ui";
-import type { DashboardPageSection2Props } from "@/lib/interfaces/render/page-dashboard-page-section2";
-import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import { CircleAlert } from "lucide-react";
+import { formatCurrency } from "@/lib/finance-ui";
+import type { DashboardUncategorizedNoticeProps } from "@/lib/interfaces/dashboard";
 
-export function DashboardPageSection2({ resolved, month }: DashboardPageSection2Props) {
-  return (
-<section className="rounded-[20px] border border-warning/20 bg-warning-soft">
+export function DashboardUncategorizedNotice({ amountCents, month }: DashboardUncategorizedNoticeProps) {
+  return (<>
+      {amountCents > 0 ? (
+        <section className="rounded-[20px] border border-warning/20 bg-warning-soft">
           <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-warning/20 bg-warning/10 text-warning">
@@ -19,7 +18,7 @@ export function DashboardPageSection2({ resolved, month }: DashboardPageSection2
                 </p>
                 <p className="mt-1 text-sm leading-6 text-warning/70">
                   {formatCurrency(
-                    resolved.dashboard.totals.uncategorizedExpenseCents,
+                    amountCents,
                   )}{" "}
                   em despesas ainda aguardam organização. Elas já reduzem o
                   saldo livre.
@@ -34,5 +33,7 @@ export function DashboardPageSection2({ resolved, month }: DashboardPageSection2
             </Link>
           </div>
         </section>
-  );
+      ) : null}
+
+  </>);
 }

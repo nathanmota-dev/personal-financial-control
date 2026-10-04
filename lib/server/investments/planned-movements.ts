@@ -37,9 +37,9 @@ export async function listPlannedInvestmentMovements(
   });
   const existingOccurrences = await getExistingRecurringOccurrences(
     database,
-    contributionTemplates.map((template) => template.id),
     startDate.slice(0, 7),
-    endDate.slice(0, 7)
+    endDate.slice(0, 7),
+    contributionTemplates.map((template) => template.id)
   );
   const recurringMovements: InvestmentMovement[] = [];
 
