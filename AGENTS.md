@@ -4,7 +4,9 @@ Personal Financial app using Next.js, Tailwind Css, Drizzle, SQLite, Turso, Zod,
 
 ---
 
-After every task, use [quality-gate-safe-delivery](.agents/skills/quality-gate-safe-delivery/SKILL.md). Run `npm run build`, `npm run lint`, `npm run test` (the full suite), `npm run quality:check` and `npm run quality:performance` sequentially. The gate covers type checking, coverage, audits, duplication, code size, helper tests, Playwright E2E and benchmarks; inspect the quality and performance reports before reporting results. Preserve the configured `no-regression` policy and baselines.
+After every task that changes code, tests, dependencies, or build/runtime/validation configuration, use [quality-gate-safe-delivery](.agents/skills/quality-gate-safe-delivery/SKILL.md). Run `npm run build`, `npm run lint`, `npm run test` (the full suite), `npm run quality:check` and `npm run quality:performance` sequentially. The gate covers type checking, coverage, audits, duplication, code size, helper tests, Playwright E2E and benchmarks; inspect the quality and performance reports before reporting results. Preserve the configured `no-regression` policy and baselines.
+
+If the task makes no changes to code, tests, dependencies, or build/runtime/validation configuration, do not run quality gates, performance checks, build, lint, typecheck, tests, dependency installation, or other npm validation commands. This exemption includes read-only investigations, direct database/API data updates, and documentation-only edits (including this `AGENTS.md`). Verify only the affected data or documentation and report that code validation was not required. If any code-related change is made during the task, the full validation sequence above is required.
 
 When naming branches, committing, pushing or opening/updating pull requests, follow [git-pr-conventions](.agents/skills/git-pr-conventions/SKILL.md).
 
