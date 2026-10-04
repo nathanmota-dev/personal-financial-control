@@ -114,8 +114,11 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
     ancestor = comparison.data.merge_base_commit?.sha;
     if (!ancestor) throw new C.InputError("Cannot resolve PR merge base for protected files.");
   }
+  const infrastructure = established ? files.flatMap((entry) => [entry.filename, entry.previous_filename].filter(Boolean))
+    .filter((file) => P.protectedFile(file) && !P.blockingPolicyFile(file, pr.head.ref)) : [];
+  if (infrastructure.length) details.unshift(`## Validation infrastructure review\n\n**WARNING** — CI maintenance paths changed: ${infrastructure.map(C.escape).join(", ")}. Policy inputs remain protected.`);
   const protectedChanges = [];
-  for (const file of established ? files.flatMap((entry) => [entry.filename, entry.previous_filename].filter(Boolean)).filter(P.protectedFile) : []) {
+  for (const file of established ? files.flatMap((entry) => [entry.filename, entry.previous_filename].filter(Boolean)).filter((file) => P.blockingPolicyFile(file, pr.head.ref)) : []) {
     if (["scripts/baseline.json", "scripts/benchmark-baseline.json", "scripts/benchmark-baseline.local.json"].includes(file)) {
       try { await github.rest.repos.getContent({ ...repo, path: file, ref: ancestor }); }
       catch (error) { if (error.status === 404) continue; throw error; }

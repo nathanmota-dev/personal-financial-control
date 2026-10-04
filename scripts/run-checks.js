@@ -6,7 +6,7 @@ const C = require("./config.js");
 const W = require("./workflow-report.js");
 const P = require("./pr-validation.js");
 
-function policyChanges(root, config) {
+function policyChanges(root, config, review = false) {
   if (!process.env.PR_BASE_SHA || !process.env.PR_HEAD_SHA) return [];
   const established = C.execute(["git", "cat-file", "-e", `${process.env.PR_BASE_SHA}:scripts/quality-gate.config.json`], root);
   if (established.status !== 0) return [];
@@ -15,13 +15,15 @@ function policyChanges(root, config) {
   if (diff.status !== 0) throw new C.InputError(`Cannot inspect validation policy: ${diff.stderr}`);
   const files = diff.stdout.trim().split("\n").filter(Boolean);
   const changed = files.filter((file) => {
-    if (!P.protectedFile(file)) return false;
+    if (review) return P.protectedFile(file) && !P.blockingPolicyFile(file, process.env.PR_HEAD_REF);
+    if (!P.blockingPolicyFile(file, process.env.PR_HEAD_REF)) return false;
     if (["scripts/baseline.json", "scripts/benchmark-baseline.json", "scripts/benchmark-baseline.local.json"].includes(file)) {
       // Establish a first reviewed CI reference even if the gate was installed on main.
       return C.execute(["git", "cat-file", "-e", `${ancestor}:${file}`], root).status === 0;
     }
     return true;
   });
+  if (review) return changed;
   for (const project of config.projects) {
     const file = project.directory === "." ? "package.json" : `${project.directory}/package.json`;
     if (!files.includes(file)) continue;
@@ -53,6 +55,11 @@ function run(root, config, workflow, options = {}, executor = C.execute) {
   const node = (file, extra = []) => [process.execPath, path.join(__dirname, file), "--root", root, ...configFlag, ...extra];
   if (workflow === "quality") {
     const changes = policyChanges(root, config);
+    const infrastructure = policyChanges(root, config, true);
+    if (infrastructure.length) {
+      checks.push({ name: "Validation infrastructure review", blocking: false, selected: true, outcome: "warning", details: infrastructure });
+      process.stdout.write(`WARNING Validation infrastructure review: ${infrastructure.join(", ")}\n`);
+    }
     checks.push({ name: "Validation policy immutability", blocking: true, selected: true, outcome: changes.length ? "failure" : "success", details: changes });
     const policyLog = changes.length ? `FAIL Validation policy immutability: protected validation files changed.\n${changes.map((file) => `- ${file}`).join("\n")}\n` : "PASS Validation policy immutability\n";
     process.stdout.write(policyLog);

@@ -3,7 +3,7 @@ const test = require("node:test"), assert = require("node:assert/strict");
 const Publisher = require("./publish-pr-report.js"), R = require("./pr-report.js");
 const P = require("./pr-validation.js");
 function fixture(options = {}) {
-  const calls = [], sha = "current-sha", pr = { number: 3, state: "open", head: { sha }, base: { sha: "base" } };
+  const calls = [], sha = "current-sha", pr = { number: 3, state: "open", head: { sha, ref: options.branch || "feat/example" }, base: { sha: "base" } };
   const run = (id) => ({ id, event: "pull_request", head_sha: sha, run_attempt: 2, status: "completed", conclusion: "success", created_at: "2026-09-01T00:00:00Z", pull_requests: [{ number: 3, head: { sha } }], html_url: `https://github.com/test/repo/actions/runs/${id}` });
   const runs = Object.fromEntries(P.WORKFLOWS.map((name, index) => [index + 1, [run(index + 11)]]));
   if (options.cancelled) runs[2][0].conclusion = "cancelled";
@@ -185,4 +185,18 @@ test("initial report waits for every required workflow and names only timed out 
   delete waiting.args.workflows;
   waiting.args.github.paginate = async (method, input) => [performanceRun(1, input.workflow_id === "e2e.yml" ? "in_progress" : "completed")];
   assert.deepEqual(await Publisher.waitForWorkflows(waiting.args), { timedOut: ["E2E"] });
+});
+
+test("ci maintenance allows helpers but still blocks policy, scenarios and renamed protected inputs", async () => {
+  for (const branch of ["ci/workflow-correction", "feat/workflow-correction"]) {
+    const { args } = fixture({ established: true, branch, files: [{ filename: "scripts/run-checks.js" }, { filename: ".github/workflows/performance.yml" }] });
+    const result = await Publisher.reconcileAndPublish(args);
+    assert.equal(result.state, branch.startsWith("ci/") ? "PASS" : "FAIL");
+    if (branch.startsWith("ci/")) assert.match(result.body, /Validation infrastructure review[\s\S]*WARNING/);
+  }
+  for (const filename of ["scripts/baseline.json", "scripts/quality-gate.config.json", "benchmarks/money.bench.ts", "vitest.config.ts"]) {
+    assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", files: [{ filename }] }).args)).state, "FAIL");
+    assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", files: [{ filename: "docs/moved", previous_filename: filename }] }).args)).state, "FAIL");
+  }
+  assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", failedWorkflow: "PR Quality Gate", files: [{ filename: "scripts/run-checks.js" }] }).args)).state, "FAIL");
 });

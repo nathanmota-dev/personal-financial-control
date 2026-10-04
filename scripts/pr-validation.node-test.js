@@ -40,3 +40,11 @@ test("infrastructure guard protects gate files without freezing unrelated utilit
   for (const file of ["scripts/quality-gate.js", "scripts/paired-benchmarks.js", "scripts/promote-baselines.node-test.js", "scripts/pr-report.node-test.js", "scripts/baseline.json", "scripts/benchmark-baseline.local.json", ".github/workflows/performance.yml", ".github/workflows/promote-baselines.yml", "frontend/benchmarks/a.ts", "backend/vitest.benchmark.config.ts"]) assert.equal(P.protectedFile(file), true);
   for (const file of ["scripts/import-customers.js", "frontend/package.json", "src/index.ts", ".github/workflows/deploy.yml"]) assert.equal(P.protectedFile(file), false);
 });
+
+test("ci maintenance never exempts policy inputs, test configuration or benchmark scenarios", () => {
+  for (const file of ["scripts/run-checks.js", "scripts/run-checks.node-test.js", ".github/workflows/quality-gate.yml"]) {
+    assert.equal(P.blockingPolicyFile(file, "ci/fix"), false);
+    for (const branch of [undefined, "fix/ci", "feature/ci", "ci-fix"]) assert.equal(P.blockingPolicyFile(file, branch), true);
+  }
+  for (const file of ["scripts/quality-gate.config.json", "scripts/baseline.json", "scripts/benchmark-baseline.local.json", "scripts/benchmark-baseline.json", "benchmarks/money.ts", "vitest.config.ts", "vitest.ci.config.ts", "vitest.benchmark.config.ts", "playwright.config.ts", "tests/suites.ts"]) assert.equal(P.blockingPolicyFile(file, "ci/fix"), true, file);
+});

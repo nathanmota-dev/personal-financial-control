@@ -1,15 +1,23 @@
 # Quality gate e evolução das baselines
 
-As alterações desta entrega são manutenção explícita da infraestrutura. A regra
-de imutabilidade continua bloqueando PRs que alteram arquivos protegidos; não há
-flag para dispensá-la. Logs, sumários e o comentário consolidado mostram a regra
-violada e os arquivos responsáveis. A aprovação de métricas é apresentada
+As alterações desta entrega são manutenção explícita da infraestrutura. Branches
+`ci/` identificam esse escopo e permitem corrigir helpers e workflows.
+A regra de imutabilidade continua bloqueando alterações nas baselines existentes,
+na configuração de política, nos cenários de benchmark e nas configurações de
+testes, inclusive em branches `ci/`. Nas demais branches, todos os arquivos da
+infraestrutura continuam protegidos. Os scripts de validação do `package.json`
+também permanecem protegidos. Logs, sumários e o comentário consolidado mostram
+as alterações de infraestrutura como aviso e as violações como falha. A aprovação de métricas é apresentada
 separadamente do resultado geral do workflow. O publicador falha quando o
 resultado consolidado é `FAIL`.
 
 O diff do PR usa seu ancestral comum com a base. Uma atualização de baseline
 exclusiva da `main` não aparece como alteração do PR. A configuração e as
 baselines existentes continuam sendo lidas da base confiável.
+
+O publicador de `PR Validation` executa o código da branch padrão. Uma correção
+nessa proteção passa a valer para o status consolidado somente após sua integração
+na `main`; o quality gate do PR já executa e testa os helpers corrigidos.
 
 ## Performance
 
