@@ -37,4 +37,5 @@ jobs:
         with:
           script: |
             const { reconcileAndPublish } = require('./scripts/publish-pr-report.js');
-            await reconcileAndPublish({ github, context, core });
+            const result = await reconcileAndPublish({ github, context, core });
+            if (result?.state === 'FAIL') core.setFailed('PR validation failed; inspect the published report.');

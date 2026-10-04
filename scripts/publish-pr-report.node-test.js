@@ -17,7 +17,7 @@ function fixture(options = {}) {
       calls.push({ kind, input });
       if (options.publishError && ["create", "update"].includes(kind)) throw new Error("Publication rejected");
       if (kind === "content") {
-        if (!options.established || (options.firstBaseline && input.path.includes("baseline"))) throw Object.assign(new Error("not found"), { status: 404 });
+        if (!options.established || ((options.firstBaseline || (options.baselineOnlyOnMain && input.ref === "ancestor")) && input.path.includes("baseline"))) throw Object.assign(new Error("not found"), { status: 404 });
         return { data: {} };
       }
       if (kind === "pull") return { data: options.headChanged ? { ...pr, head: { sha: "new-sha" } } : pr };
@@ -27,7 +27,7 @@ function fixture(options = {}) {
   }
   const github = {
     rest: {
-      repos: { listPullRequestsAssociatedWithCommit: endpoint("associated"), getContent: endpoint("content"), createCommitStatus: endpoint("status") },
+      repos: { listPullRequestsAssociatedWithCommit: endpoint("associated"), getContent: endpoint("content"), compareCommitsWithBasehead: async () => ({ data: { merge_base_commit: { sha: "ancestor" } } }), createCommitStatus: endpoint("status") },
       actions: { listRepoWorkflows: endpoint("workflows"), listWorkflowRuns: endpoint("runs") },
       pulls: { listFiles: endpoint("files"), get: endpoint("pull") },
       issues: { listComments: endpoint("comments"), updateComment: endpoint("update"), createComment: endpoint("create"), deleteComment: endpoint("delete") },
@@ -93,6 +93,23 @@ test("initial reference can be established after installation but existing refer
   const files = [{ filename: "scripts/baseline.json" }];
   assert.equal((await Publisher.reconcileAndPublish(fixture({ files, established: true, firstBaseline: true }).args)).state, "PASS");
   assert.equal((await Publisher.reconcileAndPublish(fixture({ files, established: true }).args)).state, "FAIL");
+});
+test("publisher checks reference existence at the merge base instead of the advanced main", async () => {
+  const { args, calls } = fixture({ established: true, baselineOnlyOnMain: true, files: [{ filename: "scripts/benchmark-baseline.json" }] });
+  assert.equal((await Publisher.reconcileAndPublish(args)).state, "PASS");
+  assert.ok(calls.some((call) => call.kind === "content" && call.input.path === "scripts/benchmark-baseline.json" && call.input.ref === "ancestor"));
+});
+test("passing metric comparison remains distinct from a failed workflow with protected-file details", async () => {
+  const { args } = fixture();
+  const original = args.downloadReport;
+  args.downloadReport = async (...params) => {
+    const data = await original(...params);
+    if (params[3] === "PR Quality Gate") data.manifest.checks.push({ name: "Validation policy immutability", outcome: "failure", details: ["scripts/quality-gate.js"] });
+    return data;
+  };
+  const result = await Publisher.reconcileAndPublish(args);
+  assert.equal(result.state, "FAIL"); assert.match(result.body, /metric comparison: \*\*PASS\*\*; overall: \*\*FAIL\*\*/);
+  assert.match(result.body, /Validation policy immutability[\s\S]*scripts\/quality-gate.js/);
 });
 test("publication failure cannot leave a newly passing status", async () => {
   const { calls, args } = fixture({ publishError: true });

@@ -37,6 +37,6 @@ test("artifact identity includes exact run attempt and header provenance", () =>
   for (const changed of [{ headSha: "old" }, { runAttempt: "1" }, { runId: "99" }]) assert.equal(P.correctArtifact({ ...manifest, ...changed }, "abc", selected), false);
 });
 test("infrastructure guard protects gate files without freezing unrelated utilities or dependencies", () => {
-  for (const file of ["scripts/quality-gate.js", "scripts/pr-report.node-test.js", "scripts/baseline.json", "scripts/benchmark-baseline.local.json", ".github/workflows/performance.yml", "frontend/benchmarks/a.ts", "backend/vitest.benchmark.config.ts"]) assert.equal(P.protectedFile(file), true);
+  for (const file of ["scripts/quality-gate.js", "scripts/paired-benchmarks.js", "scripts/promote-baselines.node-test.js", "scripts/pr-report.node-test.js", "scripts/baseline.json", "scripts/benchmark-baseline.local.json", ".github/workflows/performance.yml", ".github/workflows/promote-baselines.yml", "frontend/benchmarks/a.ts", "backend/vitest.benchmark.config.ts"]) assert.equal(P.protectedFile(file), true);
   for (const file of ["scripts/import-customers.js", "frontend/package.json", "src/index.ts", ".github/workflows/deploy.yml"]) assert.equal(P.protectedFile(file), false);
 });

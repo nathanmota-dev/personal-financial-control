@@ -46,16 +46,26 @@ describe("money encryption", () => {
     expect(second.startsWith("pfc:v1:")).toBe(true);
   });
 
-  it("rejects wrong keys, contexts, tampering, and malformed payloads", () => {
+  it("rejects wrong keys and contexts with authentication errors", () => {
     const payload = encryptMoney(30000, "tests.money", testKey);
     const wrongKey = Buffer.alloc(32, 8);
-    const parts = payload.split(":");
-    parts[3] = `${parts[3].slice(0, -1)}${parts[3].endsWith("A") ? "B" : "A"}`;
+    expect(() => decryptMoney(payload, "tests.money", wrongKey)).toThrow("Encrypted monetary value could not be authenticated.");
+    expect(() => decryptMoney(payload, "tests.other", testKey)).toThrow("Encrypted monetary value could not be authenticated.");
+  });
 
-    expect(() => decryptMoney(payload, "tests.money", wrongKey)).toThrow();
-    expect(() => decryptMoney(payload, "tests.other", testKey)).toThrow();
-    expect(() => decryptMoney(parts.join(":"), "tests.money", testKey)).toThrow();
-    expect(() => decryptMoney("pfc:v2:invalid", "tests.money", testKey)).toThrow();
+  it("rejects changed ciphertext bytes with an authentication error", () => {
+    const parts = encryptMoney(30000, "tests.money", testKey).split(":");
+    const ciphertext = Buffer.from(parts[3], "base64url");
+    ciphertext[0] ^= 1;
+    parts[3] = ciphertext.toString("base64url");
+    expect(() => decryptMoney(parts.join(":"), "tests.money", testKey)).toThrow("Encrypted monetary value could not be authenticated.");
+  });
+
+  it("rejects noncanonical encoding and unsupported formats as malformed", () => {
+    const parts = encryptMoney(30000, "tests.money", testKey).split(":");
+    parts[3] += "=";
+    expect(() => decryptMoney(parts.join(":"), "tests.money", testKey)).toThrow("Encrypted monetary value is malformed.");
+    expect(() => decryptMoney("pfc:v2:invalid", "tests.money", testKey)).toThrow("Encrypted monetary value is malformed.");
   });
 
   it("validates the configured key length", () => {

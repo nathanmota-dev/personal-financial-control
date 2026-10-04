@@ -37,8 +37,8 @@ function aggregate(checks) {
   return checks.includes("FAIL") ? "FAIL" : checks.includes("PENDING") ? "PENDING" : "PASS";
 }
 function protectedFile(file) {
-  return /^scripts\/(?:(?:setup|config|source-scan|quality-gate|benchmark-gate|workflow-report|run-checks|pr-validation|pr-report|publish-pr-report|select-projects|test-helpers)(?:\.node-test)?\.js|package(?:-lock)?\.json|quality-gate\.config\.json|baseline\.json|benchmark-baseline(?:\.local)?\.json|templates\/.*)$/.test(file)
-    || /^\.github\/workflows\/(?:quality-gate|performance|pr-validation|backend|frontend|e2e)\.yml$/.test(file)
+  return /^scripts\/(?:(?:setup|config|source-scan|quality-gate|benchmark-gate|paired-benchmarks|promote-baselines|workflow-report|run-checks|pr-validation|pr-report|publish-pr-report|select-projects|test-helpers)(?:\.node-test)?\.js|package(?:-lock)?\.json|quality-gate\.config\.json|baseline\.json|benchmark-baseline(?:\.local)?\.json|templates\/.*)$/.test(file)
+    || /^\.github\/workflows\/(?:quality-gate|performance|pr-validation|promote-baselines|backend|frontend|e2e)\.yml$/.test(file)
     || /^(?:playwright\.config\.ts|vitest\.ci\.config\.ts|tests\/suites\.ts)$/.test(file)
     || /(^|\/)benchmarks\//.test(file) || /(^|\/)vitest\.benchmark\.config\.[cm]?[jt]s$/.test(file);
 }

@@ -4,6 +4,9 @@ Sistema web de finanças pessoais para organizar contas, receitas, despesas,
 transferências, cartões de crédito, investimentos e metas. O painel reúne o
 saldo, os gastos por categoria e as projeções financeiras.
 
+A validação e a promoção automática das referências de qualidade e performance
+estão descritas em [Workflow baselines](docs/workflow-baselines.md).
+
 ## Configuração inicial
 
 Na raiz do projeto, copie o arquivo de exemplo:

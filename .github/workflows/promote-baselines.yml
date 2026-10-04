@@ -1,0 +1,53 @@
+name: Promote improved baselines
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - scripts/baseline.json
+      - scripts/benchmark-baseline.json
+permissions:
+  contents: read
+concurrency:
+  group: baseline-promotion-main
+  cancel-in-progress: false
+jobs:
+  validate-and-promote:
+    if: ${{ !contains(github.event.head_commit.message, '[baseline-promotion]') }}
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install gate tools
+        run: npm ci --prefix scripts
+      - name: Validate integrated commit quality
+        id: quality
+        run: npm run quality:check
+      - name: Validate integrated commit performance in three sequential pairs
+        id: performance
+        if: always()
+        run: npm run quality:performance
+      - name: Promote only eligible improvements
+        if: ${{ success() && steps.quality.outcome == 'success' && steps.performance.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh auth setup-git
+          node scripts/promote-baselines.js --root .
+      - name: Upload validation and promotion evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-promotion-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: reports/

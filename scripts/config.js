@@ -15,7 +15,7 @@ const POLICY = Object.freeze({
 const EXTENSIONS = new Set([".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts"]);
 const TEST_PATTERN = /(^|\/)(__tests__|test|tests)(\/|$)|\.(test|spec)\.[^/]+$/;
 const DECLARATION_PATTERN = /\.d\.(ts|mts|cts)$/;
-const TOOL_NAMES = ["setup", "config", "source-scan", "quality-gate", "benchmark-gate", "workflow-report", "run-checks", "pr-validation", "pr-report", "publish-pr-report", "select-projects", "test-helpers"];
+const TOOL_NAMES = ["setup", "config", "source-scan", "quality-gate", "benchmark-gate", "paired-benchmarks", "promote-baselines", "workflow-report", "run-checks", "pr-validation", "pr-report", "publish-pr-report", "select-projects", "test-helpers"];
 function toolIgnoreArgs(project) {
   return project.directory === "." ? ["--ignore-pattern", `scripts/{${TOOL_NAMES.join(",")}}{,.node-test}.js`] : [];
 }
@@ -70,6 +70,11 @@ function execute(command, cwd, options = {}) {
     shell: process.platform === "win32" && executable.endsWith(".cmd"), ...options,
   });
   return { ...result, stdout: result.stdout || "", stderr: result.stderr || result.error?.message || "" };
+}
+function mergeBase(root, base, head) {
+  const result = execute(["git", "merge-base", base, head], root);
+  if (result.status !== 0 || !/^[a-f0-9]{40}$/.test(result.stdout.trim())) throw new InputError(`Cannot resolve PR merge base: ${result.stderr}`);
+  return result.stdout.trim();
 }
 function argumentsFor(args, extra = []) {
   const options = { root: process.cwd(), config: process.env.QUALITY_GATE_CONFIG_PATH, projects: undefined };
@@ -142,4 +147,4 @@ function failureReport(root, kind, error) {
   fs.writeFileSync(inside(root, `reports/${kind}.md`), `# ${title}\n\n**ERROR** — ${escape(error.message)}\n`);
   writeJson(inside(root, `reports/${kind}.json`), { schemaVersion: 1, status: "error", error: error.message, ...provenance() });
 }
-module.exports = { InputError, METRICS, POLICY, EXTENSIONS, TEST_PATTERN, DECLARATION_PATTERN, toolIgnoreArgs, readJson, writeJson, inside, relative, escape, finite, count, ratio, percentage, lower, execute, argumentsFor, validateConfig, loadConfig, benchmarkBaselinePath, provenance, failureReport };
+module.exports = { InputError, METRICS, POLICY, EXTENSIONS, TEST_PATTERN, DECLARATION_PATTERN, toolIgnoreArgs, readJson, writeJson, inside, relative, escape, finite, count, ratio, percentage, lower, execute, mergeBase, argumentsFor, validateConfig, loadConfig, benchmarkBaselinePath, provenance, failureReport };

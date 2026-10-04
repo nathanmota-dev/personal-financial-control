@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "maxRegressionPercent": 20
+  },
+  "projects": {
+    "app": {
+      "benchmarks": {
+        "benchmarks/finance.bench.ts > Compound interest > 5 years with monthly contributions (60 months)": {
+          "hz": 545248.381143105,
+          "mean": 0.0018340265364997787,
+          "median": 0.0016930000000456857,
+          "rme": 0.5415734027696586,
+          "sampleCount": 545249
+        },
+        "benchmarks/finance.bench.ts > Compound interest > 50 years with monthly contributions (600 months)": {
+          "hz": 44287.51071158593,
+          "mean": 0.022579729226876434,
+          "median": 0.021789999999782594,
+          "rme": 0.7641282075350225,
+          "sampleCount": 44288
+        },
+        "benchmarks/finance.bench.ts > Projected balance > 90 days with 100 distributed events": {
+          "hz": 7083.432447058711,
+          "mean": 0.14117449520044975,
+          "median": 0.13861899999983507,
+          "rme": 0.19118245210656235,
+          "sampleCount": 7084
+        },
+        "benchmarks/finance.bench.ts > Projected balance > 90 days with 5000 events sharing three dates": {
+          "hz": 94.27586254157987,
+          "mean": 10.607168930000034,
+          "median": 10.58960100000013,
+          "rme": 0.30581249652212705,
+          "sampleCount": 100
+        }
+      }
+    }
+  },
+  "runner": {
+    "kind": "ci",
+    "cpuModel": "AMD EPYC 7763 64-Core Processor",
+    "platform": "linux",
+    "arch": "x64",
+    "nodeMajor": 24
+  },
+  "runtime": {
+    "node": "v24.21.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "headSha": "c0ca11db9e4e0cba179456252be32dfec55b20d3",
+  "runId": "37181628895",
+  "runAttempt": "1",
+  "source": {
+    "repository": "nathanmota-dev/personal-financial-control",
+    "runId": "37181628895",
+    "runAttempt": "1",
+    "artifactId": "11294474151",
+    "artifactName": "performance-pr-9-37181628895-1",
+    "url": "https://github.com/nathanmota-dev/personal-financial-control/actions/runs/37181628895"
+  }
+}

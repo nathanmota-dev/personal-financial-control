@@ -95,6 +95,7 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
         if (!["pass", "bootstrap", "fail", "error"].includes(data.metrics.status)) throw new C.InputError("Unknown metric report status.");
       }
       workflow.manifest = data.manifest;
+      workflow.metricStatus = data.metrics?.status;
       const actual = W.overall(data.manifest.checks.map(W.normalize));
       if (actual !== "PASS" || ["fail", "error"].includes(data.metrics?.status)) workflow.state = "FAIL";
       if (data.report) details.push(data.report);
@@ -107,10 +108,16 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
   let established = true;
   try { await github.rest.repos.getContent({ ...repo, path: "scripts/quality-gate.config.json", ref: pr.base.sha }); }
   catch (error) { if (error.status === 404) established = false; else throw error; }
+  let ancestor = pr.base.sha;
+  if (established) {
+    const comparison = await github.rest.repos.compareCommitsWithBasehead({ ...repo, basehead: `${pr.base.sha}...${sha}` });
+    ancestor = comparison.data.merge_base_commit?.sha;
+    if (!ancestor) throw new C.InputError("Cannot resolve PR merge base for protected files.");
+  }
   const protectedChanges = [];
   for (const file of established ? files.flatMap((entry) => [entry.filename, entry.previous_filename].filter(Boolean)).filter(P.protectedFile) : []) {
     if (["scripts/baseline.json", "scripts/benchmark-baseline.json", "scripts/benchmark-baseline.local.json"].includes(file)) {
-      try { await github.rest.repos.getContent({ ...repo, path: file, ref: pr.base.sha }); }
+      try { await github.rest.repos.getContent({ ...repo, path: file, ref: ancestor }); }
       catch (error) { if (error.status === 404) continue; throw error; }
     }
     protectedChanges.push(file);
