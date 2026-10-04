@@ -1,7 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const port = process.env.PFC_E2E_PORT ?? "3100";
-const baseURL = `http://127.0.0.1:${port}`;
+const baseURL = "http://127.0.0.1:3100";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -17,7 +16,7 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `npm run build && npm run start -- --hostname 127.0.0.1 --port ${port}`,
+    command: "npm run build && npm run start -- --hostname 127.0.0.1 --port 3100",
     url: `${baseURL}/login`,
     reuseExistingServer: false,
     timeout: 120_000,
