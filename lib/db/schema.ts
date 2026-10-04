@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
   index,
   sqliteTable,
@@ -9,10 +9,7 @@ import {
 import { encryptedBoolean, encryptedInteger, encryptedText, encryptedTimestamp } from "@/lib/db/encrypted-content";
 import { encryptionChecks } from "@/lib/db/encryption-checks";
 
-export const authorizedUsers = sqliteTable("authorized_users", {
-  email: text("email").primaryKey(),
-  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-});
+export { authorizedUsers, userOnboarding } from "./user-schema";
 
 export const accountTypes = [
   "checking",

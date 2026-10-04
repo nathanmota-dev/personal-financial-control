@@ -13,11 +13,13 @@ import * as operations from "@/lib/server/investment-operations";
 import * as portfolio from "@/lib/server/investment-portfolio";
 import * as projection from "@/lib/server/projected-balance";
 import { requirePageSession } from "@/lib/auth/server";
+import { getOnboarding } from "@/lib/server/onboarding";
 import * as actions from "@/app/actions/finance";
 vi.mock("embla-carousel-react", () => ({
   default: vi.fn(() => [vi.fn(), undefined]),
 }));
 vi.mock("@/lib/auth/server", () => ({ requirePageSession: vi.fn() }));
+vi.mock("@/lib/server/onboarding", () => ({ getOnboarding: vi.fn() }));
 vi.mock("next/server", async (original) => ({
   ...(await original<typeof import("next/server")>()),
   connection: vi.fn(),
@@ -102,6 +104,7 @@ vi.mock("@/app/actions/finance", () => ({
   archiveOperationalInvestmentAssetAction: vi.fn(),
 }));
 beforeEach(() => {
+  vi.mocked(getOnboarding).mockReset().mockResolvedValue({ step: 1, completedAt: null });
   vi.stubEnv("DEMO_MODE", "true");
   for (const action of Object.values(actions))
     vi.mocked(action)

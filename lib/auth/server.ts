@@ -46,14 +46,17 @@ export function checkOrigin(requestHeaders: Headers, demoOrigin?: string) {
 }
 export async function apiGuard(request: Request) {
   try {
-    const cookie = request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith("session="))?.slice(8);
-    if (!isDemoMode()) await verifySession(cookie);
+    if (!isDemoMode()) await requireRequestSession(request);
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
       checkOrigin(request.headers, new URL(request.url).origin);
       if (request.method !== "DELETE" && request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") throw new AuthError(415);
     }
     return null;
   } catch (error) { return authResponse(error); }
+}
+export async function requireRequestSession(request: Request) {
+  const cookie = request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith("session="))?.slice(8);
+  return verifySession(cookie);
 }
 export function authResponse(error: unknown) {
   const failure = firebaseError(error);
