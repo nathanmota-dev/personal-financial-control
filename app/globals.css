@@ -283,3 +283,19 @@
   border-radius: 999px;
   background: rgb(var(--content-subtle-rgb) / 0.7);
 }
+
+@keyframes login-preview-float {
+  0%, 100% { transform: translateY(-4px); }
+  50% { transform: translateY(-10px); }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .login-preview {
+    transition: transform 300ms ease, box-shadow 300ms ease;
+  }
+
+  .login-preview:hover {
+    animation: login-preview-float 3s ease-in-out infinite;
+    box-shadow: 0 30px 65px -20px rgb(0 0 0 / 0.32);
+  }
+}

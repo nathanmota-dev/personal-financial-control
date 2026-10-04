@@ -23,8 +23,8 @@ export default async function DashboardPage({
   const resolved = await getDashboardData(month);
 
   return (
-    <div className="space-y-6">
-      <header className="flex min-h-[104px] flex-wrap items-start justify-between gap-4 pt-[17px]">
+    <div className="dashboard-page space-y-6 min-[100.0625rem]:space-y-5">
+      <header className="flex min-h-[104px] flex-wrap items-start justify-between gap-4 pt-[17px] min-[100.0625rem]:min-h-[76px] min-[100.0625rem]:pt-0">
         <div>
           <h1 className="text-[35px] leading-[44px] font-semibold tracking-[-1px]">
             Visão mensal

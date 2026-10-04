@@ -8,7 +8,7 @@ import type { CategorySpendingChartsProps } from "@/lib/interfaces/dashboard";
 export function DashboardCategoryCharts({ categorySpending, className }: CategorySpendingChartsProps) {
   const distribution = buildDashboardCategoryDistribution(categorySpending);
   return (
-    <div className={cn("grid gap-6", className)}>
+    <div className={cn("grid gap-6 min-[100.0625rem]:gap-5", className)}>
       <DashboardCategoryBars distribution={distribution} />
       <DashboardCategoryDistribution distribution={distribution} />
     </div>

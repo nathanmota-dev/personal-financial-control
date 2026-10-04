@@ -6,11 +6,11 @@ export function DashboardCategoryBars({ distribution }: DashboardCategorySection
   const { positive, credits } = distribution;
   const max = positive[0]?.amountCents ?? 1;
   return (
-    <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[340px]">
+    <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[340px] min-[100.0625rem]:h-[290px]">
       <h2 className="text-lg font-semibold leading-[25px]">Gastos por categoria</h2>
       <p className="mt-1 text-xs text-content-muted">Peso relativo das despesas no mês</p>
-      <div className="mt-[27px] max-h-[235px] overflow-y-auto">
-        <div className="grid gap-[28px]">
+      <div className="mt-[27px] max-h-[235px] min-[100.0625rem]:mt-5 min-[100.0625rem]:max-h-[190px] overflow-y-auto">
+        <div className="grid gap-[28px] min-[100.0625rem]:gap-5">
           {positive.slice(0, 5).map((item, index) => (
             <div key={item.categoryId} className="grid grid-cols-[87px_minmax(0,1fr)_76px] items-center gap-3 text-xs">
               <span className="truncate font-medium text-content" title={item.categoryName}>{item.categoryName}</span>
