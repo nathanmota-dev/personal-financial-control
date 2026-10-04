@@ -260,7 +260,7 @@ describe("dashboard", () => {
     expect(dashboard.totals.variableExpenseCents).toBe(30000);
     expect(dashboard.totals.netResultCents).toBe(150000);
     expect(dashboard.accountBalances.find((account) => account.id === card.id)?.metricLabel).toBe(
-      "Fatura do mês"
+      "Fatura de maio de 2026"
     );
     expect(dashboard.accountBalances.find((account) => account.id === card.id)?.currentBalanceCents).toBe(
       30000
