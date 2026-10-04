@@ -18,6 +18,10 @@ function render({ number, sha, state, workflows = [], details = [] }) {
     }
   }
   lines.push("");
+  for (const workflow of workflows) {
+    if (workflow.metricStatus) lines.push(`${C.escape(display(workflow))} metric comparison: **${workflow.metricStatus.toUpperCase()}**; overall: **${workflow.state}**.`, "");
+    for (const check of workflow.manifest?.checks || []) if (check.details?.length) lines.push(`### ${C.escape(display(workflow))}: ${C.escape(check.name)}`, "", ...check.details.map((detail) => `- ${C.escape(detail)}`), "");
+  }
   for (const workflow of workflows) if (workflow.url) lines.push(`[${C.escape(display(workflow))} run](${workflow.url})`, "");
   for (const detail of details) lines.push("", detail.trim().replace(/^# (Quality Gate|Performance)$/m, "## $1"));
   const text = lines.join("\n").replace(/\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?/gu, "");

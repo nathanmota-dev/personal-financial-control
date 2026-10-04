@@ -6,25 +6,28 @@ const C = require("./config.js");
 const W = require("./workflow-report.js");
 const P = require("./pr-validation.js");
 
-function policyChanges(root, config) {
+function policyChanges(root, config, review = false) {
   if (!process.env.PR_BASE_SHA || !process.env.PR_HEAD_SHA) return [];
   const established = C.execute(["git", "cat-file", "-e", `${process.env.PR_BASE_SHA}:scripts/quality-gate.config.json`], root);
   if (established.status !== 0) return [];
-  const diff = C.execute(["git", "diff", "--no-renames", "--name-only", process.env.PR_BASE_SHA, process.env.PR_HEAD_SHA], root);
+  const ancestor = C.mergeBase(root, process.env.PR_BASE_SHA, process.env.PR_HEAD_SHA);
+  const diff = C.execute(["git", "diff", "--no-renames", "--name-only", ancestor, process.env.PR_HEAD_SHA], root);
   if (diff.status !== 0) throw new C.InputError(`Cannot inspect validation policy: ${diff.stderr}`);
   const files = diff.stdout.trim().split("\n").filter(Boolean);
   const changed = files.filter((file) => {
-    if (!P.protectedFile(file)) return false;
+    if (review) return P.protectedFile(file) && !P.blockingPolicyFile(file, process.env.PR_HEAD_REF);
+    if (!P.blockingPolicyFile(file, process.env.PR_HEAD_REF)) return false;
     if (["scripts/baseline.json", "scripts/benchmark-baseline.json", "scripts/benchmark-baseline.local.json"].includes(file)) {
       // Establish a first reviewed CI reference even if the gate was installed on main.
-      return C.execute(["git", "cat-file", "-e", `${process.env.PR_BASE_SHA}:${file}`], root).status === 0;
+      return C.execute(["git", "cat-file", "-e", `${ancestor}:${file}`], root).status === 0;
     }
     return true;
   });
+  if (review) return changed;
   for (const project of config.projects) {
     const file = project.directory === "." ? "package.json" : `${project.directory}/package.json`;
     if (!files.includes(file)) continue;
-    const old = C.execute(["git", "show", `${process.env.PR_BASE_SHA}:${file}`], root);
+    const old = C.execute(["git", "show", `${ancestor}:${file}`], root);
     if (old.status !== 0) { changed.push(file); continue; }
     const previous = JSON.parse(old.stdout), current = C.readJson(C.inside(root, file));
     const protectedScripts = ["test:coverage:ci", "benchmark", "benchmark:ci", ...Object.keys(previous.scripts || {}).filter((key) => key.startsWith("quality:"))];
@@ -52,7 +55,15 @@ function run(root, config, workflow, options = {}, executor = C.execute) {
   const node = (file, extra = []) => [process.execPath, path.join(__dirname, file), "--root", root, ...configFlag, ...extra];
   if (workflow === "quality") {
     const changes = policyChanges(root, config);
+    const infrastructure = policyChanges(root, config, true);
+    if (infrastructure.length) {
+      checks.push({ name: "Validation infrastructure review", blocking: false, selected: true, outcome: "warning", details: infrastructure });
+      process.stdout.write(`WARNING Validation infrastructure review: ${infrastructure.join(", ")}\n`);
+    }
     checks.push({ name: "Validation policy immutability", blocking: true, selected: true, outcome: changes.length ? "failure" : "success", details: changes });
+    const policyLog = changes.length ? `FAIL Validation policy immutability: protected validation files changed.\n${changes.map((file) => `- ${file}`).join("\n")}\n` : "PASS Validation policy immutability\n";
+    process.stdout.write(policyLog);
+    fs.writeFileSync(path.join(logDirectory, "validation-policy-immutability.txt"), policyLog);
     const installs = new Map();
     for (const project of config.projects) {
       const directory = project.installDirectory ?? project.directory;
@@ -92,6 +103,11 @@ function run(root, config, workflow, options = {}, executor = C.execute) {
     const bootstrap = process.env.QUALITY_GATE_BOOTSTRAP === "true" || !fs.existsSync(path.resolve(root, process.env.QUALITY_GATE_BASELINE_PATH || "scripts/baseline.json"));
     step("Quality metric comparison", node("quality-gate.js", bootstrap ? ["--bootstrap"] : []), ".");
   } else if (workflow === "performance") {
+    if (process.env.CI === "true") {
+      step("Paired benchmark and reporter tests", [process.execPath, "--test", path.join(__dirname, "benchmark-gate.node-test.js"), path.join(__dirname, "paired-benchmarks.node-test.js")], ".");
+      step("Same-runner paired benchmark comparison", node("paired-benchmarks.js", options.projects === undefined ? [] : ["--projects", options.projects]), ".");
+      return W.write(root, "Performance", checks);
+    }
     const bootstrap = process.env.BENCHMARK_BOOTSTRAP === "true" || !fs.existsSync(path.resolve(root, C.benchmarkBaselinePath(config)));
     let selected = options.projects === undefined ? config.projects.map((p) => p.name) : options.projects.split(",").filter(Boolean);
     if (bootstrap) selected = config.projects.map((p) => p.name);

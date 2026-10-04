@@ -37,14 +37,23 @@ function aggregate(checks) {
   return checks.includes("FAIL") ? "FAIL" : checks.includes("PENDING") ? "PENDING" : "PASS";
 }
 function protectedFile(file) {
-  return /^scripts\/(?:(?:setup|config|source-scan|quality-gate|benchmark-gate|workflow-report|run-checks|pr-validation|pr-report|publish-pr-report|select-projects|test-helpers)(?:\.node-test)?\.js|package(?:-lock)?\.json|quality-gate\.config\.json|baseline\.json|benchmark-baseline(?:\.local)?\.json|templates\/.*)$/.test(file)
-    || /^\.github\/workflows\/(?:quality-gate|performance|pr-validation|backend|frontend|e2e)\.yml$/.test(file)
+  return /^scripts\/(?:(?:setup|config|source-scan|quality-gate|benchmark-gate|paired-benchmarks|promote-baselines|workflow-report|run-checks|pr-validation|pr-report|publish-pr-report|select-projects|test-helpers)(?:\.node-test)?\.js|package(?:-lock)?\.json|quality-gate\.config\.json|baseline\.json|benchmark-baseline(?:\.local)?\.json|templates\/.*)$/.test(file)
+    || /^\.github\/workflows\/(?:quality-gate|performance|pr-validation|promote-baselines|backend|frontend|e2e)\.yml$/.test(file)
     || /^(?:playwright\.config\.ts|vitest\.ci\.config\.ts|tests\/suites\.ts)$/.test(file)
-    || /(^|\/)benchmarks\//.test(file) || /(^|\/)vitest\.benchmark\.config\.[cm]?[jt]s$/.test(file);
+    || /(^|\/)benchmarks\//.test(file) || /(^|\/)vitest(?:\.benchmark)?\.config\.[cm]?[jt]s$/.test(file);
+}
+function infrastructureScope(branch) { return typeof branch === "string" && branch.startsWith("ci/"); }
+function immutableFile(file) {
+  return /^scripts\/(?:quality-gate\.config\.json|baseline\.json|benchmark-baseline(?:\.local)?\.json)$/.test(file)
+    || /^(?:playwright\.config\.ts|vitest\.ci\.config\.ts|tests\/suites\.ts)$/.test(file)
+    || /(^|\/)benchmarks\//.test(file) || /(^|\/)vitest(?:\.benchmark)?\.config\.[cm]?[jt]s$/.test(file);
+}
+function blockingPolicyFile(file, branch) {
+  return protectedFile(file) && (!infrastructureScope(branch) || immutableFile(file));
 }
 function artifactName(kind, number, run) { return `${kind}-pr-${number}-${run.id}-${run.run_attempt || 1}`; }
 function correctArtifact(manifest, sha, run) {
   return manifest?.schemaVersion === 1 && manifest.headSha === sha && String(manifest.runId) === String(run.id)
     && String(manifest.runAttempt) === String(run.run_attempt || 1) && Array.isArray(manifest.checks);
 }
-module.exports = { WORKFLOWS, WORKFLOW_DEFINITIONS, workflowDefinition, selectProjects, latestRun, classify, aggregate, protectedFile, artifactName, correctArtifact };
+module.exports = { WORKFLOWS, WORKFLOW_DEFINITIONS, workflowDefinition, selectProjects, latestRun, classify, aggregate, protectedFile, infrastructureScope, immutableFile, blockingPolicyFile, artifactName, correctArtifact };

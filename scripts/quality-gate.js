@@ -165,7 +165,7 @@ function coverageTable(title, current, baseline) {
 }
 function render({ metrics, baseline, comparison, label, bootstrap, qualityMode = "strict" }) {
   const policy = qualityMode === "no-regression" ? "Existing coverage and size debt is accepted only at the reviewed reference; regressions and new size violations block." : "Absolute policies apply.";
-  const lines = ["# Quality Gate", "", `**${comparison.passed ? bootstrap ? "BOOTSTRAP" : "PASS" : "FAIL"}** — ${bootstrap ? "Initial measurements; no historical comparison." : comparison.passed ? "No quality regression detected." : "Blocking quality checks failed."}`, "", policy, "", `Baseline: \`${C.escape(label)}\``, "", ...coverageTable("Weighted coverage", metrics.coverage, baseline && aggregate(baseline.projects))];
+  const lines = ["# Quality Gate", "", `**${comparison.passed ? bootstrap ? "BOOTSTRAP" : "PASS" : "FAIL"}** — ${bootstrap ? "Initial measurements; no historical comparison." : comparison.passed ? "No quality regression detected." : "Blocking quality checks failed."}`, "", "This is the metric comparison result. Required command outcomes and protected-file violations determine the overall workflow result.", "", policy, "", `Baseline: \`${C.escape(label)}\``, "", ...coverageTable("Weighted coverage", metrics.coverage, baseline && aggregate(baseline.projects))];
   for (const [name, project] of Object.entries(metrics.projects)) {
     const old = baseline?.projects[name];
     lines.push("", ...coverageTable(`${name} coverage`, project.coverage, old?.coverage), "", `## ${C.escape(name)} maintainability`, "",
@@ -218,5 +218,5 @@ function runCli(args = process.argv.slice(2)) {
     return comparison.passed ? 0 : 1;
   } catch (error) { C.failureReport(root, "quality-gate", error); process.stderr.write(error.message + "\n"); return 2; }
 }
-module.exports = { aggregate, parseCoverage, parseEslint, parseDuplication, collect, compare, compareDuplication, validateBaseline, render, runCli };
+module.exports = { aggregate, parseCoverage, parseEslint, parseDuplication, collect, compare, compareDuplication, functionSizes, validateBaseline, render, runCli };
 if (require.main === module) process.exitCode = runCli();

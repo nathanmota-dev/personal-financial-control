@@ -21,6 +21,7 @@ jobs:
       CI: "true"
       PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
       PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
       - uses: actions/checkout@v4
         with:

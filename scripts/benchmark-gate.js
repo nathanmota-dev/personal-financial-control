@@ -74,7 +74,7 @@ function compare(baseline, current, names) {
 function render(baseline, comparison, selected, all, label) {
   const number = (value) => value == null ? "—" : value.toFixed(2);
   const lines = ["# Performance", "", `**${comparison.passed ? baseline ? "PASS" : "BOOTSTRAP" : "FAIL"}** — ${baseline ? "Throughput loss greater than 20% blocks delivery." : "Initial measurements; no historical speed comparison."}`, "",
-    `Baseline: \`${C.escape(label)}\` · limit: 20% throughput loss.`, "",
+    "This is the metric comparison result. Required command outcomes determine the overall workflow result.", "", `Baseline: \`${C.escape(label)}\` · limit: 20% throughput loss.`, "",
     "| Project | Benchmark | Baseline ops/s | Current ops/s | Change | RME | Samples | Result |",
     "|---|---|---:|---:|---:|---:|---:|---|"];
   for (const result of comparison.results) lines.push(`| ${C.escape(result.project)} | ${C.escape(result.key)} | ${number(result.baseline?.hz)} | ${number(result.current?.hz)} | ${result.change === null ? "—" : `${result.change >= 0 ? "+" : ""}${number(result.change)}%`} | ${result.current ? number(result.current.rme) + "%" : "—"} | ${result.current?.sampleCount ?? "—"} | ${result.status} |`);

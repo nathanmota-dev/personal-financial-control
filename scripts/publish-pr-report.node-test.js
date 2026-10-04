@@ -3,7 +3,7 @@ const test = require("node:test"), assert = require("node:assert/strict");
 const Publisher = require("./publish-pr-report.js"), R = require("./pr-report.js");
 const P = require("./pr-validation.js");
 function fixture(options = {}) {
-  const calls = [], sha = "current-sha", pr = { number: 3, state: "open", head: { sha }, base: { sha: "base" } };
+  const calls = [], sha = "current-sha", pr = { number: 3, state: "open", head: { sha, ref: options.branch || "feat/example" }, base: { sha: "base" } };
   const run = (id) => ({ id, event: "pull_request", head_sha: sha, run_attempt: 2, status: "completed", conclusion: "success", created_at: "2026-09-01T00:00:00Z", pull_requests: [{ number: 3, head: { sha } }], html_url: `https://github.com/test/repo/actions/runs/${id}` });
   const runs = Object.fromEntries(P.WORKFLOWS.map((name, index) => [index + 1, [run(index + 11)]]));
   if (options.cancelled) runs[2][0].conclusion = "cancelled";
@@ -17,7 +17,7 @@ function fixture(options = {}) {
       calls.push({ kind, input });
       if (options.publishError && ["create", "update"].includes(kind)) throw new Error("Publication rejected");
       if (kind === "content") {
-        if (!options.established || (options.firstBaseline && input.path.includes("baseline"))) throw Object.assign(new Error("not found"), { status: 404 });
+        if (!options.established || ((options.firstBaseline || (options.baselineOnlyOnMain && input.ref === "ancestor")) && input.path.includes("baseline"))) throw Object.assign(new Error("not found"), { status: 404 });
         return { data: {} };
       }
       if (kind === "pull") return { data: options.headChanged ? { ...pr, head: { sha: "new-sha" } } : pr };
@@ -27,7 +27,7 @@ function fixture(options = {}) {
   }
   const github = {
     rest: {
-      repos: { listPullRequestsAssociatedWithCommit: endpoint("associated"), getContent: endpoint("content"), createCommitStatus: endpoint("status") },
+      repos: { listPullRequestsAssociatedWithCommit: endpoint("associated"), getContent: endpoint("content"), compareCommitsWithBasehead: async () => ({ data: { merge_base_commit: { sha: "ancestor" } } }), createCommitStatus: endpoint("status") },
       actions: { listRepoWorkflows: endpoint("workflows"), listWorkflowRuns: endpoint("runs") },
       pulls: { listFiles: endpoint("files"), get: endpoint("pull") },
       issues: { listComments: endpoint("comments"), updateComment: endpoint("update"), createComment: endpoint("create"), deleteComment: endpoint("delete") },
@@ -93,6 +93,23 @@ test("initial reference can be established after installation but existing refer
   const files = [{ filename: "scripts/baseline.json" }];
   assert.equal((await Publisher.reconcileAndPublish(fixture({ files, established: true, firstBaseline: true }).args)).state, "PASS");
   assert.equal((await Publisher.reconcileAndPublish(fixture({ files, established: true }).args)).state, "FAIL");
+});
+test("publisher checks reference existence at the merge base instead of the advanced main", async () => {
+  const { args, calls } = fixture({ established: true, baselineOnlyOnMain: true, files: [{ filename: "scripts/benchmark-baseline.json" }] });
+  assert.equal((await Publisher.reconcileAndPublish(args)).state, "PASS");
+  assert.ok(calls.some((call) => call.kind === "content" && call.input.path === "scripts/benchmark-baseline.json" && call.input.ref === "ancestor"));
+});
+test("passing metric comparison remains distinct from a failed workflow with protected-file details", async () => {
+  const { args } = fixture();
+  const original = args.downloadReport;
+  args.downloadReport = async (...params) => {
+    const data = await original(...params);
+    if (params[3] === "PR Quality Gate") data.manifest.checks.push({ name: "Validation policy immutability", outcome: "failure", details: ["scripts/quality-gate.js"] });
+    return data;
+  };
+  const result = await Publisher.reconcileAndPublish(args);
+  assert.equal(result.state, "FAIL"); assert.match(result.body, /metric comparison: \*\*PASS\*\*; overall: \*\*FAIL\*\*/);
+  assert.match(result.body, /Validation policy immutability[\s\S]*scripts\/quality-gate.js/);
 });
 test("publication failure cannot leave a newly passing status", async () => {
   const { calls, args } = fixture({ publishError: true });
@@ -168,4 +185,18 @@ test("initial report waits for every required workflow and names only timed out 
   delete waiting.args.workflows;
   waiting.args.github.paginate = async (method, input) => [performanceRun(1, input.workflow_id === "e2e.yml" ? "in_progress" : "completed")];
   assert.deepEqual(await Publisher.waitForWorkflows(waiting.args), { timedOut: ["E2E"] });
+});
+
+test("ci maintenance allows helpers but still blocks policy, scenarios and renamed protected inputs", async () => {
+  for (const branch of ["ci/workflow-correction", "feat/workflow-correction"]) {
+    const { args } = fixture({ established: true, branch, files: [{ filename: "scripts/run-checks.js" }, { filename: ".github/workflows/performance.yml" }] });
+    const result = await Publisher.reconcileAndPublish(args);
+    assert.equal(result.state, branch.startsWith("ci/") ? "PASS" : "FAIL");
+    if (branch.startsWith("ci/")) assert.match(result.body, /Validation infrastructure review[\s\S]*WARNING/);
+  }
+  for (const filename of ["scripts/baseline.json", "scripts/quality-gate.config.json", "benchmarks/money.bench.ts", "vitest.config.ts"]) {
+    assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", files: [{ filename }] }).args)).state, "FAIL");
+    assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", files: [{ filename: "docs/moved", previous_filename: filename }] }).args)).state, "FAIL");
+  }
+  assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", failedWorkflow: "PR Quality Gate", files: [{ filename: "scripts/run-checks.js" }] }).args)).state, "FAIL");
 });

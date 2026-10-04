@@ -28,6 +28,14 @@ function write(root, workflow, checks) {
   C.writeJson(C.inside(root, `reports/${key}-workflow.json`), result);
   const lines = [`# ${workflow} workflow checks`, "", `**${result.overall}**`, "", "| Check | Result | Selected | Blocking |", "|---|---|---|---|"];
   for (const check of result.checks) lines.push(`| ${C.escape(check.name)} | ${check.result} | ${check.selected ? "Yes" : "No"} | ${check.blocking ? "Yes" : "No (warning)"} |`);
+  for (const check of result.checks.filter((item) => item.details?.length)) lines.push("", `## ${C.escape(check.name)} — ${check.result}`, "", ...check.details.map((detail) => `- ${C.escape(detail)}`));
+  for (const definition of P.WORKFLOW_DEFINITIONS.filter((item) => item.key === key && item.metrics)) {
+    const file = C.inside(root, `reports/${definition.stem}.json`);
+    if (fs.existsSync(file)) {
+      const metrics = C.readJson(file);
+      lines.push("", `Metric comparison: **${metrics.status.toUpperCase()}**. Overall workflow: **${result.overall}**.`);
+    }
+  }
   const summary = lines.join("\n") + "\n";
   fs.writeFileSync(C.inside(root, `reports/${key}-workflow.md`), summary);
   if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);

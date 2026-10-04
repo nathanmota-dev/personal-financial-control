@@ -40,8 +40,11 @@ jobs:
             git show "${PR_BASE_SHA}:scripts/benchmark-baseline.json" > "$RUNNER_TEMP/benchmark-baseline.json"
             echo "BENCHMARK_BASELINE_PATH=$RUNNER_TEMP/benchmark-baseline.json" >> "$GITHUB_ENV"
             echo "BENCHMARK_BASELINE_LABEL=base@${PR_BASE_SHA}:scripts/benchmark-baseline.json" >> "$GITHUB_ENV"
+          elif [[ -f scripts/benchmark-baseline.json ]]; then
+            echo "BENCHMARK_BASELINE_LABEL=initial reviewed CI reference" >> "$GITHUB_ENV"
           else
-            echo "BENCHMARK_BOOTSTRAP=true" >> "$GITHUB_ENV"
+            echo "::error::Required CI benchmark baseline is missing."
+            exit 1
           fi
       - name: Install gate tools
         run: npm ci --prefix scripts
@@ -50,7 +53,7 @@ jobs:
         shell: bash
         run: |
           node scripts/select-projects.js --root . >> "$GITHUB_OUTPUT"
-      - name: Run sequential microbenchmarks and compare
+      - name: Run three sequential benchmark pairs and compare medians
         env:
           SELECTED_PROJECTS: ${{ steps.selection.outputs.projects }}
         run: node scripts/run-checks.js --root . --workflow performance --projects "$SELECTED_PROJECTS"
