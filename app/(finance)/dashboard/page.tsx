@@ -1,26 +1,13 @@
 import { requirePageSession } from "@/lib/auth/server";
-import Link from "next/link";
-import { CircleAlert, TrendingDown, TrendingUp } from "lucide-react";
 
 import { DashboardActions } from "@/components/finance/dashboard-actions";
 import { DashboardCharts } from "@/components/finance/dashboard-charts";
-import {
-  buildRecentMonths,
-  formatCurrency,
-  isValidMonth,
-} from "@/lib/finance-ui";
-import type {
-  DashboardPageProps,
-  DashboardData,
-} from "@/lib/interfaces/dashboard";
-import {
-  getCategorySpendingReport,
-  getMonthlyDashboard,
-  getMonthlyExpenseFeed,
-  getMonthlyEvolution,
-} from "@/lib/server/dashboard";
+import { isValidMonth } from "@/lib/finance-ui";
+import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
+import { getDashboardData } from "@/lib/server/dashboard";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
-import { DashboardMetric } from "@/components/finance/dashboard-metric";
+import { DashboardMetrics } from "@/components/finance/dashboard-metrics";
+import { DashboardUncategorizedNotice } from "@/components/finance/dashboard-uncategorized-notice";
 import { DashboardDetails } from "@/components/finance/dashboard-details";
 
 export default async function DashboardPage({
@@ -33,56 +20,7 @@ export default async function DashboardPage({
   const month = isValidMonth(monthParam)
     ? monthParam
     : getFinanceDefaultMonth();
-  let data: DashboardData | undefined;
-
-  try {
-    const months = buildRecentMonths(6, month).reverse();
-    const [dashboard, evolution, categorySpending, expenses] =
-      await Promise.all([
-        getMonthlyDashboard(month),
-        getMonthlyEvolution(months),
-        getCategorySpendingReport(month),
-        getMonthlyExpenseFeed(month),
-      ]);
-    data = { dashboard, evolution, categorySpending, expenses };
-  } catch {}
-
-  const resolved = data ?? {
-    dashboard: {
-      competenceMonth: month,
-      totals: {
-        incomeCents: 0,
-        fixedExpenseCents: 0,
-        variableExpenseCents: 0,
-        uncategorizedExpenseCents: 0,
-        investmentContributionCents: 0,
-        investmentWithdrawalCents: 0,
-        netInvestmentFlowCents: 0,
-        netResultCents: 0,
-      },
-      accountBalances: [],
-      investmentProjection: null,
-    },
-    evolution: buildRecentMonths(6, month)
-      .reverse()
-      .map((competenceMonth) => ({
-        competenceMonth,
-        totals: {
-          incomeCents: 0,
-          fixedExpenseCents: 0,
-          variableExpenseCents: 0,
-          uncategorizedExpenseCents: 0,
-          investmentContributionCents: 0,
-          investmentWithdrawalCents: 0,
-          netInvestmentFlowCents: 0,
-          netResultCents: 0,
-        },
-        accountBalances: [],
-        investmentProjection: null,
-      })),
-    categorySpending: [],
-    expenses: [],
-  };
+  const resolved = await getDashboardData(month);
 
   return (
     <div className="space-y-6">
@@ -101,79 +39,9 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      <section className="grid gap-[14px] sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
-        <DashboardMetric
-          label="Receitas"
-          value={formatCurrency(resolved.dashboard.totals.incomeCents)}
-          icon={<TrendingUp className="size-[19px]" />}
-          accent="text-success"
-          description="Entradas confirmadas no mês"
-        />
-        <DashboardMetric
-          label="Gastos fixos"
-          value={formatCurrency(resolved.dashboard.totals.fixedExpenseCents)}
-          icon={<TrendingDown className="size-[19px]" />}
-          accent="text-danger"
-          description="Compromissos recorrentes"
-        />
-        <DashboardMetric
-          label="Gastos variáveis"
-          value={formatCurrency(resolved.dashboard.totals.variableExpenseCents)}
-          icon={<TrendingDown className="size-[19px]" />}
-          accent="text-danger"
-          description="Despesas flexíveis do período"
-        />
-        <DashboardMetric
-          label="Investimentos líquidos"
-          value={formatCurrency(
-            resolved.dashboard.totals.netInvestmentFlowCents,
-          )}
-          icon={<TrendingUp className="size-[19px]" />}
-          accent="text-success"
-          description="Aportes menos resgates"
-        />
-        <DashboardMetric
-          label="Saldo livre"
-          value={formatCurrency(resolved.dashboard.totals.netResultCents)}
-          icon={<TrendingUp className="size-[19px]" />}
-          accent={
-            resolved.dashboard.totals.netResultCents >= 0
-              ? "text-success"
-              : "text-danger"
-          }
-          description="Disponível após gastos e aportes"
-        />
-      </section>
+      <DashboardMetrics totals={resolved.dashboard.totals} comparisons={resolved.comparisons} />
 
-      {resolved.dashboard.totals.uncategorizedExpenseCents > 0 ? (
-        <section className="rounded-[20px] border border-warning/20 bg-warning-soft">
-          <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl border border-warning/20 bg-warning/10 text-warning">
-                <CircleAlert className="size-5" />
-              </div>
-              <div>
-                <p className="font-heading text-lg font-semibold text-warning">
-                  Há despesas sem categoria
-                </p>
-                <p className="mt-1 text-sm leading-6 text-warning/70">
-                  {formatCurrency(
-                    resolved.dashboard.totals.uncategorizedExpenseCents,
-                  )}{" "}
-                  em despesas ainda aguardam organização. Elas já reduzem o
-                  saldo livre.
-                </p>
-              </div>
-            </div>
-            <Link
-              href={`/transactions?month=${month}&uncategorized=true`}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-warning/25 bg-warning/10 px-4 text-sm font-semibold text-warning transition-colors hover:bg-warning/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40"
-            >
-              Categorizar agora
-            </Link>
-          </div>
-        </section>
-      ) : null}
+      <DashboardUncategorizedNotice amountCents={resolved.dashboard.totals.uncategorizedExpenseCents} month={month} />
 
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({
@@ -189,12 +57,14 @@ export default async function DashboardPage({
           investments: item.totals.netInvestmentFlowCents / 100,
           net: item.totals.netResultCents / 100,
         }))}
+        summary={resolved.chartSummary}
         categorySpending={resolved.categorySpending}
       />
 
       <DashboardDetails
         dashboard={resolved.dashboard}
         expenses={resolved.expenses}
+        investmentOverview={resolved.investmentOverview}
       />
     </div>
   );
