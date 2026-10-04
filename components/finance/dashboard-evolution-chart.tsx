@@ -26,7 +26,7 @@ export function DashboardEvolutionChart({ evolution }: DashboardEvolutionChartPr
           ))}
         </div>
         <ChartContainer
-          className="mt-[17px] h-[320px] w-full rounded-xl bg-[var(--chart-surface)]"
+          className="mt-[17px] h-[320px] min-[100.0625rem]:h-[280px] w-full rounded-xl bg-[var(--chart-surface)]"
           config={Object.fromEntries(
             series.map((item) => [
               item.key,

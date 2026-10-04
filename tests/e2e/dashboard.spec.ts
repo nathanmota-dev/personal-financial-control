@@ -61,3 +61,17 @@ test("dashboard changes competence while keeping the current consolidated portfo
   await expect(portfolio).toHaveText(currentPortfolio, { useInnerText: true });
   await expect(page.getByText("Variação do saldo no mês")).toBeVisible();
 });
+
+test("wide dashboard fits the metrics and first chart row without scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1000 });
+  await page.goto("/dashboard?month=2026-06");
+  for (const name of ["Evolução mensal", "Gastos por categoria", "Distribuição das despesas"]) {
+    const card = page.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
+    await expect(card).toBeVisible();
+    const bounds = await card.boundingBox();
+    expect(bounds!.y).toBeGreaterThanOrEqual(0);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(1000);
+  }
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  await page.screenshot({ path: "reports/dashboard-wide.png" });
+});

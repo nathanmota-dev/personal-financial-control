@@ -3,7 +3,7 @@ import { ArrowUpRight,CalendarDays,Check,Target } from "lucide-react";
 
 export function LoginPreview({ variant }: LoginPreviewProps) {
   return (
-    <div aria-hidden="true" className="relative mx-auto w-full max-w-[410px] select-none rounded-2xl border border-border bg-surface-raised p-5 text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.22)] sm:p-6">
+    <div aria-hidden="true" className="login-preview relative mx-auto w-full max-w-[410px] select-none rounded-2xl border border-border bg-surface-raised p-5 text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.22)] sm:p-6">
       <div className="mb-6 flex items-center justify-between border-b border-border pb-4"><span className="text-sm font-semibold">{variant === "overview" ? "Visão mensal" : variant === "planning" ? "Seu mês, organizado" : "Planos que ganham forma"}</span><span className="rounded-md bg-surface px-2 py-1 text-[10px] text-content">{variant === "goals" ? "Minhas metas" : "Outubro"}</span></div>
       {variant === "overview" ? <>
         <div className="grid grid-cols-3 gap-2">{[{ label: "Receitas", value: "4.800", color: "text-success" }, { label: "Despesas", value: "1.650", color: "text-orange" }, { label: "Investimentos", value: "2.000", color: "text-brand" }].map(item => <div key={item.label} className="rounded-lg border border-border p-2.5"><p className="text-[9px] text-content">{item.label}</p><p className="mt-2 text-xs font-semibold sm:text-sm">R$ {item.value}</p><ArrowUpRight className={`mt-2 size-3 ${item.color}`} /></div>)}</div>

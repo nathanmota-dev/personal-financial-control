@@ -66,7 +66,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
           </div>
         </aside>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8">
+        <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8 min-[100.0625rem]:has-[.dashboard-page]:pt-14">
           <header className="flex items-center justify-between gap-2 rounded-[20px] border border-border bg-card px-4 py-3 md:px-6 lg:hidden">
             <div className="min-w-0">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-brand sm:text-[0.72rem] sm:tracking-[0.32em]">
