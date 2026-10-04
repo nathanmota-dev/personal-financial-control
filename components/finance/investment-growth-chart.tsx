@@ -1,33 +1,11 @@
 "use client";
 
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { InvestmentGrowthChartChartContainer1 } from "./investment-growth-chart-investment-growth-chart-chart-container1";
 
-import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import { InvestmentGrowthSummaryMetric } from "@/components/finance/investment-growth-summary-metric";
+import { formatCurrency,formatRateFromBps } from "@/lib/finance-ui";
 import type { InvestmentGrowthChartProps } from "@/lib/interfaces/investments";
-import { formatCurrency, formatMonthLabel, formatRateFromBps } from "@/lib/finance-ui";
 import { buildInvestmentGrowthSeries } from "@/lib/investment-projection";
-import { cn } from "@/lib/utils";
-
-const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 
 export function InvestmentGrowthChart({
   currentBalanceCents,
@@ -92,68 +70,7 @@ export function InvestmentGrowthChart({
         </div>
       </div>
 
-      <ChartContainer
-        className={cn(financeChartSurfaceClassName, "h-[460px] w-full")}
-        config={{
-          principal: { label: "Saldo + movimentos", color: "var(--chart-brand)" },
-          interest: { label: "Rendimento estimado", color: "var(--chart-warning)" },
-        }}
-      >
-        <AreaChart data={data} margin={{ top: 12, right: 12, bottom: 0, left: 0 }}>
-          <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-          <XAxis
-            dataKey="competenceMonth"
-            axisLine={false}
-            tickLine={false}
-            minTickGap={30}
-            tickFormatter={(value) => formatMonthLabel(String(value))}
-          />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            width={72}
-            tickFormatter={(value) => formatAxisCurrency(Number(value))}
-          />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                labelFormatter={(value) => formatMonthLabel(String(value))}
-                formatter={(value, name) => (
-                  <>
-                    <span className="text-muted-foreground">{String(name)}</span>
-                    <span>{formatCurrency(Number(value) * 100)}</span>
-                  </>
-                )}
-              />
-            }
-          />
-          <ChartLegend content={<ChartLegendContent className="text-content" />} />
-          <Area
-            type="monotone"
-            dataKey="principal"
-            name="Saldo + movimentos"
-            stackId="growth"
-            fill="var(--color-principal)"
-            fillOpacity={0.34}
-            stroke="var(--color-principal)"
-            strokeWidth={2}
-          />
-          <Area
-            type="monotone"
-            dataKey="interest"
-            name="Rendimento estimado"
-            stackId="growth"
-            fill="var(--color-interest)"
-            fillOpacity={0.42}
-            stroke="var(--color-interest)"
-            strokeWidth={2}
-          />
-        </AreaChart>
-      </ChartContainer>
+      <InvestmentGrowthChartChartContainer1 data={data} />
     </div>
   );
-}
-
-function formatAxisCurrency(value: number) {
-  return compactCurrencyFormatter.format(value);
 }

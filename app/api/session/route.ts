@@ -1,6 +1,6 @@
+import { authConfig,SESSION_SECONDS } from "@/lib/auth/config";
+import { adminAuth,AuthError,authorizeClaims,authResponse,checkOrigin } from "@/lib/auth/server";
 import { NextResponse } from "next/server";
-import { adminAuth, AuthError, authorizeClaims, authResponse, checkOrigin } from "@/lib/auth/server";
-import { authConfig, SESSION_SECONDS } from "@/lib/auth/config";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {

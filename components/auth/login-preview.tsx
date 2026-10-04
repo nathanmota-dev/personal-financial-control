@@ -1,5 +1,5 @@
-import { ArrowUpRight, CalendarDays, Check, Target } from "lucide-react";
 import type { LoginPreviewProps } from "@/lib/interfaces/login-preview";
+import { ArrowUpRight,CalendarDays,Check,Target } from "lucide-react";
 
 export function LoginPreview({ variant }: LoginPreviewProps) {
   return (

@@ -1,5 +1,5 @@
-import type { LucideIcon } from "lucide-react";
 import type { UserControlsProps } from "@/lib/interfaces/auth";
+import type { LucideIcon } from "lucide-react";
 
 export type SidebarNavigationItem = {
   href: string;

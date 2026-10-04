@@ -1,6 +1,6 @@
-import { ArrowDownLeft, ArrowUpRight, TrendingDown, TrendingUp } from "lucide-react";
 import { FinanceMetric } from "@/components/finance/finance-metric";
 import type { TransactionSummaryCardProps } from "@/lib/interfaces/transactions";
+import { ArrowDownLeft,ArrowUpRight,TrendingDown,TrendingUp } from "lucide-react";
 
 const metrics = {
   cyan: { icon: TrendingUp, tone: "success", description: "Entradas no período selecionado" },

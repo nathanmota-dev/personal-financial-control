@@ -1,5 +1,5 @@
 import type { ProjectionCalendarDayItemProps } from "@/app/interfaces/projected-balance";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import { statusLabels } from "./labels";

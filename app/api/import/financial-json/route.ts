@@ -1,82 +1,13 @@
 import { apiGuard } from "@/lib/auth/server";
-import { and, eq } from "drizzle-orm";
+import { flattenPayload,importPayloadSchema } from "@/lib/server/financial-json";
+import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
+import { importFinancialRows } from "@/lib/server/stages/import-financial-rows";
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { getFinanceDatabase } from "@/lib/db";
-import { accounts, categories, transactions } from "@/lib/db/schema";
+import { accounts } from "@/lib/db/schema";
 import { createAccount } from "@/lib/server/accounts";
-import { createCategory } from "@/lib/server/categories";
-import { createTransaction } from "@/lib/server/transactions";
-import { parseMoneyToCents } from "@/lib/server/finance";
-
-const moneyItemSchema = z.object({
-  name: z.string().trim().min(1),
-  value: z.number().finite().nonnegative(),
-});
-
-const importPayloadSchema = z.object({
-  Entradas: z.array(moneyItemSchema).default([]),
-  "Gastos fixos": z.array(moneyItemSchema).default([]),
-  "Gastos variáveis": z.array(moneyItemSchema).default([]),
-  Investimentos: z.array(moneyItemSchema).default([]),
-  context: z
-    .object({
-      accountName: z.string().trim().min(1).default("Conta principal"),
-      accountType: z
-        .enum(["checking", "savings", "cash", "credit", "investment"])
-        .default("checking"),
-      competenceMonth: z.string().default("2026-05"),
-      transactionDate: z.string().default("2026-05-01"),
-      status: z.enum(["pending", "posted", "cancelled"]).default("posted"),
-    })
-    .default({
-      accountName: "Conta principal",
-      accountType: "checking",
-      competenceMonth: "2026-05",
-      transactionDate: "2026-05-01",
-      status: "posted",
-    }),
-});
-
-type ImportRow = {
-  section: "Entradas" | "Gastos fixos" | "Gastos variáveis" | "Investimentos";
-  categoryGroup: "income" | "fixed_expense" | "variable_expense" | "investment";
-  transactionType: "income" | "expense" | "investment_contribution";
-  item: {
-    name: string;
-    value: number;
-  };
-};
-
-function flattenPayload(payload: z.infer<typeof importPayloadSchema>): ImportRow[] {
-  return [
-    ...payload.Entradas.map((item) => ({
-      section: "Entradas" as const,
-      categoryGroup: "income" as const,
-      transactionType: "income" as const,
-      item,
-    })),
-    ...payload["Gastos fixos"].map((item) => ({
-      section: "Gastos fixos" as const,
-      categoryGroup: "fixed_expense" as const,
-      transactionType: "expense" as const,
-      item,
-    })),
-    ...payload["Gastos variáveis"].map((item) => ({
-      section: "Gastos variáveis" as const,
-      categoryGroup: "variable_expense" as const,
-      transactionType: "expense" as const,
-      item,
-    })),
-    ...payload.Investimentos.map((item) => ({
-      section: "Investimentos" as const,
-      categoryGroup: "investment" as const,
-      transactionType: "investment_contribution" as const,
-      item,
-    })),
-  ];
-}
 
 async function handlePOST(request: Request) {
   const denied = await apiGuard(request);
@@ -101,88 +32,7 @@ async function handlePOST(request: Request) {
       );
     }
 
-    const rows = flattenPayload(payload);
-    const createdCategories: string[] = [];
-    const reusedCategories: string[] = [];
-    const createdTransactions: Array<{
-      id: string;
-      section: string;
-      name: string;
-      amountCents: number;
-      type: string;
-    }> = [];
-    const skippedTransactions: Array<{
-      section: string;
-      name: string;
-      reason: string;
-    }> = [];
-
-    for (const row of rows) {
-      let category = await db.query.categories.findFirst({
-        where: eq(categories.name, row.item.name),
-      });
-
-      if (!category) {
-        category = await createCategory(
-          {
-            name: row.item.name,
-            group: row.categoryGroup,
-          },
-          db
-        );
-        createdCategories.push(category.name);
-      } else {
-        reusedCategories.push(category.name);
-      }
-
-      const amountCents = parseMoneyToCents(row.item.value);
-
-      const duplicateCandidates = await db.query.transactions.findMany({
-        where: and(
-          eq(transactions.accountId, account.id),
-          eq(transactions.categoryId, category.id),
-          eq(transactions.type, row.transactionType),
-          eq(transactions.transactionDate, payload.context.transactionDate),
-          eq(transactions.competenceMonth, payload.context.competenceMonth),
-          eq(transactions.description, row.item.name)
-        ),
-      });
-      const duplicate = duplicateCandidates.find(
-        (candidate) => candidate.amountCents === amountCents
-      );
-
-      if (duplicate) {
-        skippedTransactions.push({
-          section: row.section,
-          name: row.item.name,
-          reason: "duplicate_exact_match",
-        });
-        continue;
-      }
-
-      const transaction = await createTransaction(
-        {
-          accountId: account.id,
-          categoryId: category.id,
-          type: row.transactionType,
-          status: payload.context.status,
-          amountCents,
-          transactionDate: payload.context.transactionDate,
-          competenceMonth: payload.context.competenceMonth,
-          description: row.item.name,
-          notes: `Imported from grouped JSON (${row.section})`,
-        },
-        db
-      );
-
-      createdTransactions.push({
-        id: transaction.id,
-        section: row.section,
-        name: row.item.name,
-        amountCents,
-        type: row.transactionType,
-      });
-    }
+    const { createdCategories, reusedCategories, createdTransactions, skippedTransactions } = await importFinancialRows({ flattenPayload, payload, db, account });
 
     return NextResponse.json({
       ok: true,
@@ -213,17 +63,8 @@ async function handlePOST(request: Request) {
   }
 }
 
-export async function POST(...args: Parameters<typeof handlePOST>) {
-  const response = await handlePOST(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const POST = privateRoute(handlePOST);
 
-export async function HEAD(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
-export async function OPTIONS(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
+export const HEAD = rejectRouteMethod;
+
+export const OPTIONS = rejectRouteMethod;

@@ -1,14 +1,14 @@
 import {
-  eachDayOfInterval,
-  endOfMonth,
-  format,
-  parseISO,
-  startOfMonth,
+eachDayOfInterval,
+endOfMonth,
+format,
+parseISO,
+startOfMonth,
 } from "date-fns";
 
 import type {
-  DailyProjection,
-  ProjectionCalendarDay,
+DailyProjection,
+ProjectionCalendarDay,
 } from "@/lib/interfaces/projected-balance";
 
 export function getProjectionMonthRange(daily: DailyProjection[]) {

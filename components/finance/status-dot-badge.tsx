@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import type { StatusDotBadgeProps } from "@/lib/interfaces/finance-fields";
+import { cn } from "@/lib/utils";
 export function StatusDotBadge({
   children,
   tone,

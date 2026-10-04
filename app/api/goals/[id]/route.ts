@@ -1,11 +1,12 @@
-import { apiGuard } from "@/lib/auth/server";
 import {
-  goalApiError,
-  noStoreJson,
-  okJson,
-  revalidateGoalViews,
+goalApiError,
+noStoreJson,
+okJson,
+revalidateGoalViews,
 } from "@/app/api/goals/_responses";
-import { archiveGoal, getGoalDetails, updateGoal } from "@/lib/server/goals";
+import { apiGuard } from "@/lib/auth/server";
+import { archiveGoal,getGoalDetails,updateGoal } from "@/lib/server/goals";
+import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -66,29 +67,11 @@ async function handleDELETE(_request: Request, { params }: RouteContext) {
   }
 }
 
-export async function GET(...args: Parameters<typeof handleGET>) {
-  const response = await handleGET(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const GET = privateRoute(handleGET);
 
-export async function PATCH(...args: Parameters<typeof handlePATCH>) {
-  const response = await handlePATCH(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const PATCH = privateRoute(handlePATCH);
 
-export async function DELETE(...args: Parameters<typeof handleDELETE>) {
-  const response = await handleDELETE(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const DELETE = privateRoute(handleDELETE);
 
-export async function HEAD(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
-export async function OPTIONS(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
+export const HEAD = rejectRouteMethod;
+export const OPTIONS = rejectRouteMethod;

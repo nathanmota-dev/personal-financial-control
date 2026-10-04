@@ -1,13 +1,13 @@
 import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 
-import { InvestmentsView } from "@/components/finance/investments-view";
 import { EmergencyReserveComposition } from "@/components/finance/emergency-reserve-composition";
-import {
-  getInvestmentContributionHistory,
-  getInvestmentProjection,
-} from "@/lib/server/investments";
+import { InvestmentsView } from "@/components/finance/investments-view";
 import { getEmergencyReserveComposition } from "@/lib/server/investment-operations";
+import {
+getInvestmentContributionHistory,
+getInvestmentProjection,
+} from "@/lib/server/investments";
 
 export default async function EmergencyReservePage() {
   await requirePageSession();

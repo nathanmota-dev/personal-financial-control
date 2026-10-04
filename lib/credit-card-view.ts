@@ -1,8 +1,8 @@
-import type {
-  CreditCardMonthPoint,
-  ReadyCreditCardOverview,
-} from "@/lib/interfaces/credit-card-view";
 import { getDefaultMonth } from "@/lib/finance-ui";
+import type {
+CreditCardMonthPoint,
+ReadyCreditCardOverview,
+} from "@/lib/interfaces/credit-card-view";
 
 function shiftMonth(month: string, delta: number) {
   const [year, monthNumber] = month.split("-").map(Number);

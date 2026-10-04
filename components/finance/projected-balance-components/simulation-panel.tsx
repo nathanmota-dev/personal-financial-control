@@ -1,15 +1,15 @@
 "use client";
 
-import { Sparkles, Trash2 } from "lucide-react";
+import { Sparkles,Trash2 } from "lucide-react";
 
 import type {
-  ProjectionSimulationPanelProps,
+ProjectionSimulationPanelProps,
 } from "@/app/interfaces/projected-balance";
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import { ProjectionSimulationDialog } from "./projection-simulation-dialog";

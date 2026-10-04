@@ -1,7 +1,7 @@
 import type {
-  CategoryGroup,
-  RecurringTransactionType,
-  TransactionType,
+CategoryGroup,
+RecurringTransactionType,
+TransactionType,
 } from "@/lib/db/schema";
 
 export type DefaultCategoryDefinition = {

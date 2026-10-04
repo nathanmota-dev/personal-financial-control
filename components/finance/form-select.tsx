@@ -1,9 +1,9 @@
 "use client";
 import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
+Select,
+SelectContent,
+SelectTrigger,
+SelectValue,
 } from "@/components/ui/select";
 import type { FormSelectProps } from "@/lib/interfaces/finance-fields";
 import { cn } from "@/lib/utils";

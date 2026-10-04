@@ -1,6 +1,6 @@
 import type {
-  CreditCardCategoryOption,
-  CreditCardOverview,
+CreditCardCategoryOption,
+CreditCardOverview,
 } from "@/lib/interfaces/credit-card";
 
 export type ReadyCreditCardOverview = Extract<CreditCardOverview, { state: "ready" }>;

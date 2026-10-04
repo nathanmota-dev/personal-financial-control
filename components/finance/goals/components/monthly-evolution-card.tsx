@@ -1,27 +1,27 @@
 "use client";
 
 import {
-  Area,
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  XAxis,
-  YAxis,
+Area,
+Bar,
+CartesianGrid,
+ComposedChart,
+XAxis,
+YAxis,
 } from "recharts";
 
 import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
+ChartContainer,
+ChartTooltip,
+ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import {
-  COMPACT_CURRENCY_FORMATTER,
-  MONTHLY_EVOLUTION_CHART_CONFIG,
+COMPACT_CURRENCY_FORMATTER,
+MONTHLY_EVOLUTION_CHART_CONFIG,
 } from "../goals-constants";
 import type { MonthlyEvolutionCardProps } from "../goals-types";
 

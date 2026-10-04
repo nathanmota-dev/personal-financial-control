@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import type { InvestmentMovementDirection } from "@/lib/investment-projection";
+import type { ReactNode } from "react";
 
 export type InvestmentMovementRow = {
   id: string;

@@ -1,13 +1,13 @@
 import {
-  Banknote,
-  Layers3,
-  ShieldCheck,
-  Tags,
+Banknote,
+Layers3,
+ShieldCheck,
+Tags,
 } from "lucide-react";
 
 import { SummaryMetric } from "@/components/finance/investment-portfolio/summary-metric";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import type { PortfolioSummaryProps } from "@/lib/interfaces/investment-portfolio";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 
 export function PortfolioSummary({ dashboard }: PortfolioSummaryProps) {
   const globalIsConfigured = dashboard.globalBalanceCents !== null;

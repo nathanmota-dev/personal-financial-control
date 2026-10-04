@@ -1,6 +1,6 @@
 import type {
-  Dispatch,
-  SetStateAction,
+Dispatch,
+SetStateAction,
 } from "react";
 
 import type { getInvestmentPortfolioDashboard } from "@/lib/server/investment-portfolio";

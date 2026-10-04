@@ -1,6 +1,6 @@
 import { requirePageSession } from "@/lib/auth/server";
-import { Suspense } from "react";
 import { connection } from "next/server";
+import { Suspense } from "react";
 
 import { AppShell } from "@/components/finance/app-shell";
 import { getServerEnv } from "@/lib/env";

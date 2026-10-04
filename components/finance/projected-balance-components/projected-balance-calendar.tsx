@@ -1,23 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { isAfter, isBefore, parseISO, startOfMonth } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
-  MonthlyBody,
-  MonthlyCalendar,
-  MonthlyDay,
+MonthlyBody,
+MonthlyCalendar,
+MonthlyDay,
 } from "@zach.codes/react-calendar";
+import { isAfter,isBefore,parseISO,startOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useMemo,useState } from "react";
 
 import type { ProjectedBalanceCalendarProps } from "@/app/interfaces/projected-balance";
 import { financeMonthlyCalendarClassName } from "@/components/finance/finance-styles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import type { ProjectionCalendarDay } from "@/lib/interfaces/projected-balance";
 import {
-  buildProjectionCalendarDays,
-  getProjectionMonthFromDate,
-  getProjectionMonthRange,
+buildProjectionCalendarDays,
+getProjectionMonthFromDate,
+getProjectionMonthRange,
 } from "@/lib/projected-balance-calendar";
 
 import { ProjectedBalanceCalendarDay } from "./projected-balance-calendar-day";

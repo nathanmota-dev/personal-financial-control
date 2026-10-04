@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  CircleDollarSign,
-  Plus,
-  Target,
+CircleDollarSign,
+Plus,
+Target,
 } from "lucide-react";
 
 import { financePanelClassName } from "@/components/finance/finance-styles";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { PurposeCardsProps } from "@/lib/interfaces/investment-portfolio";
-import { formatCurrency } from "@/lib/finance-ui";
 import { PurposeCard } from "@/components/finance/investment-portfolio/purpose-card";
+import { Button } from "@/components/ui/button";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import { formatCurrency } from "@/lib/finance-ui";
+import type { PurposeCardsProps } from "@/lib/interfaces/investment-portfolio";
 
 export function PurposeCards({
   dashboard,

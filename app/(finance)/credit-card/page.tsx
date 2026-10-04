@@ -1,5 +1,5 @@
-import { requirePageSession } from "@/lib/auth/server";
 import { CreditCardView } from "@/components/finance/credit-card-view";
+import { requirePageSession } from "@/lib/auth/server";
 import { isValidMonth } from "@/lib/finance-ui";
 import { listCategories } from "@/lib/server/categories";
 import { getCreditCardOverview } from "@/lib/server/credit-card";

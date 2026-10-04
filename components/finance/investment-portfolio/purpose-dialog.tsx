@@ -1,27 +1,27 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
 import { MoneyInput } from "@/components/finance/money-input";
+import { Button } from "@/components/ui/button";
+import {
+Dialog,
+DialogContent,
+DialogDescription,
+DialogFooter,
+DialogHeader,
+DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import type { PurposeDialogProps } from "@/lib/interfaces/investment-portfolio";
-import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
 import { investmentPurposeColorOptions } from "@/lib/finance-ui";
+import type { PurposeDialogProps } from "@/lib/interfaces/investment-portfolio";
 
 export function PurposeDialog({
   state,

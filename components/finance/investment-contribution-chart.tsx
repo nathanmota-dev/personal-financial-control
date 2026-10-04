@@ -1,28 +1,12 @@
 "use client";
 
-import { Area, Bar, CartesianGrid, ComposedChart, XAxis, YAxis } from "recharts";
-import { ArrowDownToLine, ArrowUpFromLine, WalletCards } from "lucide-react";
+import { ArrowDownToLine,ArrowUpFromLine,WalletCards } from "lucide-react";
+import { InvestmentContributionChartChartContainer1 } from "./investment-contribution-chart-investment-contribution-chart-chart-container1";
 
-import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InvestmentHistoryMetric } from "@/components/finance/investment-history-metric";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import { Card,CardContent,CardHeader } from "@/components/ui/card";
+import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
 import type { InvestmentContributionChartProps } from "@/lib/interfaces/investments";
-import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
-import { cn } from "@/lib/utils";
-
-const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 
 export function InvestmentContributionChart({
   history,
@@ -82,75 +66,7 @@ export function InvestmentContributionChart({
         </div>
 
         {data.length ? (
-          <ChartContainer
-            className={cn(financeChartSurfaceClassName, "h-[330px] w-full")}
-            config={{
-              monthlyContribution: { label: "Aportes", color: "var(--chart-brand)" },
-              monthlyWithdrawal: { label: "Resgates", color: "var(--chart-warning)" },
-              cumulativeNetMovement: { label: "Movimentação líquida", color: "var(--chart-brand)" },
-            }}
-          >
-            <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="investmentMovementGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-              <XAxis
-                dataKey="month"
-                axisLine={false}
-                tickLine={false}
-                minTickGap={26}
-                tickFormatter={(value) => formatMonthLabel(String(value))}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                width={68}
-                tickFormatter={(value) => compactCurrencyFormatter.format(Number(value))}
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => formatMonthLabel(String(value))}
-                    formatter={(value, name) => (
-                      <>
-                        <span className="text-muted-foreground">{String(name)}</span>
-                        <span>{formatCurrency(Number(value) * 100)}</span>
-                      </>
-                    )}
-                  />
-                }
-              />
-              <ChartLegend content={<ChartLegendContent className="text-content" />} />
-              <Bar
-                dataKey="monthlyContribution"
-                name="Aportes"
-                fill="var(--color-monthlyContribution)"
-                fillOpacity={0.72}
-                radius={[6, 6, 2, 2]}
-                maxBarSize={28}
-              />
-              <Bar
-                dataKey="monthlyWithdrawal"
-                name="Resgates"
-                fill="var(--color-monthlyWithdrawal)"
-                fillOpacity={0.72}
-                radius={[6, 6, 2, 2]}
-                maxBarSize={28}
-              />
-              <Area
-                type="monotone"
-                dataKey="cumulativeNetMovement"
-                name="Movimentação líquida"
-                fill="url(#investmentMovementGradient)"
-                stroke="var(--color-cumulativeNetMovement)"
-                strokeWidth={2.5}
-              />
-            </ComposedChart>
-          </ChartContainer>
+          <InvestmentContributionChartChartContainer1 data={data} />
         ) : (
           <div className="flex min-h-[330px] flex-col items-center justify-center rounded-[20px] border border-dashed border-input bg-card px-6 text-center">
             <div className="rounded-full border border-brand/15 bg-brand/10 p-3 text-brand">

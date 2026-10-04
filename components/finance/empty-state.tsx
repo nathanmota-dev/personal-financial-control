@@ -2,11 +2,11 @@ import type { FinanceEmptyStateProps } from "@/lib/interfaces/finance-presentati
 import { WalletCards } from "lucide-react";
 
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
+Empty,
+EmptyDescription,
+EmptyHeader,
+EmptyMedia,
+EmptyTitle,
 } from "@/components/ui/empty";
 
 export function FinanceEmptyState({

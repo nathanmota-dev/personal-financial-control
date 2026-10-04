@@ -1,5 +1,5 @@
-import { requirePageSession } from "@/lib/auth/server";
 import { RecurringView } from "@/components/finance/recurring-view";
+import { requirePageSession } from "@/lib/auth/server";
 import { isValidMonth } from "@/lib/finance-ui";
 import type { RecurringViewProps } from "@/lib/interfaces/recurring";
 import { listAccounts } from "@/lib/server/accounts";

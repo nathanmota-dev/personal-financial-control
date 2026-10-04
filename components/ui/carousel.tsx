@@ -1,13 +1,13 @@
 "use client"
 
-import * as React from "react"
-import useEmblaCarousel, {
-  type UseEmblaCarouselType,
+import useEmblaCarousel,{
+type UseEmblaCarouselType,
 } from "embla-carousel-react"
+import * as React from "react"
 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { ChevronLeftIcon,ChevronRightIcon } from "lucide-react"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -234,11 +234,7 @@ function CarouselNext({
 }
 
 export {
-  type CarouselApi,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-  useCarousel,
+Carousel,
+CarouselContent,
+CarouselItem,CarouselNext,CarouselPrevious,useCarousel,type CarouselApi
 }

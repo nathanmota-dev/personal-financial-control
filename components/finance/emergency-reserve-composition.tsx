@@ -1,6 +1,6 @@
 import { financePanelClassName } from "@/components/finance/finance-styles";
 import { ReserveFigure } from "@/components/finance/reserve-figure";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import type { EmergencyReserveCompositionProps } from "@/lib/interfaces/investment-reserve";
 
 export function EmergencyReserveComposition({ composition }: EmergencyReserveCompositionProps) {

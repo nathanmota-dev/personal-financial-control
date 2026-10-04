@@ -1,12 +1,12 @@
 import type {
-  DailyProjection,
-  ProjectionCalculationInput,
-  ProjectionCalculationResult,
-  ProjectionEvent,
-  ProjectionSimulation,
-  ProjectionStatus,
-  ProjectionSummaryAlert,
-  ProjectedBalancePeriod,
+DailyProjection,
+ProjectedBalancePeriod,
+ProjectionCalculationInput,
+ProjectionCalculationResult,
+ProjectionEvent,
+ProjectionSimulation,
+ProjectionStatus,
+ProjectionSummaryAlert,
 } from "@/lib/interfaces/projected-balance";
 
 export const projectedBalancePeriods = [

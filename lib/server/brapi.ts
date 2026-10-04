@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { MarketDataProvider, MarketQuote } from "@/lib/interfaces/market-data";
+import type { MarketDataProvider,MarketQuote } from "@/lib/interfaces/market-data";
 import { DomainError } from "@/lib/server/errors";
 
 const responseSchema = z.object({

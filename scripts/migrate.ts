@@ -1,6 +1,6 @@
-import { createClient } from "@libsql/client";
-import { getServerEnv } from "@/lib/env";
 import { migrateDatabase } from "@/lib/db/migrate";
+import { getServerEnv } from "@/lib/env";
+import { createClient } from "@libsql/client";
 
 async function main() {
   const env = getServerEnv();

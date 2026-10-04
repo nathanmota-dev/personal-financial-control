@@ -1,12 +1,12 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
+import { defaultCategories } from "@/lib/category-defaults";
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
-import { defaultCategories } from "@/lib/category-defaults";
-import { categories, creditCardCharges, recurringTemplates, transactions } from "@/lib/db/schema";
-import { DomainError, invariant } from "@/lib/server/errors";
-import { currentTimestamp, serializeTimestamps } from "@/lib/server/finance";
+import { categories,creditCardCharges,recurringTemplates,transactions } from "@/lib/db/schema";
+import { DomainError,invariant } from "@/lib/server/errors";
+import { currentTimestamp,serializeTimestamps } from "@/lib/server/finance";
 
 const categorySchema = z.object({
   name: z.string().trim().min(1),

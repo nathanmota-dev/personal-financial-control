@@ -1,19 +1,19 @@
 "use client";
 
 import {
-  FlaskConical,
-  ChartPie,
-  PanelLeftClose,
-  PanelLeftOpen,
+ChartPie,
+FlaskConical,
+PanelLeftClose,
+PanelLeftOpen,
 } from "lucide-react";
 
-import { useState } from "react";
-import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { UserControls } from "@/components/auth/user-controls";
-import type { AppShellProps } from "@/lib/interfaces/app-shell";
-import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
-import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { MobileNavigation } from "@/components/finance/mobile-navigation";
+import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
+import { SidebarFooter } from "@/components/finance/sidebar-footer";
+import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
+import type { AppShellProps } from "@/lib/interfaces/app-shell";
+import { useState } from "react";
 
 export function AppShell({ children, demoMode, user }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);

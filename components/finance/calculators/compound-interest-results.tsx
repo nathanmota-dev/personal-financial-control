@@ -1,12 +1,12 @@
-import { ChartLine, Coins, PiggyBank } from "lucide-react";
+import { ChartLine,Coins,PiggyBank } from "lucide-react";
 
 import { CompoundInterestChart } from "@/components/finance/calculators/compound-interest-chart";
 import { CompoundInterestResultMetric } from "@/components/finance/calculators/compound-interest-result-metric";
 import { CompoundInterestTable } from "@/components/finance/calculators/compound-interest-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { CompoundInterestResultsProps } from "@/lib/interfaces/compound-interest";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/finance-ui";
+import type { CompoundInterestResultsProps } from "@/lib/interfaces/compound-interest";
 
 export function CompoundInterestResults({ simulation }: CompoundInterestResultsProps) {
   return (

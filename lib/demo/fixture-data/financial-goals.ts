@@ -1,0 +1,53 @@
+import type { DemoFixture } from "@/lib/demo/contracts";
+import { id } from "./support";
+
+export const financialGoals: DemoFixture["financialGoals"] = [
+    {
+      id: id("70000000-0000-4000-8000", 1),
+      name: "Viagem em família",
+      category: "travel",
+      targetAmountCents: 1200000,
+      targetDate: "2026-12",
+      plannedMonthlyContributionCents: 60000,
+      priority: 0,
+      status: "active",
+      color: "#38bdf8",
+      notes: "Viagem planejada para o fim do ano.",
+    },
+    {
+      id: id("70000000-0000-4000-8000", 2),
+      name: "Reserva de emergência",
+      category: "emergency",
+      targetAmountCents: 3000000,
+      targetDate: "2027-06",
+      plannedMonthlyContributionCents: 150000,
+      priority: 1,
+      status: "active",
+      color: "#14b8a6",
+      notes: "Objetivo de segurança financeira.",
+    },
+    {
+      id: id("70000000-0000-4000-8000", 3),
+      name: "Curso avançado",
+      category: "education",
+      targetAmountCents: 450000,
+      targetDate: "2026-10",
+      plannedMonthlyContributionCents: 50000,
+      priority: 2,
+      status: "completed",
+      color: "#a78bfa",
+      notes: "Meta concluída com antecedência.",
+    },
+    {
+      id: id("70000000-0000-4000-8000", 4),
+      name: "Carro novo",
+      category: "vehicle",
+      targetAmountCents: 8000000,
+      targetDate: "2028-01",
+      plannedMonthlyContributionCents: 250000,
+      priority: 2,
+      status: "archived",
+      color: "#64748b",
+      notes: "Meta arquivada para uma segunda fase.",
+    },
+  ];

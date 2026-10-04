@@ -1,12 +1,12 @@
 import type {
-  accounts,
-  recurringTemplates,
-  transactions,
-  transfers,
+accounts,
+recurringTemplates,
+transactions,
+transfers,
 } from "@/lib/db/schema";
 import type {
-  ProjectionCalculationResult,
-  ProjectedBalancePeriod,
+ProjectedBalancePeriod,
+ProjectionCalculationResult,
 } from "@/lib/interfaces/projected-balance";
 
 export type ProjectedBalanceAccountRow = typeof accounts.$inferSelect;

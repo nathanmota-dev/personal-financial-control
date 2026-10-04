@@ -1,17 +1,17 @@
 import type {
-  AccountType,
-  CategoryGroup,
-  TransactionStatus,
-  TransactionType,
+AccountType,
+CategoryGroup,
+TransactionStatus,
+TransactionType,
 } from "@/lib/db/schema";
 import type { InvestmentReductionSelection } from "@/lib/interfaces/investment-reconciliation";
 import type {
-  TransactionFundingLink,
-  TransactionFundingSource,
+TransactionFundingLink,
+TransactionFundingSource,
 } from "@/lib/interfaces/transaction-funding";
 import type { ReactNode } from "react";
 
-export type { TransactionFundingLink, TransactionFundingSource } from "@/lib/interfaces/transaction-funding";
+export type { TransactionFundingLink,TransactionFundingSource } from "@/lib/interfaces/transaction-funding";
 
 export type TransactionMutationPayload = {
   accountId: string;

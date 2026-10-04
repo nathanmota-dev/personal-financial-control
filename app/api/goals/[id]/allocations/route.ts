@@ -1,16 +1,17 @@
 import { apiGuard } from "@/lib/auth/server";
+import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { z } from "zod";
 
 import {
-  goalApiError,
-  noStoreJson,
-  okJson,
-  revalidateGoalViews,
+goalApiError,
+noStoreJson,
+okJson,
+revalidateGoalViews,
 } from "@/app/api/goals/_responses";
 import {
-  allocateGoalFunds,
-  listGoalAllocations,
-  releaseGoalFunds,
+allocateGoalFunds,
+listGoalAllocations,
+releaseGoalFunds,
 } from "@/lib/server/goals";
 
 type RouteContext = {
@@ -69,23 +70,9 @@ async function handlePOST(request: Request, { params }: RouteContext) {
   }
 }
 
-export async function GET(...args: Parameters<typeof handleGET>) {
-  const response = await handleGET(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const GET = privateRoute(handleGET);
 
-export async function POST(...args: Parameters<typeof handlePOST>) {
-  const response = await handlePOST(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const POST = privateRoute(handlePOST);
 
-export async function HEAD(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
-export async function OPTIONS(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
+export const HEAD = rejectRouteMethod;
+export const OPTIONS = rejectRouteMethod;

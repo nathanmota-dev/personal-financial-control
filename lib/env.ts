@@ -1,7 +1,7 @@
 import * as nextEnv from "@next/env";
+import { z } from "zod";
 
 const loadEnvConfig = nextEnv.loadEnvConfig ?? (nextEnv as unknown as { default: typeof nextEnv }).default.loadEnvConfig;
-import { z } from "zod";
 
 loadEnvConfig(process.cwd());
 

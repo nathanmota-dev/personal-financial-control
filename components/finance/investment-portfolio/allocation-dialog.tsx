@@ -1,27 +1,26 @@
 "use client";
-import { MoneyInput } from "@/components/finance/money-input";
+import { AllocationDialogDialogFooter3 } from "./allocation-dialog-allocation-dialog-dialog-footer3";
+import { AllocationDialogDiv2 } from "./allocation-dialog-allocation-dialog-div2";
+import { AllocationDialogPortfolioField1 } from "./allocation-dialog-allocation-dialog-portfolio-field1";
 
+import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+Dialog,
+DialogContent,
+DialogDescription,
+DialogHeader,
+DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import type { AllocationDialogProps } from "@/lib/interfaces/investment-portfolio";
 import { formatCurrency } from "@/lib/finance-ui";
-import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
+import type { AllocationDialogProps } from "@/lib/interfaces/investment-portfolio";
 
 export function AllocationDialog({
   state,
@@ -74,51 +73,9 @@ export function AllocationDialog({
             </Select>
           </PortfolioField>
 
-          <PortfolioField label="Caixinha" htmlFor="allocation-purpose">
-            <Select
-              value={form.purposeId}
-              onValueChange={(value) =>
-                setForm((current) => ({ ...current, purposeId: value }))
-              }
-              disabled={isExisting}
-            >
-              <SelectTrigger id="allocation-purpose" className="w-full border-input bg-card">
-                <SelectValue placeholder="Selecione uma finalidade" />
-              </SelectTrigger>
-              <SelectContent className="border-border bg-surface text-content-strong">
-                {purposes.map((purpose) => (
-                  <SelectItem key={purpose.id} value={purpose.id}>
-                    {purpose.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </PortfolioField>
+          <AllocationDialogPortfolioField1 form={form} setForm={setForm} isExisting={isExisting} purposes={purposes} />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <PortfolioField label="Valor alocado (R$)" htmlFor="allocation-amount">
-              <MoneyInput
-                id="allocation-amount"
-                value={form.amount}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, amount: event.target.value }))
-                }
-                placeholder="0,00"
-                inputMode="decimal"
-                required
-              />
-            </PortfolioField>
-            <PortfolioField label="Data da alocação" htmlFor="allocation-date">
-              <Input
-                id="allocation-date"
-                type="date"
-                value={form.allocatedOn}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, allocatedOn: event.target.value }))
-                }
-              />
-            </PortfolioField>
-          </div>
+          <AllocationDialogDiv2 form={form} setForm={setForm} />
 
           <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-sm">
             <div className="flex items-center justify-between gap-3">
@@ -142,28 +99,7 @@ export function AllocationDialog({
             />
           </PortfolioField>
 
-          <DialogFooter className="sm:justify-between">
-            <div>
-              {isExisting ? (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  disabled={isPending}
-                  onClick={onDelete}
-                >
-                  Remover alocação
-                </Button>
-              ) : null}
-            </div>
-            <div className="flex flex-col-reverse gap-2 sm:flex-row">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={isPending || !holdings.length || !purposes.length}>
-                {isPending ? "Salvando..." : "Salvar alocação"}
-              </Button>
-            </div>
-          </DialogFooter>
+          <AllocationDialogDialogFooter3 isExisting={isExisting} isPending={isPending} onDelete={onDelete} onOpenChange={onOpenChange} holdings={holdings} purposes={purposes} />
         </form>
       </DialogContent>
     </Dialog>

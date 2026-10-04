@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { LoaderCircle, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { LogoutButtonProps } from "@/lib/interfaces/auth";
+import { LoaderCircle,LogOut } from "lucide-react";
+import { useState } from "react";
 export function LogoutButton({ allDevices = false, iconOnly = false }: LogoutButtonProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

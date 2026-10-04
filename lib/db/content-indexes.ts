@@ -1,6 +1,6 @@
-import { getTableColumns, getTableName } from "drizzle-orm";
-import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 import { contentIndex } from "@/lib/crypto/content";
+import { getTableColumns,getTableName } from "drizzle-orm";
+import type { SQLiteTable } from "drizzle-orm/sqlite-core";
 
 export function withContentIndexes(table: SQLiteTable, values: Record<string, unknown>, defaults = false) {
   const columns = getTableColumns(table);

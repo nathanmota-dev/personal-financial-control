@@ -1,6 +1,6 @@
 import type {
-  CompoundInterestSimulation,
-  CompoundInterestSimulationInput,
+CompoundInterestSimulation,
+CompoundInterestSimulationInput,
 } from "@/lib/interfaces/compound-interest";
 
 export function formatPeriodLabel(month: number) {

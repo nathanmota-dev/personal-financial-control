@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
 import type {
-  AccountType,
-  CategoryGroup,
-  RecurringStatus,
-  RecurringTransactionType,
+AccountType,
+CategoryGroup,
+RecurringStatus,
+RecurringTransactionType,
 } from "@/lib/db/schema";
 
 export type RecurringTab = "recurring" | "category" | "calendar";

@@ -1,3 +1,4 @@
+import { domainErrorResponse } from "@/lib/server/domain-error-response";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
@@ -45,16 +46,7 @@ export function goalApiError(
   }
 ) {
   if (error instanceof DomainError) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: {
-          code: error.code,
-          message: error.message,
-        },
-      },
-      { status: error.status }
-    );
+    return domainErrorResponse(error);
   }
 
   if (error instanceof ZodError) {

@@ -1,11 +1,11 @@
-import { requirePageSession } from "@/lib/auth/server";
 import { TransactionsView } from "@/components/finance/transactions-view";
+import { requirePageSession } from "@/lib/auth/server";
 import { isValidMonth } from "@/lib/finance-ui";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
+import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 import { listTransactions } from "@/lib/server/transactions";
 import { listTransfers } from "@/lib/server/transfers";
-import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 
 export default async function TransactionsPage({
   searchParams,

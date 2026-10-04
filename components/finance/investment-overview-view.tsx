@@ -1,11 +1,11 @@
 import { InvestmentOverviewMetric } from "@/components/finance/investment-overview-metric";
+import { ArrowRight,Landmark,PiggyBank,TrendingDown,TrendingUp,WalletCards } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, Landmark, PiggyBank, TrendingDown, TrendingUp, WalletCards } from "lucide-react";
 
+import { financePanelClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
-import { financePanelClassName } from "@/components/finance/finance-styles";
-import { formatCurrency, investmentAssetClassLabels } from "@/lib/finance-ui";
+import { formatCurrency,investmentAssetClassLabels } from "@/lib/finance-ui";
 import type { InvestmentOverviewViewProps } from "@/lib/interfaces/investment-operations";
 
 export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps) {

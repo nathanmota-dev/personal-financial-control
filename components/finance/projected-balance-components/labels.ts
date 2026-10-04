@@ -1,10 +1,10 @@
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import type {
-  ProjectionEvent,
-  ProjectionStatus,
-  ProjectionSummaryAlert,
-  ProjectedBalancePeriod,
+ProjectedBalancePeriod,
+ProjectionEvent,
+ProjectionStatus,
+ProjectionSummaryAlert,
 } from "@/lib/interfaces/projected-balance";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
 
 export const EMPTY_FILTER_VALUE = "__all__";
 

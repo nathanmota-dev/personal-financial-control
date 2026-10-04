@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
+Tooltip,
+TooltipContent,
+TooltipTrigger,
 } from "@/components/ui/tooltip";
 
 import type { IconButtonProps } from "../goals-types";

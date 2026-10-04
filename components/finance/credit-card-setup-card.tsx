@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card,CardContent } from "@/components/ui/card";
 import type { CreditCardSetupCardProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardSetupCard({ title, description, action }: CreditCardSetupCardProps) {

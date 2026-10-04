@@ -1,10 +1,10 @@
 import {
-  centsToMoneyInput,
-  formatMonthLabel,
+centsToMoneyInput,
+formatMonthLabel,
 } from "@/lib/finance-ui";
 
-import { GOAL_COLORS, GOAL_PRIORITY_OPTIONS } from "./goals-constants";
-import type { ApiResponse, GoalCard, GoalFormState } from "./goals-types";
+import { GOAL_COLORS,GOAL_PRIORITY_OPTIONS } from "./goals-constants";
+import type { ApiResponse,GoalCard,GoalFormState } from "./goals-types";
 
 export function buildIsoDate(date = new Date()) {
   const year = date.getFullYear();

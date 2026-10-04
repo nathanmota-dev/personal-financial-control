@@ -1,13 +1,13 @@
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+Table,
+TableBody,
+TableCell,
+TableHead,
+TableHeader,
+TableRow,
 } from "@/components/ui/table";
-import type { CompoundInterestTableProps } from "@/lib/interfaces/compound-interest";
 import { formatCurrency } from "@/lib/finance-ui";
+import type { CompoundInterestTableProps } from "@/lib/interfaces/compound-interest";
 
 export function CompoundInterestTable({ points }: CompoundInterestTableProps) {
   return (

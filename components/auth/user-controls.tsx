@@ -1,16 +1,16 @@
 "use client";
 
-import { Ellipsis } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/finance/theme-toggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar,AvatarFallback,AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+Popover,
+PopoverContent,
+PopoverTrigger,
+} from "@/components/ui/popover";
 import type { UserControlsProps } from "@/lib/interfaces/auth";
+import { Ellipsis } from "lucide-react";
 
 export function UserControls({
   user,

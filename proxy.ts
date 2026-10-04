@@ -1,7 +1,7 @@
+import { authConfig,isAllowedOrigin } from "@/lib/auth/config";
+import { apiGuard,authResponse,firebaseError,verifySession } from "@/lib/auth/server";
 import { isDemoMode } from "@/lib/demo/mode";
-import { NextRequest, NextResponse } from "next/server";
-import { apiGuard, authResponse, verifySession, firebaseError } from "@/lib/auth/server";
-import { authConfig, isAllowedOrigin } from "@/lib/auth/config";
+import { NextRequest,NextResponse } from "next/server";
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (isDemoMode()) {

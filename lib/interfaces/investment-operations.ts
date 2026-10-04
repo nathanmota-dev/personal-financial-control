@@ -1,7 +1,7 @@
 import type {
-  getInvestmentAssetDetails,
-  getInvestmentOverview,
-  listLongTermInvestmentPositions,
+getInvestmentAssetDetails,
+getInvestmentOverview,
+listLongTermInvestmentPositions,
 } from "@/lib/server/investment-operations";
 
 export type InvestmentOverview = Awaited<ReturnType<typeof getInvestmentOverview>>;

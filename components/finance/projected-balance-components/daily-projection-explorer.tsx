@@ -1,13 +1,13 @@
 "use client";
 
+import { CalendarDays,Table2 } from "lucide-react";
 import { useState } from "react";
-import { CalendarDays, Table2 } from "lucide-react";
 
 import type { DailyProjectionExplorerProps } from "@/app/interfaces/projected-balance";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
 
-import { DayDetailSheet } from "./day-detail-sheet";
 import { DailyProjectionTable } from "./daily-projection-table";
+import { DayDetailSheet } from "./day-detail-sheet";
 import { ProjectedBalanceCalendar } from "./projected-balance-calendar";
 
 export function DailyProjectionExplorer({

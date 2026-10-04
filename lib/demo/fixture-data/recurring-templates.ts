@@ -1,0 +1,53 @@
+import type { DemoFixture } from "@/lib/demo/contracts";
+import { accountIds,categoryIds,recurringIds } from "./support";
+
+export const recurringTemplates: DemoFixture["recurringTemplates"] = [
+    {
+      id: recurringIds.salary,
+      accountId: accountIds.checking,
+      categoryId: categoryIds.salary,
+      type: "income",
+      status: "active",
+      amountCents: 650000,
+      dayOfMonth: 5,
+      startMonth: "2026-01",
+      description: "Salário mensal",
+      lastGeneratedMonth: "2026-07",
+    },
+    {
+      id: recurringIds.rent,
+      accountId: accountIds.checking,
+      categoryId: categoryIds.rent,
+      type: "expense",
+      status: "active",
+      amountCents: 180000,
+      dayOfMonth: 8,
+      startMonth: "2026-01",
+      description: "Aluguel",
+      lastGeneratedMonth: "2026-07",
+    },
+    {
+      id: recurringIds.utilities,
+      accountId: accountIds.checking,
+      categoryId: categoryIds.utilities,
+      type: "expense",
+      status: "active",
+      amountCents: 33000,
+      dayOfMonth: 15,
+      startMonth: "2026-01",
+      description: "Contas da casa",
+      lastGeneratedMonth: "2026-07",
+    },
+    {
+      id: recurringIds.investments,
+      accountId: accountIds.checking,
+      categoryId: categoryIds.investments,
+      type: "investment_contribution",
+      status: "active",
+      amountCents: 120000,
+      dayOfMonth: 20,
+      startMonth: "2026-01",
+      description: "Aporte mensal",
+      lastGeneratedMonth: "2026-07",
+    },
+  ];

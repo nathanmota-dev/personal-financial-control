@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { Direction } from "radix-ui"
+import * as React from "react"
 
 function DirectionProvider({
   dir,
@@ -19,4 +19,4 @@ function DirectionProvider({
 
 const useDirection = Direction.useDirection
 
-export { DirectionProvider, useDirection }
+export { DirectionProvider,useDirection }

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card,CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/finance-ui";
 
 import { GOAL_CATEGORY_LABELS } from "../goals-constants";

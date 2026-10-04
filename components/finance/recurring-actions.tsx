@@ -1,29 +1,29 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { Pause,Play,Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Pause, Play, Trash2 } from "lucide-react";
+import { useState,useTransition } from "react";
 import { toast } from "sonner";
 
 import {
-  deleteRecurringTemplateAction,
-  pauseRecurringTemplateAction,
-  updateRecurringTemplateAction,
+deleteRecurringTemplateAction,
+pauseRecurringTemplateAction,
+updateRecurringTemplateAction,
 } from "@/app/actions/finance";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+Dialog,
+DialogContent,
+DialogDescription,
+DialogFooter,
+DialogHeader,
+DialogTitle,
+DialogTrigger,
 } from "@/components/ui/dialog";
 import type {
-  RecurringActionButtonProps,
-  RecurringDeleteDialogProps,
-  RecurringDeleteMode,
+RecurringActionButtonProps,
+RecurringDeleteDialogProps,
+RecurringDeleteMode,
 } from "@/lib/interfaces/recurring";
 
 export function PauseRecurringButton({ id }: RecurringActionButtonProps) {
