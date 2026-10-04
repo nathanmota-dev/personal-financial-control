@@ -15,8 +15,8 @@ export function CompoundInterestForm({
   return (
     <Card className="border-border bg-card shadow-none">
       <CardHeader>
-        <CardTitle className="text-xl text-content-strong">Dados da simulação</CardTitle>
-        <p className="text-sm leading-6 text-content">
+        <CardTitle className="text-lg text-content-strong">Dados da simulação</CardTitle>
+        <p className="text-xs leading-5 text-content-muted">
           Informe os valores no formato brasileiro. O aporte é aplicado ao fim de cada mês.
         </p>
       </CardHeader>

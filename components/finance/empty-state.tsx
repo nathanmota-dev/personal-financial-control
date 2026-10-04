@@ -15,7 +15,7 @@ export function FinanceEmptyState({
   action,
 }: FinanceEmptyStateProps) {
   return (
-    <Empty className="rounded-[20px] border border-dashed border-border bg-muted/30 text-content-strong">
+    <Empty className="rounded-xl border border-dashed border-border bg-muted/30 text-content-strong">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <WalletCards className="text-brand" />

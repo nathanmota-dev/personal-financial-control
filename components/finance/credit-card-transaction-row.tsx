@@ -3,7 +3,7 @@ import { CreditCardChargeActions } from "@/components/finance/credit-card-charge
 import { Badge } from "@/components/ui/badge";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
 import { formatCurrency } from "@/lib/finance-ui";
-import type { CreditCardTransactionsPanelProps } from "@/lib/interfaces/credit-card-view";
+import type { CreditCardTransactionRowProps } from "@/lib/interfaces/credit-card-view";
 import { cn } from "@/lib/utils";
 import { ArrowDownUp,MoreHorizontal,Tag } from "lucide-react";
 
@@ -12,12 +12,7 @@ export function CreditCardTransactionRow({
   categories,
   month,
   entry,
-}: {
-  accountId: string;
-  categories: CreditCardTransactionsPanelProps["categories"];
-  month: string;
-  entry: CreditCardTransactionsPanelProps["entries"][number];
-}) {
+}: CreditCardTransactionRowProps) {
   const isAdjustment = entry.kind === "adjustment" || entry.amountCents < 0;
   const actionCharge = entry.chargeId && entry.totalAmountCents
     ? {
@@ -34,8 +29,8 @@ export function CreditCardTransactionRow({
     : null;
 
   return (
-    <article className="group flex gap-3 px-5 py-4 transition-colors hover:bg-card sm:px-6">
-      <div className="w-12 shrink-0 pt-0.5 text-center">
+    <article className="group grid grid-cols-[2rem_2.25rem_minmax(0,1fr)] gap-3 px-5 py-4 transition-colors hover:bg-surface sm:flex sm:px-6">
+      <div className="w-8 shrink-0 pt-0.5 text-center">
         <p className="text-[0.68rem] font-semibold text-content-subtle">
           {formatCreditCardMonth(entry.purchaseDate.slice(0, 7)).split(" ")[0]}
         </p>
@@ -48,7 +43,7 @@ export function CreditCardTransactionRow({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="truncate font-medium text-content-strong">{entry.description}</p>
+          <p className="break-words text-sm font-semibold text-content-strong">{entry.description}</p>
           {entry.installmentNumber && entry.installmentCount ? (
             <Badge variant="outline" className="border-input text-[0.68rem] text-content">
               {entry.installmentNumber}/{entry.installmentCount}
@@ -60,10 +55,10 @@ export function CreditCardTransactionRow({
             </Badge>
           ) : null}
         </div>
-        <p className="mt-1 truncate text-sm text-content">{entry.category?.name ?? "Sem categoria"}</p>
+        <p className="mt-1 truncate text-xs text-content-muted">{entry.category?.name ?? "Sem categoria"}</p>
       </div>
-      <div className="flex shrink-0 items-start gap-1 sm:items-center">
-        <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-brand")}>
+      <div className="col-start-3 flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0 sm:flex-nowrap">
+        <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-content-strong")}>
           {formatCurrency(entry.amountCents)}
         </p>
         {actionCharge ? (

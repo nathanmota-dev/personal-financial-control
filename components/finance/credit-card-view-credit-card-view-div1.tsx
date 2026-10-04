@@ -9,6 +9,7 @@ CreditCardPageActions
 } from "@/components/finance/credit-card-page-actions";
 import { CreditCardSetupCard } from "@/components/finance/credit-card-setup-card";
 import { CreditCardTransactionsPanel } from "@/components/finance/credit-card-transactions-panel";
+import { LoadingMetrics } from "@/components/finance/loading/primitives";
 import { PageHeader } from "@/components/finance/page-header";
 import {
 AccountSetupDialog,
@@ -19,7 +20,7 @@ import type { CreditCardViewDiv1Props } from "@/lib/interfaces/render/credit-car
 
 export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurchase, monthPoints, selectedMonth, selectMonth, isPending }: CreditCardViewDiv1Props) {
   return (
-<div className="space-y-6 pb-8">
+<div className="space-y-6">
       <PageHeader
         eyebrow="Cartão de crédito"
         title={overview.account.name}
@@ -55,6 +56,10 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
         />
       ) : null}
 
+      {isPending ? <LoadingMetrics count={4} /> : (
+        <CreditCardHero overview={overview} nextInvoice={monthPoints.find((point) => point.month > overview.month)} />
+      )}
+
       <CreditCardMonthStrip
         key={overview.month}
         points={monthPoints}
@@ -63,13 +68,8 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
         isLoading={isPending}
       />
 
-      {isPending ? (
-        <CreditCardMonthLoading month={selectedMonth} />
-      ) : (
-        <>
-          <CreditCardHero overview={overview} nextInvoice={monthPoints[1]} />
-
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+      {isPending ? <CreditCardMonthLoading month={selectedMonth} /> : (
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
             <CreditCardTransactionsPanel
               accountId={overview.account.id}
               categories={expenseCategories}
@@ -79,7 +79,6 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
             />
             <CreditCardCommitments overview={overview} monthPoints={monthPoints} />
           </div>
-        </>
       )}
     </div>
   );

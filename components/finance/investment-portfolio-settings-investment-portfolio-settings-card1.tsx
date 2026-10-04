@@ -8,7 +8,7 @@ import { Save } from "lucide-react";
 
 export function InvestmentPortfolioSettingsCard1({ initialBalance, setInitialBalance, initialDate, setInitialDate, rate, setRate, isPending, startTransition, onConfigure }: InvestmentPortfolioSettingsCard1Props) {
   return (
-<Card className="h-full rounded-[20px] border-border bg-card">
+<Card className="h-full rounded-xl border-border bg-card">
         <CardHeader>
           <CardTitle>Configurar carteira</CardTitle>
           <p className="text-sm leading-6 text-content">

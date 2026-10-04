@@ -12,17 +12,17 @@ import { ArrowDownUp,ChartPie,Search } from "lucide-react";
 
 export function CreditCardTransactionsPanelSection1({ entries, view, setView, query, setQuery, categoryFilter, setCategoryFilter, categories, filteredEntries, accountId, month, categoryTotals }: CreditCardTransactionsPanelSection1Props) {
   return (
-<section className="min-w-0 overflow-hidden rounded-[20px] border border-border bg-card shadow-none">
+<section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-none">
       <div className="border-b border-border px-5 py-5 sm:px-6">
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+        <div className="flex flex-col justify-between gap-4 2xl:flex-row 2xl:items-center">
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-semibold text-content-strong">Extrato da fatura</h2>
+              <h2 className="text-lg font-semibold text-content-strong">Extrato da fatura</h2>
               <Badge variant="outline" className="border-input text-content">{entries.length}</Badge>
             </div>
-            <p className="mt-1 text-sm text-content">Compras, parcelas e ajustes lançados no ciclo selecionado.</p>
+            <p className="mt-1 text-xs text-content-muted">Compras, parcelas e ajustes lançados no ciclo selecionado.</p>
           </div>
-          <div className="flex rounded-xl border border-border bg-muted/30 p-1">
+          <div className="flex w-fit max-w-full rounded-xl bg-surface p-1">
             <ViewToggle
               active={view === "transactions"}
               icon={<ArrowDownUp className="size-3.5" />}

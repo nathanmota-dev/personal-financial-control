@@ -1,8 +1,9 @@
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { FinanceMetricProps } from "@/lib/interfaces/finance-presentation";
 import { cn } from "@/lib/utils";
 
 const iconTones = {
-  neutral: "text-content-muted",
+  neutral: "text-muted-foreground",
   brand: "text-brand",
   success: "text-success",
   warning: "text-warning",
@@ -18,30 +19,21 @@ export function FinanceMetric({
   className,
 }: FinanceMetricProps) {
   return (
-    <article
-      className={cn(
-        "flex min-h-[154px] min-w-0 flex-col rounded-[20px] border border-border bg-card px-[18px] py-5",
-        className,
-      )}
-    >
-      <div className="flex min-h-9 items-start justify-between gap-3">
-        <p className="text-[13px] leading-[18px] font-semibold text-content">
-          {label}
-        </p>
+    <Card className={cn("min-w-0 gap-3 py-5", className)}>
+      <CardHeader className="gap-0 px-5">
+        <CardTitle className="text-sm font-medium text-content">{label}</CardTitle>
         {icon && (
-          <span className={cn("shrink-0 [&>svg]:size-[19px]", iconTones[tone])}>
+          <CardAction className={cn("[&>svg]:size-4", iconTones[tone])}>
             {icon}
-          </span>
+          </CardAction>
         )}
-      </div>
-      <p className="mt-3 break-words text-[clamp(20px,1.85vw,27px)] leading-tight font-[650] tracking-[-0.8px] text-content-strong tabular-nums">
-        {value}
-      </p>
-      {description && (
-        <p className="mt-auto pt-4 text-[11px] leading-4 text-content-subtle">
-          {description}
+      </CardHeader>
+      <CardContent className="mt-auto space-y-1.5 px-5">
+        <p className="break-words text-2xl leading-8 font-semibold tracking-tight tabular-nums">
+          {value}
         </p>
-      )}
-    </article>
+        {description && <CardDescription className="text-xs leading-4">{description}</CardDescription>}
+      </CardContent>
+    </Card>
   );
 }

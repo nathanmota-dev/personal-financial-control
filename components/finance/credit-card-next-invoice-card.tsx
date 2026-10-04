@@ -6,6 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CreditCardNextInvoiceCardDialogContent1 } from "./credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1";
 
+import { FinanceMetric } from "@/components/finance/finance-metric";
+
 import { updateAccountAction } from "@/app/actions/finance";
 import {
 Dialog,
@@ -52,25 +54,17 @@ export function CreditCardNextInvoiceCard({
         <button
           type="button"
           aria-label={`Configurar vencimento da próxima fatura. Atualmente, dia ${creditDueDay}.`}
-          className="group w-full cursor-pointer rounded-2xl border border-input/70 bg-muted/30 px-4 py-3.5 text-left outline-none transition-colors hover:border-brand/45 hover:bg-muted/30 focus-visible:border-brand/50 focus-visible:ring-2 focus-visible:ring-brand/45"
+          className="group min-w-0 cursor-pointer rounded-xl text-left outline-none transition-colors hover:ring-1 hover:ring-border focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span className="flex items-center justify-between gap-3">
-            <span className="text-xs font-medium text-content">
-              Próxima fatura
-            </span>
-            <PencilLine
-              aria-hidden="true"
-              className="size-3.5 text-content-subtle transition-colors group-hover:text-brand"
-            />
-          </span>
-          <span className="mt-1 block text-2xl font-semibold text-brand">
-            {upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
-          </span>
-          <span className="mt-1 block text-xs text-content">
-            {upcomingInvoice
+          <FinanceMetric
+            label="Próxima fatura"
+            value={upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
+            description={upcomingInvoice
               ? `Estimativa para ${upcomingInvoice.month.slice(5, 7)}/${upcomingInvoice.month.slice(0, 4)} · vence dia ${creditDueDay}`
               : `Sem parcelas futuras · vence dia ${creditDueDay}`}
-          </span>
+            icon={<PencilLine aria-hidden="true" />}
+            className="h-full"
+          />
         </button>
       </DialogTrigger>
 

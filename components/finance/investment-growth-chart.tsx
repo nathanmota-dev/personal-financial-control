@@ -41,7 +41,7 @@ export function InvestmentGrowthChart({
   }
 
   return (
-    <div className="rounded-[20px] border border-border bg-card p-5 shadow-none">
+    <div className="rounded-xl border border-border bg-card p-5 shadow-none">
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h3 className="text-lg font-semibold text-content-strong">

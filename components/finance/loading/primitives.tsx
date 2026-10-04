@@ -11,7 +11,7 @@ export function LoadingPage({ label, actions = 0, className, children }: Loading
     <div className={cn("space-y-6", className)} aria-busy="true">
       <span className="sr-only" role="status">Carregando {label}.</span>
       <div aria-hidden="true" className="space-y-6">
-        <header className="flex min-h-[104px] flex-wrap items-start justify-between gap-x-8 gap-y-4 pt-[17px] pb-2">
+        <header className="flex min-h-[104px] flex-wrap items-start justify-between gap-x-8 gap-y-4 pt-[17px] min-[100.0625rem]:min-h-[76px] min-[100.0625rem]:pt-0">
           <div className="min-w-0 flex-1 basis-[320px] space-y-2">
             <LoadingBar className="h-11 w-72" />
             <LoadingBar className="h-4 w-full max-w-2xl bg-surface-raised" />
@@ -27,7 +27,7 @@ export function LoadingPage({ label, actions = 0, className, children }: Loading
 }
 
 export function LoadingPanel({ children, className }: LoadingBlockProps) {
-  return <div className={cn("min-w-0 space-y-5 rounded-[20px] border border-border bg-card p-6", className)}>
+  return <div className={cn("min-w-0 space-y-5 rounded-xl border border-border bg-card p-6", className)}>
     <div className="space-y-2"><LoadingBar className="h-6 w-48" /><LoadingBar className="h-3 w-64 bg-surface-raised" /></div>
     {children}
   </div>;
@@ -35,7 +35,7 @@ export function LoadingPanel({ children, className }: LoadingBlockProps) {
 
 export function LoadingMetrics({ count, className }: LoadingRepeatProps) {
   return <div className={cn("grid gap-4 md:grid-cols-2 xl:grid-cols-4", className)}>
-    {Array.from({ length: count }, (_, index) => <div key={index} className="min-w-0 space-y-4 rounded-[20px] border border-border bg-card p-5">
+    {Array.from({ length: count }, (_, index) => <div key={index} className="min-w-0 space-y-3 rounded-xl border border-border bg-card p-5">
       <LoadingBar className="w-28" /><LoadingBar className="h-8 w-36" /><LoadingBar className="h-3 w-full bg-surface-raised" />
     </div>)}
   </div>;

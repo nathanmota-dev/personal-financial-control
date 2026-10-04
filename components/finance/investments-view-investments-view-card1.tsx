@@ -41,7 +41,7 @@ export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPi
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
-                  className="w-auto overflow-hidden rounded-[20px] border border-border bg-card p-0 text-content-strong shadow-none"
+                  className="w-auto overflow-hidden rounded-xl border border-border bg-card p-0 text-content-strong shadow-none"
                 >
                   <MonthPicker
                     selectedMonth={selectedSimulationDate}
@@ -63,11 +63,11 @@ export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPi
 
             {projection ? (
               simulatedMonths && simulatedValue !== null ? (
-                <div className="rounded-[20px] border border-brand/20 bg-muted/30 p-5">
-                  <p className="text-sm font-medium text-brand/80">
+                <div className="rounded-xl bg-surface p-5">
+                  <p className="text-xs font-medium text-content-muted">
                     Valor projetado
                   </p>
-                  <p className="mt-3 text-3xl font-semibold tracking-tight text-brand">
+                  <p className="mt-3 text-[27px] font-[650] tracking-[-0.8px] text-content-strong">
                     {formatCurrency(simulatedValue)}
                   </p>
                   <p className="mt-2 text-sm text-content">

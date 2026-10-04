@@ -6,37 +6,37 @@ import { formatCurrency } from "@/lib/finance-ui";
 import type { CreditCardCommitmentsProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommitmentsProps) {
-  const upcomingPoints = monthPoints.slice(1, 4);
+  const upcomingPoints = monthPoints.filter((point) => point.month > overview.month).slice(0, 3);
   const futureCharges = overview.invoice.futureInstallments.slice(0, 5);
 
   return (
-    <aside className="space-y-5">
-      <section className="rounded-[20px] border border-border bg-card p-5 shadow-none sm:p-6">
+    <aside className="space-y-6">
+      <section className="rounded-xl border border-border bg-card px-[22px] py-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold text-content">Planejamento</p>
-            <h2 className="mt-1 text-xl font-semibold text-content-strong">Próximas faturas</h2>
+            <h2 className="text-lg font-semibold text-content-strong">Próximas faturas</h2>
+            <p className="mt-1 text-xs text-content-muted">Previsão dos próximos três meses</p>
           </div>
           <CalendarRange className="size-5 text-brand" />
         </div>
-        <div className="mt-5 space-y-2">
+        <div className="mt-4 divide-y divide-border">
           {upcomingPoints.map((point) => (
-            <div key={point.month} className="flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-muted/30 px-3.5 py-3">
+            <div key={point.month} className="flex items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-sm font-medium text-content-strong">{formatCreditCardMonth(point.month)}</p>
                 <p className="mt-0.5 text-xs text-content-subtle">{point.entryCount ? `${point.entryCount} parcela${point.entryCount === 1 ? "" : "s"}` : "Sem lançamentos previstos"}</p>
               </div>
-              <p className="font-semibold text-brand">{formatCurrency(point.totalCents)}</p>
+              <p className="text-sm font-semibold text-content-strong">{formatCurrency(point.totalCents)}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-[20px] border border-border bg-card p-5 shadow-none sm:p-6">
+      <section className="rounded-xl border border-border bg-card px-[22px] py-5">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[0.68rem] font-semibold text-content">Compromissos</p>
-            <h2 className="mt-1 text-xl font-semibold text-content-strong">Parcelas em aberto</h2>
+            <h2 className="text-lg font-semibold text-content-strong">Parcelas em aberto</h2>
+            <p className="mt-1 text-xs text-content-muted">Compromissos das próximas faturas</p>
           </div>
           <Layers3 className="size-5 text-brand" />
         </div>
@@ -71,7 +71,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
         ) : null}
       </section>
 
-      <div className="rounded-2xl border border-brand/15 bg-brand/[0.06] px-4 py-3 text-xs leading-5 text-content">
+      <div className="px-1 text-xs leading-5 text-content">
         Ciclo atual: {overview.account.creditClosingDay ? `fecha dia ${overview.account.creditClosingDay}` : "fechamento não configurado"} · vencimento dia {overview.account.creditDueDay} · mês {formatCreditCardMonth(overview.month)}.
       </div>
     </aside>

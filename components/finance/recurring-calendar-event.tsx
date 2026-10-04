@@ -5,13 +5,13 @@ import type { RecurringCalendarEventItemProps } from "@/lib/interfaces/recurring
 import { cn } from "@/lib/utils";
 
 const eventTone = {
-  income: "border-warning/35 bg-warning/10",
+  income: "border-success/35 bg-success/10",
   expense: "border-danger/35 bg-danger/10",
   investment_contribution: "border-brand/35 bg-brand/10",
 } as const;
 
 const eventIconTone = {
-  income: "bg-warning/20 text-warning",
+  income: "bg-success/20 text-success",
   expense: "bg-danger/20 text-danger",
   investment_contribution: "bg-brand/20 text-brand",
 } as const;

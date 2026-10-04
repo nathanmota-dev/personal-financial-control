@@ -76,7 +76,7 @@ export function RecurringView({
         </TabsContent>
 
         <TabsContent value="category" className="mt-0">
-          <CategorySpendingCharts categorySpending={categorySpending} className="xl:grid-cols-2" />
+          <CategorySpendingCharts categorySpending={categorySpending} size="expanded" className="2xl:grid-cols-2" />
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-0">

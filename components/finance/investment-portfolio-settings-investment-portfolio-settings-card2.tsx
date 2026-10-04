@@ -16,7 +16,7 @@ import { RefreshCcw,Save,SlidersHorizontal } from "lucide-react";
 
 export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, isPending, startTransition, onUpdateRate, setReconciledBalance, setReconciledDate, setIsReconcileOpen }: InvestmentPortfolioSettingsCard2Props) {
   return (
-<Card className="h-full rounded-[20px] border-border bg-card">
+<Card className="h-full rounded-xl border-border bg-card">
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>

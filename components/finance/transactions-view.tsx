@@ -85,7 +85,7 @@ export function TransactionsView({
         </TabsList>
 
         <TabsContent value="transactions">
-          <Card className="rounded-[20px] border-border bg-card">
+          <Card className="rounded-xl border-border bg-card">
             <CardHeader>
               <CardTitle>Lista principal</CardTitle>
             </CardHeader>

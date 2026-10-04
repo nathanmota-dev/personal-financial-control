@@ -29,21 +29,21 @@ export function GoalCardItem({
       className="h-full min-w-0 gap-5"
       style={{ "--goal-color": goal.color } as CSSProperties}
     >
-      <CardContent className="flex-1 space-y-5">
+      <CardContent className="flex-1 space-y-4">
         <GoalCardItemDiv1 goal={goal} onEdit={onEdit} onRelease={onRelease} onArchive={onArchive} />
 
         <div>
           <p className="text-xs text-content">Saldo alocado</p>
-          <p className="mt-1 break-all text-[27px] font-semibold tracking-tight text-content-strong tabular-nums">
+          <p className="mt-1 break-all text-[27px] font-[650] tracking-[-0.8px] text-content-strong tabular-nums">
             {formatCurrency(goal.allocatedCents)}
           </p>
-          <p className="mt-1 text-sm text-content">
+          <p className="mt-1 text-xs text-content-muted">
             de {formatCurrency(goal.targetAmountCents)}
           </p>
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3 text-sm">
+          <div className="flex items-center justify-between gap-3 text-xs">
             <span className="text-content">Progresso</span>
             <span className="font-medium text-content-strong">
               {goal.progressPercentage.toFixed(1).replace(".", ",")}%
@@ -73,7 +73,7 @@ export function GoalCardItem({
         </div>
 
         {goal.notes ? (
-          <p className="break-words text-sm leading-6 text-content">
+          <p className="break-words text-xs leading-5 text-content">
             {goal.notes}
           </p>
         ) : null}

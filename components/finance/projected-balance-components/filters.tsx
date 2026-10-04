@@ -44,7 +44,7 @@ export function ProjectionFilters({
   }
 
   return (
-    <Card className="rounded-[20px] border-border bg-card">
+    <Card className="rounded-xl border-border bg-card">
       <CardHeader className="gap-2">
         <div className="flex items-center gap-3">
           <div className={cn(financeIconClassName, "bg-brand/10 text-brand")}>

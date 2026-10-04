@@ -102,7 +102,7 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" disabled={isPending}>
+        <Button variant="outline" disabled={isPending}>
           <Trash2 className="size-4" />
           Excluir
         </Button>

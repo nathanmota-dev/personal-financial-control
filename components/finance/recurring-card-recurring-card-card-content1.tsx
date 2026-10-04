@@ -17,11 +17,11 @@ Clock3
 
 export function RecurringCardCardContent1({ template, generated, month }: RecurringCardCardContent1Props) {
   return (
-<CardContent className="flex-1 space-y-5">
+<CardContent className="flex-1 space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="mb-1 text-xs text-content">Valor mensal</p>
-            <p className="break-all text-[27px] font-semibold tracking-tight text-content-strong tabular-nums">
+            <p className="break-all text-[27px] font-[650] tracking-[-0.8px] text-content-strong tabular-nums">
               {formatCurrency(template.amountCents)}
             </p>
           </div>
@@ -30,7 +30,7 @@ export function RecurringCardCardContent1({ template, generated, month }: Recurr
             Dia {template.dayOfMonth}
           </span>
         </div>
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-4 border-t border-border pt-4 text-sm">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-4 text-sm">
           <div className="min-w-0">
             <dt className="text-xs text-content">Conta</dt>
             <dd className="mt-1 break-words text-content-strong">

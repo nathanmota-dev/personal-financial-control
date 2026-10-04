@@ -8,7 +8,7 @@ import { GoalMetric } from "./goal-metric";
 
 export function GoalArchiveCard({ goal }: GoalArchiveCardProps) {
   return (
-    <Card className="rounded-[20px] border-border bg-muted/30">
+    <Card className="rounded-xl border-border bg-muted/30">
       <CardContent className="space-y-3 pt-5">
         <div className="flex items-center gap-2">
           <span

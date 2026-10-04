@@ -19,17 +19,17 @@ export function SettingsViewTabsContent2({ categoriesByGroup }: SettingsViewTabs
 <TabsContent value="categories">
           <div className="grid gap-6">
             {Object.entries(categoriesByGroup).map(([group, rows]) => (
-              <Card key={group} className="rounded-[20px] border-border bg-card">
+              <Card key={group} className="rounded-xl border-border bg-card">
                 <CardHeader>
                   <CardTitle>{categoryGroupLabels[group as keyof typeof categoryGroupLabels]}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-3 md:grid-cols-2">
                   {rows.map((category) => (
-                    <div key={category.id} className="rounded-2xl border border-border p-4">
+                    <div key={category.id} className="rounded-xl bg-surface p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-medium text-content-strong">{category.name}</p>
-                          <p className="text-sm text-content">
+                          <p className="mt-1 text-xs text-content-muted">
                             {categoryGroupLabels[category.group]}
                           </p>
                         </div>

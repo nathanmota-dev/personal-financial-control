@@ -28,7 +28,7 @@ test("asset detail records a fixed-income operation and a manual valuation", asy
     .fill("110,00");
   await saveDialog(valuation);
   await expect(
-    page.getByText("Valor atual", { exact: true }).locator(".."),
+    page.getByText("Valor atual", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"]'),
   ).toContainText(/110,00/);
 });
 

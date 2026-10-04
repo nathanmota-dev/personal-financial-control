@@ -1,12 +1,14 @@
 "use client";
+import { ExpandedCategoryDistribution } from "./expanded-category-distribution";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
 import { formatCurrency } from "@/lib/finance-ui";
 
-export function DashboardCategoryDistribution({ distribution }: DashboardCategorySectionProps) {
+export function DashboardCategoryDistribution({ distribution, size = "default" }: DashboardCategorySectionProps) {
   const { chart, positiveTotalCents: total, netTotalCents } = distribution;
+  if (size === "expanded") return <ExpandedCategoryDistribution distribution={distribution} />;
   return (
     <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[340px] min-[100.0625rem]:h-[290px]">
       <h2 className="text-lg font-semibold leading-[25px]">Distribuição das despesas</h2>

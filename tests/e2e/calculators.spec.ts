@@ -15,7 +15,7 @@ test("calculator catalog, calculation, units, table, persistence and clearing", 
   await page.getByLabel("Período", { exact: true }).fill("1");
   await page.getByRole("button", { name: "Calcular", exact: true }).click();
   await expect(
-    page.getByRole("article").filter({ hasText: "Valor total final" }),
+    page.locator('[data-slot="card"]').filter({ hasText: "Valor total final" }),
   ).toContainText(/2\.200,00/);
   await page.getByRole("tab", { name: "Tabela" }).click();
   await expect(page.getByRole("table").getByRole("row")).toHaveCount(14);
@@ -30,7 +30,7 @@ test("calculator catalog, calculation, units, table, persistence and clearing", 
   await page.getByLabel("Período", { exact: true }).fill("2");
   await page.getByRole("button", { name: "Calcular", exact: true }).click();
   await expect(
-    page.getByRole("article").filter({ hasText: "Valor total final" }),
+    page.locator('[data-slot="card"]').filter({ hasText: "Valor total final" }),
   ).toContainText(/1\.221,10/);
   await page.getByRole("button", { name: "Limpar", exact: true }).click();
   await expect(page.getByLabel("Valor inicial")).toHaveValue("");
