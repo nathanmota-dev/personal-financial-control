@@ -1,15 +1,16 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { cp, mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { once } from "node:events";
 import type { FinanceServer } from "./contracts";
 
-export async function startFinanceServer(): Promise<FinanceServer> {
+export async function startFinanceServer(authenticated = false): Promise<FinanceServer> {
   const root = process.cwd();
   const standalone = path.join(root, ".next/standalone");
   const directory = await mkdtemp(path.join(tmpdir(), "pfc-e2e-"));
-  const url = "http://localhost:3101";
+  const port = process.env.PFC_E2E_FINANCE_PORT ?? "3101";
+  const url = `http://localhost:${port}`;
   let output = "";
   try {
     await cp(
@@ -36,20 +37,34 @@ export async function startFinanceServer(): Promise<FinanceServer> {
     await mkdir(path.join(directory, "tmp"));
     const control = path.join(directory, "brapi.json");
     await writeFile(control, "{}");
+    const databaseUrl = `file:${path.join(directory, "finance.db")}`;
+    if (authenticated) {
+      const migration = spawnSync(process.execPath, ["--import", "tsx", "tests/e2e/helpers/auth-database.ts"], {
+        cwd: root,
+        env: { ...process.env, DATABASE_URL: databaseUrl, DATA_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString("base64") },
+        encoding: "utf8",
+      });
+      if (migration.status !== 0) throw new Error(migration.stderr);
+    }
     const child = spawn(
       process.execPath,
-      ["--import", path.join(root, "tests/e2e/helpers/brapi.mjs"), "server.js"],
+      ["--import", path.join(root, "tests/e2e/helpers/brapi.mjs"), ...(authenticated ? ["--import", path.join(root, "tests/e2e/helpers/firebase.mjs")] : []), "server.js"],
       {
         cwd: directory,
         env: {
           ...process.env,
           NODE_ENV: "production",
-          DEMO_MODE: "true",
+          DEMO_MODE: String(!authenticated),
           APP_URL: url,
-          PORT: "3101",
+          PORT: port,
           HOSTNAME: "127.0.0.1",
           TMPDIR: path.join(directory, "tmp"),
-          DATABASE_URL: `file:${path.join(directory, "finance.db")}`,
+          DATABASE_URL: databaseUrl,
+          ...(authenticated ? {
+            FIREBASE_PROJECT_ID: "onboarding-test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "onboarding-test",
+            NEXT_PUBLIC_FIREBASE_API_KEY: "test", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test",
+            FIREBASE_CLIENT_EMAIL: "test@example.test", FIREBASE_PRIVATE_KEY: "test",
+          } : {}),
           TOKEN: "e2e-unused-token",
           DATA_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString("base64"),
           BRAPI_API_TOKEN: "e2e-test-token",
@@ -89,9 +104,10 @@ export async function startFinanceServer(): Promise<FinanceServer> {
           throw spawnError ?? new Error(`Finance server exited: ${output}`);
         try {
           const response = await fetch(`${url}/api/accounts`, {
+            ...(authenticated ? { headers: { cookie: "session=onboarding-a" } } : {}),
             signal: AbortSignal.timeout(1500),
           });
-          if (response.ok && (await response.json()).accounts.length === 5)
+          if (response.ok && (await response.json()).accounts.length === (authenticated ? 0 : 5))
             return {
               url,
               directory,

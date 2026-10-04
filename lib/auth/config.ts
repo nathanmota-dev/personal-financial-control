@@ -1,10 +1,16 @@
 export const SESSION_SECONDS = 14 * 24 * 60 * 60;
 export function authConfig(environment = process.env.NODE_ENV) {
+  // Validate the server process configuration at runtime, including standalone
+  // deployments; public client values are otherwise inlined by Next at build time.
+  const [apiKey, authDomain, appId, publicProjectId] = [
+    "NEXT_PUBLIC_FIREBASE_API_KEY", "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+    "NEXT_PUBLIC_FIREBASE_APP_ID", "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+  ].map(key => process.env[key]);
   const urlVariable = environment === "development" ? "APP_URL_DEVELOPMENT" : "APP_URL";
   const origin = new URL(process.env[urlVariable] || "invalid");
   if (origin.pathname !== "/" || origin.search || origin.hash || origin.username || origin.password || (origin.protocol !== "https:" && !(origin.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname)))) throw new Error(`Invalid ${urlVariable}`);
   const projectId = process.env.FIREBASE_PROJECT_ID;
-  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY || !process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || !process.env.NEXT_PUBLIC_FIREBASE_APP_ID || !projectId || projectId !== process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) throw new Error("Authentication unavailable");
+  if (!apiKey || !authDomain || !appId || !projectId || projectId !== publicProjectId || !process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) throw new Error("Authentication unavailable");
   return { origin: origin.origin, projectId, secure: origin.protocol === "https:" };
 }
 
