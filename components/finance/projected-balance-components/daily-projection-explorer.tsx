@@ -12,6 +12,7 @@ import { ProjectedBalanceCalendar } from "./projected-balance-calendar";
 
 export function DailyProjectionExplorer({
   daily,
+  actions,
   onRemoveSimulation,
 }: DailyProjectionExplorerProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -37,25 +38,28 @@ export function DailyProjectionExplorer({
             Navegue pelo mês ou alterne para a conferência em formato de tabela.
           </p>
         </div>
-        <TabsList
-          variant="line"
-          className="h-10 w-full rounded-xl border border-border bg-muted/30 p-1 sm:w-auto"
-        >
-          <TabsTrigger
-            value="calendar"
-            className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
+        <div className="flex flex-wrap items-center gap-3">
+          {actions}
+          <TabsList
+            variant="line"
+            className="h-10 w-full rounded-xl border border-border bg-muted/30 p-1 sm:w-auto"
           >
-            <CalendarDays className="size-4" aria-hidden="true" />
-            Calendário
-          </TabsTrigger>
-          <TabsTrigger
-            value="table"
-            className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
-          >
-            <Table2 className="size-4" aria-hidden="true" />
-            Tabela
-          </TabsTrigger>
-        </TabsList>
+            <TabsTrigger
+              value="calendar"
+              className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
+            >
+              <CalendarDays className="size-4" aria-hidden="true" />
+              Calendário
+            </TabsTrigger>
+            <TabsTrigger
+              value="table"
+              className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
+            >
+              <Table2 className="size-4" aria-hidden="true" />
+              Tabela
+            </TabsTrigger>
+          </TabsList>
+        </div>
       </div>
 
       <TabsContent value="calendar" className="mt-0">

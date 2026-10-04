@@ -2,9 +2,8 @@ import { LoadingBar, LoadingChart, LoadingFields, LoadingMetrics, LoadingPage, L
 
 export function ProjectedBalanceSkeleton() {
   return <LoadingPage label="saldo projetado">
-    <LoadingPanel><LoadingFields count={6} className="xl:grid-cols-3" /></LoadingPanel>
     <LoadingMetrics count={5} className="xl:grid-cols-5" />
-    <LoadingPanel><LoadingBar className="h-10 w-40 rounded-lg" /></LoadingPanel>
+    <LoadingPanel><LoadingFields count={6} className="xl:grid-cols-3" /></LoadingPanel>
     <LoadingChart />
     <LoadingTabs count={2} />
     <LoadingPanel>

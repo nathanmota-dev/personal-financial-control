@@ -7,7 +7,7 @@ export function RecurringSegmentedControl() {
     <TabsList
       aria-label="Visualização das recorrências"
       variant="line"
-      className="max-w-full justify-start overflow-x-auto"
+      className="max-w-full justify-start overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       <TabsTrigger
         value="recurring"

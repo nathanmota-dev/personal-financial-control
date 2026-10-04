@@ -86,6 +86,7 @@ export type DashboardChartSummaryProps = { summary: DashboardChartSummary };
 export type CategorySpendingChartsProps = {
   categorySpending: CategorySpendingItem[];
   className?: string;
+  size?: "default" | "expanded";
 };
 export type DashboardActionsProps = { month: string };
 export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "expenses" | "investmentOverview">;
@@ -94,5 +95,5 @@ export type DashboardBalancesProps = { accounts: DashboardAccountBalance[] };
 export type DashboardPortfolioProps = Pick<DashboardData, "investmentOverview">;
 export type DashboardMetricListProps = Pick<DashboardData, "comparisons"> & { totals: DashboardTotals };
 export type DashboardCategoryDistribution = ReturnType<typeof import("@/lib/dashboard-categories").buildDashboardCategoryDistribution>;
-export type DashboardCategorySectionProps = { distribution: DashboardCategoryDistribution };
+export type DashboardCategorySectionProps = { distribution: DashboardCategoryDistribution; size?: "default" | "expanded" };
 export type DashboardUncategorizedNoticeProps = { amountCents: number; month: string };

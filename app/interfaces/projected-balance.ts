@@ -99,6 +99,7 @@ export type ProjectionCalendarDayItemProps = {
 };
 
 export type DailyProjectionExplorerProps = {
+  actions?: ReactNode;
   daily: DailyProjection[];
   onRemoveSimulation: (simulationId: string) => void;
 };

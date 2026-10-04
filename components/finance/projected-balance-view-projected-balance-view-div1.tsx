@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/finance/page-header";
 import { ProjectedBalanceChart } from "@/components/finance/projected-balance-components/chart";
 import { DailyProjectionExplorer } from "@/components/finance/projected-balance-components/daily-projection-explorer";
 import { ProjectionFilters } from "@/components/finance/projected-balance-components/filters";
-import { ProjectionSimulationPanel } from "@/components/finance/projected-balance-components/simulation-panel";
+import { ProjectionSimulationDialog } from "@/components/finance/projected-balance-components/projection-simulation-dialog";
 import {
 ProjectionAlerts,
 ProjectionSummaryCards,
@@ -16,7 +16,7 @@ import type { ProjectedBalanceViewDiv1Props } from "@/lib/interfaces/render/proj
 import { Landmark } from "lucide-react";
 import Link from "next/link";
 
-export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, creditAccounts, filters, loadError, visibleProjection, selectedAccount, simulations, addSimulation, removeSimulation, clearSimulations }: ProjectedBalanceViewDiv1Props) {
+export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, creditAccounts, filters, loadError, visibleProjection, selectedAccount, addSimulation, removeSimulation }: ProjectedBalanceViewDiv1Props) {
   return (
 <div className="space-y-6">
       <PageHeader
@@ -40,6 +40,12 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
         />
       ) : (
         <>
+          {!loadError && visibleProjection?.daily.length ? (
+            <ProjectionSummaryCards
+              summary={visibleProjection.summary}
+              selectedAccountName={selectedAccount?.name}
+            />
+          ) : null}
           <ProjectionFilters
             accounts={accounts}
             creditAccounts={creditAccounts}
@@ -51,26 +57,15 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
           ) : visibleProjection ? (
             visibleProjection.daily.length ? (
               <>
-                <ProjectionSummaryCards
-                  summary={visibleProjection.summary}
-                  selectedAccountName={selectedAccount?.name}
-                />
-                <ProjectionAlerts alerts={visibleProjection.summary.alerts} />
-                <ProjectionSimulationPanel
-                  accounts={accounts}
-                  filters={filters}
-                  simulations={simulations}
-                  onAddSimulation={addSimulation}
-                  onRemoveSimulation={removeSimulation}
-                  onClearSimulations={clearSimulations}
-                />
                 <ProjectedBalanceChart
                   daily={visibleProjection.daily}
                   minimumReserveCents={visibleProjection.summary.minimumReserveCents}
                 />
+                <ProjectionAlerts alerts={visibleProjection.summary.alerts} />
                 <DailyProjectionExplorer
                   daily={visibleProjection.daily}
                   onRemoveSimulation={removeSimulation}
+                  actions={<ProjectionSimulationDialog accounts={accounts} filters={filters} onAddSimulation={addSimulation} />}
                 />
               </>
             ) : (
