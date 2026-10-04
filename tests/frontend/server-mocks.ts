@@ -1,5 +1,6 @@
 import { beforeEach, vi } from "vitest";
 import fixtures from "./fixtures/finance.json";
+import { dashboardFixture } from "./fixtures/dashboard";
 import * as accounts from "@/lib/server/accounts";
 import * as categories from "@/lib/server/categories";
 import * as transactions from "@/lib/server/transactions";
@@ -33,6 +34,7 @@ vi.mock("@/lib/server/transactions", () => ({ listTransactions: vi.fn() }));
 vi.mock("@/lib/server/transfers", () => ({ listTransfers: vi.fn() }));
 vi.mock("@/lib/server/recurring", () => ({ listRecurringTemplates: vi.fn() }));
 vi.mock("@/lib/server/dashboard", () => ({
+  getDashboardData: vi.fn(),
   getMonthlyDashboard: vi.fn(),
   getMonthlyEvolution: vi.fn(),
   getMonthlyExpenseFeed: vi.fn(),
@@ -128,6 +130,7 @@ beforeEach(() => {
   vi.mocked(recurring.listRecurringTemplates)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.recurring) as never);
+  vi.mocked(dashboard.getDashboardData).mockReset().mockResolvedValue(structuredClone(dashboardFixture));
   vi.mocked(dashboard.getMonthlyDashboard)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.dashboard) as never);
