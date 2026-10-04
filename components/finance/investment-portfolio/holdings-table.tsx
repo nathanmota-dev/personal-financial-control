@@ -1,32 +1,22 @@
 "use client";
 
 import {
-  CalendarDays,
-  Coins,
-  Plus,
+Coins,
+Plus
 } from "lucide-react";
+import { HoldingsTableDiv2 } from "./holdings-table-holdings-table-div2";
+import { HoldingsTableTableBody1 } from "./holdings-table-holdings-table-table-body1";
 
 import { financePanelClassName } from "@/components/finance/finance-styles";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+Table,
+TableHead,
+TableHeader,
+TableRow
 } from "@/components/ui/table";
 import type { HoldingsTableProps } from "@/lib/interfaces/investment-portfolio";
-import {
-  formatCurrency,
-  formatDateLabel,
-  investmentAssetClassLabels,
-  investmentInstrumentTypeLabels,
-} from "@/lib/finance-ui";
-import { HoldingActions } from "@/components/finance/investment-portfolio/holding-actions";
-import { HoldingMetric } from "@/components/finance/investment-portfolio/holding-metric";
 
 export function HoldingsTable({
   dashboard,
@@ -72,164 +62,11 @@ export function HoldingsTable({
                 <TableHead className="pr-6 text-right text-content">Ações</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {dashboard.holdings.length ? (
-                dashboard.holdings.map((holding) => (
-                  <TableRow key={holding.id} className="border-border/70 hover:bg-card">
-                    <TableCell className="max-w-[230px] pl-6">
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-content-strong">{holding.name}</p>
-                        <p className="mt-1 truncate text-xs text-content">
-                          {holding.ticker || "Sem ticker"}
-                          {holding.institutionName ? " · " + holding.institutionName : ""}
-                        </p>
-                        {holding.allocations.length ? (
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {holding.allocations.map((allocation) => (
-                              <button
-                                key={allocation.id}
-                                type="button"
-                                className="inline-flex items-center gap-1 rounded-full border border-input bg-surface-raised px-2 py-1 text-[0.68rem] text-content transition hover:border-brand/30 hover:text-brand"
-                                title="Editar alocação"
-                                onClick={() => onEditAllocation(allocation)}
-                              >
-                                <span
-                                  className="size-1.5 rounded-full"
-                                  style={{ backgroundColor: allocation.purposeColor }}
-                                />
-                                {allocation.purposeName}: {formatCurrency(allocation.amountCents)}
-                              </button>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1">
-                        <Badge variant="outline" className="border-brand/20 text-brand">
-                          {investmentAssetClassLabels[holding.assetClass]}
-                        </Badge>
-                        <p className="text-xs text-content">
-                          {investmentInstrumentTypeLabels[holding.instrumentType]}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-content-strong">
-                      {formatCurrency(holding.currentValueCents)}
-                    </TableCell>
-                    <TableCell className="text-right text-warning">
-                      {formatCurrency(holding.allocatedCents)}
-                    </TableCell>
-                    <TableCell className="text-right text-content">
-                      {formatCurrency(holding.freeValueCents)}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-xs text-content">
-                      {formatDateLabel(holding.valueAsOf)}
-                    </TableCell>
-                    <TableCell className="pr-6">
-                      <HoldingActions
-                        holding={holding}
-                        onEdit={() => onEdit(holding)}
-                        onAllocate={() => onAllocate(holding)}
-                        onArchive={() => onArchive(holding)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={7} className="px-6 py-12 text-center">
-                    <Coins className="mx-auto size-7 text-content-subtle" />
-                    <p className="mt-3 text-lg font-semibold text-content-strong">
-                      Nenhuma posição cadastrada
-                    </p>
-                    <p className="mt-1 text-sm text-content">
-                      Comece pelo ativo com maior impacto no seu patrimônio.
-                    </p>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+            <HoldingsTableTableBody1 dashboard={dashboard} onEditAllocation={onEditAllocation} onEdit={onEdit} onAllocate={onAllocate} onArchive={onArchive} />
           </Table>
         </div>
 
-        <div className="space-y-3 px-4 pb-4 md:hidden">
-          {dashboard.holdings.length ? (
-            dashboard.holdings.map((holding) => (
-              <article key={holding.id} className="rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-lg font-semibold text-content-strong">
-                      {holding.name}
-                    </p>
-                    <p className="mt-1 truncate text-xs text-content">
-                      {holding.ticker || "Sem ticker"}
-                      {holding.institutionName ? " · " + holding.institutionName : ""}
-                    </p>
-                  </div>
-                  <HoldingActions
-                    holding={holding}
-                    onEdit={() => onEdit(holding)}
-                    onAllocate={() => onAllocate(holding)}
-                    onArchive={() => onArchive(holding)}
-                  />
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-brand/20 text-brand">
-                    {investmentAssetClassLabels[holding.assetClass]}
-                  </Badge>
-                  <Badge variant="outline" className="border-input text-content">
-                    {investmentInstrumentTypeLabels[holding.instrumentType]}
-                  </Badge>
-                </div>
-                <div className="mt-4 grid grid-cols-3 gap-2">
-                  <HoldingMetric label="Atual" value={formatCurrency(holding.currentValueCents)} />
-                  <HoldingMetric label="Alocado" value={formatCurrency(holding.allocatedCents)} />
-                  <HoldingMetric label="Livre" value={formatCurrency(holding.freeValueCents)} />
-                </div>
-                <div className="mt-4 flex items-center gap-2 text-xs text-content">
-                  <CalendarDays className="size-3.5" />
-                  Valor informado em {formatDateLabel(holding.valueAsOf)}
-                </div>
-                {holding.allocations.length ? (
-                  <div className="mt-3 space-y-1.5 border-t border-border/80 pt-3">
-                    {holding.allocations.map((allocation) => (
-                      <button
-                        key={allocation.id}
-                        type="button"
-                        className="flex w-full items-center justify-between gap-3 text-left text-xs"
-                        title="Editar alocação"
-                        onClick={() => onEditAllocation(allocation)}
-                      >
-                        <span className="flex min-w-0 items-center gap-1.5 truncate text-content">
-                          <span
-                            className="size-1.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: allocation.purposeColor }}
-                          />
-                          {allocation.purposeName}
-                        </span>
-                        <span className="shrink-0 text-warning">
-                          {formatCurrency(allocation.amountCents)}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            ))
-          ) : (
-            <div className="rounded-2xl border border-dashed border-input px-5 py-10 text-center">
-              <Coins className="mx-auto size-7 text-content-subtle" />
-              <p className="mt-3 text-lg font-semibold text-content-strong">
-                Nenhuma posição cadastrada
-              </p>
-              <Button type="button" variant="outline" className="mt-4" onClick={onCreate}>
-                <Plus className="size-4" />
-                Cadastrar ativo
-              </Button>
-            </div>
-          )}
-        </div>
+        <HoldingsTableDiv2 dashboard={dashboard} onEdit={onEdit} onAllocate={onAllocate} onArchive={onArchive} onEditAllocation={onEditAllocation} onCreate={onCreate} />
       </CardContent>
     </Card>
   );

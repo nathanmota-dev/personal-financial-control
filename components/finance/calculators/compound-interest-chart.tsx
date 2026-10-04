@@ -1,10 +1,10 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { CartesianGrid,Line,LineChart,XAxis,YAxis } from "recharts";
 
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import type { CompoundInterestChartProps } from "@/lib/interfaces/compound-interest";
+import { ChartContainer,ChartTooltip,ChartTooltipContent } from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/finance-ui";
+import type { CompoundInterestChartProps } from "@/lib/interfaces/compound-interest";
 
 function compactCurrency(cents: number) {
   return new Intl.NumberFormat("pt-BR", {

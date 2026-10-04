@@ -1,8 +1,8 @@
 import { format } from "date-fns";
 
 import type {
-  RecurringCalendarEvent,
-  RecurringTemplateRow,
+RecurringCalendarEvent,
+RecurringTemplateRow,
 } from "@/lib/interfaces/recurring";
 
 export function isRecurringTemplateVisibleInMonth(

@@ -1,41 +1,27 @@
 "use client";
 
 import { useMemo } from "react";
-import { Pencil } from "lucide-react";
+import { TransactionsViewDiv1 } from "./transactions-view-transactions-view-div1";
+import { TransactionsViewDiv2 } from "./transactions-view-transactions-view-div2";
+import { TransactionsViewTabsContent3 } from "./transactions-view-transactions-view-tabs-content3";
 
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
-import { DeleteTransactionDialog, TransferDialog } from "@/components/finance/transaction-actions";
+import {
+CategorySetupDialog,
+SetupCallout,
+} from "@/components/finance/setup-dialogs";
+import { TransferDialog } from "@/components/finance/transaction-actions";
 import { TransactionDialog } from "@/components/finance/transaction-dialog";
 import { TransactionFilters } from "@/components/finance/transaction-filters";
 import { TransactionSummaryCard } from "@/components/finance/transaction-summary-card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
 import {
-  CategorySetupDialog,
-  SetupCallout,
-} from "@/components/finance/setup-dialogs";
-import { Badge } from "@/components/ui/badge";
-import { StatusDotBadge } from "@/components/finance/status-dot-badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
-import {
-  formatCurrency,
-  formatDateLabel,
-  formatMonthLabel,
-  getStatusTone,
-  getTransactionTone,
-  transactionStatusLabels,
-  transactionTypeLabels,
+formatCurrency,
+formatMonthLabel
 } from "@/lib/finance-ui";
+import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
 
 export function TransactionsView({
   accounts,
@@ -106,127 +92,9 @@ export function TransactionsView({
             <CardContent className="space-y-4">
               {transactions.length ? (
                 <>
-                  <div className="hidden md:block">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Descrição</TableHead>
-                          <TableHead>Conta</TableHead>
-                          <TableHead>Categoria</TableHead>
-                          <TableHead>Tipo</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Valor</TableHead>
-                          <TableHead className="text-right">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {transactions.map((transaction) => (
-                          <TableRow key={transaction.id}>
-                            <TableCell>{formatDateLabel(transaction.transactionDate)}</TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="font-medium text-content-strong">{transaction.description}</p>
-                                {transaction.notes ? <p className="text-xs text-content">{transaction.notes}</p> : null}
-                                {transaction.isGeneratedByFunding ? (
-                                  <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
-                                ) : transaction.fundingSource === "investments" ? (
-                                  <p className="mt-1 text-xs font-medium text-brand">Pago com investimentos</p>
-                                ) : null}
-                              </div>
-                            </TableCell>
-                            <TableCell>{transaction.account?.name ?? "-"}</TableCell>
-                            <TableCell>{transaction.category?.name ?? "Sem categoria"}</TableCell>
-                            <TableCell>
-                              <div className="flex flex-wrap gap-2">
-                                <StatusDotBadge tone={getTransactionTone(transaction.type)}>
-                                  {transactionTypeLabels[transaction.type]}
-                                </StatusDotBadge>
-                                {transaction.isGeneratedByFunding ? (
-                                  <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
-                                ) : transaction.fundingSource === "investments" ? (
-                                  <Badge className="bg-brand/10 text-brand ring-1 ring-brand/20">Investimentos</Badge>
-                                ) : null}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <StatusDotBadge tone={getStatusTone(transaction.status)}>
-                                {transactionStatusLabels[transaction.status]}
-                              </StatusDotBadge>
-                            </TableCell>
-                            <TableCell className="text-right font-semibold">{formatCurrency(transaction.amountCents)}</TableCell>
-                            <TableCell className="text-right">
-                              {transaction.isGeneratedByFunding ? (
-                                <span className="text-xs text-content">Gerenciado pela despesa</span>
-                              ) : (
-                                <div className="flex justify-end gap-2">
-                                  <TransactionDialog
-                                    accounts={accounts}
-                                    categories={categories}
-                                    month={filters.month}
-                                    transaction={transaction}
-                                    afterCategorization={afterLastCategorization}
-                                    trigger={
-                                      <Button variant="outline" size="icon-sm" aria-label="Editar lançamento">
-                                        <Pencil className="size-4" />
-                                      </Button>
-                                    }
-                                  />
-                                  <DeleteTransactionDialog id={transaction.id} />
-                                </div>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
+                  <TransactionsViewDiv1 transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
 
-                  <div className="grid gap-3 md:hidden">
-                    {transactions.map((transaction) => (
-                      <div key={transaction.id} className="rounded-2xl border border-border p-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="font-medium text-content-strong">{transaction.description}</p>
-                            <p className="text-sm text-content">
-                              {formatDateLabel(transaction.transactionDate)} • {transaction.account?.name ?? "-"}
-                            </p>
-                            {transaction.isGeneratedByFunding ? (
-                              <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
-                            ) : transaction.fundingSource === "investments" ? (
-                              <p className="mt-1 text-xs font-medium text-brand">Pago com investimentos</p>
-                            ) : null}
-                          </div>
-                          <p className="font-semibold text-content-strong">{formatCurrency(transaction.amountCents)}</p>
-                        </div>
-                        <p className="mt-2 text-xs text-content">{transaction.category?.name ?? "Sem categoria"}</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <StatusDotBadge tone={getTransactionTone(transaction.type)}>{transactionTypeLabels[transaction.type]}</StatusDotBadge>
-                          {transaction.isGeneratedByFunding ? (
-                            <Badge className="bg-warning/10 text-warning ring-1 ring-warning/20">Automático</Badge>
-                          ) : transaction.fundingSource === "investments" ? (
-                            <Badge className="bg-brand/10 text-brand ring-1 ring-brand/20">Investimentos</Badge>
-                          ) : null}
-                          <StatusDotBadge tone={getStatusTone(transaction.status)}>{transactionStatusLabels[transaction.status]}</StatusDotBadge>
-                        </div>
-                        {transaction.isGeneratedByFunding ? (
-                          <p className="mt-4 text-xs text-content">Gerenciado pela despesa vinculada</p>
-                        ) : (
-                          <div className="mt-4 flex gap-2">
-                            <TransactionDialog
-                              accounts={accounts}
-                              categories={categories}
-                              month={filters.month}
-                              transaction={transaction}
-                              afterCategorization={afterLastCategorization}
-                              trigger={<Button variant="outline" className="flex-1">Editar</Button>}
-                            />
-                            <DeleteTransactionDialog id={transaction.id} />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <TransactionsViewDiv2 transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
                 </>
               ) : (
                 <FinanceEmptyState
@@ -245,40 +113,7 @@ export function TransactionsView({
           </Card>
         </TabsContent>
 
-        <TabsContent value="transfers">
-          <Card className="rounded-[20px] border-border bg-card">
-            <CardHeader>
-              <CardTitle>Transferências do mês</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {transfers.length ? (
-                transfers.map((transfer) => (
-                  <div key={transfer.id} className="flex flex-col justify-between gap-3 rounded-2xl border border-border p-4 md:flex-row md:items-center">
-                    <div>
-                      <p className="font-medium text-content-strong">{transfer.description}</p>
-                      <p className="text-sm text-content">
-                        {formatDateLabel(transfer.transferDate)} • {transfer.fromAccount?.name ?? "-"} para {transfer.toAccount?.name ?? "-"}
-                      </p>
-                    </div>
-                    <p className="font-semibold text-brand">{formatCurrency(transfer.amountCents)}</p>
-                  </div>
-                ))
-              ) : (
-                <FinanceEmptyState
-                  title="Sem transferências"
-                  description="Transferências exigem pelo menos duas contas cadastradas."
-                  action={
-                    accounts.length >= 2 ? (
-                      <TransferDialog accounts={accounts} month={filters.month} />
-                    ) : (
-                      <SetupCallout title="Cadastre duas contas" description="Crie pelo menos duas contas para movimentar saldo entre origem e destino." />
-                    )
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <TransactionsViewTabsContent3 transfers={transfers} accounts={accounts} filters={filters} />
       </Tabs>
     </div>
   );

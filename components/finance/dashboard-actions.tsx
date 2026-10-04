@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, ChevronDown, Plus, WalletCards } from "lucide-react";
 import {
-  AccountSetupDialog,
-  CategorySetupDialog,
+AccountSetupDialog,
+CategorySetupDialog,
 } from "@/components/finance/setup-dialogs";
 import { Button } from "@/components/ui/button";
 import { MonthPicker } from "@/components/ui/monthpicker";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+Popover,
+PopoverContent,
+PopoverTrigger,
 } from "@/components/ui/popover";
 import type { DashboardActionsProps } from "@/lib/interfaces/dashboard";
+import { CalendarDays,ChevronDown,Plus,WalletCards } from "lucide-react";
+import { usePathname,useRouter,useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const months = [
   "Jan",

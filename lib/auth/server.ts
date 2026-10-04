@@ -1,10 +1,10 @@
-import "server-only";
 import { isDemoMode } from "@/lib/demo/mode";
-import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth, type DecodedIdToken } from "firebase-admin/auth";
-import { cookies, headers } from "next/headers";
+import { cert,getApps,initializeApp } from "firebase-admin/app";
+import { getAuth,type DecodedIdToken } from "firebase-admin/auth";
+import { cookies,headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { authConfig, isAllowedOrigin } from "./config";
+import "server-only";
+import { authConfig,isAllowedOrigin } from "./config";
 import { isAuthorizedEmail } from "./users";
 
 export class AuthError extends Error {

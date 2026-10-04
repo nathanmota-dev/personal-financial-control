@@ -1,18 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useEffect,useState } from "react";
 
 import { CompoundInterestForm } from "@/components/finance/calculators/compound-interest-form";
 import { CompoundInterestResults } from "@/components/finance/calculators/compound-interest-results";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { calculateCompoundInterest } from "@/lib/compound-interest";
-import { formatMoneyInput, moneyInputToCents } from "@/lib/finance-ui";
+import { formatMoneyInput,moneyInputToCents } from "@/lib/finance-ui";
 import type {
-  CompoundInterestFormValues,
-  CompoundInterestSimulation,
+CompoundInterestFormValues,
+CompoundInterestSimulation,
 } from "@/lib/interfaces/compound-interest";
 
 const STORAGE_KEY = "personal-financial-control:compound-interest";

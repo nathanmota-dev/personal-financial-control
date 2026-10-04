@@ -1,6 +1,6 @@
-import { CalendarDays, ChartPie, Repeat2 } from "lucide-react";
+import { CalendarDays,ChartPie,Repeat2 } from "lucide-react";
 
-import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsList,TabsTrigger } from "@/components/ui/tabs";
 
 export function RecurringSegmentedControl() {
   return (

@@ -1,8 +1,8 @@
-import { bench, describe } from "vitest";
+import { bench,describe } from "vitest";
 
 import { calculateCompoundInterest } from "@/lib/compound-interest";
 import { calculateDailyProjection } from "@/lib/projected-balance";
-import { benchmarkOptions, compoundInterestInput, projectionInput } from "./fixtures";
+import { benchmarkOptions,compoundInterestInput,projectionInput } from "./fixtures";
 
 const fiveYears = compoundInterestInput(5);
 const fiftyYears = compoundInterestInput(50);

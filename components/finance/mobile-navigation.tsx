@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Menu } from "lucide-react";
-import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { SidebarFooter } from "@/components/finance/sidebar-footer";
-import type { MobileNavigationProps } from "@/lib/interfaces/app-shell";
+import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
+Drawer,
+DrawerContent,
+DrawerDescription,
+DrawerHeader,
+DrawerTitle,
+DrawerTrigger,
 } from "@/components/ui/drawer";
+import type { MobileNavigationProps } from "@/lib/interfaces/app-shell";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 
 export function MobileNavigation({ user, demoMode }: MobileNavigationProps) {
   const [open, setOpen] = useState(false);

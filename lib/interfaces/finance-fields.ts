@@ -1,9 +1,9 @@
-import type { ComponentProps, ReactNode } from "react";
 import type { Select } from "@/components/ui/select";
 import type {
-  CreditCardCategoryOption,
-  CreditCardChargeForEdit,
+CreditCardCategoryOption,
+CreditCardChargeForEdit,
 } from "@/lib/interfaces/credit-card";
+import type { ComponentProps,ReactNode } from "react";
 
 export type MoneyInputProps = Omit<
   ComponentProps<"input">,

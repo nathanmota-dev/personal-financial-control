@@ -1,11 +1,11 @@
 import type {
-  AccountType,
-  CategoryGroup,
-  InvestmentAssetClass,
-  InvestmentInstrumentType,
-  RecurringStatus,
-  TransactionStatus,
-  TransactionType,
+AccountType,
+CategoryGroup,
+InvestmentAssetClass,
+InvestmentInstrumentType,
+RecurringStatus,
+TransactionStatus,
+TransactionType,
 } from "@/lib/db/schema";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {

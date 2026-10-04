@@ -1,8 +1,8 @@
+import { ArrowRight,ArrowUpRight,ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 
 import { PageHeader } from "@/components/finance/page-header";
-import { helpGuides, helpQuestions, helpSteps } from "@/lib/help-content";
+import { helpGuides,helpQuestions,helpSteps } from "@/lib/help-content";
 
 export function HelpView() {
   return (

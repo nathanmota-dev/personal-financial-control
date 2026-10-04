@@ -1,21 +1,21 @@
 import {
-  AlertTriangle,
-  CalendarClock,
-  CircleDollarSign,
-  TrendingDown,
-  TrendingUp,
-  Wallet,
+AlertTriangle,
+CalendarClock,
+CircleDollarSign,
+TrendingDown,
+TrendingUp,
+Wallet,
 } from "lucide-react";
 
 import type {
-  ProjectionAlertsProps,
-  ProjectionSummaryCardsProps,
+ProjectionAlertsProps,
+ProjectionSummaryCardsProps,
 } from "@/app/interfaces/projected-balance";
-import { ProjectionMetricCard } from "./metric-card";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
+import { ProjectionMetricCard } from "./metric-card";
 
-import { formatAlertDetail, formatAlertTitle } from "./labels";
+import { formatAlertDetail,formatAlertTitle } from "./labels";
 
 export function ProjectionSummaryCards({
   summary,

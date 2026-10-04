@@ -1,26 +1,26 @@
 "use client";
 
 import type {
-  DayDetailSheetProps,
-  DetailMetricProps,
-  EventRowProps,
+DayDetailSheetProps,
+DetailMetricProps,
+EventRowProps,
 } from "@/app/interfaces/projected-balance";
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
+Sheet,
+SheetContent,
+SheetDescription,
+SheetHeader,
+SheetTitle,
 } from "@/components/ui/sheet";
-import { Trash2 } from "lucide-react";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 
-import { eventSourceLabels, eventTypeLabels } from "./labels";
+import { eventSourceLabels,eventTypeLabels } from "./labels";
 
 export function DayDetailSheet({
   day,

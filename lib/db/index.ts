@@ -1,32 +1,32 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-import { getTableConfig, SQLiteTable } from "drizzle-orm/sqlite-core";
-import { is } from "drizzle-orm";
-import { migrateDatabase } from "@/lib/db/migrate";
 import { protectContentPersistence } from "@/lib/db/content-persistence";
-import { mkdtempSync, rmSync } from "node:fs";
+import { migrateDatabase } from "@/lib/db/migrate";
+import { createClient } from "@libsql/client";
+import { is } from "drizzle-orm";
+import { drizzle } from "drizzle-orm/libsql";
+import { getTableConfig,SQLiteTable } from "drizzle-orm/sqlite-core";
+import { mkdtempSync,rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import * as schema from "@/lib/db/schema";
+import {
+accounts,
+categories,
+creditCardCharges,
+creditCardInstallments,
+financialGoalAllocations,
+financialGoals,
+investmentHoldings,
+investmentPortfolio,
+investmentPurposeAllocations,
+investmentPurposes,
+recurringTemplates,
+transactions,
+transfers,
+} from "@/lib/db/schema";
 import { demoFixture } from "@/lib/demo/fixture";
 import { getServerEnv } from "@/lib/env";
 import type { FinanceDatabaseRuntime } from "@/lib/interfaces/database";
-import * as schema from "@/lib/db/schema";
-import {
-  accounts,
-  categories,
-  creditCardCharges,
-  creditCardInstallments,
-  financialGoalAllocations,
-  financialGoals,
-  investmentHoldings,
-  investmentPurposeAllocations,
-  investmentPurposes,
-  investmentPortfolio,
-  recurringTemplates,
-  transactions,
-  transfers,
-} from "@/lib/db/schema";
 
 export function createDatabase(url: string, authToken?: string) {
   for (const value of Object.values(schema)) if (is(value, SQLiteTable)) getTableConfig(value as SQLiteTable);

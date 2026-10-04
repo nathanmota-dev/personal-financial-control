@@ -1,5 +1,5 @@
-import "server-only";
 import { createClient } from "@libsql/client";
+import "server-only";
 
 // Authorization always uses the persistent database, including in DEMO_MODE.
 export async function isAuthorizedEmail(email: string) {

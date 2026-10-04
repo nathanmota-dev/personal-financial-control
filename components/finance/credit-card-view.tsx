@@ -1,25 +1,17 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname,useRouter } from "next/navigation";
+import { useOptimistic,useTransition } from "react";
+import { CreditCardViewDiv1 } from "./credit-card-view-credit-card-view-div1";
 
-import { CreditCardCommitments } from "@/components/finance/credit-card-commitments";
-import { CreditCardHero } from "@/components/finance/credit-card-hero";
 import {
-  CreditCardMonthPicker,
-  CreditCardPageActions,
+CreditCardMonthPicker
 } from "@/components/finance/credit-card-page-actions";
-import { CreditCardMonthStrip } from "@/components/finance/credit-card-month-strip";
-import { CreditCardMonthLoading } from "@/components/finance/credit-card-month-loading";
-import { CreditCardSetupCard } from "@/components/finance/credit-card-setup-card";
-import { CreditCardTransactionsPanel } from "@/components/finance/credit-card-transactions-panel";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
 import {
-  AccountSetupDialog,
-  CategorySetupDialog,
+AccountSetupDialog
 } from "@/components/finance/setup-dialogs";
-import { Button } from "@/components/ui/button";
 import { buildCreditCardMonthPoints } from "@/lib/credit-card-view";
 import type { CreditCardViewProps } from "@/lib/interfaces/credit-card-view";
 
@@ -97,68 +89,6 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
   }
 
   return (
-    <div className="space-y-6 pb-8">
-      <PageHeader
-        eyebrow="Cartão de crédito"
-        title={overview.account.name}
-        description="Fatura, evolução mensal e parcelas futuras em um só lugar."
-        actions={
-          <CreditCardPageActions
-            month={overview.month}
-            accountId={overview.account.id}
-            categories={expenseCategories}
-            canCreatePurchase={canCreatePurchase}
-          />
-        }
-      />
-
-      {overview.needsConfiguration ? (
-        <CreditCardSetupCard
-          title="Configure o fechamento do cartão"
-          description="Defina o dia de fechamento para distribuir automaticamente as compras entre as faturas corretas."
-          action={
-            <AccountSetupDialog
-              account={overview.account}
-              trigger={<Button>Editar cartão</Button>}
-            />
-          }
-        />
-      ) : null}
-
-      {!expenseCategories.length ? (
-        <CreditCardSetupCard
-          title="Cadastre categorias de despesa"
-          description="As compras do cartão usam categorias de gasto fixo ou variável para organizar o extrato."
-          action={<CategorySetupDialog />}
-        />
-      ) : null}
-
-      <CreditCardMonthStrip
-        key={overview.month}
-        points={monthPoints}
-        selectedMonth={selectedMonth}
-        onSelectMonth={selectMonth}
-        isLoading={isPending}
-      />
-
-      {isPending ? (
-        <CreditCardMonthLoading month={selectedMonth} />
-      ) : (
-        <>
-          <CreditCardHero overview={overview} nextInvoice={monthPoints[1]} />
-
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
-            <CreditCardTransactionsPanel
-              accountId={overview.account.id}
-              categories={expenseCategories}
-              month={overview.month}
-              entries={overview.invoice.entries}
-              categoryTotals={overview.invoice.categoryTotals}
-            />
-            <CreditCardCommitments overview={overview} monthPoints={monthPoints} />
-          </div>
-        </>
-      )}
-    </div>
+    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} isPending={isPending} />
   );
 }

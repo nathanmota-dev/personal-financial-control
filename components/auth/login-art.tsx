@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LoginPreview } from "@/components/auth/login-preview";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft,ChevronRight } from "lucide-react";
+import { useEffect,useState } from "react";
 
 const slides = [
   { variant: "overview", title: "Tudo em uma só visão.", description: "Acompanhe receitas, despesas e investimentos. Entenda para onde seu dinheiro vai e o que fica para você." },

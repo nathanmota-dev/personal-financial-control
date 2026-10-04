@@ -1,5 +1,5 @@
 import { getDatabase } from "@/lib/db";
-import { createCategory, listCategories } from "@/lib/server/categories";
+import { createCategory,listCategories } from "@/lib/server/categories";
 
 const baseUrl = process.env.PFC_BASE_URL ?? "http://127.0.0.1:3000";
 const cardName = "Cartão Itaú Platinum final 9544";

@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { CircleHelp, Settings } from "lucide-react";
 import { UserControls } from "@/components/auth/user-controls";
 import type { SidebarFooterProps } from "@/lib/interfaces/sidebar-navigation";
+import { cn } from "@/lib/utils";
+import { CircleHelp,Settings } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function SidebarFooter({ user, demoMode, onNavigate }: SidebarFooterProps) {
   const pathname = usePathname();

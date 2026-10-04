@@ -229,7 +229,10 @@ describe("Firebase access boundary", () => {
       const source = readFileSync(file, "utf8");
       for (const match of source.matchAll(/async function handle\w+\([^]*?\) \{([^]*?)\n\}/g)) expect(match[1].trim().startsWith("const denied = await apiGuard(")).toBe(true);
     }
-    const actions = readFileSync("app/actions/finance.ts", "utf8");
+    const actions = files("app/actions/finance")
+      .filter((file) => file.endsWith(".ts") && !file.endsWith("action-runtime.ts"))
+      .map((file) => readFileSync(file, "utf8"))
+      .join("\n");
     expect([...actions.matchAll(/export async function/g)]).toHaveLength(44);
     expect([...actions.matchAll(/await requireActionSession\(\)/g)]).toHaveLength(44);
     // The informational client help page uses the guarded layout and proxy,

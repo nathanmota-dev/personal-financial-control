@@ -1,16 +1,16 @@
 import {
-  Calculator,
-  ChartNoAxesCombined,
-  CreditCard,
-  Landmark,
-  LayoutDashboard,
-  ListPlus,
-  Repeat2,
-  Settings,
-  Target,
+Calculator,
+ChartNoAxesCombined,
+CreditCard,
+Landmark,
+LayoutDashboard,
+ListPlus,
+Repeat2,
+Settings,
+Target,
 } from "lucide-react";
 
-import type { HelpGuide, HelpQuestion, HelpStep } from "@/lib/interfaces/help";
+import type { HelpGuide,HelpQuestion,HelpStep } from "@/lib/interfaces/help";
 
 export const helpSteps: HelpStep[] = [
   {

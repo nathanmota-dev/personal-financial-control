@@ -2,26 +2,26 @@
 
 import { useMemo } from "react";
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceLine,
-  XAxis,
-  YAxis,
+CartesianGrid,
+Line,
+LineChart,
+ReferenceLine,
+XAxis,
+YAxis,
 } from "recharts";
 
 import type {
-  ProjectedBalanceChartPoint,
-  ProjectedBalanceChartProps,
+ProjectedBalanceChartPoint,
+ProjectedBalanceChartProps,
 } from "@/app/interfaces/projected-balance";
 import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
+ChartContainer,
+ChartTooltip,
+ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import { statusLabels } from "./labels";

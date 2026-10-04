@@ -1,3 +1,4 @@
+import { sortDatedMovements } from "@/lib/utils/movement-order";
 export type InvestmentMovementDirection = "contribution" | "withdrawal";
 
 export type InvestmentMovement = {
@@ -213,13 +214,7 @@ function accrueBalance(
 }
 
 function sortMovements(movements: InvestmentMovement[]) {
-  return [...movements].sort((left, right) => {
-    return (
-      left.date.localeCompare(right.date) ||
-      (left.createdAt ?? "").localeCompare(right.createdAt ?? "") ||
-      left.id.localeCompare(right.id)
-    );
-  });
+  return sortDatedMovements(movements);
 }
 
 function parseDateParts(date: string) {

@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { formatMoneyInput } from "@/lib/finance-ui";
-import { maskMoneyInput, formatPastedMoney } from "@/lib/money-input";
 import type { MoneyInputProps } from "@/lib/interfaces/finance-fields";
+import { formatPastedMoney,maskMoneyInput } from "@/lib/money-input";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 export function MoneyInput({
   value,

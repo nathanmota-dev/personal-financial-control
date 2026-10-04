@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import type { SessionUser } from "@/lib/interfaces/auth";
+import type { ReactNode } from "react";
 
 export interface AppShellProps {
   children: ReactNode;

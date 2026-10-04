@@ -1,7 +1,7 @@
-import { getTableName, sql } from "drizzle-orm";
-import { check, type SQLiteColumn } from "drizzle-orm/sqlite-core";
 import indexes from "@/lib/db/encryption-indexes.json";
 import inventory from "@/lib/db/encryption-inventory.json";
+import { getTableName,sql } from "drizzle-orm";
+import { check,type SQLiteColumn } from "drizzle-orm/sqlite-core";
 
 export function encryptionChecks(columns: Record<string, SQLiteColumn>) {
   const name = getTableName(Object.values(columns)[0].table);

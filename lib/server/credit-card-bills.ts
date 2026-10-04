@@ -1,21 +1,22 @@
-import { and, eq } from "drizzle-orm";
+import { validateCreditCardPaymentAccounts } from "@/lib/server/stages/validate-credit-card-payment-accounts";
+import { and,eq } from "drizzle-orm";
 import { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import {
-  categories,
-  creditCardBillPayments,
-  creditCardBills,
-  transactions,
+categories,
+creditCardBillPayments,
+creditCardBills,
+transactions,
 } from "@/lib/db/schema";
 import { getAccountById } from "@/lib/server/accounts";
 import { invariant } from "@/lib/server/errors";
 import {
-  currentTimestamp,
-  normalizeCompetenceMonth,
-  normalizeDate,
-  serializeTimestamps,
+currentTimestamp,
+normalizeCompetenceMonth,
+normalizeDate,
+serializeTimestamps,
 } from "@/lib/server/finance";
 
 export const creditCardBillSchema = z.object({
@@ -211,9 +212,7 @@ export async function createCreditCardBillPayment(
   database?: AppDb
 ) {
   const db = await resolveDb(database);
-  const values = creditCardBillPaymentSchema.parse(input);
-  values.invoiceMonth = normalizeCompetenceMonth(values.invoiceMonth);
-  values.paymentDate = normalizeDate(values.paymentDate);
+  const values = parseBillPaymentInput(input);
 
   const existingPayment = await db.query.creditCardBillPayments.findFirst({
     where: eq(creditCardBillPayments.idempotencyKey, values.idempotencyKey),
@@ -231,35 +230,7 @@ export async function createCreditCardBillPayment(
     };
   }
 
-  const cardAccount = await getAccountById(values.accountId, db);
-  const paymentAccount = await getAccountById(values.paymentAccountId, db);
-  invariant(!cardAccount.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived card account.");
-  invariant(!paymentAccount.isArchived, "ACCOUNT_ARCHIVED", "Cannot use an archived payment account.");
-  invariant(
-    cardAccount.type === "credit",
-    "ACCOUNT_TYPE_MISMATCH",
-    "Credit card payments require a credit card account."
-  );
-  invariant(
-    paymentAccount.type === "checking" ||
-      paymentAccount.type === "savings" ||
-      paymentAccount.type === "cash",
-    "INVALID_PAYMENT_ACCOUNT",
-    "Credit card payments require a checking, savings, or cash account."
-  );
-
-  const bill =
-    values.kind === "unlinked"
-      ? null
-      : await getBillByAccountAndMonth(values.accountId, values.invoiceMonth, db);
-  if (values.kind !== "unlinked") {
-    invariant(bill, "CREDIT_CARD_BILL_NOT_FOUND", "Credit card bill does not exist.", 404);
-    invariant(
-      bill.status !== "paid",
-      "CREDIT_CARD_BILL_ALREADY_PAID",
-      "Credit card bill is already paid."
-    );
-  }
+  const { cardAccount, bill } = await validateCreditCardPaymentAccounts({ values, db, getBillByAccountAndMonth });
 
   const category = await getOrCreatePaymentCategory(db);
   const description = values.description ?? paymentDescription(values.invoiceMonth, values.kind);
@@ -334,4 +305,11 @@ export async function createCreditCardBillPayment(
       idempotent: false,
     };
   });
+}
+
+function parseBillPaymentInput(input: CreditCardBillPaymentInput) {
+  const values = creditCardBillPaymentSchema.parse(input);
+  values.invoiceMonth = normalizeCompetenceMonth(values.invoiceMonth);
+  values.paymentDate = normalizeDate(values.paymentDate);
+  return values;
 }

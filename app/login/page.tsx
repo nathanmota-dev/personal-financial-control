@@ -1,10 +1,10 @@
-import { ChartPie, LockKeyhole } from "lucide-react";
-import { isDemoMode } from "@/lib/demo/mode";
-import type { LoginPageProps } from "@/lib/interfaces/auth";
-import { LoginForm } from "@/components/auth/login-form";
 import { LoginArt } from "@/components/auth/login-art";
+import { LoginForm } from "@/components/auth/login-form";
 import { ThemeToggle } from "@/components/finance/theme-toggle";
 import { safeDestination } from "@/lib/auth/config";
+import { isDemoMode } from "@/lib/demo/mode";
+import type { LoginPageProps } from "@/lib/interfaces/auth";
+import { ChartPie,LockKeyhole } from "lucide-react";
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;

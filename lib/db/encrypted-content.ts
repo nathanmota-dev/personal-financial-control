@@ -1,6 +1,6 @@
+import type { ContentType,ContentValue } from "@/lib/crypto/content";
+import { decryptContent,encryptContent } from "@/lib/crypto/content";
 import { customType } from "drizzle-orm/sqlite-core";
-import { decryptContent, encryptContent } from "@/lib/crypto/content";
-import type { ContentType, ContentValue } from "@/lib/crypto/content";
 
 function column<T extends ContentValue>(name: string, context: string, type: ContentType) {
   return customType<{ data: T; driverData: string }>({

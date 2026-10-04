@@ -1,10 +1,10 @@
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
-import { listCreditCardExpenseEntries } from "@/lib/server/credit-card";
-import { getInvestmentProjection } from "@/lib/server/investments";
 import { listAccounts } from "@/lib/server/accounts";
-import { listTransactions } from "@/lib/server/transactions";
+import { listCreditCardExpenseEntries } from "@/lib/server/credit-card";
 import { normalizeCompetenceMonth } from "@/lib/server/finance";
+import { getInvestmentProjection } from "@/lib/server/investments";
+import { listTransactions } from "@/lib/server/transactions";
 
 async function resolveDb(database?: AppDb) {
   return database ?? getFinanceDatabase();

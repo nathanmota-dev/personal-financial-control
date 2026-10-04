@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, Pencil, Split } from "lucide-react";
+import { Archive,Pencil,Split } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import type { HoldingActionsProps } from "@/lib/interfaces/investment-portfolio";

@@ -1,4 +1,4 @@
-import type { Client, InStatement, InValue } from "@libsql/client";
+import type { Client,InStatement,InValue } from "@libsql/client";
 import { getTableColumns } from "drizzle-orm";
 import { readMigrationFiles } from "drizzle-orm/migrator";
 import { join } from "node:path";

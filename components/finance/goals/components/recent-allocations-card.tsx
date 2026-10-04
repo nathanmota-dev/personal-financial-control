@@ -1,14 +1,14 @@
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+Table,
+TableBody,
+TableCell,
+TableHead,
+TableHeader,
+TableRow,
 } from "@/components/ui/table";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import { ALLOCATION_TYPE_LABELS } from "../goals-constants";

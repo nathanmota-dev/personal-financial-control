@@ -1,21 +1,11 @@
 "use client";
 
-import { InlineWarning } from "@/components/finance/inline-warning";
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+Dialog
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ContributionDialogDialogContent1 } from "./contribution-dialog-contribution-dialog-dialog-content1";
 
 import type { ContributionDialogProps } from "../goals-types";
-import { LabeledInput } from "./labeled-input";
-import { SelectField } from "./select-field";
 
 export function ContributionDialog({
   state,
@@ -37,91 +27,7 @@ export function ContributionDialog({
 
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
-      <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Registrar aporte</DialogTitle>
-          <DialogDescription className="text-content">
-            {state?.goal.name ?? "Meta"}
-          </DialogDescription>
-        </DialogHeader>
-
-        {!sourceAccounts.length || !investmentCategories.length ? (
-          <InlineWarning message="Cadastre uma conta de origem e uma categoria de investimento para registrar aportes vinculados." />
-        ) : null}
-
-        <form
-          className="grid gap-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSubmit();
-          }}
-        >
-          <LabeledInput monetary
-            id="goal-contribution-amount"
-            label="Valor do aporte"
-            value={form.amount}
-            placeholder="0,00"
-            onChange={(event) =>
-              setForm((current) => ({ ...current, amount: event.target.value }))
-            }
-          />
-          <LabeledInput
-            id="goal-contribution-date"
-            label="Data"
-            type="date"
-            value={form.transactionDate}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                transactionDate: event.target.value,
-              }))
-            }
-          />
-          <SelectField
-            label="Conta de origem"
-            value={form.accountId}
-            onValueChange={(accountId) =>
-              setForm((current) => ({ ...current, accountId }))
-            }
-            options={sourceAccounts.map((account) => ({
-              value: account.id,
-              label: account.name,
-            }))}
-          />
-          <SelectField
-            label="Categoria de investimento"
-            value={form.categoryId}
-            onValueChange={(categoryId) =>
-              setForm((current) => ({ ...current, categoryId }))
-            }
-            options={investmentCategories.map((category) => ({
-              value: category.id,
-              label: category.name,
-            }))}
-          />
-          <div className="space-y-2">
-            <Label htmlFor="goal-contribution-notes" className="text-content-strong">
-              Notas
-            </Label>
-            <Textarea
-              id="goal-contribution-notes"
-              value={form.notes}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, notes: event.target.value }))
-              }
-              className="min-h-20 border-input bg-card text-content-strong"
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isPending || !canSubmit}>
-              {isPending ? "Registrando..." : "Registrar aporte"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
+      <ContributionDialogDialogContent1 state={state} sourceAccounts={sourceAccounts} investmentCategories={investmentCategories} onSubmit={onSubmit} form={form} setForm={setForm} onOpenChange={onOpenChange} isPending={isPending} canSubmit={canSubmit} />
     </Dialog>
   );
 }

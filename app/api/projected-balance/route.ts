@@ -1,12 +1,14 @@
 import { apiGuard } from "@/lib/auth/server";
+import { domainErrorResponse } from "@/lib/server/domain-error-response";
+import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-import {
-  getProjectedBalance,
-  parseProjectedBalanceSearchParams,
-} from "@/lib/server/projected-balance";
 import { DomainError } from "@/lib/server/errors";
+import {
+getProjectedBalance,
+parseProjectedBalanceSearchParams,
+} from "@/lib/server/projected-balance";
 
 async function handleGET(request: Request) {
   const denied = await apiGuard(request);
@@ -23,16 +25,7 @@ async function handleGET(request: Request) {
     });
   } catch (error) {
     if (error instanceof DomainError) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-          },
-        },
-        { status: error.status }
-      );
+      return domainErrorResponse(error);
     }
 
     if (error instanceof ZodError) {
@@ -62,17 +55,7 @@ async function handleGET(request: Request) {
   }
 }
 
-export async function GET(...args: Parameters<typeof handleGET>) {
-  const response = await handleGET(...args);
-  response.headers.set("Cache-Control", "private, no-store");
-  return response;
-}
+export const GET = privateRoute(handleGET);
 
-export async function HEAD(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
-export async function OPTIONS(request: Request) {
-  const denied = await apiGuard(request);
-  return denied ?? new Response(null, { status: 405, headers: { "Cache-Control": "private, no-store" } });
-}
+export const HEAD = rejectRouteMethod;
+export const OPTIONS = rejectRouteMethod;

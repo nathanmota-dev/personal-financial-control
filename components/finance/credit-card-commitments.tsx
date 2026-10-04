@@ -1,8 +1,8 @@
-import { ArrowRight, CalendarRange, Layers3, Receipt } from "lucide-react";
+import { ArrowRight,CalendarRange,Layers3,Receipt } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "@/lib/finance-ui";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
+import { formatCurrency } from "@/lib/finance-ui";
 import type { CreditCardCommitmentsProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommitmentsProps) {

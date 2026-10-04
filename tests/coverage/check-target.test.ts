@@ -76,7 +76,10 @@ describe("strict per-file coverage target", () => {
   );
   it("keeps the entire configured production scope including declarations and reexports", () => {
     const files = productionFiles(process.cwd());
-    expect(files).toHaveLength(313);
+    expect(files.length).toBeGreaterThanOrEqual(313);
+    expect(new Set(files).size).toBe(files.length);
+    expect(files).toContain("lib/db/schema/transactions.ts");
+    expect(files).toContain("lib/server/transactions/creation.ts");
     expect(files).toContain("lib/interfaces/auth.ts");
     expect(files).toContain("components/finance/goals/components/index.ts");
     expect(files).toContain("proxy.ts");

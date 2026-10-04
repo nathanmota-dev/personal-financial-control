@@ -1,12 +1,12 @@
 "use client";
 
-import { addMonths, subMonths } from "date-fns";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { addMonths,subMonths } from "date-fns";
+import { CalendarDays,ChevronLeft,ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useMonthlyCalendar } from "@zach.codes/react-calendar";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import { getMonthFromDate } from "@/lib/recurring-calendar";
+import { useMonthlyCalendar } from "@zach.codes/react-calendar";
 
 export function RecurringCalendarNav() {
   const { currentMonth, onCurrentMonthChange } = useMonthlyCalendar();

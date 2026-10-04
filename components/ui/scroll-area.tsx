@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
+import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
@@ -52,4 +52,4 @@ function ScrollBar({
   )
 }
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea,ScrollBar }

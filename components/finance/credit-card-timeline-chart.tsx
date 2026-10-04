@@ -2,24 +2,24 @@
 
 import { useMemo } from "react";
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceLine,
-  XAxis,
-  YAxis,
+CartesianGrid,
+Line,
+LineChart,
+ReferenceLine,
+XAxis,
+YAxis,
 } from "recharts";
 
+import {
+ChartContainer,
+ChartTooltip,
+ChartTooltipContent,
+} from "@/components/ui/chart";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
 import { formatCurrency } from "@/lib/finance-ui";
 import type {
-  CreditCardTimelineChartProps,
+CreditCardTimelineChartProps,
 } from "@/lib/interfaces/credit-card-view";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
 const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {

@@ -1,7 +1,7 @@
-import { ArrowDownLeft, ArrowUpRight, Check, TrendingUp } from "lucide-react";
+import { ArrowDownLeft,ArrowUpRight,Check,TrendingUp } from "lucide-react";
 
+import { formatCurrency,transactionTypeLabels } from "@/lib/finance-ui";
 import type { RecurringCalendarEventItemProps } from "@/lib/interfaces/recurring";
-import { formatCurrency, transactionTypeLabels } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 const eventTone = {

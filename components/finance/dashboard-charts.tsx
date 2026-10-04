@@ -1,21 +1,10 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { DashboardCategoryCharts } from "@/components/finance/dashboard-category-charts";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import type { DashboardChartsProps } from "@/lib/interfaces/dashboard";
 import { formatCurrency } from "@/lib/finance-ui";
-
-const series = [
-  { key: "income", label: "Receitas", color: "var(--chart-1)" },
-  { key: "expenses", label: "Despesas", color: "var(--chart-2)" },
-  { key: "investments", label: "Invest. líquidos", color: "var(--chart-3)" },
-  { key: "net", label: "Saldo", color: "var(--chart-neutral)" },
-];
+import type { DashboardChartsProps } from "@/lib/interfaces/dashboard";
+import { series } from "@/lib/utils/components/dashboard-charts";
+import { DashboardChartsChartContainer1 } from "./dashboard-charts-dashboard-charts-chart-container1";
 export function DashboardCharts({
   evolution,
   categorySpending,
@@ -53,88 +42,7 @@ export function DashboardCharts({
             </div>
           ))}
         </div>
-        <ChartContainer
-          className="mt-[17px] h-[320px] w-full rounded-xl bg-[var(--chart-surface)]"
-          config={Object.fromEntries(
-            series.map((item) => [
-              item.key,
-              { label: item.label, color: item.color },
-            ]),
-          )}
-        >
-          <AreaChart
-            data={evolution}
-            margin={{ top: 30, right: 29, bottom: 8, left: -18 }}
-          >
-            <defs>
-              <linearGradient
-                id="dashboard-income-fill"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="var(--chart-1)"
-                  stopOpacity={0.2}
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--chart-1)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-            <XAxis
-              dataKey="month"
-              axisLine={false}
-              tickLine={false}
-              tickMargin={16}
-              fontSize={10}
-              stroke="var(--content-subtle)"
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tickCount={5}
-              fontSize={10}
-              stroke="var(--content-subtle)"
-              tickFormatter={(value) =>
-                Math.abs(value) >= 1000 ? `${value / 1000}k` : String(value)
-              }
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name) => (
-                    <>
-                      <span className="text-content">
-                        {series.find((item) => item.key === name)?.label ??
-                          name}
-                      </span>
-                      <strong>{formatCurrency(Number(value) * 100)}</strong>
-                    </>
-                  )}
-                />
-              }
-            />
-            {series.map((item) => (
-              <Area
-                key={item.key}
-                type="linear"
-                dataKey={item.key}
-                stroke={item.color}
-                strokeWidth={item.key === "income" ? 3 : 2}
-                fill={
-                  item.key === "income" ? "url(#dashboard-income-fill)" : "none"
-                }
-                isAnimationActive={false}
-              />
-            ))}
-          </AreaChart>
-        </ChartContainer>
+        <DashboardChartsChartContainer1 evolution={evolution} />
         <div className="mt-[33px]">
           <h3 className="text-sm font-semibold">
             Resultado acumulado {accumulated >= 0 ? "positivo" : "negativo"}

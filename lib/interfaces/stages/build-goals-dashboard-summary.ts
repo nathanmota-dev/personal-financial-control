@@ -1,0 +1,8 @@
+
+export interface BuildGoalsDashboardSummaryContext {
+  visibleGoals: { id: string; name: string; createdAt: Date; updatedAt: Date; status: "active" | "paused" | "completed" | "archived"; notes: string | null; category: "other" | "housing" | "vehicle" | "electronics" | "travel" | "education" | "emergency"; targetAmountCents: number; targetDate: string | null; plannedMonthlyContributionCents: number; priority: number; color: string; }[];
+  allocationTotals: Map<string, number>;
+  archivedGoals: { id: string; name: string; createdAt: Date; updatedAt: Date; status: "active" | "paused" | "completed" | "archived"; notes: string | null; category: "other" | "housing" | "vehicle" | "electronics" | "travel" | "education" | "emergency"; targetAmountCents: number; targetDate: string | null; plannedMonthlyContributionCents: number; priority: number; color: string; }[];
+  investmentProjection: { currentBalanceCents: number; asOfDate: string; estimatedInterestCents: number; contributionCents: number; withdrawalCents: number; netMovementCents: number; projection: { [k: string]: number; }; plannedMovements: import("@/lib/investment-projection").InvestmentMovement[]; nextContributionDate: string | undefined; id: string; createdAt: Date & string; updatedAt: Date & string; checkpointBalanceCents: number; expectedMonthlyRateBps: number; checkpointDate: string; } | null;
+  allocationRows: { id: string; type: "initial_allocation" | "manual_allocation" | "manual_release" | "contribution" | "correction"; createdAt: Date; updatedAt: Date; amountCents: number; notes: string | null; transactionId: string | null; goalId: string; occurredOn: string; }[];
+}

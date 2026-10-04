@@ -1,7 +1,7 @@
-import { isDemoMode } from "@/lib/demo/mode";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { requirePageSession } from "@/lib/auth/server";
 import { SettingsView } from "@/components/finance/settings-view";
+import { requirePageSession } from "@/lib/auth/server";
+import { isDemoMode } from "@/lib/demo/mode";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 

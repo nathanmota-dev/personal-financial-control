@@ -9,14 +9,14 @@ import { RecurringCalendar } from "@/components/finance/recurring-calendar";
 import { RecurringDialog } from "@/components/finance/recurring-dialog";
 import { RecurringSegmentedControl } from "@/components/finance/recurring-segmented-control";
 import {
-  AccountSetupDialog,
-  CategorySetupDialog,
-  SetupCallout,
+AccountSetupDialog,
+CategorySetupDialog,
+SetupCallout,
 } from "@/components/finance/setup-dialogs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import type { RecurringViewProps } from "@/lib/interfaces/recurring";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import { Tabs,TabsContent } from "@/components/ui/tabs";
 import { formatMonthLabel } from "@/lib/finance-ui";
+import type { RecurringViewProps } from "@/lib/interfaces/recurring";
 
 export function RecurringView({
   accounts,

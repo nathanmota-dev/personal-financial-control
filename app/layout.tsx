@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 
 import { Providers } from "@/components/providers";
 import { themeInitializationScript } from "@/lib/theme-script";

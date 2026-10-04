@@ -2,7 +2,7 @@ import { defaultCategories } from "@/lib/category-defaults";
 import { getDatabase } from "@/lib/db";
 import { getServerEnv } from "@/lib/env";
 import { createAccount } from "@/lib/server/accounts";
-import { createCategory, listCategories } from "@/lib/server/categories";
+import { createCategory,listCategories } from "@/lib/server/categories";
 
 async function main() {
   if (getServerEnv().DEMO_MODE) {

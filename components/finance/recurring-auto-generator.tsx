@@ -1,16 +1,16 @@
 "use client";
 
+import { usePathname,useRouter,useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { generateRecurringTransactionsAction } from "@/app/actions/finance";
 import { DEMO_REFERENCE_MONTH } from "@/lib/demo/constants";
 import {
-  extractErrorMessage,
-  formatMonthLabel,
-  getDefaultMonth,
-  isValidMonth,
+extractErrorMessage,
+formatMonthLabel,
+getDefaultMonth,
+isValidMonth,
 } from "@/lib/finance-ui";
 
 const autoGeneratePaths = new Set(["/dashboard", "/transactions", "/recurring"]);

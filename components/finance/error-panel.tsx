@@ -1,6 +1,6 @@
 import { AlertTriangle } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 
 export function ErrorPanel({ title, message }: { title: string; message: string }) {
   return (

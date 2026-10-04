@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 
 import type {
-  DailyProjection,
-  ProjectionEvent,
-  ProjectionCalendarDay,
-  ProjectionSimulation,
-  ProjectionStatus,
-  ProjectionSummary,
-  ProjectionSummaryAlert,
-  ProjectedBalancePeriod,
+DailyProjection,
+ProjectedBalancePeriod,
+ProjectionCalendarDay,
+ProjectionEvent,
+ProjectionSimulation,
+ProjectionStatus,
+ProjectionSummary,
+ProjectionSummaryAlert,
 } from "@/lib/interfaces/projected-balance";
 
 export type ProjectedBalanceAccountOption = {

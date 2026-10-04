@@ -1,25 +1,23 @@
 "use client";
-import { MoneyInput } from "@/components/finance/money-input";
+import { buildInitialAmounts,groupSources,parseInputCents } from "@/lib/utils/components/investment-reduction-dialog";
+import { InvestmentReductionDialogDiv2 } from "./investment-reduction-dialog-investment-reduction-dialog-div2";
 
-import { useMemo, useState } from "react";
-import { ArrowDownRight, Check, CircleDollarSign, Layers3, ShieldAlert } from "lucide-react";
+import { ArrowDownRight } from "lucide-react";
+import { useMemo,useState } from "react";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import type {
-  InvestmentReductionDialogProps,
-  InvestmentReductionSource,
-} from "@/lib/interfaces/investment-reconciliation";
-import { centsToMoneyInput, formatCurrency, moneyInputToCents } from "@/lib/finance-ui";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import {
+Dialog,
+DialogContent,
+DialogDescription,
+DialogFooter,
+DialogHeader,
+DialogTitle,
+} from "@/components/ui/dialog";
+import type {
+InvestmentReductionDialogProps,
+InvestmentReductionSource,
+} from "@/lib/interfaces/investment-reconciliation";
 
 export function InvestmentReductionDialog({
   open,
@@ -85,116 +83,7 @@ export function InvestmentReductionDialog({
           </div>
         </DialogHeader>
 
-        <div className="grid min-h-0 gap-4 overflow-y-auto pr-1">
-          <div className="grid gap-3 rounded-xl border border-brand/15 bg-card p-4 sm:grid-cols-[1fr_auto] sm:items-center">
-            <div>
-              <p className="text-[0.68rem] font-semibold text-brand/70">
-                Redução a distribuir
-              </p>
-              <p className="mt-1 text-3xl font-semibold tracking-tight text-brand">
-                {formatCurrency(amountCents)}
-              </p>
-            </div>
-            <div className="rounded-xl border border-input/80 bg-muted/30 px-3 py-2 text-right">
-              <p className="text-xs text-content">Selecionado</p>
-              <p className="mt-1 font-semibold text-content-strong">{formatCurrency(selectedCents)}</p>
-            </div>
-          </div>
-
-          {groupedSources.length ? (
-            groupedSources.map((group) => (
-              <section key={group.label} className="space-y-2">
-                <div className="flex items-center gap-2 px-1">
-                  <Layers3 className="size-4 text-content" />
-                  <h3 className="text-xs font-semibold text-content">
-                    {group.label}
-                  </h3>
-                </div>
-                <div className="grid gap-2">
-                  {group.sources.map((source) => {
-                    const selectedSourceCents = parseInputCents(amounts[source.id] ?? "");
-                    const exceedsAvailable = selectedSourceCents > source.availableCents;
-
-                    return (
-                      <div
-                        key={source.id}
-                        className={cn(
-                          "grid gap-3 rounded-2xl border px-3 py-3 transition-colors sm:grid-cols-[minmax(0,1fr)_150px] sm:items-center",
-                          selectedSourceCents > 0 && !exceedsAvailable
-                            ? "border-brand/30 bg-brand/[0.07]"
-                            : "border-border bg-card",
-                          exceedsAvailable && "border-danger/40 bg-danger/[0.06]"
-                        )}
-                      >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="truncate font-medium text-content-strong">{source.label}</p>
-                            {selectedSourceCents > 0 && !exceedsAvailable ? (
-                              <Check className="size-4 shrink-0 text-brand" />
-                            ) : null}
-                          </div>
-                          <p className="mt-1 text-xs leading-5 text-content">{source.description}</p>
-                          <p className="mt-1 text-xs text-content">
-                            Disponível: {formatCurrency(source.availableCents)}
-                          </p>
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor={`reduction-${source.id}`} className="text-xs text-content">
-                            Quanto reduzir
-                          </Label>
-                          <MoneyInput
-                            id={`reduction-${source.id}`}
-                            inputMode="decimal"
-                            value={amounts[source.id] ?? ""}
-                            onChange={(event) => changeAmount(source, event.target.value)}
-                            placeholder="0,00"
-                            aria-invalid={exceedsAvailable}
-                            className="h-10 border-input bg-card text-right text-content-strong placeholder:text-content-subtle"
-                          />
-                          {exceedsAvailable ? (
-                            <p className="text-right text-[0.68rem] text-danger">Acima do disponível</p>
-                          ) : null}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            ))
-          ) : (
-            <div className="rounded-2xl border border-warning/20 bg-warning/[0.07] p-4 text-sm leading-6 text-warning">
-              Não há uma fonte cadastrada para esta redução. Atualize o patrimônio ou escolha o
-              patrimônio não cadastrado quando essa opção estiver disponível.
-            </div>
-          )}
-
-          <div
-            className={cn(
-              "flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm",
-              isClosed
-                ? "border-warning/20 bg-warning/[0.06] text-warning"
-                : remainingCents > 0
-                  ? "border-warning/20 bg-warning/[0.06] text-warning"
-                  : "border-danger/20 bg-danger/[0.06] text-danger"
-            )}
-          >
-            {isClosed ? (
-              <CircleDollarSign className="mt-0.5 size-4 shrink-0 text-warning" />
-            ) : (
-              <ShieldAlert className="mt-0.5 size-4 shrink-0 text-warning" />
-            )}
-            <div>
-              <p className="font-medium">
-                {isClosed
-                  ? "A distribuição fecha exatamente a redução."
-                  : remainingCents > 0
-                    ? `Ainda faltam ${formatCurrency(remainingCents)}.`
-                    : `A distribuição excede em ${formatCurrency(Math.abs(remainingCents))}.`}
-              </p>
-              {footerNote ? <div className="mt-1 text-xs opacity-75">{footerNote}</div> : null}
-            </div>
-          </div>
-        </div>
+        <InvestmentReductionDialogDiv2 amountCents={amountCents} selectedCents={selectedCents} groupedSources={groupedSources} amounts={amounts} changeAmount={changeAmount} isClosed={isClosed} remainingCents={remainingCents} footerNote={footerNote} />
 
         <DialogFooter className="border-t border-border/80 pt-4">
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isPending}>
@@ -214,49 +103,4 @@ export function InvestmentReductionDialog({
       </DialogContent>
     </Dialog>
   );
-}
-
-type SourceGroup = {
-  label: string;
-  sources: InvestmentReductionSource[];
-};
-
-function groupSources(sources: InvestmentReductionSource[]): SourceGroup[] {
-  const groups = new Map<string, InvestmentReductionSource[]>();
-
-  for (const source of sources) {
-    const label = source.sourceType === "not_registered" ? "Fora da carteira cadastrada" : source.holdingName ?? "Ativos";
-    const current = groups.get(label) ?? [];
-    current.push(source);
-    groups.set(label, current);
-  }
-
-  return [...groups.entries()].map(([label, groupedSources]) => ({
-    label,
-    sources: groupedSources,
-  }));
-}
-
-function parseInputCents(value: string) {
-  if (!value.trim()) {
-    return 0;
-  }
-
-  try {
-    return Math.max(moneyInputToCents(value), 0);
-  } catch {
-    return 0;
-  }
-}
-
-function buildInitialAmounts(
-  selections: InvestmentReductionDialogProps["initialSelections"]
-) {
-  const amounts: Record<string, string> = {};
-
-  for (const selection of selections ?? []) {
-    amounts[selection.sourceId] = centsToMoneyInput(selection.amountCents);
-  }
-
-  return amounts;
 }

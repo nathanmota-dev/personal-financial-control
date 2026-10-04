@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { format, parseISO, startOfMonth } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
-  MonthlyBody,
-  MonthlyCalendar,
-  MonthlyDay,
+MonthlyBody,
+MonthlyCalendar,
+MonthlyDay,
 } from "@zach.codes/react-calendar";
+import { format,parseISO,startOfMonth } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useState } from "react";
 
+import { financeMonthlyCalendarClassName } from "@/components/finance/finance-styles";
 import { RecurringCalendarEventItem } from "@/components/finance/recurring-calendar-event";
 import { RecurringCalendarNav } from "@/components/finance/recurring-calendar-nav";
-import { financeMonthlyCalendarClassName } from "@/components/finance/finance-styles";
-import type { RecurringCalendarEvent, RecurringCalendarProps } from "@/lib/interfaces/recurring";
+import type { RecurringCalendarEvent,RecurringCalendarProps } from "@/lib/interfaces/recurring";
 import {
-  buildRecurringCalendarEvents,
-  getMonthFromDate,
+buildRecurringCalendarEvents,
+getMonthFromDate,
 } from "@/lib/recurring-calendar";
 
 export function RecurringCalendar({

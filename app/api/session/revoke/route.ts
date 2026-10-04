@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { adminAuth, apiGuard, authResponse, verifySession } from "@/lib/auth/server";
 import { authConfig } from "@/lib/auth/config";
+import { adminAuth,apiGuard,authResponse,verifySession } from "@/lib/auth/server";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
   const denied = await apiGuard(request);

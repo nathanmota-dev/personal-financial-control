@@ -1,8 +1,8 @@
 import type {
-  AllocationType,
-  GoalCategory,
-  GoalStatus,
-  SummaryTone,
+AllocationType,
+GoalCategory,
+GoalStatus,
+SummaryTone,
 } from "./goals-types";
 
 export const GOAL_CATEGORY_LABELS: Record<GoalCategory, string> = {

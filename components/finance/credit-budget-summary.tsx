@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { financePanelClassName } from "@/components/finance/finance-styles";
+import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 

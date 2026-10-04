@@ -1,6 +1,6 @@
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import type { FinanceFieldProps } from "@/lib/interfaces/finance-fields";
+import { cn } from "@/lib/utils";
 export function FinanceField({
   label,
   children,

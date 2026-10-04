@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { FinanceMetric } from "@/components/finance/finance-metric";
 import type { OverviewMetricProps } from "@/lib/interfaces/investment-operations";
+import Link from "next/link";
 
 export function InvestmentOverviewMetric({ icon, label, value, detail, tone, href }: OverviewMetricProps) {
   const content = <FinanceMetric label={label} value={value} description={detail} icon={icon} tone={tone === "red" ? "danger" : tone === "teal" || tone === "green" ? "success" : "brand"} className="h-full" />;

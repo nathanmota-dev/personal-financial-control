@@ -1,19 +1,19 @@
 "use client";
 
-import { useId } from "react";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
 } from "@/components/ui/select";
+import { useId } from "react";
 
 import {
-  SELECT_CONTENT_CLASSNAME,
-  SELECT_ITEM_CLASSNAME,
-  SELECT_TRIGGER_CLASSNAME,
+SELECT_CONTENT_CLASSNAME,
+SELECT_ITEM_CLASSNAME,
+SELECT_TRIGGER_CLASSNAME,
 } from "../goals-constants";
 import type { SelectFieldProps } from "../goals-types";
 

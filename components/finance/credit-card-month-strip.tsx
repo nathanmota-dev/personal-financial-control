@@ -1,20 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CreditCardMonthStripShowNextPage } from "@/lib/utils/component-actions/credit-card-month-strip-show-next-page";
+import { CreditCardMonthStripShowPreviousPage } from "@/lib/utils/component-actions/credit-card-month-strip-show-previous-page";
+import { CARD_GAP,CARD_MIN_WIDTH } from "@/lib/utils/components/credit-card-month-strip";
+import { useEffect,useRef,useState } from "react";
+import { CreditCardMonthStripSection1 } from "./credit-card-month-strip-credit-card-month-strip-section1";
 
-import { CreditCardTimelineChart } from "@/components/finance/credit-card-timeline-chart";
-import { Button } from "@/components/ui/button";
-import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency } from "@/lib/finance-ui";
 import type {
-  CreditCardMonthPoint,
-  CreditCardMonthStripProps,
+CreditCardMonthStripProps
 } from "@/lib/interfaces/credit-card-view";
-import { cn } from "@/lib/utils";
-
-const CARD_MIN_WIDTH = 132;
-const CARD_GAP = 12;
 
 export function CreditCardMonthStrip({
   points,
@@ -59,132 +53,14 @@ export function CreditCardMonthStrip({
   }, []);
 
   function showPreviousPage() {
-    setHasNavigated(true);
-    setPageIndex(Math.max(0, activePageIndex - 1));
+    return CreditCardMonthStripShowPreviousPage({ setHasNavigated, setPageIndex, activePageIndex });
   }
 
   function showNextPage() {
-    setHasNavigated(true);
-    setPageIndex(Math.min(maxPageIndex, activePageIndex + 1));
+    return CreditCardMonthStripShowNextPage({ setHasNavigated, setPageIndex, maxPageIndex, activePageIndex });
   }
 
   return (
-    <section
-      className="rounded-[20px] border border-border bg-card p-4 shadow-none sm:p-5"
-      aria-busy={isLoading}
-    >
-      <div className="flex items-start justify-between gap-4 px-1">
-        <div>
-          <p className="text-[0.68rem] font-semibold text-content">
-            Linha do tempo
-          </p>
-          <h2 className="mt-1 text-xl font-semibold text-content-strong">Suas faturas</h2>
-        </div>
-        <CalendarDays className="size-5 text-content" />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-border/70 bg-muted/30 px-2 py-2 sm:px-3">
-        <CreditCardTimelineChart points={visiblePoints} />
-      </div>
-
-      <div className="mt-3 flex items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          aria-label="Mostrar faturas anteriores"
-          disabled={activePageIndex === 0}
-          onClick={showPreviousPage}
-          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-
-        <div
-          ref={cardsViewportRef}
-          className="min-w-0 flex-1"
-          aria-label={`Faturas ${pageStart + 1} a ${Math.min(pageStart + visiblePoints.length, points.length)}`}
-        >
-          <div
-            className="grid gap-3"
-            style={{ gridTemplateColumns: `repeat(${Math.max(visiblePoints.length, 1)}, minmax(0, 1fr))` }}
-          >
-            {visiblePoints.map((point) => (
-              <CreditCardMonthCard
-                key={point.month}
-                point={point}
-                previousPoint={points[points.indexOf(point) - 1]}
-                selected={point.month === selectedMonth}
-                onSelect={() => onSelectMonth(point.month)}
-              />
-            ))}
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          aria-label="Mostrar próximas faturas"
-          disabled={activePageIndex >= maxPageIndex}
-          onClick={showNextPage}
-          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
-        >
-          <ChevronRight className="size-4" />
-        </Button>
-      </div>
-
-      <p className="mt-3 text-center text-[0.68rem] text-content-subtle">
-        Mostrando {pageStart + 1}–{Math.min(pageStart + visiblePoints.length, points.length)} de {points.length} meses
-      </p>
-    </section>
-  );
-}
-
-function CreditCardMonthCard({
-  point,
-  previousPoint,
-  selected,
-  onSelect,
-}: {
-  point: CreditCardMonthPoint;
-  previousPoint?: CreditCardMonthPoint;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const isIncrease = previousPoint && point.totalCents > previousPoint.totalCents;
-  const hasChange = previousPoint && point.totalCents !== previousPoint.totalCents;
-
-  return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      onClick={onSelect}
-      className={cn(
-        "min-w-0 rounded-2xl border px-3 py-3 text-left transition-all duration-200",
-        selected
-          ? "border-brand/90 bg-brand/10 shadow-none ring-1 ring-brand/25"
-          : "border-border bg-muted/30 hover:border-input hover:bg-card"
-      )}
-    >
-      <div className="flex items-center justify-between gap-1">
-        <span className={cn("truncate text-sm font-medium", selected ? "text-content-strong" : "text-content")}>
-          {formatCreditCardMonth(point.month)}
-        </span>
-        {hasChange ? (
-          isIncrease ? <ArrowUpRight className="size-3.5 shrink-0 text-danger" /> : <ArrowDownRight className="size-3.5 shrink-0 text-success" />
-        ) : null}
-      </div>
-      <p className={cn("mt-2 truncate text-lg font-semibold", selected ? "text-brand" : "text-content")}>
-        {formatCurrency(point.totalCents)}
-      </p>
-      <p className="mt-1 truncate text-[0.68rem] text-content">
-        {point.billStatus === "paid"
-          ? "Paga"
-          : point.entryCount
-            ? `${point.entryCount} lançamento${point.entryCount === 1 ? "" : "s"}`
-            : "Sem parcelas"}
-      </p>
-    </button>
+    <CreditCardMonthStripSection1 isLoading={isLoading} visiblePoints={visiblePoints} activePageIndex={activePageIndex} showPreviousPage={showPreviousPage} cardsViewportRef={cardsViewportRef} pageStart={pageStart} points={points} selectedMonth={selectedMonth} onSelectMonth={onSelectMonth} maxPageIndex={maxPageIndex} showNextPage={showNextPage} />
   );
 }

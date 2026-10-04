@@ -1,23 +1,23 @@
 "use client";
 import { MoneyInput } from "@/components/finance/money-input";
 
-import { useState, useTransition } from "react";
+import { ArrowLeft,Pencil,Plus,RefreshCw,Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { useState,useTransition } from "react";
 import { toast } from "sonner";
 
-import { createInvestmentOperationAction, deleteInvestmentOperationAction, registerManualInvestmentQuoteAction, updateInvestmentOperationAction, updateManualInvestmentBalanceAction } from "@/app/actions/finance";
+import { createInvestmentOperationAction,deleteInvestmentOperationAction,registerManualInvestmentQuoteAction,updateInvestmentOperationAction,updateManualInvestmentBalanceAction } from "@/app/actions/finance";
 import { financePanelClassName } from "@/components/finance/finance-styles";
 import { InvestmentDetailMetric as Metric } from "@/components/finance/investment-detail-metric";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { formatCurrency, formatDateLabel, moneyInputToCents } from "@/lib/finance-ui";
-import type { InvestmentAssetDetailViewProps, OperationFormState } from "@/lib/interfaces/investment-operations";
+import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from "@/components/ui/select";
+import { formatCurrency,formatDateLabel,moneyInputToCents } from "@/lib/finance-ui";
+import type { InvestmentAssetDetailViewProps,OperationFormState } from "@/lib/interfaces/investment-operations";
 
 const labels = { buy: "Compra", sell: "Venda", application: "Aplicação", redemption: "Resgate", correction: "Correção" };
 const today = () => new Date().toISOString().slice(0, 10);

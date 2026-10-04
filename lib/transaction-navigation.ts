@@ -1,6 +1,6 @@
 import type {
-  TransactionMutationPayload,
-  TransactionRow,
+TransactionMutationPayload,
+TransactionRow,
 } from "@/lib/interfaces/transactions";
 
 export function transactionSaveDestination({
