@@ -22,6 +22,8 @@ export function reportYearMonths(year: string, today: string) {
   return Array.from({ length: count }, (_, index) => `${year}-${String(index + 1).padStart(2, "0")}`);
 }
 
-export function reportHref(mode: ReportMode, period: string) {
-  return `/reports?${new URLSearchParams({ mode, period })}`;
+export function reportHref(mode: ReportMode, period: string, rememberedMonth?: string) {
+  const params = new URLSearchParams({ mode, period });
+  if (mode === "annual" && rememberedMonth) params.set("month", rememberedMonth);
+  return `/reports?${params}`;
 }

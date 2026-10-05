@@ -1,31 +1,25 @@
-import { DashboardEvolutionChart } from "@/components/finance/dashboard-evolution-chart";
-import Link from "next/link";
-import { formatCurrency, formatMonthLabel, transactionTypeLabels } from "@/lib/finance-ui";
-import type { TransactionType } from "@/lib/db/schema";
-import type { ReportProps } from "@/lib/interfaces/reports";
-import { reportHref } from "@/lib/report-periods";
+"use client";
 
-export function ReportTables({ report }: ReportProps) {
-  return <div className="space-y-6">
-    <section className="rounded-2xl bg-card p-5">
-      <h2 className="text-lg font-semibold">Meses do ano</h2>
-      <DashboardEvolutionChart evolution={report.series.map(({ month, metrics }) => ({
-        month: month.slice(5), income: metrics.incomeCents / 100, expenses: metrics.expenseCents / 100,
-        investments: metrics.netInvestmentFlowCents / 100, net: metrics.netResultCents / 100,
-      }))} />
-      <p className="my-3 text-sm text-content">Média de receitas: {report.averageIncomeCents === null ? "Não aplicável" : formatCurrency(report.averageIncomeCents)}. Divisor: {report.averageDivisor} {report.mode === "monthly" ? "mês selecionado" : "meses incluídos"}. Meses sem registros entram com zero; meses futuros ficam fora da série e da média anual.</p>
-      <div className="overflow-x-auto"><table className="w-full text-left text-sm tabular-nums"><caption className="sr-only">Receitas, despesas e resultados por mês</caption>
-        <thead><tr>{["Mês", "Receitas", "Despesas", "Resultado", "Investimentos líquidos", "Saldo livre", "Taxa"].map((label) => <th key={label} className="whitespace-nowrap p-3">{label}</th>)}</tr></thead>
-        <tbody>{report.series.map(({ month, metrics: m, hasMovements }) => <tr key={month} className="border-t"><th className="p-3 font-normal"><Link className="text-brand underline" href={reportHref("monthly", month)}>{formatMonthLabel(month)}</Link>{!hasMovements && <span className="block text-xs text-content">Sem registros</span>}</th>
-          {[m.incomeCents, m.expenseCents, m.operatingResultCents, m.netInvestmentFlowCents, m.netResultCents].map((value, index) => <td className="whitespace-nowrap p-3" key={index}>{formatCurrency(value)}</td>)}<td className="p-3">{m.savingsRate === null ? "Não aplicável" : `${m.savingsRate.toFixed(2)}%`}</td>
-        </tr>)}</tbody>
-      </table></div>
-    </section>
-    <section className="rounded-2xl bg-card p-5"><h2 className="text-lg font-semibold">Categorias e comparação</h2>
-      <p className="my-3 text-sm text-content">Inclui categorias arquivadas e créditos negativos. Comparação com {report.previousPeriod}{report.partial ? " completo, enquanto o período selecionado é parcial" : ""}.</p>
-      <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr><th className="p-3">Categoria</th><th>Tipo</th><th>Selecionado</th><th>Anterior</th><th>Variação absoluta</th></tr></thead>
-        <tbody>{report.categories.map((row) => <tr key={row.id} className="border-t"><th className="p-3 font-normal">{row.name}</th><td>{transactionTypeLabels[row.type as TransactionType]}</td><td className="whitespace-nowrap p-3">{formatCurrency(row.amountCents)}</td><td className="whitespace-nowrap p-3">{formatCurrency(row.previousCents)}</td><td className="whitespace-nowrap p-3">{formatCurrency(row.amountCents - row.previousCents)}</td></tr>)}</tbody>
-      </table></div>
-    </section>
-  </div>;
+import { useReportViews } from "@/hooks/use-report-views";
+import { ReportViewLoading } from "@/components/finance/reports/view-loading";
+import { shiftReportPeriod } from "@/lib/report-periods";
+import { CalendarDays, ChartPie, List } from "lucide-react";
+import { ReportMonthlyTable } from "@/components/finance/reports/monthly-table";
+import { ReportCategoryTable } from "@/components/finance/reports/category-table";
+import { ReportEntries } from "@/components/finance/reports/entries";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { ReportInitialProps } from "@/lib/interfaces/reports";
+
+export function ReportTables({ report }: ReportInitialProps) {
+  const views = useReportViews(report);
+  return <Tabs defaultValue="months" className="gap-4">
+    <TabsList aria-label="Visualização do relatório" variant="line" className="max-w-full justify-start overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <TabsTrigger value="months" className="shrink-0 px-3 text-xs sm:text-sm"><CalendarDays className="size-4" /><span>Meses do ano</span></TabsTrigger>
+      <TabsTrigger value="categories" className="shrink-0 px-3 text-xs sm:text-sm"><ChartPie className="size-4" /><span>Categorias</span></TabsTrigger>
+      <TabsTrigger value="sources" className="shrink-0 px-3 text-xs sm:text-sm"><List className="size-4" /><span>Origens dos totais</span></TabsTrigger>
+    </TabsList>
+    <TabsContent value="months" className="mt-0"><ReportMonthlyTable report={report} /></TabsContent>
+    <TabsContent value="categories" className="mt-0">{views.categories ? <ReportCategoryTable report={{ categories: views.categories, previousPeriod: shiftReportPeriod(report.mode, report.period, -1), partial: report.partial }} /> : <ReportViewLoading error={views.categoryError} retry={views.retry} />}</TabsContent>
+    <TabsContent value="sources" className="mt-0">{views.entries ? <ReportEntries report={{ entries: views.entries }} /> : <ReportViewLoading error={views.entriesError} retry={views.retry} />}</TabsContent>
+  </Tabs>;
 }

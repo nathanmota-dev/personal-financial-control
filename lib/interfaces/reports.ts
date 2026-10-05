@@ -24,4 +24,21 @@ export type ReportResult = ReportPeriod & {
   entries: ReportEntry[];
 };
 export type ReportProps = { report: ReportResult };
-export type ReportControlsProps = ReportPeriod & { previousPeriod: string; nextPeriod: string };
+export type ReportControlsProps = ReportPeriod & { defaultMonth: string; rememberedMonth?: string };
+export type ReportInitialResult = Pick<ReportResult, "mode" | "period" | "series" | "pending" | "partial"> & { entryCount: number };
+export type ReportInitialProps = { report: ReportInitialResult };
+export type ReportMonthsProps = { report: Pick<ReportResult, "series"> };
+export type ReportCategoryProps = { report: Pick<ReportResult, "categories" | "previousPeriod" | "partial"> };
+export type ReportEntriesProps = { report: Pick<ReportResult, "entries"> };
+export type ReportView = "categories" | "sources";
+export type ReportDeferredState = {
+  categories: ReportResult["categories"] | null;
+  entries: ReportEntry[] | null;
+  categoryError: boolean;
+  entriesError: boolean;
+};
+
+export type ReportYearPickerProps = { year: string; onYearChange: (year: string) => void };
+export type ReportEntryProps = { entry: ReportEntry };
+
+export type ReportViewLoadingProps = { error: boolean; retry: () => void };
