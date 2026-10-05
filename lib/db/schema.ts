@@ -10,3 +10,5 @@ export { creditCardBillPaymentsRelations,creditCardBillsRelations,creditCardChar
 export { recurringTemplates,transactionFundingLinks,transactions,transfers } from "./schema/transactions";
 export { type AccountType,type AllocationType,type CategoryGroup,type CreditCardBillPaymentKind,type CreditCardBillStatus,type CreditCardChargeKind,type GoalCategory,type GoalStatus,type InvestmentAssetClass,type InvestmentInstrumentType,type InvestmentReductionEventType,type InvestmentReductionSourceType,type InvestmentReductionStatus,type RecurringStatus,type RecurringTransactionType,type TransactionFundingLinkType,type TransactionStatus,type TransactionType } from "./schema/types";
 export { authorizedUsers, userOnboarding } from "./user-schema";
+
+export { monthlyBudgets } from "./schema/budgets";

@@ -29,5 +29,8 @@
   ],
   "investment_portfolio_snapshots": [
     "snapshot_date"
+  ],
+  "monthly_budgets": [
+    "competence_month"
   ]
 }

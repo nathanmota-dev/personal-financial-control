@@ -510,6 +510,7 @@ describe("finance action boundary", () => {
         ).toEqual([
           "/",
           "/dashboard",
+          "/budgets",
           "/transactions",
           "/recurring",
           "/projected-balance",

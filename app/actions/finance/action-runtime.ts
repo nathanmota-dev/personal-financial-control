@@ -8,6 +8,7 @@ export function revalidateFinanceViews() {
   [
     "/",
     "/dashboard",
+    "/budgets",
     "/transactions",
     "/recurring",
     "/projected-balance",
