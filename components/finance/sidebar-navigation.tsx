@@ -24,6 +24,7 @@ const navigation: SidebarNavigationItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/transactions", label: "Lançamentos", icon: ListPlus },
   { href: "/credit-card", label: "Cartão", icon: CreditCard },
+  { href: "/budgets", label: "Orçamentos", icon: Target },
   { href: "/recurring", label: "Recorrentes", icon: Repeat2 },
   {
     href: "/projected-balance",
@@ -54,7 +55,7 @@ export function SidebarNavigation({ mobile = false, onNavigate }: SidebarNavigat
   function href(path: string) {
     const month = searchParams.get("month");
     return month &&
-      ["/dashboard", "/transactions", "/credit-card", "/recurring"].includes(
+      ["/dashboard", "/transactions", "/credit-card", "/recurring", "/budgets"].includes(
         path,
       )
       ? `${path}?${new URLSearchParams({ month })}`
@@ -91,7 +92,7 @@ export function SidebarNavigation({ mobile = false, onNavigate }: SidebarNavigat
           return null;
         return (
           <div key={item.href}>
-            {index === 4 && !query && (
+            {index === 5 && !query && (
               <p className="mb-[11px] mt-[12px] px-[13px] text-xs text-content-subtle">
                 Análise
               </p>

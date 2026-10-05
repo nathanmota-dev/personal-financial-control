@@ -279,5 +279,13 @@
     "notes": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "monthly_budgets": {
+    "id": "technical",
+    "category_id": "technical",
+    "competence_month": "text",
+    "amount_cents": "integer",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }

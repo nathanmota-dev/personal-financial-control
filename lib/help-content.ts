@@ -38,6 +38,12 @@ export const helpSteps: HelpStep[] = [
 
 export const helpGuides: HelpGuide[] = [
   {
+    title: "Orçamentos",
+    description: "Defina limites mensais por categoria. Realizado reúne despesas efetivadas e parcelas/ajustes da fatura do mês; pendentes aparecem separados. Comprometido soma os dois, excluindo cancelados e pagamentos de fatura. Créditos reduzem o consumo. Copie o mês anterior sem sobrescrever limites e confira as despesas de cada categoria.",
+    href: "/budgets",
+    icon: Target,
+  },
+  {
     title: "Dashboard",
     description:
       "Veja receitas, gastos fixos e variáveis, investimentos líquidos e saldo livre do mês. Os gráficos ajudam a entender a evolução e os gastos por categoria.",
