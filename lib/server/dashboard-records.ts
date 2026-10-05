@@ -33,7 +33,7 @@ export async function readDashboardRecords(months: string[], db: AppDb) {
       account: row.charge.account ? serializeTimestamps(row.charge.account) : null,
     });
   }
-  return { activeTransactions, expenses };
+  return { activeTransactions, expenses, installments };
 }
 
 export async function readDashboardBalances(month: string, expenses: DashboardExpense[], db: AppDb): Promise<DashboardAccountBalance[]> {

@@ -44,6 +44,7 @@ const navigation: SidebarNavigationItem[] = [
       },
     ],
   },
+  { href: "/reports", label: "Relatórios", icon: ChartNoAxesCombined },
   { href: "/goals", label: "Metas", icon: Target },
   { href: "/calculators", label: "Calculadoras", icon: Calculator },
 ];

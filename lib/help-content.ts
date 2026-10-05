@@ -38,6 +38,12 @@ export const helpSteps: HelpStep[] = [
 
 export const helpGuides: HelpGuide[] = [
   {
+    title: "Relatórios",
+    description: "Consulte meses e anos por competência, compare categorias e confira a taxa de economia. Pendências estão incluídas; períodos parciais são comparados com o anterior completo. Inspecione as origens dos totais e as fórmulas no relatório.",
+    href: "/reports",
+    icon: ChartNoAxesCombined,
+  },
+  {
     title: "Orçamentos",
     description: "Defina limites mensais por categoria. Realizado reúne despesas efetivadas e parcelas/ajustes da fatura do mês; pendentes aparecem separados. Comprometido soma os dois, excluindo cancelados e pagamentos de fatura. Créditos reduzem o consumo. Copie o mês anterior sem sobrescrever limites e confira as despesas de cada categoria.",
     href: "/budgets",
