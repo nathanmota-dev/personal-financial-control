@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 export type BudgetInput = { categoryId: string; competenceMonth: string; amountCents: number };
 export type BudgetExpense = {
   id: string; categoryId: string | null; categoryName: string; accountName: string;
@@ -15,8 +16,12 @@ export type BudgetRow = {
 export type BudgetOverview = { month: string; categories: BudgetCategory[]; rows: BudgetRow[]; committedCents: number };
 export type BudgetsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 export type BudgetRowProps = { row: BudgetRow; month: string };
-export type BudgetFormProps = { month: string; categories: BudgetCategory[]; limit?: BudgetLimit };
+export type BudgetFormProps = { month: string; categories: BudgetCategory[]; limit?: BudgetLimit; onSaved?: () => void };
 
 export type BudgetMonthProps = { month: string };
 export type BudgetsViewProps = { overview: BudgetOverview };
 export type BudgetKey = Omit<BudgetInput, "amountCents">;
+
+export type BudgetDialogProps = BudgetFormProps & { trigger?: ReactNode };
+export type BudgetExpensesProps = { row: BudgetRow };
+export type BudgetSectionProps = { title: string; description: string; rows: BudgetRow[]; month: string; columns?: 1 | 2 };

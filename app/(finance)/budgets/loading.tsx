@@ -1,3 +1,9 @@
+import { LoadingMetrics, LoadingPage, LoadingPanel, LoadingRows } from "@/components/finance/loading/primitives";
+
 export default function BudgetsLoading() {
-  return <div role="status" className="space-y-4" aria-busy="true"><p className="text-content">Carregando orçamentos…</p><div className="h-36 animate-pulse rounded-xl bg-card motion-reduce:animate-none" /><div className="h-64 animate-pulse rounded-xl bg-card motion-reduce:animate-none" /></div>;
+  return <LoadingPage label="orçamentos" actions={3}>
+    <LoadingMetrics count={5} className="xl:grid-cols-5" />
+    <div className="grid gap-6 xl:grid-cols-2"><LoadingPanel><LoadingRows count={3} /></LoadingPanel><LoadingPanel><LoadingRows count={2} columns={1} /></LoadingPanel></div>
+    <LoadingPanel><div className="grid gap-8 md:grid-cols-2"><LoadingRows count={3} /><LoadingRows count={3} /></div></LoadingPanel>
+  </LoadingPage>;
 }

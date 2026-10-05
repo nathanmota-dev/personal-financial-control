@@ -1,30 +1,32 @@
+import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
-import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/finance-ui";
+import { financePanelClassName } from "@/components/finance/finance-styles";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { BudgetsViewProps } from "@/lib/interfaces/budgets";
-import { BudgetCopy } from "./budget-copy";
-import { BudgetForm } from "./budget-form";
-import { BudgetCategoryRow } from "./budget-row";
+import { BudgetActions } from "./budget-actions";
+import { BudgetMetrics } from "./budget-metrics";
+import { BudgetSection } from "./budget-section";
 
 export function BudgetsView({ overview }: BudgetsViewProps) {
-  const sections = [
-    { title: "Categorias com limite", rows: overview.rows.filter((row) => row.limit) },
-    { title: "Despesas sem limite", rows: overview.rows.filter((row) => !row.limit && row.categoryId) },
-    { title: "Despesas sem categoria", rows: overview.rows.filter((row) => !row.categoryId) },
-  ];
-  const available = overview.categories.filter((category) => !overview.rows.some((row) => row.limit && row.categoryId === category.id));
-  return <div className="space-y-6">
-    <PageHeader title="Orçamentos" description="Planeje o mês e acompanhe quanto já está comprometido em cada categoria." actions={<form action="/budgets" className="flex flex-wrap items-end gap-2"><label className="grid gap-1 text-sm">Competência<input aria-label="Competência" name="month" type="month" required defaultValue={overview.month} className="h-10 rounded-lg border border-input bg-card px-3" /></label><Button type="submit" variant="outline">Consultar mês</Button></form>} />
-    <div className="space-y-2 rounded-xl border border-border bg-card p-5 text-sm text-content">
-      <p>Realizado = despesas efetivadas + parcelas e ajustes da fatura desta competência, independentemente do pagamento.</p>
-      <p>Comprometido = realizado + pendente. Cancelados, transferências, aportes, resgates e pagamentos de fatura ficam fora. Créditos reduzem o consumo.</p>
-      <p className="pt-2 text-lg font-semibold text-content-strong">Total comprometido: {formatCurrency(overview.committedCents)}</p>
+  const limited = overview.rows.filter((row) => row.limit);
+  const unbounded = overview.rows.filter((row) => !row.limit && row.categoryId);
+  const uncategorized = overview.rows.filter((row) => !row.categoryId);
+  const available = overview.categories.filter((category) => !limited.some((row) => row.categoryId === category.id));
+  return <div className="space-y-6 min-[100.0625rem]:space-y-5">
+    <PageHeader title="Orçamentos" description="Planeje o mês e acompanhe o consumo dos limites por categoria." actions={<BudgetActions key={overview.month} month={overview.month} categories={available} />} />
+    <BudgetMetrics overview={overview} />
+    <div className="grid items-stretch gap-6 xl:grid-cols-2">
+        {limited.length ? <BudgetSection title="Categorias com limite" description="Planejado e comprometido na competência selecionada" rows={limited} month={overview.month} /> : <Card className={`${financePanelClassName} rounded-[20px]`}><CardHeader><CardTitle><h2>Categorias com limite</h2></CardTitle><CardDescription className="text-xs">Planejado e comprometido na competência selecionada</CardDescription></CardHeader><CardContent><FinanceEmptyState title="Nenhum limite definido" description="Use Novo limite ou copie o mês anterior para começar a planejar esta competência." /></CardContent></Card>}
+      <Card className={`${financePanelClassName} rounded-[20px]`}>
+        <CardHeader><CardTitle><h2>Como o consumo é calculado</h2></CardTitle><CardDescription className="text-xs">Despesas por competência, como no Dashboard</CardDescription></CardHeader>
+        <CardContent className="space-y-5 text-sm leading-6 text-content">
+          <div><p className="font-semibold text-content-strong">Realizado</p><p>Despesas efetivadas e parcelas ou ajustes da fatura do mês, independentemente do pagamento.</p></div>
+          <div><p className="font-semibold text-content-strong">Comprometido</p><p>Realizado + pendente. Créditos e estornos reduzem o consumo. O saldo considera apenas as categorias com limite.</p></div>
+          <p className="border-t border-border pt-4 text-xs leading-5 text-content-subtle">Cancelados, transferências, aportes, resgates e pagamentos de fatura ficam fora. Despesas sem limite ou categoria aparecem separadamente.</p>
+        </CardContent>
+      </Card>
     </div>
-    <section aria-label="Definir limites" className="flex flex-wrap justify-between gap-6 rounded-xl border border-border bg-card p-5">
-      <div className="space-y-3"><h2 className="font-semibold">Novo limite para o mês</h2><BudgetForm key={overview.month} month={overview.month} categories={available} />{!available.length && <p className="text-sm text-content">Todas as categorias disponíveis já têm limite. Cadastre categorias de despesa em Configurações se necessário.</p>}</div>
-      <BudgetCopy key={overview.month} month={overview.month} />
-    </section>
-    {overview.rows.length === 0 && <p className="rounded-xl border border-dashed border-border p-6 text-content">Nenhum limite ou despesa nesta competência. Crie um limite ou copie o mês anterior para começar.</p>}
-    {sections.map((section) => section.rows.length > 0 && <section key={section.title} className="rounded-xl border border-border bg-card px-5"><h2 className="border-b border-border py-4 text-lg font-semibold">{section.title}</h2>{section.rows.map((row) => <BudgetCategoryRow key={`${overview.month}-${row.categoryId}-${row.limit?.amountCents ?? "none"}`} row={row} month={overview.month} />)}</section>)}
+        {unbounded.length > 0 && <BudgetSection title="Despesas sem limite" description="Gastos do mês em categorias que ainda não têm orçamento" rows={unbounded} month={overview.month} columns={2} />}
+        {uncategorized.length > 0 && <BudgetSection title="Despesas sem categoria" description="Valores incluídos no total comprometido, sem um limite associado" rows={uncategorized} month={overview.month} columns={2} />}
   </div>;
 }

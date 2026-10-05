@@ -1,4 +1,6 @@
 "use client";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { useState, useTransition } from "react";
 import { removeBudgetAction } from "@/app/actions/finance/budgets";
 import { Button } from "@/components/ui/button";
@@ -11,9 +13,10 @@ export function BudgetRemove({ categoryId, competenceMonth }: Omit<BudgetInput, 
     startTransition(async () => {
       try {
         const result = await removeBudgetAction({ categoryId, competenceMonth });
-        setMessage(result.ok ? "Limite removido." : result.error.message);
-      } catch { setMessage("Não foi possível remover. Tente novamente."); }
+        report(result.ok ? "Limite removido." : result.error.message);
+      } catch { report("Não foi possível remover. Tente novamente."); }
     });
   }
-  return <div><Button variant="outline" disabled={pending} onClick={remove}>{pending ? "Removendo…" : "Remover limite"}</Button><p role="status" className="text-sm">{message}</p></div>;
+  function report(value: string) { setMessage(value); toast(value); }
+  return <div><Button variant="outline" size="icon-sm" aria-label="Remover limite" disabled={pending} onClick={remove}><Trash2 className="size-4" /></Button><p role="status" className="sr-only">{message}</p></div>;
 }

@@ -1,4 +1,6 @@
 "use client";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
 import { useState, useTransition } from "react";
 import { copyPreviousBudgetsAction } from "@/app/actions/finance/budgets";
 import type { BudgetMonthProps } from "@/lib/interfaces/budgets";
@@ -11,9 +13,10 @@ export function BudgetCopy({ month }: BudgetMonthProps) {
     startTransition(async () => {
       try {
         const result = await copyPreviousBudgetsAction(month);
-        setMessage(result.ok ? `${result.data} limite(s) copiado(s). Valores existentes preservados.` : result.error.message);
-      } catch { setMessage("Não foi possível copiar. Tente novamente."); }
+        report(result.ok ? `${result.data} limite(s) copiado(s). Valores existentes preservados.` : result.error.message);
+      } catch { report("Não foi possível copiar. Tente novamente."); }
     });
   }
-  return <div className="space-y-2"><Button variant="outline" disabled={pending} onClick={copy}>{pending ? "Copiando…" : "Copiar limites do mês anterior"}</Button><p role="status" className="max-w-sm text-sm text-content">{message}</p></div>;
+  function report(value: string) { setMessage(value); toast(value); }
+  return <div className="relative"><Button variant="secondary" disabled={pending} onClick={copy}><Copy className="size-4" />{pending ? "Copiando…" : "Copiar mês anterior"}</Button><p role="status" className="sr-only">{message}</p></div>;
 }

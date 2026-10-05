@@ -1,5 +1,8 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { navigation } from "@/tests/frontend/setup";
+import { BudgetDialog } from "@/components/finance/budgets/budget-dialog";
+import { BudgetActions } from "@/components/finance/budgets/budget-actions";
 import { renderUI } from "@/tests/frontend/helpers";
 import { aggregateBudgets } from "@/lib/budget-aggregation";
 import { BudgetsView } from "@/components/finance/budgets/budgets-view";
@@ -26,7 +29,7 @@ beforeEach(() => {
 it("renders authorized monthly budgets, empty and loading states and propagates read errors", async () => {
   const view = renderUI(await Page({ searchParams: Promise.resolve({ month: "2026-07" }) }));
   expect(screen.getByRole("heading", { name: "Orçamentos" })).toBeVisible();
-  expect(screen.getByText(/Nenhum limite ou despesa/)).toBeVisible();
+  expect(screen.getByText(/Nenhum limite definido/)).toBeVisible();
   expect(getBudgetOverview).toHaveBeenCalledWith("2026-07");
   view.unmount(); renderUI(<Loading />);
   expect(screen.getByRole("status")).toHaveTextContent("Carregando orçamentos");
@@ -45,14 +48,15 @@ it.each([45000, 64000, 80000, -5000])("renders accessible consumption and expens
   expect(screen.getByRole("heading", { name: "Despesas sem limite" })).toBeVisible();
   expect(screen.getByRole("heading", { name: "Despesas sem categoria" })).toBeVisible();
   expect(screen.getByText("Arquivada")).toBeVisible();
-  expect(screen.getByRole("progressbar")).toHaveAttribute("value", String(Math.max(0, Math.min(100, amountCents / 80000 * 100))));
-  fireEvent.click(screen.getByText("Conferir despesas de Food (1)"));
-  expect(screen.getAllByText(/Card · Parcela/).length).toBe(3);
+  expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", String(Math.max(0, Math.min(100, amountCents / 80000 * 100))));
+  fireEvent.click(screen.getByRole("button", { name: "Conferir despesas de Food (1)" }));
+  expect(screen.getAllByText(/Card · Parcela/).length).toBe(1);
   if (amountCents < 0) expect(screen.getAllByText(/crédito/i).length).toBeGreaterThan(0);
 });
 it("creates and edits limits and shows validation and network errors", async () => {
   const { user, unmount } = renderUI(<BudgetForm month="2026-07" categories={[category]} />);
-  await user.selectOptions(screen.getByRole("combobox"), category.id);
+  await user.click(screen.getByRole("combobox"));
+  await user.click(screen.getByRole("option", { name: "Food" }));
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "800,00" } });
   await user.click(screen.getByRole("button", { name: "Criar limite" }));
   await waitFor(() => expect(actions.saveBudgetAction).toHaveBeenCalledWith({ categoryId: category.id, competenceMonth: "2026-07", amountCents: 80000 }));
@@ -89,5 +93,25 @@ it("copies and removes limits, reporting operation and transport failures", asyn
 });
 it("offers expense details for a limit with no movements", () => {
   renderUI(<BudgetsView overview={{ ...empty, rows: aggregateBudgets([category], [limit], []) }} />);
-  expect(screen.getByText("Nenhuma despesa nesta competência.")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Conferir despesas de Food (0)" }));
+  expect(screen.getByText("Nenhuma despesa nesta competência")).toBeInTheDocument();
+});
+
+
+it("changes competence with the shared month picker", async () => {
+  navigation.pathname = "/budgets";
+  const { user } = renderUI(<BudgetActions month="2026-07" categories={[category]} />);
+  await user.click(screen.getByRole("button", { name: "julho de 2026" }));
+  await user.click(screen.getByRole("button", { name: "Ago" }));
+  expect(navigation.replace).toHaveBeenCalledWith("/budgets?month=2026-08");
+});
+it("closes the edit dialog after saving and disables creation without categories", async () => {
+  const { user, unmount } = renderUI(<BudgetDialog month="2026-07" categories={[category]} limit={limit} />);
+  await user.click(screen.getByRole("button", { name: "Editar limite de Food" }));
+  expect(screen.getByRole("dialog")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Salvar limite" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  unmount();
+  renderUI(<BudgetDialog month="2026-07" categories={[]} />);
+  expect(screen.getByRole("button", { name: "Novo limite" })).toBeDisabled();
 });
