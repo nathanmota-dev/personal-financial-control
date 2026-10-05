@@ -38,6 +38,12 @@ export const helpSteps: HelpStep[] = [
 
 export const helpGuides: HelpGuide[] = [
   {
+    title: "Relatórios",
+    description: "Consulte meses e anos por competência, compare categorias e confira a taxa de economia. Pendências estão incluídas; períodos parciais são comparados com o anterior completo. Inspecione as origens dos totais e as fórmulas no relatório.",
+    href: "/reports",
+    icon: ChartNoAxesCombined,
+  },
+  {
     title: "Dashboard",
     description:
       "Veja receitas, gastos fixos e variáveis, investimentos líquidos e saldo livre do mês. Os gráficos ajudam a entender a evolução e os gastos por categoria.",

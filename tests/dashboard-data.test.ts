@@ -1,3 +1,4 @@
+import { getReport } from "@/lib/server/reports";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { eq } from "drizzle-orm";
 import { transactions, transfers } from "@/lib/db/schema";
@@ -45,6 +46,14 @@ describe("consolidated dashboard data", () => {
     await upsertCreditCardBill({ accountId: card.id, invoiceMonth: "2026-01", dueDate: "2026-01-10", statementTotalCents: 32000, currentChargesTotalCents: 18000 }, db);
     await createCreditCardBillPayment({ accountId: card.id, invoiceMonth: "2026-01", paymentAccountId: account.id, amountCents: 10000, paymentDate: "2026-01-10", idempotencyKey: "test-bill", description: "Any description" }, db);
     const data = await getDashboardData("2026-01", db);
+    const monthlyReport = await getReport({ mode: "monthly", period: "2026-01" }, db, "2026-02-01");
+    for (const [key, value] of Object.entries(data.dashboard.totals)) expect(monthlyReport.totals[key as keyof typeof data.dashboard.totals]).toBe(value);
+    expect(monthlyReport.entries.some((row) => row.description === "Cancelled")).toBe(false);
+    expect(monthlyReport.entries.some((row) => row.description === "Any description")).toBe(false);
+    expect(monthlyReport.entries.find((row) => row.description === "Refund")).toMatchObject({ source: "installment", amountCents: -3000 });
+    expect(monthlyReport.pending.count).toBe(1);
+    const annualReport = await getReport({ mode: "annual", period: "2026" }, db, "2026-02-01");
+    expect(annualReport.totals.expenseCents).toBe(105000);
     const totalExpenses = data.categorySpending.reduce((sum, row) => sum + row.amountCents, 0);
     expect(data.dashboard.totals).toMatchObject({ incomeCents: 200000, fixedExpenseCents: 50000, variableExpenseCents: 30000, uncategorizedExpenseCents: 5000, netResultCents: 115000 });
     expect(totalExpenses).toBe(85000);
