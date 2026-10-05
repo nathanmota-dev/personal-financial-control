@@ -1,3 +1,4 @@
+import { saveBudget, getBudgetOverview, copyPreviousBudgets, removeBudget } from "@/lib/server/budgets";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { getFinanceDatabase } from "@/lib/db";
@@ -30,6 +31,16 @@ describe("demo mode", () => {
     } else {
       process.env.DEMO_MODE = originalDemoMode;
     }
+  });
+
+  it("keeps budget reads and mutations isolated in demo storage", async () => {
+    const overview = await getBudgetOverview("2026-07");
+    const input = { categoryId: overview.categories[0].id, competenceMonth: "2026-07", amountCents: 80000 };
+    await saveBudget(input);
+    expect((await getBudgetOverview("2026-07")).rows.find((row) => row.categoryId === input.categoryId)?.limit?.amountCents).toBe(80000);
+    expect(await copyPreviousBudgets("2026-08")).toBe(1);
+    await removeBudget(input);
+    await removeBudget({ ...input, competenceMonth: "2026-08" });
   });
 
   it("loads every finance domain from the in-memory fixture", async () => {

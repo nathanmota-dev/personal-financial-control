@@ -134,6 +134,13 @@
       "when": 1791000000000,
       "tag": "0018_user_onboarding",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1791100000000,
+      "tag": "0019_monthly_budgets",
+      "breakpoints": true
     }
   ]
 }
