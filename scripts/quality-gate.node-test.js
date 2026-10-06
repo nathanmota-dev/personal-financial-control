@@ -77,7 +77,9 @@ test("CLI bootstrap produces reports/candidate, then compares a reviewed referen
   assert.equal(C.readJson(path.join(root, "reports/quality-gate.json")).status, "bootstrap");
   fs.copyFileSync(path.join(root, "reports/candidate-baseline.json"), path.join(root, "scripts/baseline.json"));
   assert.equal(H.cli("quality-gate.js", root, ["--no-collect"]).status, 0);
-  assert.match(fs.readFileSync(path.join(root, "reports/quality-gate.md"), "utf8"), /Weighted coverage[\s\S]*app maintainability[\s\S]*Combined duplication/);
+  const report = fs.readFileSync(path.join(root, "reports/quality-gate.md"), "utf8");
+  assert.match(report, /Weighted coverage[\s\S]*\n## Coverage\n[\s\S]*\n## Maintainability\n[\s\S]*Combined duplication/);
+  assert.doesNotMatch(report, /app coverage|app maintainability/);
 });
 test("missing/malformed input returns 2 and a failure report, not green", (t) => {
   const root = H.temporary(t); H.inputs(root); H.write(root, "reports/eslint/app.json", "{");
