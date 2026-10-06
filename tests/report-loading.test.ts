@@ -24,6 +24,12 @@ it("only categories query the comparison period; origins query the selected peri
   await getReportView({ mode: "monthly", period: "2026-01" }, "sources", db, "2026-02-01");
   expect(readDashboardRecords).toHaveBeenLastCalledWith(["2026-01"], db);
 });
+it("reads both months together for an on-demand summary", async () => {
+  vi.mocked(readDashboardRecords).mockResolvedValue({ activeTransactions: [], expenses: [], installments: [] });
+  const result = await getReportView({ mode: "monthly", period: "2026-01" }, "summary", db, "2026-02-01");
+  expect(readDashboardRecords).toHaveBeenCalledWith(["2026-01", "2025-12"], db);
+  expect(result).toMatchObject({ summary: { period: "2026-01", previousPeriod: "2025-12", entries: [], previousEntries: [], insights: [] } });
+});
 it("bounds annual queries and preserves empty future years", async () => {
   vi.mocked(readDashboardRecords).mockResolvedValue({ activeTransactions: [], expenses: [], installments: [] });
   await getReportView({ mode: "annual", period: "2026" }, "categories", db, "2026-02-01");

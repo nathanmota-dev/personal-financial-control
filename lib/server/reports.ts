@@ -1,4 +1,5 @@
 import { aggregateDashboardMonth } from "@/lib/dashboard-aggregation";
+import { buildMonthlyRetrospective } from "@/lib/monthly-retrospective";
 import { getFinanceDatabase, type AppDb } from "@/lib/db";
 import type { ReportInitialResult, ReportPeriod, ReportView } from "@/lib/interfaces/reports";
 import { buildReport, reportEntries, reportMetrics } from "@/lib/report-aggregation";
@@ -36,8 +37,9 @@ export async function getReportInitial(selection: ReportPeriod, database?: AppDb
 export async function getReportView(selection: ReportPeriod, view: ReportView, database?: AppDb, today = getFinanceToday()) {
   const previous = shiftReportPeriod(selection.mode, selection.period, -1);
   const months = selection.mode === "monthly" ? [selection.period] : reportYearMonths(selection.period, today);
-  const previousMonths = view === "categories" ? selection.mode === "monthly" ? [previous] : reportYearMonths(previous, "9999-12-31") : [];
+  const previousMonths = view !== "sources" ? selection.mode === "monthly" ? [previous] : reportYearMonths(previous, "9999-12-31") : [];
   const records = await readDashboardRecords([...new Set([...months, ...previousMonths])], database ?? await getFinanceDatabase());
   if (view === "sources") return { entries: reportEntries(records).filter((row) => months.includes(row.month)) };
+  if (view === "summary") return { summary: buildMonthlyRetrospective(buildReport(selection, today, records), reportEntries(records).filter((row) => previousMonths.includes(row.month))) };
   return { categories: buildReport(selection, today, records).categories };
 }

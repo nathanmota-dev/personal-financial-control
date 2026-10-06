@@ -36,7 +36,7 @@ describe("reports interface", () => {
     expect(screen.getByRole("heading", { name: "Meses do ano" })).toBeVisible();
     expect(screen.queryByRole("heading", { name: "Origens dos totais" })).not.toBeInTheDocument();
     expect(screen.getAllByText("Sem registros")).toHaveLength(7);
-    await user.click(screen.getByText("Como calculamos"));
+    expect(document.querySelector("details")).toBeNull();
     expect(screen.getByText(/Transferências e valorização/)).toBeVisible();
     await user.click(screen.getByRole("tab", { name: "Categorias" }));
     expect(await screen.findByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
@@ -57,9 +57,11 @@ describe("reports interface", () => {
     const { user } = renderUI(<ReportTables report={data} />);
     await user.click(screen.getByRole("tab", { name: "Categorias" }));
     expect(await screen.findByText("Archived")).toBeVisible();
+    expect(screen.getByText(/Comparação com junho de 2026/)).toBeVisible();
     await user.click(screen.getByRole("tab", { name: "Origens dos totais" }));
     expect(screen.getAllByRole("link", { name: "Parcela de cartão" })[0]).toHaveAttribute("href", "/credit-card?month=2026-07");
     expect(screen.getAllByText("Pendente", { exact: true })[0]).toBeVisible();
+    expect(screen.queryByText("2026-07", { exact: true })).not.toBeInTheDocument();
     expect(screen.getAllByText("Efetivado", { exact: true })[0]).toBeVisible();
   });
   it("selects a month with the shared picker and switches mode through the URL", async () => {

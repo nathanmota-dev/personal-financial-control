@@ -10,7 +10,7 @@ async function handleGET(request: Request) {
   const params = new URL(request.url).searchParams;
   const selection = parseReportPeriod(Object.fromEntries(params), getFinanceDefaultMonth());
   const view = params.get("view");
-  if (!selection || (view !== "categories" && view !== "sources")) {
+  if (!selection || (view !== "categories" && view !== "sources" && view !== "summary") || (view === "summary" && selection.mode !== "monthly")) {
     return Response.json({ error: "Período ou visualização inválidos." }, { status: 400 });
   }
   try {

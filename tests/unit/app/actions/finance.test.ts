@@ -512,6 +512,7 @@ describe("finance action boundary", () => {
           "/dashboard",
           "/budgets",
           "/transactions",
+          "/reports",
           "/recurring",
           "/projected-balance",
           "/investments",
