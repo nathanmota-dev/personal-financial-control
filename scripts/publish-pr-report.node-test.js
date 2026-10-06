@@ -194,7 +194,7 @@ test("ci maintenance allows helpers but still blocks policy, scenarios and renam
     const { args } = fixture({ established: true, branch, files: [{ filename: "scripts/run-checks.js" }, { filename: ".github/workflows/performance.yml" }] });
     const result = await Publisher.reconcileAndPublish(args);
     assert.equal(result.state, branch.startsWith("ci/") ? "PASS" : "FAIL");
-    if (branch.startsWith("ci/")) assert.match(result.body, /Validation infrastructure review[\s\S]*WARNING/);
+    if (branch.startsWith("ci/")) assert.doesNotMatch(result.body, /Validation infrastructure review|CI maintenance paths changed/);
   }
   for (const filename of ["scripts/baseline.json", "scripts/quality-gate.config.json", "benchmarks/money.bench.ts", "vitest.config.ts"]) {
     assert.equal((await Publisher.reconcileAndPublish(fixture({ established: true, branch: "ci/fix", files: [{ filename }] }).args)).state, "FAIL");

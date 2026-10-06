@@ -35,3 +35,28 @@ test("report follows the consolidated format with one uninterrupted table for al
   assert.match(body, /## Quality Gate/); assert.match(body, /## Performance/);
   assert.doesNotMatch(body, /PR #3|commit `abc`|metric comparison:|\[(Quality Gate|Performance|Backend CI|Frontend CI|E2E) run\]/);
 });
+
+test("comment omits infrastructure and measurement metadata while preserving tables and failures", () => {
+  const quality = ["# Quality Gate", "**FAIL** — Blocking quality checks failed.",
+    "This is the metric comparison result. Required command outcomes and protected-file violations determine the overall workflow result.",
+    "Existing coverage and size debt is accepted only at the reviewed reference; regressions and new size violations block.",
+    "Baseline: `base&#64;reference:scripts/baseline.json`", "## Coverage", "| lines | 80% | 79% | -1 pp |",
+    "## Maintainability", "| ESLint violations | 0 | 0 | +0 |", "## Failures", "- app: lines coverage decreased.",
+    "## Existing debt (warning only)", "- app: branches coverage below 80% target."].join("\n\n");
+  const performance = ["# Performance", "**PASS** — Throughput loss greater than 20% blocks delivery.",
+    "This is the metric comparison result. Required command outcomes determine the overall workflow result.",
+    "Baseline: `reference-sha` · limit: 20% throughput loss.", "| app | finance scenario | 100 | 101 | PASS |",
+    "## Paired measurement evidence", "Reference commit: `reference-sha`. Current commit: `current-sha`.\nRunner: {\"cpuModel\":\"private-runner\"}. Runtime: v24.21.0.\nRun: 123; attempt: 1. Three sequential pairs; median throughput per scenario.",
+    "| Pair | Checkout | Scenario | ops/s | RME | Samples |", "| 1 | current | app/scenario | 101 | 1% | 100 |"].join("\n\n");
+  const infrastructure = "## Validation infrastructure review\n\n**WARNING** — CI maintenance paths changed: scripts/pr-report.js. Policy inputs remain protected.";
+  const workflows = [{ name: "Quality Gate", state: "FAIL", manifest: W.manifest("Quality Gate", [
+    { name: "Validation infrastructure review", outcome: "warning", blocking: false, details: ["scripts/pr-report.js"] },
+    { name: "Critical audit", outcome: "failure", details: ["critical vulnerability"] },
+  ]) }];
+  const body = R.render({ workflows, details: [infrastructure, quality, performance] });
+  assert.doesNotMatch(body, /CI maintenance paths changed|## Validation infrastructure review|### Quality Gate: Validation infrastructure review|scripts\/pr-report\.js/);
+  assert.doesNotMatch(body, /This is the metric comparison result|Existing coverage and size debt|Baseline:|Reference commit:|Current commit:|Runner:|Runtime:|Run: 123|reference-sha|current-sha|private-runner/);
+  for (const value of ["## Coverage", "## Maintainability", "| lines | 80% | 79% | -1 pp |", "| app | finance scenario | 100 | 101 | PASS |", "| 1 | current | app/scenario | 101 | 1% | 100 |", "lines coverage decreased", "branches coverage below 80% target", "critical vulnerability", "| Quality Gate | Validation infrastructure review | WARNING |"])
+    assert.ok(body.includes(value), `Missing retained result: ${value}`);
+  assert.match(quality, /Baseline:/); assert.match(performance, /Reference commit:/);
+});
