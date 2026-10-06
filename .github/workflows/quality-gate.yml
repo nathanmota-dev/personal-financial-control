@@ -23,11 +23,11 @@ jobs:
       PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: "24"
       - name: Select trusted policy and baseline
@@ -57,7 +57,7 @@ jobs:
           fi
       - name: Upload diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: quality-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 14
@@ -81,7 +81,7 @@ jobs:
       # workflow_run only starts once its publisher exists on the default branch.
       - name: Check whether the default-branch publisher is installed
         id: publisher
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             try {
@@ -95,18 +95,18 @@ jobs:
               if (error.status !== 404) throw error;
               core.setOutput('bootstrap', 'true');
             }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.publisher.outputs.bootstrap == 'true'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.publisher.outputs.bootstrap == 'true'
         with:
           node-version: "24"
       - name: Wait for all checks and publish the current PR report
         if: steps.publisher.outputs.bootstrap == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           GH_TOKEN: ${{ github.token }}
           QUALITY_RESULT: ${{ needs.evaluate.result }}

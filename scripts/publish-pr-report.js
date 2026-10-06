@@ -101,7 +101,7 @@ async function reconcileAndPublish({ github, context, core, root = process.cwd()
       if (data.report) details.push(data.report);
     } catch (error) {
       workflow.state = "FAIL";
-      details.push(`## ${workflow.name}\n\n**FAIL** — ${C.escape(error.message)}. Inspect the linked workflow.`);
+      details.push(`## ${workflow.name}\n\n**FAIL** — ${C.escape(error.message)}. Inspect the workflow artifacts in Actions.`);
     }
   }
   const files = await github.paginate(github.rest.pulls.listFiles, { ...repo, pull_number: pr.number, per_page: 100 });
