@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requirePageSession } from "@/lib/auth/server";
 import { PageHeader } from "@/components/finance/page-header";
 import { ReportControls } from "@/components/finance/reports/controls";
+import { ReportExportActions } from "@/components/finance/reports/export-actions";
 import { ReportNotes } from "@/components/finance/reports/notes";
 import { ReportTables } from "@/components/finance/reports/tables";
 import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
@@ -19,6 +20,7 @@ export default async function ReportsPage({ searchParams }: DashboardPageProps) 
   const report = await getReportInitial(selection);
   return <div className="space-y-6 min-[100.0625rem]:space-y-5">
     <PageHeader title="Relatórios" description="Consulte o histórico por competência e entenda o resultado antes e depois dos investimentos." actions={<ReportControls {...selection} defaultMonth={defaultMonth} rememberedMonth={remembered?.period} />} />
+    <ReportExportActions key={`export:${selection.mode}:${selection.period}`} {...selection} />
     <ReportTables key={`${selection.mode}:${selection.period}`} report={report} />
     <ReportNotes report={report} />
   </div>;
