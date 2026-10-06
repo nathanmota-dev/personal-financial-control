@@ -31,7 +31,7 @@ function sumMetrics(metrics: ReportMetrics[]) {
   return reportMetrics(totals);
 }
 
-function categoryTotals(entries: ReportEntry[], previous: ReportEntry[]) {
+export function reportCategoryTotals(entries: ReportEntry[], previous: ReportEntry[]) {
   const categories = new Map<string, ReportResult["categories"][number]>();
   for (const [rows, field] of [[entries, "amountCents"], [previous, "previousCents"]] as const) {
     for (const row of rows) {
@@ -68,6 +68,6 @@ export function buildReport(selection: ReportPeriod, today: string, records: Rep
     future: period > today.slice(0, mode === "monthly" ? 7 : 4),
     averageDivisor: months.length, averageIncomeCents: months.length ? totals.incomeCents / months.length : null,
     pending: { count: pending.length, amountCents: pending.reduce((sum, row) => sum + row.amountCents, 0) },
-    categories: categoryTotals(entries, previousEntries), entries,
+    categories: reportCategoryTotals(entries, previousEntries), entries,
   };
 }

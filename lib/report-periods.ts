@@ -1,4 +1,5 @@
 import type { ReportMode, ReportPeriod } from "@/lib/interfaces/reports";
+import type { ReportExportRequest } from "@/lib/interfaces/report-export";
 
 export function parseReportPeriod(params: Record<string, string | string[] | undefined>, defaultMonth: string): ReportPeriod | null {
   const mode = params.mode ?? "monthly";
@@ -26,4 +27,8 @@ export function reportHref(mode: ReportMode, period: string, rememberedMonth?: s
   const params = new URLSearchParams({ mode, period });
   if (mode === "annual" && rememberedMonth) params.set("month", rememberedMonth);
   return `/reports?${params}`;
+}
+
+export function reportCsvFilename({ kind, mode, period }: ReportExportRequest) {
+  return `relatorio-${kind === "summary" ? "resumo" : "categorias"}-${mode === "monthly" ? "mensal" : "anual"}-${period}.csv`;
 }

@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+test("report exports without a session never expose financial CSV", async ({ request }) => {
+  const response = await request.get("/api/reports/export?mode=monthly&period=2026-07&kind=summary");
+  expect(response.ok()).toBe(false);
+  expect(response.headers()["content-type"]).not.toContain("text/csv");
+  expect(response.headers()["cache-control"]).toBe("private, no-store");
+  expect(response.headers()["content-disposition"]).toBeUndefined();
+});
+
 test("Google login shows a recoverable error when Firebase is unavailable", async ({ page }) => {
   await page.goto("/login");
   const google = page.getByRole("button", { name: "Continuar com Google" });
