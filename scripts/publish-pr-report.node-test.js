@@ -108,7 +108,9 @@ test("passing metric comparison remains distinct from a failed workflow with pro
     return data;
   };
   const result = await Publisher.reconcileAndPublish(args);
-  assert.equal(result.state, "FAIL"); assert.match(result.body, /metric comparison: \*\*PASS\*\*; overall: \*\*FAIL\*\*/);
+  assert.equal(result.state, "FAIL"); assert.match(result.body, /Quality Gate overall: \*\*FAIL\*\*/);
+  assert.match(result.body, /\| Quality Gate \| required metric check \| PASS \|/);
+  assert.match(result.body, /\| Quality Gate \| Validation policy immutability \| FAIL \|/);
   assert.match(result.body, /Validation policy immutability[\s\S]*scripts\/quality-gate.js/);
 });
 test("publication failure cannot leave a newly passing status", async () => {

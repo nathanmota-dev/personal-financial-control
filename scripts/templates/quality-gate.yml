@@ -17,11 +17,11 @@ jobs:
       PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: __NODE_VERSION__
       - name: Select trusted policy and baseline
@@ -51,7 +51,7 @@ jobs:
           fi
       - name: Upload diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: quality-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 14

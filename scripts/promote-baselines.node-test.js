@@ -107,7 +107,7 @@ test("promotion workflow validates main before writing and prevents recursive ba
   const steps = job.steps;
   assert.ok(steps.findIndex((step) => step.id === "quality") < steps.findIndex((step) => step.id === "performance"));
   assert.match(steps.find((step) => step.name === "Promote only eligible improvements").if, /success\(\).*quality.outcome.*performance.outcome/);
-  assert.equal(steps.find((step) => step.uses === "actions/checkout@v4").with["persist-credentials"], false);
+  assert.equal(steps.find((step) => step.uses === "actions/checkout@v5").with["persist-credentials"], false);
   const publisher = fs.readFileSync(path.join(__dirname, "../.github/workflows/pr-validation.yml"), "utf8");
   assert.match(publisher, /result\?\.state === 'FAIL'.*core.setFailed/);
 });

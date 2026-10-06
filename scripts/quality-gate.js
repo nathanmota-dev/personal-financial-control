@@ -168,7 +168,8 @@ function render({ metrics, baseline, comparison, label, bootstrap, qualityMode =
   const lines = ["# Quality Gate", "", `**${comparison.passed ? bootstrap ? "BOOTSTRAP" : "PASS" : "FAIL"}** — ${bootstrap ? "Initial measurements; no historical comparison." : comparison.passed ? "No quality regression detected." : "Blocking quality checks failed."}`, "", "This is the metric comparison result. Required command outcomes and protected-file violations determine the overall workflow result.", "", policy, "", `Baseline: \`${C.escape(label)}\``, "", ...coverageTable("Weighted coverage", metrics.coverage, baseline && aggregate(baseline.projects))];
   for (const [name, project] of Object.entries(metrics.projects)) {
     const old = baseline?.projects[name];
-    lines.push("", ...coverageTable(`${name} coverage`, project.coverage, old?.coverage), "", `## ${C.escape(name)} maintainability`, "",
+    const prefix = Object.keys(metrics.projects).length === 1 ? "" : `${name} `;
+    lines.push("", ...coverageTable(`${prefix}Coverage`, project.coverage, old?.coverage), "", `## ${C.escape(prefix)}Maintainability`, "",
       "| Metric | Baseline | Current | Change |", "|---|---:|---:|---:|");
     const values = (p) => p && ({ Duplication: p.duplication.totalLines ? p.duplication.duplicatedLines / p.duplication.totalLines * 100 : 0,
       "Duplicate fragments": p.duplication.fragments, "ESLint violations": p.lintViolations,
