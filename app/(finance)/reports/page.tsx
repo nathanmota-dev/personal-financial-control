@@ -19,7 +19,7 @@ export default async function ReportsPage({ searchParams }: DashboardPageProps) 
   const report = await getReportInitial(selection);
   return <div className="space-y-6 min-[100.0625rem]:space-y-5">
     <PageHeader title="Relatórios" description="Consulte o histórico por competência e entenda o resultado antes e depois dos investimentos." actions={<ReportControls {...selection} defaultMonth={defaultMonth} rememberedMonth={remembered?.period} />} />
-    <ReportNotes report={report} />
     <ReportTables key={`${selection.mode}:${selection.period}`} report={report} />
+    <ReportNotes report={report} />
   </div>;
 }

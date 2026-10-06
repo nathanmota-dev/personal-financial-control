@@ -2,13 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusDotBadge } from "@/components/finance/status-dot-badge";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { formatCurrency, getTransactionTone, transactionTypeLabels } from "@/lib/finance-ui";
+import { formatCurrency, formatMonthLabel, getTransactionTone, transactionTypeLabels } from "@/lib/finance-ui";
 import type { TransactionType } from "@/lib/db/schema";
 import type { ReportCategoryProps } from "@/lib/interfaces/reports";
 
 export function ReportCategoryTable({ report }: ReportCategoryProps) {
   return <Card className="min-w-0 shadow-none">
-    <CardHeader><CardTitle><h2>Categorias e comparação</h2></CardTitle><CardDescription>Inclui categorias arquivadas e créditos negativos. Comparação com {report.previousPeriod}{report.partial ? " completo, enquanto o período selecionado é parcial" : ""}.</CardDescription></CardHeader>
+    <CardHeader><CardTitle><h2>Categorias e comparação</h2></CardTitle><CardDescription>Inclui categorias arquivadas e créditos negativos. Comparação com {report.previousPeriod.length === 7 ? formatMonthLabel(report.previousPeriod) : report.previousPeriod}{report.partial ? " completo, enquanto o período selecionado é parcial" : ""}.</CardDescription></CardHeader>
     <CardContent>{report.categories.length ? <Table>
       <TableHeader><TableRow><TableHead>Categoria</TableHead><TableHead>Tipo</TableHead><TableHead className="text-right">Selecionado</TableHead><TableHead className="text-right">Anterior</TableHead><TableHead className="text-right">Variação absoluta</TableHead></TableRow></TableHeader>
       <TableBody>{report.categories.map((row) => <TableRow key={row.id}>

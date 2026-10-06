@@ -10,6 +10,7 @@ export function revalidateFinanceViews() {
     "/dashboard",
     "/budgets",
     "/transactions",
+    "/reports",
     "/recurring",
     "/projected-balance",
     "/investments",
