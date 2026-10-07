@@ -1,7 +1,11 @@
 # Financial presentation privacy
 
-The finance layout supplies `FinancialPrivacyProvider` outside its Suspense
-boundary, so fallback content and onboarding share the same protection. Its device preference is
+The finance layout supplies `FinancialPrivacyProvider` inside its Suspense
+boundary, wrapping both the financial shell and onboarding. This lets the shell
+hydrate with the concealed server snapshot before the device preference updates
+its context, avoiding hydration mismatches and lost initial interactions. The
+Suspense fallback contains only a loading message and no financial content.
+Its device preference is
 stored under separate `personal-financial-control:privacy:personal` and
 `personal-financial-control:privacy:demo` keys. Only `hidden` or `visible` is stored.
 Server rendering and the first hydration render always conceal financial values;

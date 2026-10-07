@@ -30,8 +30,8 @@ it("conceals server-rendered values and input contents before hydration even wit
 
 it("conceals streamed fallback content before the financial shell is ready", () => {
   function PendingShell(): never { throw new Promise(() => {}); }
-  const html = renderToString(<FinancialPrivacyProvider demoMode><Suspense fallback={<Values />}><PendingShell /></Suspense></FinancialPrivacyProvider>);
-  expect(html).toContain("Valor oculto");
+  const html = renderToString(<Suspense fallback={<p>Carregando dados financeiros.</p>}><FinancialPrivacyProvider demoMode><PendingShell /></FinancialPrivacyProvider></Suspense>);
+  expect(html).toContain("Carregando dados financeiros.");
   expect(html).not.toMatch(/987,65|123 unidades|secret-chart/);
 });
 

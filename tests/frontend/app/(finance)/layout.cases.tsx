@@ -1,9 +1,41 @@
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
+import { lazy } from "react";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { renderUI } from "../../helpers";
 import Layout from "@/app/(finance)/layout";
 import { requirePageSession } from "@/lib/auth/server";
 import { getOnboarding } from "@/lib/server/onboarding";
+import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
+import { financialPrivacyKey } from "@/lib/financial-privacy";
+
+it.each([null, "visible", "hidden"])("hydrates a delayed financial shell before applying preference %s", async (preference) => {
+  if (preference) localStorage.setItem(financialPrivacyKey(true), preference);
+  const container = document.createElement("div");
+  container.innerHTML = renderToString(await Layout({ children: <FinancialPrivacyToggle /> }));
+  document.body.append(container);
+  expect(container.textContent).toContain("Mostrar valores");
+  let release!: () => void;
+  const ready = new Promise<void>(resolve => { release = resolve; });
+  const DeferredToggle = lazy(async () => {
+    await ready;
+    return { default: FinancialPrivacyToggle };
+  });
+  const client = await Layout({ children: <DeferredToggle /> });
+  const recovered = vi.fn();
+  const root = hydrateRoot(container, client, { onRecoverableError: recovered });
+  try {
+    await act(async () => {});
+    expect(container.textContent).toContain("Mostrar valores");
+    await act(async () => { release(); await ready; });
+    expect(recovered).not.toHaveBeenCalled();
+    expect(container.textContent).toContain(preference === "hidden" ? "Mostrar valores" : "Ocultar valores");
+  } finally {
+    await act(() => root.unmount());
+    container.remove();
+  }
+});
 it.each([
   { name: "Ana Lima", picture: "/ana.jpg" },
   { name: "", picture: 42 },

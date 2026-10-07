@@ -22,11 +22,13 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
     : null;
 
   return (
-    <FinancialPrivacyProvider key={String(demoMode)} demoMode={demoMode}><Suspense
+    <Suspense
       fallback={<div className="min-h-screen bg-surface text-content-strong" role="status">Carregando dados financeiros.</div>}
     >
-      <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
-      {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
-    </Suspense></FinancialPrivacyProvider>
+      <FinancialPrivacyProvider key={String(demoMode)} demoMode={demoMode}>
+        <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
+        {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
+      </FinancialPrivacyProvider>
+    </Suspense>
   );
 }
