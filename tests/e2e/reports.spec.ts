@@ -54,14 +54,14 @@ test("months are visible while secondary report requests are pending", async ({ 
   });
   await page.goto("/reports?mode=monthly&period=2026-07");
   await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
-  await expect.poll(() => [...requested].sort()).toEqual(["categories", "sources"]);
+  await expect.poll(() => [...requested].sort()).toEqual(["categories", "daily-expenses", "sources"]);
   await page.getByRole("tab", { name: "Origens dos totais", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Origens dos totais" })).toBeVisible();
   await page.getByRole("tab", { name: "Categorias", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("Carregando");
   release();
   await expect(page.getByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
-  await expect.poll(() => [...requested].sort()).toEqual(["categories", "sources"]);
+  await expect.poll(() => [...requested].sort()).toEqual(["categories", "daily-expenses", "sources"]);
 });
 
 test("monthly summary explains both months on demand and works by keyboard on mobile", async ({ page, request }) => {

@@ -19,7 +19,14 @@ const report = () => ({ ...buildReport({ mode: "monthly", period: "2026-07" }, "
 
 describe("reports interface", () => {
   beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn(async (url: string) => Response.json(url.includes("view=categories") ? { categories: [] } : { entries: [] })));
+    vi.stubGlobal("fetch", vi.fn(async (input: string) => {
+      if (input.includes("view=categories")) return Response.json({ categories: [] });
+      if (input.includes("view=daily-expenses")) {
+        const period = new URL(input, "http://localhost").searchParams.get("period")!;
+        return Response.json({ map: buildDailyExpenseMap(period, []) });
+      }
+      return Response.json({ entries: [] });
+    }));
   });
   it("loads URL filters after authentication and handles invalid filters explicitly", async () => {
     vi.mocked(getReportInitial).mockResolvedValueOnce(report());
@@ -93,20 +100,21 @@ describe("reports interface", () => {
     await user.click(screen.getByRole("tab", { name: "Mensal" }));
     expect(navigation.push).toHaveBeenCalledWith("/reports?mode=monthly&period=2026-08");
   });
-  it("renders months first and loads sources while categories are still pending", async () => {
+  it("renders months first and loads deferred views while categories are still pending", async () => {
     let resolveCategories!: (value: Response) => void;
     vi.mocked(fetch).mockImplementationOnce(() => new Promise((resolve) => { resolveCategories = resolve; }));
     const { user } = renderUI(<ReportTables report={report()} />);
     expect(screen.getByRole("heading", { name: "Meses do ano" })).toBeVisible();
-    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenCalledTimes(3);
     expect(fetch).toHaveBeenNthCalledWith(1, "/api/reports?mode=monthly&period=2026-07&view=categories", expect.anything());
+    expect(fetch).toHaveBeenNthCalledWith(2, "/api/reports?mode=monthly&period=2026-07&view=sources", expect.anything());
+    expect(fetch).toHaveBeenNthCalledWith(3, "/api/reports?mode=monthly&period=2026-07&view=daily-expenses", expect.anything());
     await user.click(screen.getByRole("tab", { name: "Origens dos totais" }));
     expect(await screen.findByRole("heading", { name: "Origens dos totais" })).toBeVisible();
     await user.click(screen.getByRole("tab", { name: "Categorias" }));
     expect(screen.getByRole("status")).toHaveTextContent("Carregando");
     await act(async () => resolveCategories(Response.json({ categories: [] })));
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
-    expect(fetch).toHaveBeenNthCalledWith(2, "/api/reports?mode=monthly&period=2026-07&view=sources", expect.anything());
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
     expect(await screen.findByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
   });
   it("shows request failures without losing months and allows retry", async () => {
