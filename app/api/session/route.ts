@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     if (request.headers.get("content-type")?.split(";")[0].trim() !== "application/json") throw new AuthError(415);
     const body = await request.json().catch(() => { throw new AuthError(400); });
     if (typeof body?.idToken !== "string" || !body.idToken || body.idToken.length > 20000) throw new AuthError(400);
-    const auth = adminAuth();
+    const auth = await adminAuth();
     const token = await authorizeClaims(await auth.verifyIdToken(body.idToken, true));
     const age = Date.now() / 1000 - token.auth_time;
     if (!Number.isFinite(age) || age < -30 || age > 300) throw new AuthError(401);

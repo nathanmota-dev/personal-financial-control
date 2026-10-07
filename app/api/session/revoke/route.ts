@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   if (denied) return denied;
   try {
     const user = await verifySession((await cookies()).get("session")?.value);
-    await adminAuth().revokeRefreshTokens(user.uid);
+    await (await adminAuth()).revokeRefreshTokens(user.uid);
     const response = NextResponse.json({ ok: true }, { headers: { "Cache-Control": "private, no-store" } });
     response.cookies.set("session", "", { httpOnly: true, sameSite: "lax", path: "/", secure: authConfig().secure, maxAge: 0 });
     return response;

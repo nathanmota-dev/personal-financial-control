@@ -1,6 +1,5 @@
 import { isDemoMode } from "@/lib/demo/mode";
-import { cert,getApps,initializeApp } from "firebase-admin/app";
-import { getAuth,type DecodedIdToken } from "firebase-admin/auth";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import { cookies,headers } from "next/headers";
 import { redirect } from "next/navigation";
 import "server-only";
@@ -10,9 +9,14 @@ import { isAuthorizedEmail } from "./users";
 export class AuthError extends Error {
   constructor(public status: number) { super(status === 403 ? "Acesso não permitido." : status === 503 ? "Autenticação indisponível." : "Entre novamente."); }
 }
-export function adminAuth() {
+export async function adminAuth() {
   try {
     const config = authConfig();
+    // Demo requests must not load the SDK or its runtime dependencies.
+    const [{ cert, getApps, initializeApp }, { getAuth }] = await Promise.all([
+      import("firebase-admin/app"),
+      import("firebase-admin/auth"),
+    ]);
     const app = getApps().find(app => app.name === "pfc-auth") ?? initializeApp({ credential: cert({ projectId: config.projectId, clientEmail: process.env.FIREBASE_CLIENT_EMAIL, privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n") }) }, "pfc-auth");
     return getAuth(app);
   } catch { throw new AuthError(503); }
@@ -27,7 +31,7 @@ export function firebaseError(error: unknown): AuthError {
   return new AuthError(["auth/id-token-expired", "auth/id-token-revoked", "auth/invalid-id-token", "auth/argument-error", "auth/session-cookie-expired", "auth/session-cookie-revoked", "auth/invalid-session-cookie", "auth/user-disabled", "auth/user-not-found"].includes(code || "") ? 401 : 503);
 }
 export async function verifySession(cookie?: string) {
-  const auth = adminAuth();
+  const auth = await adminAuth();
   if (!cookie) throw new AuthError(401);
   try { return await authorizeClaims(await auth.verifySessionCookie(cookie, true)); } catch (error) { throw firebaseError(error); }
 }
