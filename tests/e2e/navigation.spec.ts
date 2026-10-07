@@ -35,7 +35,7 @@ test("demo entry, month-aware navigation, search, sidebar and persisted theme", 
   await page
     .getByRole("button", { name: "Abrir preferências da conta" })
     .click();
-  await page.getByRole("button", { name: /Ativar tema/ }).click();
+  await page.getByRole("button", { name: "Escuro", exact: true }).click();
   const theme = await page.evaluate(() => localStorage.getItem("theme"));
   expect(["dark", "light"]).toContain(theme);
   await page.reload();

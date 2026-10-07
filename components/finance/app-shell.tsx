@@ -63,7 +63,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
                 )}
               </button>
             </div>
-            <div className="flex justify-center px-3 pb-4"><FinancialPrivacyToggle compact={collapsed} /></div>
+            {collapsed && <div className="mt-auto flex justify-center pb-5"><FinancialPrivacyToggle compact /></div>}
             {!collapsed && (
               <>
                 <SidebarNavigation />
