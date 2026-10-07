@@ -21,7 +21,8 @@ ChartContainer,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import { statusLabels } from "./labels";
@@ -37,6 +38,7 @@ export function ProjectedBalanceChart({
   daily,
   minimumReserveCents,
 }: ProjectedBalanceChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = useMemo<ProjectedBalanceChartPoint[]>(
     () =>
       daily.map((day) => ({

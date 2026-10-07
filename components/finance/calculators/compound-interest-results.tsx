@@ -1,3 +1,5 @@
+"use client";
+
 import { ChartLine,Coins,PiggyBank } from "lucide-react";
 
 import { CompoundInterestChart } from "@/components/finance/calculators/compound-interest-chart";
@@ -5,10 +7,11 @@ import { CompoundInterestResultMetric } from "@/components/finance/calculators/c
 import { CompoundInterestTable } from "@/components/finance/calculators/compound-interest-table";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CompoundInterestResultsProps } from "@/lib/interfaces/compound-interest";
 
 export function CompoundInterestResults({ simulation }: CompoundInterestResultsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <section aria-labelledby="simulation-result" className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-500">
       <div className="grid gap-4 md:grid-cols-3">

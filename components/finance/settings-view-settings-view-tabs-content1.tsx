@@ -7,14 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import {
-accountTypeLabels,
-formatCurrency
-} from "@/lib/finance-ui";
+import { accountTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { SettingsViewTabsContent1Props } from "@/lib/interfaces/render/settings-view-settings-view-tabs-content1";
 import { Pencil } from "lucide-react";
 
 export function SettingsViewTabsContent1({ accounts }: SettingsViewTabsContent1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <TabsContent value="accounts">
           <div className="grid gap-4 md:grid-cols-2">

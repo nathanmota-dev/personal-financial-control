@@ -1,3 +1,5 @@
+"use client";
+
 import {
 Table,
 TableBody,
@@ -6,10 +8,11 @@ TableHead,
 TableHeader,
 TableRow,
 } from "@/components/ui/table";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CompoundInterestTableProps } from "@/lib/interfaces/compound-interest";
 
 export function CompoundInterestTable({ points }: CompoundInterestTableProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <div className="max-h-[430px] overflow-auto rounded-2xl border border-border bg-muted/30">
       <Table>

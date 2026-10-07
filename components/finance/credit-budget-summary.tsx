@@ -1,6 +1,8 @@
+"use client";
+
 import { financePanelClassName } from "@/components/finance/finance-styles";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 export function CreditBudgetSummary({
@@ -18,6 +20,7 @@ export function CreditBudgetSummary({
   availableForInvoiceCents: number;
   invoiceTotalCents: number;
 }) {
+  const { formatCurrency } = useFinancialFormatter();
   const totalCommittedCents =
     nonCardExpenseCents + investmentContributionCents - investmentWithdrawalCents;
 

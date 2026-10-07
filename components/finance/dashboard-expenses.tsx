@@ -1,7 +1,10 @@
+"use client";
+
 import { Car, CreditCard, HeartPulse, House, ReceiptText, ShoppingBasket } from "lucide-react";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import type { DashboardExpenseListProps } from "@/lib/interfaces/dashboard";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 function expenseIcon(description: string) {
   const text = description.toLocaleLowerCase("pt-BR");
@@ -14,6 +17,7 @@ function expenseIcon(description: string) {
 }
 
 export function DashboardExpenses({ expenses }: DashboardExpenseListProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
       <section className="min-w-0 rounded-[20px] border border-border bg-card p-[23px] xl:min-h-[500px]">
         <h2 className="text-xl font-semibold leading-6">

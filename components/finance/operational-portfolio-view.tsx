@@ -14,7 +14,8 @@ import { Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle,DialogT
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from "@/components/ui/select";
-import { formatCurrency,investmentAssetClassLabels } from "@/lib/finance-ui";
+import { investmentAssetClassLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { AssetFormState,OperationalPortfolioViewProps } from "@/lib/interfaces/investment-operations";
 
 const initialForm: AssetFormState = { name: "", ticker: "", institutionName: "", assetClass: "equities", instrumentType: "stock", valuationMode: "market_quote", quoteSymbol: "" };
@@ -24,6 +25,7 @@ const supportedTypes = [
 ] as const;
 
 export function OperationalPortfolioView({ positions }: OperationalPortfolioViewProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [assetClass, setAssetClass] = useState("all");

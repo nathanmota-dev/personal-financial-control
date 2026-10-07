@@ -4,9 +4,10 @@ import { Cell, Pie, PieChart } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function DashboardCategoryDistribution({ distribution, size = "default" }: DashboardCategorySectionProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { chart, positiveTotalCents: total, netTotalCents } = distribution;
   if (size === "expanded") return <ExpandedCategoryDistribution distribution={distribution} />;
   return (

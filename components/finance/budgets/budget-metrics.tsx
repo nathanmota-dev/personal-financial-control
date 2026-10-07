@@ -1,8 +1,11 @@
+"use client";
+
 import { DashboardMetric } from "@/components/finance/dashboard-metric";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { BudgetsViewProps } from "@/lib/interfaces/budgets";
 
 export function BudgetMetrics({ overview }: BudgetsViewProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const limits = overview.rows.filter((row) => row.limit);
   const planned = limits.reduce((sum, row) => sum + row.limit!.amountCents, 0);
   const posted = overview.rows.reduce((sum, row) => sum + row.postedCents, 0);

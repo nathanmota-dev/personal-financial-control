@@ -7,6 +7,7 @@ PanelLeftClose,
 PanelLeftOpen,
 } from "lucide-react";
 
+import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import { UserControls } from "@/components/auth/user-controls";
 import { MobileNavigation } from "@/components/finance/mobile-navigation";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
@@ -57,6 +58,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
                 )}
               </button>
             </div>
+            <div className="flex justify-center px-3 pb-4"><FinancialPrivacyToggle compact={collapsed} /></div>
             {!collapsed && (
               <>
                 <SidebarNavigation />
@@ -78,6 +80,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
+              <FinancialPrivacyToggle compact />
               <UserControls user={user} demoMode={demoMode} />
               <MobileNavigation user={user} demoMode={demoMode} />
             </div>

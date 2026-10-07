@@ -1,4 +1,6 @@
 "use client";
+
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 import { AllocationDialogDialogFooter3 } from "./allocation-dialog-allocation-dialog-dialog-footer3";
 import { AllocationDialogDiv2 } from "./allocation-dialog-allocation-dialog-div2";
 import { AllocationDialogPortfolioField1 } from "./allocation-dialog-allocation-dialog-portfolio-field1";
@@ -6,7 +8,7 @@ import { AllocationDialogPortfolioField1 } from "./allocation-dialog-allocation-
 import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogHeader,
 DialogTitle
@@ -19,7 +21,7 @@ SelectTrigger,
 SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { AllocationDialogProps } from "@/lib/interfaces/investment-portfolio";
 
 export function AllocationDialog({
@@ -36,6 +38,7 @@ export function AllocationDialog({
   onSubmit,
   onDelete,
 }: AllocationDialogProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-border bg-card text-content-strong sm:max-w-xl">

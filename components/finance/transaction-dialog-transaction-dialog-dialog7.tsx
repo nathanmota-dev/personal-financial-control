@@ -1,11 +1,13 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { SetupCallout } from "@/components/finance/setup-dialogs";
 import { TransactionDialogDiv6 } from "@/components/finance/transaction-dialog-transaction-dialog-div6";
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,

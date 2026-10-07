@@ -2,7 +2,7 @@
 import { CreditCardChargeActions } from "@/components/finance/credit-card-charge-actions";
 import { Badge } from "@/components/ui/badge";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardTransactionRowProps } from "@/lib/interfaces/credit-card-view";
 import { cn } from "@/lib/utils";
 import { ArrowDownUp,MoreHorizontal,Tag } from "lucide-react";
@@ -13,6 +13,7 @@ export function CreditCardTransactionRow({
   month,
   entry,
 }: CreditCardTransactionRowProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const isAdjustment = entry.kind === "adjustment" || entry.amountCents < 0;
   const actionCharge = entry.chargeId && entry.totalAmountCents
     ? {

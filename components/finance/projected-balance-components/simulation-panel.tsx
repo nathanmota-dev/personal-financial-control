@@ -9,7 +9,8 @@ import { financeItemClassName } from "@/components/finance/finance-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import { ProjectionSimulationDialog } from "./projection-simulation-dialog";
@@ -22,6 +23,7 @@ export function ProjectionSimulationPanel({
   onRemoveSimulation,
   onClearSimulations,
 }: ProjectionSimulationPanelProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card className="rounded-xl border-border bg-card shadow-none">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

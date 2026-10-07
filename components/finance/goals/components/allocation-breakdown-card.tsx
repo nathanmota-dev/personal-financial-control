@@ -9,7 +9,7 @@ ChartContainer,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import { ALLOCATION_BREAKDOWN_CHART_CONFIG } from "../goals-constants";
@@ -18,6 +18,7 @@ import type { AllocationBreakdownCardProps } from "../goals-types";
 export function AllocationBreakdownCard({
   dashboard,
 }: AllocationBreakdownCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = dashboard.charts.allocationBreakdown.map((item) => ({
     ...item,
     amount: item.amountCents / 100,

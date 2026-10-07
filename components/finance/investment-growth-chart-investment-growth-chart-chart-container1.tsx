@@ -8,7 +8,8 @@ ChartLegendContent,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentGrowthChartChartContainer1Props } from "@/lib/interfaces/render/investment-growth-chart-investment-growth-chart-chart-container1";
 import { cn } from "@/lib/utils";
 import { formatAxisCurrency } from "@/lib/utils/components/investment-growth-chart";
@@ -21,6 +22,7 @@ YAxis,
 } from "recharts";
 
 export function InvestmentGrowthChartChartContainer1({ data }: InvestmentGrowthChartChartContainer1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <ChartContainer
         className={cn(financeChartSurfaceClassName, "h-[460px] w-full")}

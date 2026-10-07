@@ -16,7 +16,8 @@ SheetDescription,
 SheetHeader,
 SheetTitle,
 } from "@/components/ui/sheet";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
 
@@ -27,6 +28,7 @@ export function DayDetailSheet({
   onOpenChange,
   onRemoveSimulation,
 }: DayDetailSheetProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Sheet open={Boolean(day)} onOpenChange={onOpenChange}>
       <SheetContent className="w-full overflow-y-auto border-border bg-surface text-content-strong sm:max-w-xl">
@@ -105,6 +107,7 @@ export function DayDetailSheet({
 }
 
 function EventRow({ event, onRemoveSimulation }: EventRowProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const isPositive = event.netImpactCents >= 0;
   const accountName =
     typeof event.metadata?.accountName === "string"

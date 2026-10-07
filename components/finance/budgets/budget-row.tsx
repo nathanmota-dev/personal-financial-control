@@ -1,8 +1,10 @@
+"use client";
+
 import { Layers } from "lucide-react";
 import { financeIconClassName } from "@/components/finance/finance-styles";
 import { StatusDotBadge } from "@/components/finance/status-dot-badge";
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { BudgetRowProps } from "@/lib/interfaces/budgets";
 import { BudgetDialog } from "./budget-dialog";
 import { BudgetExpenses } from "./budget-expenses";
@@ -13,6 +15,7 @@ const tones = { below: "text-success", warning: "text-warning", reached: "text-d
 const progressTones = { below: "[&_[data-slot=progress-indicator]]:bg-brand", warning: "[&_[data-slot=progress-indicator]]:bg-warning", reached: "[&_[data-slot=progress-indicator]]:bg-danger" };
 
 export function BudgetCategoryRow({ row, month }: BudgetRowProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const values = [["Realizado", formatCurrency(row.postedCents)], ["Pendente", formatCurrency(row.pendingCents)], ["Comprometido", formatCurrency(row.committedCents)]];
   if (row.limit) values.push(["Limite", formatCurrency(row.limit.amountCents)], ["Saldo do limite", formatCurrency(row.remainingCents!)]);
   return <article className="space-y-4 py-5" aria-label={row.categoryName}>

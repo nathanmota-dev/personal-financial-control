@@ -17,10 +17,8 @@ import { TransactionFilters } from "@/components/finance/transaction-filters";
 import { TransactionSummaryCard } from "@/components/finance/transaction-summary-card";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
-import {
-formatCurrency,
-formatMonthLabel
-} from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
 
 export function TransactionsView({
@@ -30,6 +28,7 @@ export function TransactionsView({
   transfers,
   filters,
 }: TransactionsViewProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const totals = useMemo(
     () =>
       transactions.reduce(

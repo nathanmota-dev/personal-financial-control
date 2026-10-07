@@ -1,6 +1,9 @@
+"use client";
+
 import { ArrowDownLeft,ArrowUpRight,Check,TrendingUp } from "lucide-react";
 
-import { formatCurrency,transactionTypeLabels } from "@/lib/finance-ui";
+import { transactionTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { RecurringCalendarEventItemProps } from "@/lib/interfaces/recurring";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +28,7 @@ const eventIcon = {
 export function RecurringCalendarEventItem({
   event,
 }: RecurringCalendarEventItemProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const EventIcon = eventIcon[event.type];
 
   return (

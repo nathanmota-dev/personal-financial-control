@@ -1,3 +1,5 @@
+"use client";
+
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import {
 Table,
@@ -7,11 +9,13 @@ TableHead,
 TableHeader,
 TableRow,
 } from "@/components/ui/table";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { DailyProjectionTableDiv1Props } from "@/lib/interfaces/render/daily-projection-table-daily-projection-table-div1";
 import { cn } from "@/lib/utils";
 
 export function DailyProjectionTableDiv1({ daily, onSelectDay }: DailyProjectionTableDiv1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="hidden md:block">
             <Table>

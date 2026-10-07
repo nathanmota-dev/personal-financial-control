@@ -2,7 +2,7 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import type { DashboardEvolutionChartProps } from "@/lib/interfaces/dashboard";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 const series = [
   { key: "income", label: "Receitas", color: "var(--chart-1)" },
@@ -11,6 +11,7 @@ const series = [
   { key: "net", label: "Saldo", color: "var(--chart-neutral)" },
 ];
 export function DashboardEvolutionChart({ evolution }: DashboardEvolutionChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (<>
         <div className="mt-[18px] grid grid-cols-2 gap-3 sm:grid-cols-4">
           {series.map((item) => (

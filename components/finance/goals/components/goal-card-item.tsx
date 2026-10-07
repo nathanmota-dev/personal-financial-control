@@ -9,7 +9,7 @@ import { GoalCardItemDiv1 } from "./goal-card-item-goal-card-item-div1";
 
 import { Card,CardContent,CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 import { Button } from "@/components/ui/button";
 import type { GoalCardItemProps } from "../goals-types";
@@ -24,6 +24,7 @@ export function GoalCardItem({
   onArchive,
   canContribute,
 }: GoalCardItemProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card
       className="h-full min-w-0 gap-5"

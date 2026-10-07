@@ -8,13 +8,15 @@ ChartLegendContent,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentContributionChartChartContainer1Props } from "@/lib/interfaces/render/investment-contribution-chart-investment-contribution-chart-chart-container1";
 import { cn } from "@/lib/utils";
 import { compactCurrencyFormatter } from "@/lib/utils/components/investment-contribution-chart";
 import { Area,Bar,CartesianGrid,ComposedChart,XAxis,YAxis } from "recharts";
 
 export function InvestmentContributionChartChartContainer1({ data }: InvestmentContributionChartChartContainer1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <ChartContainer
             className={cn(financeChartSurfaceClassName, "h-[330px] w-full")}

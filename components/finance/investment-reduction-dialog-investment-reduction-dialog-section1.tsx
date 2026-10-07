@@ -2,13 +2,14 @@
 
 import { MoneyInput } from "@/components/finance/money-input";
 import { Label } from "@/components/ui/label";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentReductionDialogSection1Props } from "@/lib/interfaces/render/investment-reduction-dialog-investment-reduction-dialog-section1";
 import { cn } from "@/lib/utils";
 import { parseInputCents } from "@/lib/utils/components/investment-reduction-dialog";
 import { Check,Layers3 } from "lucide-react";
 
 export function InvestmentReductionDialogSection1({ group, amounts, changeAmount }: InvestmentReductionDialogSection1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <section key={group.label} className="space-y-2">
                 <div className="flex items-center gap-2 px-1">

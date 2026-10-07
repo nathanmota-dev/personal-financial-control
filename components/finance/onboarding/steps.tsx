@@ -1,13 +1,15 @@
 "use client";
 
+import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
 import { CreditCard, LayoutDashboard, Monitor, Moon, Sun, Wallet } from "lucide-react";
 import { useTheme } from "next-themes";
 import { ChoiceGroup, Onboarding, TipsList } from "@/components/ui/onboarding";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { OnboardingStepsProps } from "@/lib/interfaces/onboarding";
 import { OnboardingAccountForm } from "./account-form";
 
 export function OnboardingSteps({ name, accounts, disabled, onSaved, onBusyChange }: OnboardingStepsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { theme, setTheme } = useTheme();
   const bankAccounts = accounts.filter(account => account.type !== "credit" && account.type !== "investment");
   const cards = accounts.filter(account => account.type === "credit");
@@ -36,7 +38,7 @@ export function OnboardingSteps({ name, accounts, disabled, onSaved, onBusyChang
       { step: 4, credit: true, title: "Seus cartões", description: "Informe os dias da fatura para acompanhar cada cartão.", items: cards }].map(({ step, credit, title, description, items }) =>
       <Onboarding.Step key={step} step={step} className="space-y-5">
         <Onboarding.Header title={title} description={description} />
-        <OnboardingAccountForm credit={credit} onSaved={onSaved} onBusyChange={onBusyChange} disabled={disabled} />
+        <FinancialPrivacyForm><OnboardingAccountForm credit={credit} onSaved={onSaved} onBusyChange={onBusyChange} disabled={disabled} /></FinancialPrivacyForm>
         <div aria-live="polite" className="space-y-2">
           <p className="text-sm font-medium">{credit ? "Cartões" : "Contas"} cadastrados ({items.length})</p>
           {items.length ? <ul className="divide-y rounded-lg border px-3">{items.map(account => <li key={account.id} className="flex justify-between gap-3 py-3 text-sm">

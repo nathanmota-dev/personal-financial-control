@@ -16,7 +16,7 @@ ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type {
 CreditCardTimelineChartProps,
 } from "@/lib/interfaces/credit-card-view";
@@ -30,6 +30,7 @@ const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 export function CreditCardTimelineChart({ points }: CreditCardTimelineChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = useMemo(
     () => points.map((point) => ({ month: point.month, amount: point.totalCents / 100 })),
     [points]

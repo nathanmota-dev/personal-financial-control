@@ -1,3 +1,6 @@
+"use client";
+
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import type { MetricCardProps } from "@/lib/interfaces/dashboard";
 
@@ -6,6 +9,7 @@ export function DashboardMetric({
   value,
   comparison,
 }: MetricCardProps) {
+  const { protect } = useFinancialFormatter();
   const Icon = comparison.tone === "neutral" && comparison.description.startsWith("Sem movimentações")
     ? Minus : comparison.direction === "up" ? TrendingUp : comparison.direction === "down" ? TrendingDown : Minus;
   const accent = comparison.tone === "positive" ? "text-success" : comparison.tone === "negative" ? "text-danger" : "text-content-subtle";
@@ -15,13 +19,13 @@ export function DashboardMetric({
         {label}
       </p>
       <span className={`absolute top-[23px] right-[18px] ${accent}`}>
-        <Icon className="size-[19px]" aria-label={comparison.description} />
+        <Icon className="size-[19px]" aria-label={protect(comparison.description)} />
       </span>
       <p className="absolute top-[50px] left-[18px] right-2 whitespace-nowrap text-[clamp(20px,1.875vw,32px)] leading-[34px] font-[650] tracking-[-0.8px] xl:text-[27px]">
         {value}
       </p>
       <p className="mt-auto text-[11px] leading-[15px] text-content-subtle">
-        {comparison.description}
+        {protect(comparison.description)}
       </p>
     </article>
   );

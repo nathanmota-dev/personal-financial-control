@@ -1,9 +1,11 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,
@@ -11,7 +13,7 @@ DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 import type { AllocationDialogProps } from "../goals-types";
 import { LabeledInput } from "./labeled-input";
@@ -25,6 +27,7 @@ export function AllocationDialog({
   onOpenChange,
   onSubmit,
 }: AllocationDialogProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const isRelease = state?.type === "manual_release";
 
   return (

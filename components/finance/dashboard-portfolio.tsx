@@ -1,7 +1,10 @@
+"use client";
+
 import type { DashboardPortfolioProps } from "@/lib/interfaces/dashboard";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function DashboardPortfolio({ investmentOverview: overview }: DashboardPortfolioProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[238px]">
       <h2 className="text-lg font-semibold">Carteira consolidada</h2>

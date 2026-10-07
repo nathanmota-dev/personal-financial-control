@@ -16,7 +16,8 @@ ChartContainer,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import {
@@ -26,6 +27,7 @@ MONTHLY_EVOLUTION_CHART_CONFIG,
 import type { MonthlyEvolutionCardProps } from "../goals-types";
 
 export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = dashboard.charts.monthlyEvolution.map((point) => ({
     month: point.month,
     allocated: point.monthlyAllocatedCents / 100,

@@ -10,7 +10,7 @@ import { financePanelClassName } from "@/components/finance/finance-styles";
 import { PurposeCard } from "@/components/finance/investment-portfolio/purpose-card";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { PurposeCardsProps } from "@/lib/interfaces/investment-portfolio";
 
 export function PurposeCards({
@@ -20,6 +20,7 @@ export function PurposeCards({
   onAllocate,
   onArchive,
 }: PurposeCardsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card className={financePanelClassName + " h-full"}>
       <CardHeader className="flex flex-row items-start justify-between gap-4">

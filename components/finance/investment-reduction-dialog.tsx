@@ -1,4 +1,6 @@
 "use client";
+
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 import { buildInitialAmounts,groupSources,parseInputCents } from "@/lib/utils/components/investment-reduction-dialog";
 import { InvestmentReductionDialogDiv2 } from "./investment-reduction-dialog-investment-reduction-dialog-div2";
 
@@ -8,7 +10,7 @@ import { useMemo,useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,

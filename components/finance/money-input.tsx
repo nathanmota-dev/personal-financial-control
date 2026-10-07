@@ -1,4 +1,5 @@
 "use client";
+import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
 import { Input } from "@/components/ui/input";
 import { formatMoneyInput } from "@/lib/finance-ui";
 import type { MoneyInputProps } from "@/lib/interfaces/finance-fields";
@@ -24,7 +25,7 @@ export function MoneyInput({
     onValueChange?.(next);
   }
   return (
-    <Input
+    <FinancialPrivacyForm><Input
       {...props}
       type="text"
       inputMode="decimal"
@@ -51,6 +52,6 @@ export function MoneyInput({
         setter?.call(input, next);
         input.dispatchEvent(new Event("input", { bubbles: true }));
       }}
-    />
+    /></FinancialPrivacyForm>
   );
 }

@@ -1,9 +1,13 @@
+"use client";
+
 import { SummaryEvidence } from "@/components/finance/reports/summary-evidence";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { MonthlyInsightProps } from "@/lib/interfaces/monthly-retrospective";
 
 export function MonthlyInsight({ insight, summary }: MonthlyInsightProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const percentage = insight.percentage === null ? "" : ` (${Math.abs(insight.percentage).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%)`;
   const entries = [...summary.previousEntries, ...summary.entries].filter((entry) => entry.type === "expense" && `expense:${entry.categoryId}` === insight.id);
   return <li className="min-w-0"><Card className="shadow-none">

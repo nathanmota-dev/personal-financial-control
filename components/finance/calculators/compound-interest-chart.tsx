@@ -3,7 +3,7 @@
 import { CartesianGrid,Line,LineChart,XAxis,YAxis } from "recharts";
 
 import { ChartContainer,ChartTooltip,ChartTooltipContent } from "@/components/ui/chart";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CompoundInterestChartProps } from "@/lib/interfaces/compound-interest";
 
 function compactCurrency(cents: number) {
@@ -16,6 +16,7 @@ function compactCurrency(cents: number) {
 }
 
 export function CompoundInterestChart({ points }: CompoundInterestChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <ChartContainer
       className="h-[360px] w-full rounded-xl bg-[var(--chart-surface)] p-2 md:h-[430px]"

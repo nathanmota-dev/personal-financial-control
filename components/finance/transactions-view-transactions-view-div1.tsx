@@ -13,18 +13,13 @@ TableHead,
 TableHeader,
 TableRow,
 } from "@/components/ui/table";
-import {
-formatCurrency,
-formatDateLabel,
-getStatusTone,
-getTransactionTone,
-transactionStatusLabels,
-transactionTypeLabels
-} from "@/lib/finance-ui";
+import { formatDateLabel, getStatusTone, getTransactionTone, transactionStatusLabels, transactionTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewDiv1Props } from "@/lib/interfaces/render/transactions-view-transactions-view-div1";
 import { Pencil } from "lucide-react";
 
 export function TransactionsViewDiv1({ transactions, accounts, categories, filters, afterLastCategorization }: TransactionsViewDiv1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="hidden md:block">
                     <Table>

@@ -50,6 +50,7 @@ test("dashboard shows balances and updates confirmed income and uncategorized ex
 test("dashboard changes competence while keeping the current consolidated portfolio", async ({ page }) => {
   await page.goto("/dashboard?month=2026-07");
   const portfolio = page.locator("section").filter({ has: page.getByRole("heading", { name: "Carteira consolidada" }) });
+  await expect(portfolio).toContainText(/R\$\s*\d/);
   const currentPortfolio = await portfolio.innerText();
   await expect(page.getByText("Fatura de julho de 2026", { exact: false })).toBeVisible();
   await expect(page.getByRole("article", { name: "Receitas" })).toContainText("em relação ao mês anterior");
@@ -65,12 +66,14 @@ test("dashboard changes competence while keeping the current consolidated portfo
 test("wide dashboard fits the metrics and first chart row without scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1000 });
   await page.goto("/dashboard?month=2026-06");
+  await expect(page.getByRole("button", { name: "Ocultar valores", exact: true })).toBeVisible();
   for (const name of ["Evolução mensal", "Gastos por categoria", "Distribuição das despesas"]) {
     const card = page.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
     await expect(card).toBeVisible();
-    const bounds = await card.boundingBox();
-    expect(bounds!.y).toBeGreaterThanOrEqual(0);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(1000);
+    await expect.poll(async () => {
+      const bounds = await card.boundingBox();
+      return bounds !== null && bounds.y >= 0 && bounds.y + bounds.height <= 1000;
+    }).toBe(true);
   }
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await page.screenshot({ path: "reports/dashboard-wide.png" });

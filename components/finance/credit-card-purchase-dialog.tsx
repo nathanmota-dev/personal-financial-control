@@ -1,5 +1,7 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import type { CreditCardPurchaseDialogProps } from "@/lib/interfaces/finance-fields";
 import { Pencil,Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -14,7 +16,7 @@ updateCreditCardChargeAction,
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogHeader,
 DialogTitle,

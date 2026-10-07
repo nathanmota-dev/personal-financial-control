@@ -1,12 +1,13 @@
 "use client";
 
 import { InvestmentReductionDialogSection1 } from "@/components/finance/investment-reduction-dialog-investment-reduction-dialog-section1";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentReductionDialogDiv2Props } from "@/lib/interfaces/render/investment-reduction-dialog-investment-reduction-dialog-div2";
 import { cn } from "@/lib/utils";
 import { CircleDollarSign,ShieldAlert } from "lucide-react";
 
 export function InvestmentReductionDialogDiv2({ amountCents, selectedCents, groupedSources, amounts, changeAmount, isClosed, remainingCents, footerNote }: InvestmentReductionDialogDiv2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="grid min-h-0 gap-4 overflow-y-auto pr-1">
           <div className="grid gap-3 rounded-xl border border-brand/15 bg-card p-4 sm:grid-cols-[1fr_auto] sm:items-center">

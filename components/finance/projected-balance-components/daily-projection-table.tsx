@@ -1,3 +1,5 @@
+"use client";
+
 import type {
 DailyProjectionTableProps,
 MobileDayMetricProps,
@@ -5,11 +7,13 @@ MobileDayMetricProps,
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 import { DailyProjectionTableDiv1 } from "./daily-projection-table-daily-projection-table-div1";
 
 export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card className="rounded-xl border-border bg-card">
         <CardHeader>

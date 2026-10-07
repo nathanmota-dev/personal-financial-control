@@ -1,3 +1,5 @@
+"use client";
+
 import {
 Banknote,
 Layers3,
@@ -6,10 +8,12 @@ Tags,
 } from "lucide-react";
 
 import { SummaryMetric } from "@/components/finance/investment-portfolio/summary-metric";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { PortfolioSummaryProps } from "@/lib/interfaces/investment-portfolio";
 
 export function PortfolioSummary({ dashboard }: PortfolioSummaryProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const globalIsConfigured = dashboard.globalBalanceCents !== null;
   const updatedDate =
     dashboard.investmentProjection?.asOfDate ?? dashboard.lastValueAsOf;

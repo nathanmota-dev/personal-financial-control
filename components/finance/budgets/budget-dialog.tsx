@@ -1,9 +1,11 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { useState } from "react";
 import { Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog,  DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import type { BudgetDialogProps } from "@/lib/interfaces/budgets";
 import { BudgetForm } from "./budget-form";

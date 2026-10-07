@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { MonthPicker } from "@/components/ui/monthpicker";
 import { Popover,PopoverContent,PopoverTrigger } from "@/components/ui/popover";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentsViewCard1Props } from "@/lib/interfaces/render/investments-view-investments-view-card1";
 import { cn } from "@/lib/utils";
 import { SIMULATION_MONTH_LABELS,formatSimulationMonth } from "@/lib/utils/components/investments-view";
 import { CalendarDays } from "lucide-react";
 
 export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPickerOpen, projection, selectedSimulationDate, applySimulation, minSimulationMonth, maxSimulationMonth, simulatedMonths, simulatedValue }: InvestmentsViewCard1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <Card className={cn(financePanelClassName, "h-full")}>
           <CardHeader>

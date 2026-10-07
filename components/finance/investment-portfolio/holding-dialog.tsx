@@ -1,9 +1,11 @@
 "use client";
+
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 import { HoldingDialogForm1 } from "./holding-dialog-holding-dialog-form1";
 
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogHeader,
 DialogTitle
