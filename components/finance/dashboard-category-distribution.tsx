@@ -6,8 +6,10 @@ import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
+const distributionChartClassName = "aspect-square h-[200px] w-[200px] min-[100.0625rem]:h-[180px] min-[100.0625rem]:w-[180px] shrink-0";
+
 export function DashboardCategoryDistribution({ distribution, size = "default" }: DashboardCategorySectionProps) {
-  const { formatCurrency } = useFinancialFormatter();
+  const { formatCurrency, hidden } = useFinancialFormatter();
   const { chart, positiveTotalCents: total, netTotalCents } = distribution;
   if (size === "expanded") return <ExpandedCategoryDistribution distribution={distribution} />;
   return (
@@ -16,14 +18,18 @@ export function DashboardCategoryDistribution({ distribution, size = "default" }
       <p className="mt-1 text-xs text-content-muted">Percentuais sobre categorias com gasto líquido positivo</p>
       <div className="mt-[22px] min-[100.0625rem]:mt-3 flex flex-wrap items-center gap-5 sm:flex-nowrap">
         <div className="relative shrink-0">
-          <ChartContainer className="aspect-square h-[200px] w-[200px] min-[100.0625rem]:h-[180px] min-[100.0625rem]:w-[180px] shrink-0" config={{ amountCents: { label: "Total gasto" } }}>
-            <PieChart>
-              <ChartTooltip content={<ChartTooltipContent nameKey="categoryName" formatter={(value, name) => <><span>{name}</span><strong>{formatCurrency(Number(value))}</strong></>} />} />
-              <Pie isAnimationActive={false} data={total ? chart : [{ categoryName: "Sem despesas", amountCents: 1 }]} dataKey="amountCents" nameKey="categoryName" innerRadius="57%" outerRadius="89%" paddingAngle={total ? 3 : 0} stroke="none" startAngle={90} endAngle={-270}>
-                {(total ? chart : [null]).map((item, index) => <Cell key={item?.categoryId ?? "empty"} fill={total ? colors[index] : "var(--chart-rail)"} />)}
-              </Pie>
-            </PieChart>
-          </ChartContainer>
+          {hidden ? (
+            <div data-slot="chart" className={distributionChartClassName} />
+          ) : (
+            <ChartContainer className={distributionChartClassName} config={{ amountCents: { label: "Total gasto" } }}>
+              <PieChart>
+                <ChartTooltip content={<ChartTooltipContent nameKey="categoryName" formatter={(value, name) => <><span>{name}</span><strong>{formatCurrency(Number(value))}</strong></>} />} />
+                <Pie isAnimationActive={false} data={total ? chart : [{ categoryName: "Sem despesas", amountCents: 1 }]} dataKey="amountCents" nameKey="categoryName" innerRadius="57%" outerRadius="89%" paddingAngle={total ? 3 : 0} stroke="none" startAngle={90} endAngle={-270}>
+                  {(total ? chart : [null]).map((item, index) => <Cell key={item?.categoryId ?? "empty"} fill={total ? colors[index] : "var(--chart-rail)"} />)}
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          )}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2">
             <span className="text-[11px] text-content-muted">Total líquido</span>
             <span className="text-[16px] font-[650]">{formatCurrency(netTotalCents)}</span>

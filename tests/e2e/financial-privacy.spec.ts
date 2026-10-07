@@ -53,6 +53,12 @@ test("global privacy covers every financial domain, details, charts and reload w
       await expect(page.locator(".recharts-surface")).toHaveCount(0);
       await expect(page.locator('[data-slot="chart"]').first().getByRole("img", { name: "Valor oculto" })).toBeVisible();
     }
+    if (route.startsWith("/dashboard")) {
+      const categoryDistribution = page
+        .getByRole("heading", { name: "Distribuição das despesas" })
+        .locator("xpath=ancestor::section[1]");
+      await expect(categoryDistribution.getByRole("img", { name: "Valor oculto" })).toHaveCount(1);
+    }
   }
   await expect(page.getByRole("button", { name: "Exportar resumo" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Mostrar valores para exportar" })).toBeVisible();
