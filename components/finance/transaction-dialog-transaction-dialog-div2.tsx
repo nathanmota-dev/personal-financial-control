@@ -3,13 +3,12 @@
 import { FormSelect } from "@/components/finance/form-select";
 import { Label } from "@/components/ui/label";
 import { SelectItem } from "@/components/ui/select";
-import {
-formatCurrency
-} from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionDialogDiv2Props } from "@/lib/interfaces/render/transaction-dialog-transaction-dialog-div2";
 import { labelClassName,selectClassName } from "@/lib/utils/components/transaction-dialog";
 
 export function TransactionDialogDiv2({ formId, isInvestmentExpense, selectedAccountId, setSelectedAccountId, filteredAccounts }: TransactionDialogDiv2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="space-y-2">
                   <Label

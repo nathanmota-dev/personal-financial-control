@@ -3,7 +3,7 @@
 import {
 SummaryCard
 } from "@/components/finance/goals/components";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { GoalsViewSection1Props } from "@/lib/interfaces/render/goals-view-goals-view-section1";
 import {
 CalendarClock,
@@ -14,6 +14,7 @@ Target
 } from "lucide-react";
 
 export function GoalsViewSection1({ dashboard }: GoalsViewSection1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <SummaryCard

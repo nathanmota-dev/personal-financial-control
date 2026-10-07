@@ -4,12 +4,8 @@ import { HoldingActions } from "@/components/finance/investment-portfolio/holdin
 import { HoldingMetric } from "@/components/finance/investment-portfolio/holding-metric";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-formatCurrency,
-formatDateLabel,
-investmentAssetClassLabels,
-investmentInstrumentTypeLabels,
-} from "@/lib/finance-ui";
+import { formatDateLabel, investmentAssetClassLabels, investmentInstrumentTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { HoldingsTableDiv2Props } from "@/lib/interfaces/render/holdings-table-holdings-table-div2";
 import {
 CalendarDays,
@@ -18,6 +14,7 @@ Plus,
 } from "lucide-react";
 
 export function HoldingsTableDiv2({ dashboard, onEdit, onAllocate, onArchive, onEditAllocation, onCreate }: HoldingsTableDiv2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="space-y-3 px-4 pb-4 md:hidden">
           {dashboard.holdings.length ? (

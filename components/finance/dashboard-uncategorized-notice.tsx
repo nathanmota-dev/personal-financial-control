@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { CircleAlert } from "lucide-react";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { DashboardUncategorizedNoticeProps } from "@/lib/interfaces/dashboard";
 
 export function DashboardUncategorizedNotice({ amountCents, month }: DashboardUncategorizedNoticeProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (<>
       {amountCents > 0 ? (
         <section className="rounded-[20px] border border-warning/20 bg-warning-soft">

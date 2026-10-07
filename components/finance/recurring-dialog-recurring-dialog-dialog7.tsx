@@ -1,11 +1,13 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { RecurringDialogDiv6 } from "@/components/finance/recurring-dialog-recurring-dialog-div6";
 import { SetupCallout } from "@/components/finance/setup-dialogs";
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,

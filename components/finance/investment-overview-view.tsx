@@ -1,3 +1,5 @@
+"use client";
+
 import { InvestmentOverviewMetric } from "@/components/finance/investment-overview-metric";
 import { ArrowRight,Landmark,PiggyBank,TrendingDown,TrendingUp,WalletCards } from "lucide-react";
 import Link from "next/link";
@@ -5,10 +7,12 @@ import Link from "next/link";
 import { financePanelClassName } from "@/components/finance/finance-styles";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
-import { formatCurrency,investmentAssetClassLabels } from "@/lib/finance-ui";
+import { investmentAssetClassLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentOverviewViewProps } from "@/lib/interfaces/investment-operations";
 
 export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const ResultIcon = overview.resultCents >= 0 ? TrendingUp : TrendingDown;
   return <div className="space-y-6">
     <PageHeader eyebrow="Investimentos" title="Investimentos" description="Reserva de emergência e carteira de longo prazo em uma leitura consolidada, com custo conhecido e resultado operacional." actions={<Button asChild><Link href="/investments/portfolio">Abrir carteira <ArrowRight className="size-4" /></Link></Button>} />

@@ -1,5 +1,8 @@
+"use client";
+
 import type { ProjectionCalendarDayItemProps } from "@/app/interfaces/projected-balance";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import { statusLabels } from "./labels";
@@ -23,6 +26,7 @@ export function ProjectedBalanceCalendarDay({
   calendarDay,
   onSelectDay,
 }: ProjectionCalendarDayItemProps) {
+  const { formatCurrency } = useFinancialFormatter();
   if (!calendarDay.day) {
     return (
       <li className="h-full min-h-24 list-none">

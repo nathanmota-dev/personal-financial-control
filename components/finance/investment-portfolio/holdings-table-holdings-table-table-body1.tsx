@@ -7,18 +7,15 @@ TableBody,
 TableCell,
 TableRow
 } from "@/components/ui/table";
-import {
-formatCurrency,
-formatDateLabel,
-investmentAssetClassLabels,
-investmentInstrumentTypeLabels,
-} from "@/lib/finance-ui";
+import { formatDateLabel, investmentAssetClassLabels, investmentInstrumentTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { HoldingsTableTableBody1Props } from "@/lib/interfaces/render/holdings-table-holdings-table-table-body1";
 import {
 Coins
 } from "lucide-react";
 
 export function HoldingsTableTableBody1({ dashboard, onEditAllocation, onEdit, onAllocate, onArchive }: HoldingsTableTableBody1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <TableBody>
               {dashboard.holdings.length ? (

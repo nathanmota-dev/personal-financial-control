@@ -1,8 +1,11 @@
+"use client";
+
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function ExpandedCategoryDistribution({ distribution }: DashboardCategorySectionProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { chart, positiveTotalCents: total, netTotalCents } = distribution;
   const radius = 112;
   const circumference = 2 * Math.PI * radius;

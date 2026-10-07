@@ -5,17 +5,12 @@ import { DeleteTransactionDialog } from "@/components/finance/transaction-action
 import { TransactionDialog } from "@/components/finance/transaction-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-formatCurrency,
-formatDateLabel,
-getStatusTone,
-getTransactionTone,
-transactionStatusLabels,
-transactionTypeLabels
-} from "@/lib/finance-ui";
+import { formatDateLabel, getStatusTone, getTransactionTone, transactionStatusLabels, transactionTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewDiv2Props } from "@/lib/interfaces/render/transactions-view-transactions-view-div2";
 
 export function TransactionsViewDiv2({ transactions, accounts, categories, filters, afterLastCategorization }: TransactionsViewDiv2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="grid gap-3 md:hidden">
                     {transactions.map((transaction) => (

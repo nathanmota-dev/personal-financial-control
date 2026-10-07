@@ -1,9 +1,13 @@
+"use client";
+
 import { financePanelClassName } from "@/components/finance/finance-styles";
 import { ReserveFigure } from "@/components/finance/reserve-figure";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { EmergencyReserveCompositionProps } from "@/lib/interfaces/investment-reserve";
 
 export function EmergencyReserveComposition({ composition }: EmergencyReserveCompositionProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return <section className={`${financePanelClassName} overflow-hidden`}>
     <div className="grid gap-4 border-b border-border p-5 sm:grid-cols-3"><ReserveFigure label="Saldo oficial" value={composition.officialBalanceCents} /><ReserveFigure label="Composição cadastrada" value={composition.registeredCents} /><ReserveFigure label="Diferença de conciliação" value={composition.differenceCents} /></div>
     <div className="p-5"><h2 className="font-semibold text-content-strong">Composição líquida da reserva</h2><p className="mt-1 text-sm text-content-muted">Estes ativos explicam o saldo oficial; não são somados novamente ao patrimônio.</p></div>

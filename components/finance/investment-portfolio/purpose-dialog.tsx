@@ -1,11 +1,13 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
 import { MoneyInput } from "@/components/finance/money-input";
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,

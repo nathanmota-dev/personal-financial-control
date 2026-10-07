@@ -1,7 +1,11 @@
+"use client";
+
 import type { DashboardBalancesProps } from "@/lib/interfaces/dashboard";
-import { accountTypeLabels, formatCurrency } from "@/lib/finance-ui";
+import { accountTypeLabels } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function DashboardBalances({ accounts }: DashboardBalancesProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
         <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[238px]">
           <h2 className="text-lg font-semibold">Saldos por conta</h2>

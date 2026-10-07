@@ -1,11 +1,13 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { LabeledInput } from "@/components/finance/goals/components/labeled-input";
 import { SelectField } from "@/components/finance/goals/components/select-field";
 import { InlineWarning } from "@/components/finance/inline-warning";
 import { Button } from "@/components/ui/button";
 import {
-DialogContent,
+
 DialogDescription,
 DialogFooter,
 DialogHeader,

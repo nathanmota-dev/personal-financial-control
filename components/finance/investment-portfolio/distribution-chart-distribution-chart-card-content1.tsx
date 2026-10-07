@@ -7,13 +7,14 @@ ChartContainer,
 ChartTooltip,
 ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { DistributionChartCardContent1Props } from "@/lib/interfaces/render/distribution-chart-distribution-chart-card-content1";
 import { cn } from "@/lib/utils";
 import { DISTRIBUTION_CHART_CONFIG } from "@/lib/utils/components/distribution-chart";
 import { Cell,Pie,PieChart } from "recharts";
 
 export function DistributionChartCardContent1({ data, dashboard }: DistributionChartCardContent1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <CardContent className="space-y-4">
         {data.length ? (

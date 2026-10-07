@@ -1,10 +1,13 @@
+"use client";
+
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusDotBadge } from "@/components/finance/status-dot-badge";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { ReportInitialProps } from "@/lib/interfaces/reports";
 
 export function ReportNotes({ report }: ReportInitialProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return <Card className="shadow-none">
     <CardHeader><CardTitle><h2>Leitura do relatório</h2></CardTitle><CardDescription>Competência, pendências e critérios de cálculo</CardDescription></CardHeader>
     <CardContent className="space-y-4">

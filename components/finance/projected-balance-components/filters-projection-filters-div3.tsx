@@ -1,5 +1,6 @@
 "use client";
 
+import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
 import { MoneyInput } from "@/components/finance/money-input";
 import { FilterField } from "@/components/finance/projected-balance-components/filter-field";
 import { ProjectionFiltersFilterField1 } from "@/components/finance/projected-balance-components/filters-projection-filters-filter-field1";
@@ -62,7 +63,7 @@ export function ProjectionFiltersDiv3({ filters, updateFilters, isStartDatePicke
 
           <ProjectionFiltersFilterField2 filters={filters} updateFilters={updateFilters} accounts={accounts} />
 
-          <FilterField label="Reserva mínima">
+          <FilterField label="Reserva mínima"><FinancialPrivacyForm>
             <div className="flex gap-2">
               <MoneyInput
                 inputMode="decimal"
@@ -88,7 +89,7 @@ export function ProjectionFiltersDiv3({ filters, updateFilters, isStartDatePicke
                 <Check className="size-4" />
               </Button>
             </div>
-          </FilterField>
+          </FinancialPrivacyForm></FilterField>
         </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+
 import { Plus } from "lucide-react";
 import { useId,useState,type FormEvent } from "react";
 import { ProjectionSimulationDialogForm1 } from "./projection-simulation-dialog-projection-simulation-dialog-form1";
@@ -8,7 +10,7 @@ import type { ProjectionSimulationDialogProps } from "@/app/interfaces/projected
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
+
 DialogDescription,
 DialogHeader,
 DialogTitle,

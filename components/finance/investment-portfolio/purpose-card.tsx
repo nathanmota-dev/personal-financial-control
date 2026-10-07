@@ -3,7 +3,8 @@
 import { PurposeCardDiv1 } from "./purpose-card-purpose-card-div1";
 
 import { Progress } from "@/components/ui/progress";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { PurposeCardProps } from "@/lib/interfaces/investment-portfolio";
 
 export function PurposeCard({
@@ -13,6 +14,7 @@ export function PurposeCard({
   onAllocate,
   onArchive,
 }: PurposeCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const percentage = purpose.percentage.toFixed(1).replace(".", ",");
   const progress = purpose.progressPercentage;
 

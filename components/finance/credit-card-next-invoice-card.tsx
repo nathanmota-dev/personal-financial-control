@@ -13,7 +13,8 @@ import {
 Dialog,
 DialogTrigger
 } from "@/components/ui/dialog";
-import { extractErrorMessage,formatCurrency } from "@/lib/finance-ui";
+import { extractErrorMessage } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardNextInvoiceCardProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardNextInvoiceCard({
@@ -21,6 +22,7 @@ export function CreditCardNextInvoiceCard({
   creditDueDay,
   nextInvoice,
 }: CreditCardNextInvoiceCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(creditDueDay);

@@ -1,3 +1,5 @@
+"use client";
+
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import {
@@ -8,13 +10,15 @@ TableHead,
 TableHeader,
 TableRow,
 } from "@/components/ui/table";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 
 import { ALLOCATION_TYPE_LABELS } from "../goals-constants";
 import type { RecentAllocationsCardProps } from "../goals-types";
 
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card className="rounded-xl border-border bg-card">
       <CardHeader>

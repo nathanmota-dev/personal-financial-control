@@ -6,10 +6,12 @@ import { financeIconClassName } from "@/components/finance/finance-styles";
 import { StatusDotBadge } from "@/components/finance/status-dot-badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { BudgetExpensesProps } from "@/lib/interfaces/budgets";
 
 export function BudgetExpenses({ row }: BudgetExpensesProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return <Dialog>
     <DialogTrigger asChild><Button variant="ghost" size="sm" className="px-0 text-content" aria-label={`Conferir despesas de ${row.categoryName} (${row.expenses.length})`}><ReceiptText className="size-4" />{row.expenses.length} despesa(s)</Button></DialogTrigger>
     <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto border-border bg-card sm:max-w-2xl">

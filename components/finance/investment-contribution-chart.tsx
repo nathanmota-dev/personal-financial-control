@@ -5,12 +5,14 @@ import { InvestmentContributionChartChartContainer1 } from "./investment-contrib
 
 import { InvestmentHistoryMetric } from "@/components/finance/investment-history-metric";
 import { Card,CardContent,CardHeader } from "@/components/ui/card";
-import { formatCurrency,formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentContributionChartProps } from "@/lib/interfaces/investments";
 
 export function InvestmentContributionChart({
   history,
 }: InvestmentContributionChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = history.points.map((point) => ({
     ...point,
     monthlyContribution: point.monthlyContributionCents / 100,

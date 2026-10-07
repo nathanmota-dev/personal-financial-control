@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { reportHref } from "@/lib/report-periods";
 import type { ReportMonthsProps } from "@/lib/interfaces/reports";
 
 export function ReportMonthlyTable({ report }: ReportMonthsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return <Card className="min-w-0 shadow-none">
     <CardHeader><CardTitle><h2>Meses do ano</h2></CardTitle><CardDescription>Receitas, despesas e resultados por competência</CardDescription></CardHeader>
     <CardContent>

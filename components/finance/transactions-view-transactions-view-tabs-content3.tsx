@@ -7,13 +7,12 @@ SetupCallout
 import { TransferDialog } from "@/components/finance/transaction-actions";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { TabsContent } from "@/components/ui/tabs";
-import {
-formatCurrency,
-formatDateLabel
-} from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewTabsContent3Props } from "@/lib/interfaces/render/transactions-view-transactions-view-tabs-content3";
 
 export function TransactionsViewTabsContent3({ transfers, accounts, filters }: TransactionsViewTabsContent3Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <TabsContent value="transfers">
           <Card className="rounded-xl border-border bg-card">

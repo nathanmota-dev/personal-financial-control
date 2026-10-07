@@ -1,6 +1,6 @@
 "use client";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type {
 CreditCardMonthCardProps
 } from "@/lib/interfaces/credit-card-view";
@@ -13,6 +13,7 @@ export function CreditCardMonthCard({
   selected,
   onSelect,
 }: CreditCardMonthCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const isIncrease = previousPoint && point.totalCents > previousPoint.totalCents;
   const hasChange = previousPoint && point.totalCents !== previousPoint.totalCents;
 

@@ -1,3 +1,5 @@
+"use client";
+
 import {
 AlertTriangle,
 CalendarClock,
@@ -11,7 +13,8 @@ import type {
 ProjectionAlertsProps,
 ProjectionSummaryCardsProps,
 } from "@/app/interfaces/projected-balance";
-import { formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
 import { ProjectionMetricCard } from "./metric-card";
 
@@ -21,6 +24,7 @@ export function ProjectionSummaryCards({
   summary,
   selectedAccountName,
 }: ProjectionSummaryCardsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const availableBlocked = summary.availablePerDayCents <= 0;
   const nextIncomeValue = summary.nextIncomeDate
     ? formatDateLabel(summary.nextIncomeDate)

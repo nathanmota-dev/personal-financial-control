@@ -1,11 +1,13 @@
 "use client";
 
 import { InvestmentSummaryCard } from "@/components/finance/investment-summary-card";
-import { formatCurrency,formatDateLabel,formatRateFromBps } from "@/lib/finance-ui";
+import { formatDateLabel, formatRateFromBps } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentsViewSection1Props } from "@/lib/interfaces/render/investments-view-investments-view-section1";
 import { Calculator,PiggyBank,TrendingUp } from "lucide-react";
 
 export function InvestmentsViewSection1({ projection }: InvestmentsViewSection1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <section className="grid gap-4 md:grid-cols-3">
         <InvestmentSummaryCard

@@ -1,5 +1,6 @@
 "use client";
 
+import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useEffect,useState } from "react";
@@ -74,6 +75,10 @@ function formatCurrencyValues(
   };
 }
 
+function clearSavedSimulation() {
+  try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be unavailable. */ }
+}
+
 export function CompoundInterestCalculator() {
   const [values, setValues] = useState<CompoundInterestFormValues>(EMPTY_VALUES);
   const [simulation, setSimulation] = useState<CompoundInterestSimulation | null>(null);
@@ -81,10 +86,9 @@ export function CompoundInterestCalculator() {
 
   useEffect(() => {
     const hydrationTimer = window.setTimeout(() => {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-
       try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
         const restored = formatCurrencyValues(
           JSON.parse(saved) as CompoundInterestFormValues
         );
@@ -92,7 +96,7 @@ export function CompoundInterestCalculator() {
         setValues(restored);
         setSimulation(restoredSimulation);
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        clearSavedSimulation();
       }
     }, 0);
 
@@ -106,7 +110,7 @@ export function CompoundInterestCalculator() {
       setValues(formattedValues);
       setSimulation(nextSimulation);
       setError(null);
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(formattedValues));
+      try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(formattedValues)); } catch { /* The simulation remains usable without storage. */ }
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Não foi possível calcular a simulação.");
     }
@@ -116,7 +120,7 @@ export function CompoundInterestCalculator() {
     setValues(EMPTY_VALUES);
     setSimulation(null);
     setError(null);
-    window.localStorage.removeItem(STORAGE_KEY);
+    clearSavedSimulation();
   }
 
   return (
@@ -135,13 +139,13 @@ export function CompoundInterestCalculator() {
         }
       />
 
-      <CompoundInterestForm
+      <FinancialPrivacyForm><CompoundInterestForm
         values={values}
         error={error}
         onChange={setValues}
         onSubmit={handleSubmit}
         onClear={handleClear}
-      />
+      /></FinancialPrivacyForm>
 
       {simulation ? <CompoundInterestResults simulation={simulation} /> : null}
     </div>

@@ -3,7 +3,8 @@
 import { InvestmentGrowthChartChartContainer1 } from "./investment-growth-chart-investment-growth-chart-chart-container1";
 
 import { InvestmentGrowthSummaryMetric } from "@/components/finance/investment-growth-summary-metric";
-import { formatCurrency,formatRateFromBps } from "@/lib/finance-ui";
+import { formatRateFromBps } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentGrowthChartProps } from "@/lib/interfaces/investments";
 import { buildInvestmentGrowthSeries } from "@/lib/investment-projection";
 
@@ -15,6 +16,7 @@ export function InvestmentGrowthChart({
   months,
   periodLabel,
 }: InvestmentGrowthChartProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const data = buildInvestmentGrowthSeries({
     currentBalanceCents,
     expectedMonthlyRateBps,

@@ -1,11 +1,14 @@
+"use client";
+
 import { ArrowRight,CalendarRange,Layers3,Receipt } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardCommitmentsProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommitmentsProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const upcomingPoints = monthPoints.filter((point) => point.month > overview.month).slice(0, 3);
   const futureCharges = overview.invoice.futureInstallments.slice(0, 5);
 

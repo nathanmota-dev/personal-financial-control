@@ -9,7 +9,7 @@ import { InvestmentsViewSection1 } from "@/components/finance/investments-view-i
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentsViewDiv2Props } from "@/lib/interfaces/render/investments-view-investments-view-div2";
 import { cn } from "@/lib/utils";
 import { formatSimulationMonth } from "@/lib/utils/components/investments-view";
@@ -17,6 +17,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export function InvestmentsViewDiv2({ projection, contributionHistory, cards, isSimulationPickerOpen, setIsSimulationPickerOpen, selectedSimulationDate, applySimulation, minSimulationMonth, maxSimulationMonth, simulatedMonths, simulatedValue }: InvestmentsViewDiv2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <div className="space-y-6">
       <PageHeader

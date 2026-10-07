@@ -1,12 +1,15 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card,CardContent } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 import { GOAL_CATEGORY_LABELS } from "../goals-constants";
 import type { GoalArchiveCardProps } from "../goals-types";
 import { GoalMetric } from "./goal-metric";
 
 export function GoalArchiveCard({ goal }: GoalArchiveCardProps) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
     <Card className="rounded-xl border-border bg-muted/30">
       <CardContent className="space-y-3 pt-5">

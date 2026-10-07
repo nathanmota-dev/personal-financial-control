@@ -1,9 +1,12 @@
+"use client";
+
 import { Banknote, Clock3, Percent, Wallet } from "lucide-react";
 import { FinanceMetric } from "@/components/finance/finance-metric";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { MonthlyRetrospectiveProps } from "@/lib/interfaces/monthly-retrospective";
 
 export function MonthlySummaryMetrics({ summary }: MonthlyRetrospectiveProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { totals, pending } = summary;
   return <section aria-label="Números do mês" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
     <FinanceMetric label="Resultado antes dos investimentos" value={formatCurrency(totals.operatingResultCents)} icon={<Wallet />} description={`Receitas: ${formatCurrency(totals.incomeCents)}; despesas líquidas: ${formatCurrency(totals.expenseCents)}`} />

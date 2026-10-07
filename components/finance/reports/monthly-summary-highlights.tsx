@@ -1,9 +1,13 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReportEntrySource } from "@/components/finance/reports/entry-source";
-import { formatCurrency, formatMonthLabel } from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { MonthlyRetrospectiveProps } from "@/lib/interfaces/monthly-retrospective";
 
 export function MonthlySummaryHighlights({ summary }: MonthlyRetrospectiveProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { largestExpense, largestCategory } = summary;
   return <section aria-label="Destaques das despesas" className="grid gap-4 lg:grid-cols-2">
     <Card className="min-w-0 shadow-none">

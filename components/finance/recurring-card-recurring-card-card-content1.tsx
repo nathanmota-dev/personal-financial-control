@@ -3,10 +3,8 @@
 import {
 CardContent
 } from "@/components/ui/card";
-import {
-formatCurrency,
-formatMonthLabel
-} from "@/lib/finance-ui";
+import { formatMonthLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { RecurringCardCardContent1Props } from "@/lib/interfaces/render/recurring-card-recurring-card-card-content1";
 import { cn } from "@/lib/utils";
 import {
@@ -16,6 +14,7 @@ Clock3
 } from "lucide-react";
 
 export function RecurringCardCardContent1({ template, generated, month }: RecurringCardCardContent1Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <CardContent className="flex-1 space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3">

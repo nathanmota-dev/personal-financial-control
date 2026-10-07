@@ -1,12 +1,16 @@
+"use client";
+
 import { CreditCard } from "lucide-react";
 
 import { CreditCardHeroDetail } from "@/components/finance/credit-card-hero-detail";
 import { CreditCardNextInvoiceCard } from "@/components/finance/credit-card-next-invoice-card";
 import { FinanceMetric } from "@/components/finance/finance-metric";
-import { formatCurrency, formatDateLabel } from "@/lib/finance-ui";
+import { formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardHeroProps } from "@/lib/interfaces/credit-card-view";
 
 export function CreditCardHero({ overview, nextInvoice }: CreditCardHeroProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const isPaid = overview.invoice.bill?.status === "paid";
   const paidLabel = overview.invoice.bill?.paidAt
     ? `Paga em ${formatDateLabel(overview.invoice.bill.paidAt)}`

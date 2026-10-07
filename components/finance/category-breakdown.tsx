@@ -1,5 +1,5 @@
 "use client";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardTransactionsPanelProps } from "@/lib/interfaces/credit-card-view";
 import { TransactionEmptyState } from "./transaction-empty-state";
 
@@ -8,6 +8,7 @@ export function CategoryBreakdown({
 }: {
   categoryTotals: CreditCardTransactionsPanelProps["categoryTotals"];
 }) {
+  const { formatCurrency } = useFinancialFormatter();
   const largest = Math.max(...categoryTotals.map((category) => Math.abs(category.amountCents)), 1);
 
   if (!categoryTotals.length) {

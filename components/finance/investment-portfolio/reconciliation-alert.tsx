@@ -13,11 +13,13 @@ import {
 applyInvestmentReductionAction,
 getInvestmentReductionSourcesAction,
 } from "@/app/actions/finance";
-import { extractErrorMessage,formatCurrency,formatDateLabel } from "@/lib/finance-ui";
+import { extractErrorMessage, formatDateLabel } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { ReconciliationAlertProps } from "@/lib/interfaces/investment-portfolio";
 import type { InvestmentReductionSelection,InvestmentReductionSource } from "@/lib/interfaces/investment-reconciliation";
 
 export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isReductionOpen, setIsReductionOpen] = useState(false);

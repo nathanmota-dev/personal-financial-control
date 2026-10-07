@@ -1,9 +1,12 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
-import { formatCurrency } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function DashboardCategoryBars({ distribution, size = "default" }: DashboardCategorySectionProps) {
+  const { formatCurrency } = useFinancialFormatter();
   const { positive, credits } = distribution;
   const max = positive[0]?.amountCents ?? 1;
   return (

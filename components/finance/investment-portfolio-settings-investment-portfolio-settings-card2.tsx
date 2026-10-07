@@ -4,17 +4,14 @@ import { financeIconClassName } from "@/components/finance/finance-styles";
 import { InvestmentField } from "@/components/finance/investment-field";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import {
-centsToMoneyInput,
-formatCurrency,
-formatDateLabel,
-formatRateFromBps
-} from "@/lib/finance-ui";
+import { centsToMoneyInput, formatDateLabel, formatRateFromBps } from "@/lib/finance-ui";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentPortfolioSettingsCard2Props } from "@/lib/interfaces/render/investment-portfolio-settings-investment-portfolio-settings-card2";
 import { cn } from "@/lib/utils";
 import { RefreshCcw,Save,SlidersHorizontal } from "lucide-react";
 
 export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, isPending, startTransition, onUpdateRate, setReconciledBalance, setReconciledDate, setIsReconcileOpen }: InvestmentPortfolioSettingsCard2Props) {
+  const { formatCurrency } = useFinancialFormatter();
   return (
 <Card className="h-full rounded-xl border-border bg-card">
         <CardHeader>

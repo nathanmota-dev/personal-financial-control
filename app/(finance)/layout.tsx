@@ -2,6 +2,7 @@ import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
+import { FinancialPrivacyProvider } from "@/components/finance/privacy/privacy-provider";
 import { AppShell } from "@/components/finance/app-shell";
 import { getServerEnv } from "@/lib/env";
 import type { FinanceLayoutProps } from "@/lib/interfaces/app-shell";
@@ -22,10 +23,12 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
 
   return (
     <Suspense
-      fallback={<div className="min-h-screen bg-surface text-content-strong">{children}</div>}
+      fallback={<div className="min-h-screen bg-surface text-content-strong" role="status">Carregando dados financeiros.</div>}
     >
-      <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
-      {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
+      <FinancialPrivacyProvider key={String(demoMode)} demoMode={demoMode}>
+        <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
+        {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
+      </FinancialPrivacyProvider>
     </Suspense>
   );
 }
