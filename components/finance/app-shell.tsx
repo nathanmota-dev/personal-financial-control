@@ -1,77 +1,36 @@
 "use client";
 
-import {
-FlaskConical,
-PanelLeftClose,
-PanelLeftOpen,
-} from "lucide-react";
-
-import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import { UserControls } from "@/components/auth/user-controls";
+import { FinanceCommandPalette } from "@/components/finance/finance-command-palette";
+import { FinanceCommandTrigger } from "@/components/finance/finance-command-trigger";
+import { FinanceSidebar } from "@/components/finance/finance-sidebar";
 import { MobileNavigation } from "@/components/finance/mobile-navigation";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
-import { SidebarFooter } from "@/components/finance/sidebar-footer";
-import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
+import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import type { AppShellProps } from "@/lib/interfaces/app-shell";
-import Image from "next/image";
+import { FlaskConical } from "lucide-react";
 import { useState } from "react";
 
 export function AppShell({ children, demoMode, user }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const openCommandPalette = () => setCommandPaletteOpen(true);
+
   return (
     <div className="min-h-screen bg-app-shell text-content-strong">
+      <FinanceCommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+      />
       <RecurringAutoGenerator demoMode={demoMode} />
       <div className="flex min-h-screen">
-        <aside
-          className={
-            collapsed
-              ? "hidden lg:block w-[64px] shrink-0 bg-sidebar"
-              : "hidden w-[238px] shrink-0 bg-sidebar lg:block"
-          }
-        >
-          <div className="sticky top-0 flex h-dvh max-h-[1056px] flex-col">
-            <div className="flex h-[82px] shrink-0 items-start gap-[11px] pl-6 pr-[14px] pt-6">
-              {!collapsed && (
-                <>
-                  <Image
-                    src="/icon.png"
-                    width={30}
-                    height={30}
-                    sizes="30px"
-                    alt=""
-                    className="size-[30px] shrink-0 rounded-[7px] object-contain"
-                  />
-                  <span className="pt-0.5 text-xl font-semibold tracking-tight">
-                    finance
-                  </span>
-                </>
-              )}
-              <button
-                type="button"
-                onClick={() => setCollapsed(!collapsed)}
-                aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
-                className={
-                  collapsed
-                    ? "-ml-2 flex size-[30px] items-center justify-center rounded-full bg-card"
-                    : "ml-auto flex size-[30px] shrink-0 items-center justify-center rounded-full bg-card"
-                }
-              >
-                {collapsed ? (
-                  <PanelLeftOpen className="size-4" />
-                ) : (
-                  <PanelLeftClose className="size-4" />
-                )}
-              </button>
-            </div>
-            {collapsed && <div className="mt-auto flex justify-center pb-5"><FinancialPrivacyToggle compact /></div>}
-            {!collapsed && (
-              <>
-                <SidebarNavigation />
-                <SidebarFooter user={user} demoMode={demoMode} />
-              </>
-            )}
-          </div>
-        </aside>
+        <FinanceSidebar
+          collapsed={collapsed}
+          demoMode={demoMode}
+          user={user}
+          onToggleCollapsed={() => setCollapsed((value) => !value)}
+          onOpenCommandPalette={openCommandPalette}
+        />
 
         <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-7 lg:pb-[106px] lg:pl-[29px] lg:pr-[55px] lg:pt-8 min-[100.0625rem]:pt-14">
           <header className="flex items-center justify-between gap-2 rounded-[20px] border border-border bg-card px-4 py-3 md:px-6 lg:hidden">
@@ -85,6 +44,11 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
+              <FinanceCommandTrigger
+                compact
+                onOpen={openCommandPalette}
+                className="size-9 border border-border bg-card"
+              />
               <FinancialPrivacyToggle compact />
               <UserControls user={user} demoMode={demoMode} />
               <MobileNavigation user={user} demoMode={demoMode} />

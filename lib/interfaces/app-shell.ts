@@ -7,6 +7,12 @@ export interface AppShellProps {
   user: SessionUser;
 }
 
+export type FinanceSidebarProps = Pick<AppShellProps, "demoMode" | "user"> & {
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
+  onOpenCommandPalette: () => void;
+};
+
 export interface FinanceLayoutProps {
   children: ReactNode;
 }

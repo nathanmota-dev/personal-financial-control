@@ -34,6 +34,7 @@ export default async function CreditCardPage({
     <CreditCardView
       overview={data?.overview ?? { state: "no_account", month }}
       categories={data?.categories ?? []}
+      loadError={!data}
     />
   );
 }

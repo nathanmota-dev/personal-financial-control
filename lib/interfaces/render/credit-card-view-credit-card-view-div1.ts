@@ -7,4 +7,7 @@ export interface CreditCardViewDiv1Props {
   selectedMonth: string;
   selectMonth: (month: string) => void;
   isPending: boolean;
+  purchaseCommandId?: string | null;
+  setupCommandId?: string | null;
+  categoryCommandId?: string | null;
 }

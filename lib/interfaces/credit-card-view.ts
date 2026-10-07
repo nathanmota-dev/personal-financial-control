@@ -9,6 +9,7 @@ export type ReadyCreditCardOverview = Extract<CreditCardOverview, { state: "read
 export type CreditCardViewProps = {
   overview: CreditCardOverview;
   categories: CreditCardCategoryOption[];
+  loadError?: boolean;
 };
 
 export type CreditCardMonthLoadingProps = {
@@ -68,6 +69,7 @@ export type CreditCardPageActionsProps = {
   accountId?: string;
   categories?: CreditCardCategoryOption[];
   canCreatePurchase?: boolean;
+  purchaseCommandId?: string | null;
 };
 
 export type CreditCardSetupCardProps = {

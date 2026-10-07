@@ -15,8 +15,9 @@ export function TransactionDialog({
   transaction,
   trigger,
   afterCategorization,
+  command,
 }: TransactionDialogProps) {
-  const { open, handleOpenChange, startTransition, onSubmit, formId, selectedType, handleTypeChange, isManualExpense, fundingSource, setFundingSource, isInvestmentExpense, selectedAccountId, setSelectedAccountId, filteredAccounts, selectedCategoryId, setSelectedCategoryId, categoryRequired, filteredCategories, transactionDate, setTransactionDate, competenceMonth, setCompetenceMonth, formError, isPending, isReductionOpen, reductionAmountCents, previousSelections, reductionSources, setIsReductionOpen, clearReductionState, confirmReduction } = useTransactionDialog({ accounts, categories, month, transaction, trigger, afterCategorization });
+  const { open, handleOpenChange, startTransition, onSubmit, formId, selectedType, handleTypeChange, isManualExpense, fundingSource, setFundingSource, isInvestmentExpense, selectedAccountId, setSelectedAccountId, filteredAccounts, selectedCategoryId, setSelectedCategoryId, categoryRequired, filteredCategories, transactionDate, setTransactionDate, competenceMonth, setCompetenceMonth, formError, isPending, isReductionOpen, reductionAmountCents, previousSelections, reductionSources, setIsReductionOpen, clearReductionState, confirmReduction } = useTransactionDialog({ accounts, categories, month, transaction, trigger, afterCategorization, command });
 
   return (
     <>

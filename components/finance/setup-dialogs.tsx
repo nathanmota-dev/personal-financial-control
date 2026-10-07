@@ -43,13 +43,24 @@ SetupCalloutProps,
 export function AccountSetupDialog({
   account,
   trigger,
+  commandId,
+  defaultType,
 }: AccountSetupDialogProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [dismissedCommandId, setDismissedCommandId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const initialType = account?.type ?? defaultType ?? "checking";
+  const open = manualOpen || Boolean(commandId && dismissedCommandId !== commandId);
   const [selectedAccountType, setSelectedAccountType] = useState<
     AccountRow["type"]
-  >(account?.type ?? "checking");
+  >(initialType);
+
+  function handleOpenChange(nextOpen: boolean) {
+    setManualOpen(nextOpen);
+    setSelectedAccountType(initialType);
+    if (!nextOpen && commandId) setDismissedCommandId(commandId);
+  }
 
   async function onSubmit(formData: FormData) {
     const type = String(formData.get("type")) as AccountRow["type"];
@@ -80,7 +91,7 @@ export function AccountSetupDialog({
         toast.success("Conta criada.");
       }
 
-      setOpen(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       toast.error(extractErrorMessage(error));
@@ -90,12 +101,7 @@ export function AccountSetupDialog({
   return (
     <Dialog
       open={open}
-      onOpenChange={(nextOpen) => {
-        setOpen(nextOpen);
-        if (nextOpen) {
-          setSelectedAccountType(account?.type ?? "checking");
-        }
-      }}
+      onOpenChange={handleOpenChange}
     >
       <DialogTrigger asChild>
         {trigger ?? (
@@ -113,10 +119,18 @@ export function AccountSetupDialog({
 export function CategorySetupDialog({
   category,
   trigger,
+  commandId,
 }: CategorySetupDialogProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [dismissedCommandId, setDismissedCommandId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const open = manualOpen || Boolean(commandId && dismissedCommandId !== commandId);
+
+  function handleOpenChange(nextOpen: boolean) {
+    setManualOpen(nextOpen);
+    if (!nextOpen && commandId) setDismissedCommandId(commandId);
+  }
 
   async function onSubmit(formData: FormData) {
     const payload = {
@@ -133,7 +147,7 @@ export function CategorySetupDialog({
         toast.success("Categoria criada.");
       }
 
-      setOpen(false);
+      handleOpenChange(false);
       router.refresh();
     } catch (error) {
       toast.error(extractErrorMessage(error));
@@ -141,7 +155,7 @@ export function CategorySetupDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant="outline">

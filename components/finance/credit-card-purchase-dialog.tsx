@@ -5,7 +5,7 @@ import { DialogContent } from "@/components/finance/privacy/privacy-dialog-conte
 import type { CreditCardPurchaseDialogProps } from "@/lib/interfaces/finance-fields";
 import { Pencil,Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useId,useState,useTransition } from "react";
+import { useEffect,useId,useRef,useState,useTransition } from "react";
 import { toast } from "sonner";
 import { CreditCardPurchaseDialogForm1 } from "./credit-card-purchase-dialog-credit-card-purchase-dialog-form1";
 
@@ -32,6 +32,7 @@ export function CreditCardPurchaseDialog({
   disabled,
   charge,
   trigger,
+  commandId,
 }: CreditCardPurchaseDialogProps) {
   const defaultDate = charge?.purchaseDate ?? `${month}-01`;
   const purchaseDateFieldId = useId();
@@ -39,7 +40,15 @@ export function CreditCardPurchaseDialog({
   const [open, setOpen] = useState(false);
   const [purchaseDate, setPurchaseDate] = useState(defaultDate);
   const [isPending, startTransition] = useTransition();
+  const handledCommandId = useRef<string | null>(null);
   const isEditing = Boolean(charge);
+
+  useEffect(() => {
+    if (!commandId || handledCommandId.current === commandId) return;
+    handledCommandId.current = commandId;
+    setPurchaseDate(defaultDate);
+    setOpen(true);
+  }, [commandId, defaultDate]);
 
   async function onSubmit(formData: FormData) {
     try {

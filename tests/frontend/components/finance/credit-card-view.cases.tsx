@@ -35,6 +35,27 @@ describe("credit card view states", () => {
     expect(screen.getByText("Mais de um cartão ativo")).toBeVisible();
     expect(screen.getByText(/Fecha dia —/)).toBeVisible();
   });
+  it("opens card setup instead of a purchase form when no card exists", async () => {
+    navigation.pathname = "/credit-card";
+    navigation.search = new URLSearchParams(
+      "month=2026-07&command=new-credit-card-purchase&commandId=card-setup",
+    );
+    renderUI(
+      <CreditCardView
+        overview={{ state: "no_account", month: "2026-07" }}
+        categories={[]}
+      />,
+    );
+
+    const setupDialog = await screen.findByRole("dialog", { name: "Nova conta" });
+    expect(screen.getByRole("combobox", { name: "Tipo de conta" })).toHaveTextContent(
+      "Cartão",
+    );
+    expect(setupDialog).toBeVisible();
+    expect(
+      screen.queryByRole("dialog", { name: "Nova compra no cartão" }),
+    ).not.toBeInTheDocument();
+  });
   it("requires expense categories and closing configuration", () => {
     const overview = { ...fixtures.creditCard, needsConfiguration: true };
     renderUI(<CreditCardView overview={overview as never} categories={[]} />);

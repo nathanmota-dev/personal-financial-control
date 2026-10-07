@@ -23,9 +23,12 @@ import { InlineWarning } from "@/components/finance/inline-warning";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GOAL_COMMAND_ACTIONS } from "@/lib/finance-command-catalog";
+import { useFinanceCommandIntent } from "@/hooks/finance/use-finance-command-intent";
 
 export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
   const { isMutating, openCreateGoal, openAllocationDialog, openContributionDialog, openEditGoal, setArchiveGoal, canCreateContribution, goalDialog, goalForm, setGoalForm, setGoalDialog, startTransition, submitGoal, allocationDialog, allocationForm, setAllocationForm, setAllocationDialog, submitAllocation, contributionDialog, contributionForm, setContributionForm, setContributionDialog, submitContribution, archiveGoal, submitArchiveGoal } = useGoalsView({ dashboard });
+  useFinanceCommandIntent(GOAL_COMMAND_ACTIONS, () => openCreateGoal());
 
   return (
     <TooltipProvider>

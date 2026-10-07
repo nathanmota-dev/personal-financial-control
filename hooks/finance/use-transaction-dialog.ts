@@ -15,7 +15,14 @@ import { TransactionDialogOnSubmit } from "@/lib/utils/component-actions/transac
 import { TransactionDialogPersistTransaction } from "@/lib/utils/component-actions/transaction-dialog-persist-transaction";
 import { TransactionDialogResetFormState } from "@/lib/utils/component-actions/transaction-dialog-reset-form-state";
 import { TransactionDialogShowError } from "@/lib/utils/component-actions/transaction-dialog-show-error";
-import { compatibleCategories,investmentType } from "@/lib/utils/components/transaction-dialog";
+import {
+accountValue,
+categoryValue,
+compatibleCategories,
+filterTransactionAccounts,
+investmentType
+} from "@/lib/utils/components/transaction-dialog";
+import { useEffect, useRef } from "react";
 
 export function useTransactionDialog({
   accounts,
@@ -23,8 +30,10 @@ export function useTransactionDialog({
   month,
   transaction,
   afterCategorization,
+  command,
 }: TransactionDialogProps) {
 const { setSelectedType, setSelectedAccountId, setSelectedCategoryId, setTransactionDate, setCompetenceMonth, setFundingSource, setFormError, setOpen, fundingSource, selectedAccountId, selectedCategoryId, setReductionSources, setReductionAmountCents, setPreviousSelections, setPendingPayload, setIsReductionOpen, router, pendingPayload, selectedType, open, startTransition, formId, transactionDate, competenceMonth, formError, isPending, isReductionOpen, reductionAmountCents, previousSelections, reductionSources } = useTransactionDialogState({ transaction, accounts, categories, month });
+const handledCommandId = useRef<string | null>(null);
 
 function resetFormState() {
     return TransactionDialogResetFormState({ transaction, setSelectedType, setSelectedAccountId, accounts, setSelectedCategoryId, categories, setTransactionDate, month, setCompetenceMonth, setFundingSource, setFormError });
@@ -61,17 +70,43 @@ function clearReductionState() {
     return TransactionDialogClearReductionState({ setIsReductionOpen, setPendingPayload, setReductionSources, setPreviousSelections });
   }
 
+useEffect(() => {
+  if (
+    !command ||
+    (command.action !== "new-income" && command.action !== "new-expense") ||
+    handledCommandId.current === command.id
+  ) {
+    return;
+  }
+
+  handledCommandId.current = command.id;
+  const nextType = command.action === "new-income" ? "income" : "expense";
+  setSelectedType(nextType);
+  setSelectedAccountId(accountValue(accounts, nextType));
+  setSelectedCategoryId(categoryValue(categories, nextType));
+  setTransactionDate(`${month}-01`);
+  setCompetenceMonth(month);
+  setFundingSource("account");
+  setFormError(null);
+  setOpen(true);
+}, [
+  accounts,
+  categories,
+  command,
+  month,
+  setCompetenceMonth,
+  setFormError,
+  setFundingSource,
+  setOpen,
+  setSelectedAccountId,
+  setSelectedCategoryId,
+  setSelectedType,
+  setTransactionDate,
+]);
+
 const filteredCategories = compatibleCategories(categories, selectedType);
 
-const filteredAccounts =
-    selectedType === "expense" || investmentType(selectedType)
-      ? accounts.filter(
-          (account) =>
-            account.type === "checking" ||
-            account.type === "savings" ||
-            account.type === "cash",
-        )
-      : accounts;
+const filteredAccounts = filterTransactionAccounts(accounts, selectedType);
 
 const categoryRequired = investmentType(selectedType);
 

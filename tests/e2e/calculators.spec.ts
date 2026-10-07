@@ -4,7 +4,7 @@ test("calculator catalog, calculation, units, table, persistence and clearing", 
   page,
 }) => {
   await page.goto("/calculators");
-  await page.getByRole("link", { name: /Juros compostos/ }).click();
+  await page.getByRole("link", { name: "Juros compostos", exact: true }).click();
   await page.getByRole("button", { name: "Calcular", exact: true }).click();
   await expect(
     page.getByRole("alert").filter({ hasText: "Preencha todos" }),
