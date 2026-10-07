@@ -94,6 +94,56 @@ test("account balances hide the scrollbar, support mouse dragging and omit the r
   await expect.poll(() => list.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
 });
 
+test("category distribution tooltip follows the hovered segment outside the donut center", async ({ page }) => {
+  await page.goto("/dashboard?month=2026-07");
+  const card = page
+    .getByRole("heading", { name: "Distribuição das despesas" })
+    .locator("xpath=ancestor::section[1]");
+  const chart = card.locator('[data-slot="chart"]').first();
+  await card.scrollIntoViewIfNeeded();
+  await expect(chart).toBeVisible();
+  await expect(chart.locator(".recharts-sector").first()).toBeVisible();
+  const chartBounds = await chart.boundingBox();
+  expect(chartBounds).not.toBeNull();
+  if (!chartBounds) return;
+
+  const centerX = chartBounds.x + chartBounds.width / 2;
+  const centerY = chartBounds.y + chartBounds.height / 2;
+  const chartLayout = chart.locator("xpath=..");
+  const centerText = chartLayout
+    .locator(".pointer-events-none.absolute.inset-0 > span");
+  const labelBounds = await centerText.nth(0).boundingBox();
+  const amountBounds = await centerText.nth(1).boundingBox();
+  expect(labelBounds).not.toBeNull();
+  expect(amountBounds).not.toBeNull();
+
+  const tooltip = chartLayout.getByTestId("dashboard-category-tooltip");
+  const lowerX = centerX + chartBounds.width * 0.25;
+  const lowerY = centerY + chartBounds.height * 0.25;
+  await page.mouse.move(lowerX, lowerY);
+  await expect(tooltip).toBeVisible();
+  const lowerTooltipBounds = await tooltip.boundingBox();
+  expect(lowerTooltipBounds).not.toBeNull();
+  if (!lowerTooltipBounds || !labelBounds || !amountBounds) return;
+  expect(lowerTooltipBounds.y).toBeGreaterThan(lowerY);
+  expect(lowerTooltipBounds.x).toBeGreaterThan(lowerX);
+  expect(lowerTooltipBounds.x - lowerX).toBeLessThan(24);
+  expect(lowerTooltipBounds.y - lowerY).toBeLessThan(24);
+  expect(Math.hypot(lowerTooltipBounds.x - centerX, lowerTooltipBounds.y - centerY)).toBeGreaterThan(chartBounds.width * 0.44);
+  expect(
+    lowerTooltipBounds.x + lowerTooltipBounds.width <= labelBounds.x ||
+      lowerTooltipBounds.x >= labelBounds.x + labelBounds.width ||
+      lowerTooltipBounds.y + lowerTooltipBounds.height <= labelBounds.y ||
+      lowerTooltipBounds.y >= labelBounds.y + labelBounds.height,
+  ).toBe(true);
+  expect(
+    lowerTooltipBounds.x + lowerTooltipBounds.width <= amountBounds.x ||
+      lowerTooltipBounds.x >= amountBounds.x + amountBounds.width ||
+      lowerTooltipBounds.y + lowerTooltipBounds.height <= amountBounds.y ||
+      lowerTooltipBounds.y >= amountBounds.y + amountBounds.height,
+  ).toBe(true);
+});
+
 test("wide dashboard fits the metrics and first chart row without scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1000 });
   await page.goto("/dashboard?month=2026-06");
