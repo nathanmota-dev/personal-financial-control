@@ -134,7 +134,7 @@ export type MetricCardTone = "cyan" | "emerald" | "sky" | "amber" | "rose";
 
 export type MetricCardProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   description: string;
   icon: ReactNode;
   tone: MetricCardTone;
@@ -146,7 +146,7 @@ export type StatusBadgeProps = {
 
 export type MobileDayMetricProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   className: string;
 };
 
@@ -154,7 +154,7 @@ export type DetailMetricTone = "slate" | "cyan" | "emerald" | "sky" | "blue" | "
 
 export type DetailMetricProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   tone?: DetailMetricTone;
 };
 

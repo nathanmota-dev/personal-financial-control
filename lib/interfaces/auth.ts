@@ -10,6 +10,7 @@ export interface LogoutButtonProps {
 export interface SessionUser {
   name: string;
   photoURL: string | null;
+  email?: string | null;
 }
 
 export interface UserControlsProps {

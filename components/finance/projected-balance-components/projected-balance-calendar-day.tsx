@@ -26,7 +26,7 @@ export function ProjectedBalanceCalendarDay({
   calendarDay,
   onSelectDay,
 }: ProjectionCalendarDayItemProps) {
-  const { formatCurrency } = useFinancialFormatter();
+  const { formatCurrency, formatCurrencyText } = useFinancialFormatter();
   if (!calendarDay.day) {
     return (
       <li className="h-full min-h-24 list-none">
@@ -49,7 +49,7 @@ export function ProjectedBalanceCalendarDay({
           tone.cell
         )}
         onClick={() => onSelectDay(day)}
-        aria-label={`${formatDateLabel(day.date)}. ${statusLabels[day.status]}. Saldo projetado ${formatCurrency(day.projectedBalanceCents)}. Disponível por dia ${formatCurrency(day.availablePerDayCents)}.`}
+        aria-label={`${formatDateLabel(day.date)}. ${statusLabels[day.status]}. Saldo projetado ${formatCurrencyText(day.projectedBalanceCents)}. Disponível por dia ${formatCurrencyText(day.availablePerDayCents)}.`}
       >
         <div className="min-w-0">
           <p className="truncate text-[0.58rem] font-medium text-content-muted">

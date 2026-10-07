@@ -16,6 +16,7 @@ export type BudgetRow = {
 export type BudgetOverview = { month: string; categories: BudgetCategory[]; rows: BudgetRow[]; committedCents: number };
 export type BudgetsPageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 export type BudgetRowProps = { row: BudgetRow; month: string };
+export type BudgetMetricValue = [label: string, value: ReactNode];
 export type BudgetFormProps = { month: string; categories: BudgetCategory[]; limit?: BudgetLimit; onSaved?: () => void };
 
 export type BudgetMonthProps = { month: string };

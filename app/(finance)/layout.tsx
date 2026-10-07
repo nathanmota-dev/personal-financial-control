@@ -14,6 +14,7 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
   const session = await requirePageSession();
   const user = {
     name: typeof session.name === "string" && session.name.trim() ? session.name : "Usuário",
+    email: "email" in session && typeof session.email === "string" ? session.email : null,
     photoURL: typeof session.picture === "string" ? session.picture : null,
   };
   const { DEMO_MODE: demoMode } = getServerEnv();

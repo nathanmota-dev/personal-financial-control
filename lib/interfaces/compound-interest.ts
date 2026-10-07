@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type InterestRatePeriod = "monthly" | "annual";
 
 export type InvestmentPeriodUnit = "months" | "years";
@@ -58,9 +60,9 @@ export type CompoundInterestResultsProps = {
 
 export type CompoundInterestResultMetricProps = {
   title: string;
-  value: string;
-  detail: string;
-  icon: React.ReactNode;
+  value: ReactNode;
+  detail: ReactNode;
+  icon: ReactNode;
   featured?: boolean;
 };
 

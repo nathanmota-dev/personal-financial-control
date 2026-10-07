@@ -1,5 +1,7 @@
 "use client";
 
+import { AccountPreferences } from "@/components/auth/account-preferences";
+import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { ThemeToggle } from "@/components/finance/theme-toggle";
 import { Avatar,AvatarFallback,AvatarImage } from "@/components/ui/avatar";
@@ -52,11 +54,12 @@ export function UserControls({
       {expanded ? (
         <>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{user.name}</p>
-            <p className="mt-0.5 truncate text-xs text-content-subtle">
-              {demoMode ? "Conta demonstração" : "Conta pessoal"}
+            <p className="truncate text-sm font-semibold">{names[0]}</p>
+            <p className="mt-0.5 truncate text-xs text-content-subtle" title={user.email ?? undefined}>
+              {user.email}
             </p>
           </div>
+          <FinancialPrivacyToggle compact />
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -67,17 +70,8 @@ export function UserControls({
                 <Ellipsis className="size-[18px]" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-52" align="end">
-              <p className="mb-3 text-sm font-medium">Conta e preferências</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-content">Tema</span>
-                <ThemeToggle />
-              </div>
-              {!demoMode && (
-                <div className="mt-3">
-                  <LogoutButton />
-                </div>
-              )}
+            <PopoverContent className="w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-4" align="end" collisionPadding={8}>
+              <AccountPreferences user={user} demoMode={demoMode} />
             </PopoverContent>
           </Popover>
         </>

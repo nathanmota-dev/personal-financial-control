@@ -1,7 +1,6 @@
 "use client";
 
 import {
-ChartPie,
 FlaskConical,
 PanelLeftClose,
 PanelLeftOpen,
@@ -14,6 +13,7 @@ import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-gene
 import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import type { AppShellProps } from "@/lib/interfaces/app-shell";
+import Image from "next/image";
 import { useState } from "react";
 
 export function AppShell({ children, demoMode, user }: AppShellProps) {
@@ -33,9 +33,14 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
             <div className="flex h-[82px] shrink-0 items-start gap-[11px] pl-6 pr-[14px] pt-6">
               {!collapsed && (
                 <>
-                  <span className="flex size-[30px] shrink-0 items-center justify-center rounded-[7px] bg-orange text-white">
-                    <ChartPie className="size-[18px]" />
-                  </span>
+                  <Image
+                    src="/icon.png"
+                    width={30}
+                    height={30}
+                    sizes="30px"
+                    alt=""
+                    className="size-[30px] shrink-0 rounded-[7px] object-contain"
+                  />
                   <span className="pt-0.5 text-xl font-semibold tracking-tight">
                     finance
                   </span>
@@ -58,7 +63,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
                 )}
               </button>
             </div>
-            <div className="flex justify-center px-3 pb-4"><FinancialPrivacyToggle compact={collapsed} /></div>
+            {collapsed && <div className="mt-auto flex justify-center pb-5"><FinancialPrivacyToggle compact /></div>}
             {!collapsed && (
               <>
                 <SidebarNavigation />

@@ -2,6 +2,7 @@ import type { accounts, categories, transactions } from "@/lib/db/schema";
 import type { CategorySpendingItem } from "@/lib/interfaces/recurring";
 import type { InvestmentOverview } from "@/lib/interfaces/investment-operations";
 import type { serializeTimestamps } from "@/lib/server/finance";
+import type { ReactNode } from "react";
 
 export type DashboardPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -66,7 +67,7 @@ export type DashboardData = {
 };
 export type MetricCardProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   comparison: DashboardComparison;
 };
 export type DashboardEvolutionItem = {

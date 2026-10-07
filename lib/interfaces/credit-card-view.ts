@@ -2,6 +2,7 @@ import type {
 CreditCardCategoryOption,
 CreditCardOverview,
 } from "@/lib/interfaces/credit-card";
+import type { ReactNode } from "react";
 
 export type ReadyCreditCardOverview = Extract<CreditCardOverview, { state: "ready" }>;
 
@@ -39,8 +40,8 @@ export type CreditCardHeroProps = {
 
 export type CreditCardHeroDetailProps = {
   label: string;
-  value: string;
-  detail: string;
+  value: ReactNode;
+  detail: ReactNode;
 };
 
 export type CreditCardNextInvoiceCardProps = {

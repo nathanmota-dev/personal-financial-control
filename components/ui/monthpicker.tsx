@@ -1,13 +1,9 @@
 "use client";
+import type { Month, MonthCalProps } from "@/lib/interfaces/monthpicker";
 import { cn } from "@/lib/utils";
 import { ChevronLeft,ChevronRight } from "lucide-react";
 import * as React from "react";
 import { buttonVariants } from "./button";
-
-type Month = {
-    number: number;
-    name: string;
-};
 
 const MONTHS: Month[][] = [
     [
@@ -30,29 +26,6 @@ const MONTHS: Month[][] = [
     ],
 ];
 
-type MonthCalProps = {
-    selectedMonth?: Date;
-    onMonthSelect?: (date: Date) => void;
-    onYearForward?: () => void;
-    onYearBackward?: () => void;
-    callbacks?: {
-        yearLabel?: (year: number) => string;
-        monthLabel?: (month: Month) => string;
-    };
-    variant?: {
-        calendar?: {
-            main?: ButtonVariant;
-            selected?: ButtonVariant;
-        };
-        chevrons?: ButtonVariant;
-    };
-    minDate?: Date;
-    maxDate?: Date;
-    disabledDates?: Date[];
-};
-
-type ButtonVariant = "default" | "outline" | "ghost" | "link" | "destructive" | "secondary" | null | undefined;
-
 function MonthPicker({
     onMonthSelect,
     selectedMonth,
@@ -69,7 +42,7 @@ function MonthPicker({
     return (
         <div
             className={cn(
-                "min-w-[200px] w-[280px] rounded-[1.5rem] bg-surface/95 p-4",
+                "min-w-[200px] w-[280px] bg-popover p-4",
                 className
             )}
             {...props}
@@ -151,6 +124,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
                                             className="h-10 w-1/4 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20"
                                         >
                                             <button
+                                                aria-pressed={month === m.number && menuYear === year}
                                                 type="button"
                                                 onClick={() => {
                                                     setMonth(m.number);
@@ -164,7 +138,7 @@ function MonthCal({ selectedMonth, onMonthSelect, callbacks, variant, minDate, m
                                                 }
                                                 className={cn(
                                                     buttonVariants({ variant: month == m.number && menuYear == year ? variant?.calendar?.selected ?? "default" : variant?.calendar?.main ?? "ghost" }),
-                                                    "h-full w-full rounded-xl p-0 font-normal text-content-strong aria-selected:opacity-100 hover:bg-surface-raised"
+                                                    "h-full w-full rounded-xl p-0 font-normal"
                                                 )}
                                             >
                                                 {callbacks?.monthLabel ? callbacks.monthLabel(m) : m.name}

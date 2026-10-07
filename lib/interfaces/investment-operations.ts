@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type {
 getInvestmentAssetDetails,
 getInvestmentOverview,
@@ -59,7 +61,7 @@ export type OperationalAssetInput = {
 export type InvestmentOverviewViewProps = { overview: InvestmentOverview };
 export type OperationalPortfolioViewProps = { positions: InvestmentPosition[] };
 export type InvestmentAssetDetailViewProps = { asset: InvestmentAssetDetails };
-export type OverviewMetricProps = { icon: React.ReactNode; label: string; value: string; detail: string; tone: "cyan" | "teal" | "blue" | "green" | "red"; href?: string };
+export type OverviewMetricProps = { icon: ReactNode; label: string; value: ReactNode; detail: ReactNode; tone: "cyan" | "teal" | "blue" | "green" | "red"; href?: string };
 export type AssetFormState = { name: string; ticker: string; institutionName: string; assetClass: OperationalAssetInput["assetClass"]; instrumentType: OperationalAssetInput["instrumentType"]; valuationMode: OperationalAssetInput["valuationMode"]; quoteSymbol: string };
 export type OperationFormState = { type: InvestmentOperationInput["type"]; operatedOn: string; quantity: string; unitPrice: string; grossAmount: string; fees: string; notes: string };
-export type DetailMetricProps = { label: string; value: string; tone?: "neutral" | "positive" | "negative" };
+export type DetailMetricProps = { label: string; value: ReactNode; tone?: "neutral" | "positive" | "negative" };

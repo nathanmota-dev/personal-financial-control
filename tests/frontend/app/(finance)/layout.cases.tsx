@@ -37,7 +37,7 @@ it.each([null, "visible", "hidden"])("hydrates a delayed financial shell before 
   }
 });
 it.each([
-  { name: "Ana Lima", picture: "/ana.jpg" },
+  { name: "Ana Lima", picture: "/ana.jpg", email: "ana@example.com" },
   { name: "", picture: 42 },
   { name: undefined, picture: null },
 ])("normalizes session presentation %j", async (session) => {
@@ -46,7 +46,7 @@ it.each([
   expect(screen.getByRole("heading", { name: "Minha página" })).toBeVisible();
   if (!session.name)
     expect(screen.getAllByText("Usuário").length).toBeGreaterThan(0);
-  else expect(screen.getAllByText(session.name).length).toBeGreaterThan(0);
+  else expect(screen.getAllByText(session.name.split(" ")[0]).length).toBeGreaterThan(0);
 });
 it("queries progress by UID and suppresses completed onboarding", async () => {
   vi.stubEnv("DEMO_MODE", "false");
