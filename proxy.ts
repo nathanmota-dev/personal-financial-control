@@ -14,7 +14,10 @@ export async function proxy(request: NextRequest) {
     return response;
   }
   if (process.env.NODE_ENV === "development" && path === "/_next/webpack-hmr" && request.method === "GET") return NextResponse.next();
-  const asset = path.startsWith("/_next/static/") || path === "/icon.png" || path === "/favicon.ico";
+  const asset =
+    path.startsWith("/_next/static/") ||
+    path === "/favicon.ico" ||
+    path === "/icon.png";
   if (asset && ["GET", "HEAD"].includes(request.method)) return NextResponse.next();
   let origin: string;
   try { origin = authConfig().origin; } catch (error) {
