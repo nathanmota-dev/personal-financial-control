@@ -105,7 +105,7 @@ export function MonthPickerField({
         </PopoverTrigger>
         <PopoverContent
           align={align}
-          className="w-auto overflow-hidden rounded-xl border border-border bg-popover p-0 text-content-strong shadow-none"
+          className="w-auto overflow-hidden rounded-xl border border-border bg-popover p-0 text-content-strong shadow-none ring-0"
         >
           <MonthPicker
             selectedMonth={parseMonthValue(selectedValue)}

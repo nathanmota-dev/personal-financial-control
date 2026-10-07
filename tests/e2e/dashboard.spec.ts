@@ -54,10 +54,10 @@ test("dashboard changes competence while keeping the current consolidated portfo
   const currentPortfolio = await portfolio.innerText();
   await expect(page.getByText("Fatura de julho de 2026", { exact: false })).toBeVisible();
   await expect(page.getByRole("article", { name: "Receitas" })).toContainText("em relação ao mês anterior");
-  await page.getByRole("button", { name: /Selecionar mês/ }).click();
+  await page.getByRole("button", { name: "julho de 2026" }).click();
   await page.getByRole("button", { name: "Jun", exact: true }).click();
   await expect(page).toHaveURL(/month=2026-06/);
-  await expect(page.getByRole("button", { name: /Selecionar mês:.*junho/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "junho de 2026" })).toBeVisible();
   await expect(page.getByText("Fatura de junho de 2026", { exact: false })).toBeVisible();
   await expect(portfolio).toHaveText(currentPortfolio, { useInnerText: true });
   await expect(page.getByText("Variação do saldo no mês")).toBeVisible();
@@ -77,4 +77,31 @@ test("wide dashboard fits the metrics and first chart row without scrolling", as
   }
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await page.screenshot({ path: "reports/dashboard-wide.png" });
+});
+
+test("account preferences and month picker follow the selected theme", async ({ page }) => {
+  await page.goto("/dashboard?month=2026-07");
+  const account = page.getByRole("group", { name: "Conta e preferências" });
+  await expect(account.getByRole("button", { name: "Ocultar valores" })).toBeVisible();
+  for (const theme of ["Claro", "Escuro", "Auto"]) {
+    await account.getByRole("button", { name: "Abrir preferências da conta" }).click();
+    const preferences = page.getByRole("dialog");
+    await expect(preferences.getByRole("button", { name: "Minha conta" })).toHaveAttribute("aria-disabled", "true");
+    await expect(preferences.getByRole("group", { name: "Idioma" })).toBeVisible();
+    await expect(preferences.getByRole("button", { name: /Buscar/ })).toHaveAttribute("aria-disabled", "true");
+    await preferences.getByRole("button", { name: theme, exact: true }).click();
+    await expect(preferences.getByRole("button", { name: theme, exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.screenshot({ animations: "disabled", path: `reports/account-${theme}.png` });
+    await page.keyboard.press("Escape");
+    await page.getByRole("button", { name: "julho de 2026", exact: true }).click();
+    const selected = page.getByRole("button", { name: "Jul", exact: true });
+    await expect(selected).toHaveAttribute("aria-pressed", "true");
+    const colors = await selected.evaluate(element => {
+      const style = getComputedStyle(element);
+      return { text: style.color, background: style.backgroundColor };
+    });
+    expect(colors.text).not.toBe(colors.background);
+    await page.screenshot({ animations: "disabled", path: `reports/month-picker-${theme}.png` });
+    await page.keyboard.press("Escape");
+  }
 });

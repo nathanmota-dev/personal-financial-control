@@ -22,7 +22,7 @@ test("global privacy covers every financial domain, details, charts and reload w
   await expect(income).toContainText("Valor oculto");
   await page.getByRole("button", { name: "Recolher sidebar" }).click();
   await expect(page.getByRole("button", { name: "Mostrar valores", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: /Selecionar mês/ }).click();
+  await page.getByRole("button", { name: "julho de 2026" }).click();
   await page.getByRole("button", { name: "Jun", exact: true }).click();
   await expect(income).toContainText("Valor oculto");
   await page.addInitScript(() => {
