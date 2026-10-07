@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo,useState } from "react";
 import { TransactionsViewDiv1 } from "./transactions-view-transactions-view-div1";
 import { TransactionsViewDiv2 } from "./transactions-view-transactions-view-div2";
 import { TransactionsViewTabsContent3 } from "./transactions-view-transactions-view-tabs-content3";
@@ -20,6 +20,10 @@ import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
+import type { FinanceCommandIntent } from "@/lib/interfaces/finance-command";
+import { TRANSACTION_COMMAND_ACTIONS } from "@/lib/finance-command-catalog";
+import { useFinanceCommandIntent } from "@/hooks/finance/use-finance-command-intent";
+import { toast } from "sonner";
 
 export function TransactionsView({
   accounts,
@@ -27,8 +31,17 @@ export function TransactionsView({
   transactions,
   transfers,
   filters,
+  loadError = false,
 }: TransactionsViewProps) {
   const { formatCurrency } = useFinancialFormatter();
+  const [commandIntent, setCommandIntent] = useState<FinanceCommandIntent | null>(null);
+  useFinanceCommandIntent(TRANSACTION_COMMAND_ACTIONS, (intent) => {
+    if (loadError) {
+      toast.error("Não foi possível carregar contas e categorias. Tente novamente.");
+      return;
+    }
+    setCommandIntent(intent);
+  });
   const totals = useMemo(
     () =>
       transactions.reduce(
@@ -62,8 +75,19 @@ export function TransactionsView({
         actions={
           <>
             <CategorySetupDialog />
-            <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
-            <TransferDialog accounts={accounts} month={filters.month} />
+            <TransactionDialog
+              accounts={accounts}
+              categories={categories}
+              month={filters.month}
+              command={commandIntent}
+            />
+            <TransferDialog
+              accounts={accounts}
+              month={filters.month}
+              commandId={
+                commandIntent?.action === "new-transfer" ? commandIntent.id : null
+              }
+            />
           </>
         }
       />

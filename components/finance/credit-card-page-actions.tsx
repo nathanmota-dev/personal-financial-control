@@ -11,6 +11,7 @@ export function CreditCardPageActions({
   accountId,
   categories = [],
   canCreatePurchase = false,
+  purchaseCommandId,
 }: CreditCardPageActionsProps) {
   return (
     <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
@@ -21,6 +22,7 @@ export function CreditCardPageActions({
           categories={categories}
           month={month}
           disabled={!canCreatePurchase}
+          commandId={purchaseCommandId}
         />
       ) : null}
     </div>

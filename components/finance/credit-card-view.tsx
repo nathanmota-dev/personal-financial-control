@@ -1,8 +1,11 @@
 "use client";
 
 import { usePathname,useRouter } from "next/navigation";
-import { useOptimistic,useTransition } from "react";
+import { useOptimistic,useState,useTransition } from "react";
 import { CreditCardViewDiv1 } from "./credit-card-view-credit-card-view-div1";
+import { CREDIT_CARD_COMMAND_ACTIONS } from "@/lib/finance-command-catalog";
+import { useFinanceCommandIntent } from "@/hooks/finance/use-finance-command-intent";
+import { toast } from "sonner";
 
 import {
 CreditCardMonthPicker
@@ -15,15 +18,42 @@ AccountSetupDialog
 import { buildCreditCardMonthPoints } from "@/lib/credit-card-view";
 import type { CreditCardViewProps } from "@/lib/interfaces/credit-card-view";
 
-export function CreditCardView({ overview, categories }: CreditCardViewProps) {
+export function CreditCardView({ overview, categories, loadError = false }: CreditCardViewProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedMonth, setSelectedMonth] = useOptimistic(overview.month);
+  const [purchaseCommandId, setPurchaseCommandId] = useState<string | null>(null);
+  const [setupCommandId, setSetupCommandId] = useState<string | null>(null);
+  const [categoryCommandId, setCategoryCommandId] = useState<string | null>(null);
   const expenseCategories = categories.filter(
     (category) =>
       category.group === "fixed_expense" || category.group === "variable_expense"
   );
+
+  useFinanceCommandIntent(CREDIT_CARD_COMMAND_ACTIONS, (intent) => {
+    if (loadError) {
+      toast.error("Não foi possível carregar os dados do cartão. Tente novamente.");
+      return;
+    }
+    if (overview.state === "no_account") {
+      setSetupCommandId(intent.id);
+      return;
+    }
+    if (overview.state === "multiple_accounts") {
+      toast.info("Mantenha um único cartão ativo para registrar uma compra.");
+      return;
+    }
+    if (overview.needsConfiguration) {
+      setSetupCommandId(intent.id);
+      return;
+    }
+    if (!expenseCategories.length) {
+      setCategoryCommandId(intent.id);
+      return;
+    }
+    setPurchaseCommandId(intent.id);
+  });
 
   if (overview.state === "no_account") {
     return (
@@ -37,7 +67,12 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
         <FinanceEmptyState
           title="Nenhum cartão configurado"
           description="Cadastre uma conta do tipo cartão para começar a acompanhar suas faturas."
-          action={<AccountSetupDialog />}
+          action={
+            <AccountSetupDialog
+              commandId={setupCommandId}
+              defaultType="credit"
+            />
+          }
         />
       </div>
     );
@@ -89,6 +124,6 @@ export function CreditCardView({ overview, categories }: CreditCardViewProps) {
   }
 
   return (
-    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} isPending={isPending} />
+    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} isPending={isPending} purchaseCommandId={purchaseCommandId} setupCommandId={setupCommandId} categoryCommandId={categoryCommandId} />
   );
 }

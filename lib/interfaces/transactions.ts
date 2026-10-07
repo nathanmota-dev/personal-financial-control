@@ -10,6 +10,7 @@ TransactionFundingLink,
 TransactionFundingSource,
 } from "@/lib/interfaces/transaction-funding";
 import type { ReactNode } from "react";
+import type { FinanceCommandIntent } from "@/lib/interfaces/finance-command";
 
 export type { TransactionFundingLink,TransactionFundingSource } from "@/lib/interfaces/transaction-funding";
 
@@ -87,6 +88,7 @@ export type TransactionsViewProps = {
   transactions: TransactionRow[];
   transfers: TransferRow[];
   filters: TransactionFilters;
+  loadError?: boolean;
 };
 
 export type FilterSelectOption = {
@@ -114,6 +116,7 @@ export type TransactionDialogProps = {
   transaction?: TransactionRow;
   trigger?: ReactNode;
   afterCategorization?: string;
+  command?: FinanceCommandIntent | null;
 };
 
 export type TransactionSummaryCardProps = {
@@ -125,6 +128,7 @@ export type TransactionSummaryCardProps = {
 export type TransferDialogProps = {
   accounts: TransactionAccountOption[];
   month: string;
+  commandId?: string | null;
 };
 
 export type DeleteTransactionDialogProps = {

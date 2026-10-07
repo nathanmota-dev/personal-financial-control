@@ -49,4 +49,18 @@ export function investmentType(type: TransactionRow["type"]) {
   return type === "investment_contribution" || type === "investment_withdrawal";
 }
 
+export function filterTransactionAccounts(
+  accounts: TransactionAccountOption[],
+  type: TransactionRow["type"],
+) {
+  if (type !== "expense" && !investmentType(type)) return accounts;
+
+  return accounts.filter(
+    (account) =>
+      account.type === "checking" ||
+      account.type === "savings" ||
+      account.type === "cash",
+  );
+}
+
 export { todayDate } from "@/lib/utils/finance-date";

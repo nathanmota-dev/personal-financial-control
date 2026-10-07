@@ -87,6 +87,7 @@ export default async function TransactionsPage({
         type,
         section,
       }}
+      loadError={!data}
     />
   );
 }

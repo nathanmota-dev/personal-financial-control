@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState,useTransition } from "react";
+import { useEffect,useRef,useState,useTransition } from "react";
 import { toast } from "sonner";
 import { TransferDialogDialog1 } from "./transaction-actions-transfer-dialog-dialog1";
 
@@ -26,11 +26,18 @@ DeleteTransactionDialogProps,
 TransferDialogProps,
 } from "@/lib/interfaces/transactions";
 
-export function TransferDialog({ accounts, month }: TransferDialogProps) {
+export function TransferDialog({ accounts, month, commandId }: TransferDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const handledCommandId = useRef<string | null>(null);
   const canTransfer = accounts.length >= 2;
+
+  useEffect(() => {
+    if (!commandId || handledCommandId.current === commandId) return;
+    handledCommandId.current = commandId;
+    setOpen(true);
+  }, [commandId]);
 
   async function onSubmit(formData: FormData) {
     try {

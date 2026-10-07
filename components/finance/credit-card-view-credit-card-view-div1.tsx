@@ -18,7 +18,7 @@ CategorySetupDialog,
 import { Button } from "@/components/ui/button";
 import type { CreditCardViewDiv1Props } from "@/lib/interfaces/render/credit-card-view-credit-card-view-div1";
 
-export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurchase, monthPoints, selectedMonth, selectMonth, isPending }: CreditCardViewDiv1Props) {
+export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurchase, monthPoints, selectedMonth, selectMonth, isPending, purchaseCommandId, setupCommandId, categoryCommandId }: CreditCardViewDiv1Props) {
   return (
 <div className="space-y-6">
       <PageHeader
@@ -31,6 +31,7 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
             accountId={overview.account.id}
             categories={expenseCategories}
             canCreatePurchase={canCreatePurchase}
+            purchaseCommandId={purchaseCommandId}
           />
         }
       />
@@ -42,6 +43,8 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
           action={
             <AccountSetupDialog
               account={overview.account}
+              commandId={setupCommandId}
+              defaultType="credit"
               trigger={<Button>Editar cartão</Button>}
             />
           }
@@ -52,7 +55,7 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
         <CreditCardSetupCard
           title="Cadastre categorias de despesa"
           description="As compras do cartão usam categorias de gasto fixo ou variável para organizar o extrato."
-          action={<CategorySetupDialog />}
+          action={<CategorySetupDialog commandId={categoryCommandId} />}
         />
       ) : null}
 

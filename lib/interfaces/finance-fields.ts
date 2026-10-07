@@ -35,10 +35,13 @@ export type CategoryRow = {
 export type AccountSetupDialogProps = {
   account?: AccountRow;
   trigger?: ReactNode;
+  commandId?: string | null;
+  defaultType?: AccountRow["type"];
 };
 export type CategorySetupDialogProps = {
   category?: CategoryRow;
   trigger?: ReactNode;
+  commandId?: string | null;
 };
 export type SetupCalloutProps = { title: string; description: string };
 export type CreditCardPurchaseDialogProps = {
@@ -48,6 +51,7 @@ export type CreditCardPurchaseDialogProps = {
   disabled?: boolean;
   charge?: CreditCardChargeForEdit;
   trigger?: ReactNode;
+  commandId?: string | null;
 };
 export type StatusDotBadgeProps = {
   children: ReactNode;
