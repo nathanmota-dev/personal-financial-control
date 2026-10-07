@@ -63,6 +63,37 @@ test("dashboard changes competence while keeping the current consolidated portfo
   await expect(page.getByText("Variação do saldo no mês")).toBeVisible();
 });
 
+test("account balances hide the scrollbar, support mouse dragging and omit the redundant subtitle", async ({ page }) => {
+  await page.goto("/dashboard?month=2026-07");
+  const card = page.locator("section").filter({
+    has: page.getByRole("heading", { name: "Saldos por conta" }),
+  });
+  const list = card.getByTestId("dashboard-balances-list");
+
+  await list.scrollIntoViewIfNeeded();
+  await expect(card.getByText("Posição atual das contas")).toHaveCount(0);
+  const listStyles = await list.evaluate((element) => ({
+    scrollHeight: element.scrollHeight,
+    clientHeight: element.clientHeight,
+    scrollbarWidth: getComputedStyle(element).scrollbarWidth,
+    webkitScrollbarDisplay: getComputedStyle(element, "::-webkit-scrollbar").display,
+  }));
+  expect(listStyles.scrollHeight).toBeGreaterThan(listStyles.clientHeight);
+  expect(listStyles.scrollbarWidth).toBe("none");
+  expect(listStyles.webkitScrollbarDisplay).toBe("none");
+
+  const bounds = await list.boundingBox();
+  expect(bounds).not.toBeNull();
+  if (!bounds) return;
+  const x = bounds.x + bounds.width / 2;
+  const y = bounds.y + bounds.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 50, { steps: 5 });
+  await page.mouse.up();
+  await expect.poll(() => list.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+});
+
 test("wide dashboard fits the metrics and first chart row without scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1000 });
   await page.goto("/dashboard?month=2026-06");
