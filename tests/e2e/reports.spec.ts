@@ -54,14 +54,14 @@ test("months are visible while secondary report requests are pending", async ({ 
   });
   await page.goto("/reports?mode=monthly&period=2026-07");
   await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
-  await expect.poll(() => [...requested].sort()).toEqual(["categories", "sources"]);
+  await expect.poll(() => [...requested].sort()).toEqual(["categories", "daily-expenses", "sources"]);
   await page.getByRole("tab", { name: "Origens dos totais", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Origens dos totais" })).toBeVisible();
   await page.getByRole("tab", { name: "Categorias", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("Carregando");
   release();
   await expect(page.getByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
-  await expect.poll(() => [...requested].sort()).toEqual(["categories", "sources"]);
+  await expect.poll(() => [...requested].sort()).toEqual(["categories", "daily-expenses", "sources"]);
 });
 
 test("monthly summary explains both months on demand and works by keyboard on mobile", async ({ page, request }) => {
@@ -118,4 +118,52 @@ test("partial summary avoids conclusive changes and request failures never rende
   await expect(page.getByText(/Comparação conclusiva disponível/)).toBeVisible();
   await expect(page.getByText(/aumento de|redução de/)).toHaveCount(0);
   await page.screenshot({ path: "reports/monthly-summary-desktop.png", fullPage: true });
+});
+
+test("monthly daily expense map reconciles purchases and credits by purchase date", async ({ page, request }) => {
+  const { accountIds, categoryIds } = await import("../../lib/demo/fixture");
+  const purchase = await request.post("/api/credit-card/charges", { data: {
+    accountId: accountIds.credit, categoryId: categoryIds.leisure, description: "Compra parcelada do mapa",
+    purchaseDate: "2026-07-12", totalAmountCents: 90000, installmentCount: 3, firstInvoiceMonth: "2026-08",
+  } });
+  expect(purchase.status()).toBe(201);
+  const refund = await request.post("/api/credit-card/charges", { data: {
+    accountId: accountIds.credit, categoryId: categoryIds.leisure, description: "Estorno do mapa",
+    purchaseDate: "2026-07-12", totalAmountCents: -5000, kind: "adjustment", installmentCount: 1, firstInvoiceMonth: "2026-08",
+  } });
+  expect(refund.status()).toBe(201);
+  const posted = await request.post("/api/transactions", { data: {
+    accountId: accountIds.checking, categoryId: categoryIds.groceries, description: "Compra com data real",
+    type: "expense", status: "posted", amountCents: 20000, competenceMonth: "2026-06", transactionDate: "2026-07-13",
+  } });
+  expect(posted.status()).toBe(201);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/reports?mode=monthly&period=2026-07");
+  await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Despesas por data", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Despesas por data da transação/compra" })).toBeVisible();
+  const purchaseDay = page.getByRole("button", { name: /12\/07\/2026\. Gastos positivos/ });
+  await purchaseDay.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "Movimentos de 12/07/2026" })).toBeVisible();
+  const detail = page.getByRole("heading", { name: "Movimentos de 12/07/2026" }).locator("xpath=ancestor::*[@data-slot='card'][1]");
+  await expect(detail).toContainText("Compra parcelada do mapa");
+  await expect(detail).toContainText("Estorno do mapa");
+  await expect(detail).toContainText("900,00");
+  await expect(detail).toContainText("50,00");
+  await expect(detail).toContainText("850,00");
+  await expect(detail.getByRole("link", { name: "Abrir compra" }).first()).toHaveAttribute("href", "/credit-card?month=2026-08");
+
+  await page.getByRole("button", { name: "Ver itens de 13/07/2026" }).click();
+  const postedDay = page.getByRole("heading", { name: "Movimentos de 13/07/2026" }).locator("xpath=ancestor::*[@data-slot='card'][1]");
+  await expect(postedDay).toContainText("Compra com data real");
+  await expect(postedDay.getByRole("link", { name: "Abrir lançamento" })).toHaveAttribute("href", "/transactions?month=2026-06");
+  await expect(postedDay).not.toContainText("Cinema e lazer");
+  await expect(postedDay).not.toContainText("Curso cancelado");
+
+  await page.getByRole("tab", { name: "Meses do ano", exact: true }).click();
+  await page.getByRole("tab", { name: "Anual", exact: true }).click();
+  await expect(page.getByRole("tab", { name: "Despesas por data", exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

@@ -8,7 +8,7 @@ async function handleGET(request: Request) {
   if (denied) return denied;
   const { selection, params } = readReportRequest(request);
   const view = params.get("view");
-  if (!selection || (view !== "categories" && view !== "sources" && view !== "summary") || (view === "summary" && selection.mode !== "monthly")) {
+  if (!selection || (view !== "categories" && view !== "sources" && view !== "summary" && view !== "daily-expenses") || ((view === "summary" || view === "daily-expenses") && selection.mode !== "monthly")) {
     return Response.json({ error: "Período ou visualização inválidos." }, { status: 400 });
   }
   try {

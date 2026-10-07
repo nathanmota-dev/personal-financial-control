@@ -2,6 +2,7 @@ import { act, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MonthlySummaryContent } from "@/components/finance/reports/monthly-summary-content";
 import { ReportTables } from "@/components/finance/reports/tables";
+import { buildDailyExpenseMap } from "@/lib/daily-expenses";
 import { buildReport } from "@/lib/report-aggregation";
 import { buildMonthlyRetrospective } from "@/lib/monthly-retrospective";
 import type { MonthlyRetrospective } from "@/lib/interfaces/monthly-retrospective";
@@ -18,10 +19,19 @@ function summary(): MonthlyRetrospective {
 }
 
 describe("monthly summary interface", () => {
-  beforeEach(() => vi.stubGlobal("fetch", vi.fn(async (url) => Response.json(String(url).includes("view=summary") ? { summary: summary() } : String(url).includes("categories") ? { categories: [] } : { entries: [] }))));
-  it("fetches only on demand and keeps data across all view changes", async () => {
+  beforeEach(() => vi.stubGlobal("fetch", vi.fn(async (input) => {
+    const url = String(input);
+    if (url.includes("view=summary")) return Response.json({ summary: summary() });
+    if (url.includes("view=daily-expenses")) {
+      const period = new URL(url, "http://localhost").searchParams.get("period") ?? "2026-06";
+      return Response.json({ map: buildDailyExpenseMap(period, []) });
+    }
+    return Response.json(url.includes("categories") ? { categories: [] } : { entries: [] });
+  })));
+  it("loads deferred views in parallel and keeps summary data across all view changes", async () => {
     const { user } = renderUI(<ReportTables report={{ ...empty(), entryCount: 0 }} />);
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+    expect(fetch).toHaveBeenCalledWith("/api/reports?mode=monthly&period=2026-06&view=daily-expenses", expect.anything());
     await user.click(screen.getByRole("tab", { name: "Resumo do mês" }));
     expect(await screen.findByText(/aumento de/)).toHaveTextContent(/200,00.*40%/);
     expect(fetch).toHaveBeenLastCalledWith("/api/reports?mode=monthly&period=2026-06&view=summary", expect.objectContaining({ cache: "no-store" }));
@@ -32,7 +42,7 @@ describe("monthly summary interface", () => {
     await user.click(screen.getByRole("tab", { name: "Categorias" }));
     await user.click(screen.getByRole("tab", { name: "Origens dos totais" }));
     await user.click(screen.getByRole("tab", { name: "Resumo do mês" }));
-    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(fetch).toHaveBeenCalledTimes(4);
   });
   it("shows values and both months' evidence with installment and transaction links", async () => {
     renderUI(<MonthlySummaryContent summary={summary()} />);
@@ -96,7 +106,7 @@ describe("monthly summary interface", () => {
     expect(screen.queryByText("Não aplicável")).not.toBeInTheDocument();
     await user.click(screen.getByRole("tab", { name: "Meses do ano" }));
     await user.click(screen.getByRole("tab", { name: "Resumo do mês" }));
-    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(fetch).toHaveBeenCalledTimes(4);
     fail = false;
     await user.click(screen.getByRole("button", { name: "Tentar novamente" }));
     expect(await screen.findByText(/aumento de/)).toBeVisible();
@@ -122,11 +132,11 @@ describe("monthly summary interface", () => {
     vi.mocked(fetch).mockImplementation(async (input) => String(input).includes("view=summary") ? new Promise((resolve) => { finish = resolve; }) : Response.json(String(input).includes("categories") ? { categories: [] } : { entries: [] }));
     const { user } = renderUI(<ReportTables report={{ ...empty(), entryCount: 0 }} />);
     await user.click(screen.getByRole("tab", { name: "Resumo do mês" }));
-    const signal = vi.mocked(fetch).mock.calls[2][1]?.signal;
+    const signal = vi.mocked(fetch).mock.calls.find(([input]) => String(input).includes("view=summary"))![1]?.signal;
     await user.click(screen.getByRole("tab", { name: "Meses do ano" }));
     await user.click(screen.getByRole("tab", { name: "Resumo do mês" }));
     expect(signal?.aborted).toBe(false);
-    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(fetch).toHaveBeenCalledTimes(4);
     await act(async () => finish(Response.json({ summary: summary() })));
     expect(screen.getByText(/aumento de/)).toBeVisible();
   });
