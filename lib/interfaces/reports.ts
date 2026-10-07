@@ -30,7 +30,7 @@ export type ReportInitialProps = { report: ReportInitialResult };
 export type ReportMonthsProps = { report: Pick<ReportResult, "series"> };
 export type ReportCategoryProps = { report: Pick<ReportResult, "categories" | "previousPeriod" | "partial"> };
 export type ReportEntriesProps = { report: Pick<ReportResult, "entries"> };
-export type ReportView = "categories" | "sources" | "summary";
+export type ReportView = "categories" | "sources" | "summary" | "daily-expenses";
 export type ReportDeferredState = {
   categories: ReportResult["categories"] | null;
   entries: ReportEntry[] | null;

@@ -7,6 +7,10 @@ import { ReportNotes } from "@/components/finance/reports/notes";
 import { navigation } from "@/tests/frontend/setup";
 import { ReportTables } from "@/components/finance/reports/tables";
 import { ReportControls } from "@/components/finance/reports/controls";
+import { DailyExpensesView } from "@/components/finance/reports/daily-expenses-view";
+import { FinancialPrivacyContext } from "@/components/finance/privacy/privacy-context";
+import { buildDailyExpenseMap } from "@/lib/daily-expenses";
+import type { DailyExpenseEntry } from "@/lib/interfaces/daily-expenses";
 import { renderUI } from "@/tests/frontend/helpers";
 
 vi.mock("@/lib/server/reports", () => ({ getReportInitial: vi.fn() }));
@@ -112,5 +116,50 @@ describe("reports interface", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Não foi possível carregar");
     await user.click(screen.getByRole("button", { name: "Tentar novamente" }));
     expect(await screen.findByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
+  });
+  it("loads the monthly daily map with deferred report views and lets a keyboard user open a day", async () => {
+    const entry: DailyExpenseEntry = {
+      id: "daily-entry", date: "2026-07-05", description: "Mercado", amountCents: 20000,
+      direction: "expense", source: "transaction", category: "Alimentação", account: "Principal",
+      sourceHref: "/transactions?month=2026-06",
+    };
+    const map = buildDailyExpenseMap("2026-07", [entry]);
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      const url = String(input);
+      if (url.includes("view=daily-expenses")) return Response.json({ map });
+      return Response.json(url.includes("view=categories") ? { categories: [] } : { entries: [] });
+    });
+    const { user } = renderUI(<ReportTables report={report()} />);
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith("/api/reports?mode=monthly&period=2026-07&view=categories", expect.anything());
+      expect(fetch).toHaveBeenCalledWith("/api/reports?mode=monthly&period=2026-07&view=sources", expect.anything());
+      expect(fetch).toHaveBeenCalledWith("/api/reports?mode=monthly&period=2026-07&view=daily-expenses", expect.anything());
+    });
+    await user.click(screen.getByRole("tab", { name: "Despesas por data" }));
+    expect(await screen.findByRole("heading", { name: "Despesas por data da transação/compra" })).toBeVisible();
+    const day = screen.getByRole("button", { name: /05\/07\/2026\. Gastos positivos/ });
+    day.focus();
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("heading", { name: "Movimentos de 05/07/2026" })).toBeVisible();
+    expect(screen.getByText("Mercado", { exact: true })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Abrir lançamento" })).toHaveAttribute("href", "/transactions?month=2026-06");
+    expect(screen.getByRole("table", { name: "Calendário de despesas de julho de 2026" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Resumo diário acessível" })).toBeVisible();
+  });
+  it("masks daily amounts in cells, labels, the daily table and selected day details", async () => {
+    const map = buildDailyExpenseMap("2026-07", [{
+      id: "daily-entry", date: "2026-07-05", description: "Mercado", amountCents: 20000,
+      direction: "expense", source: "transaction", category: "Alimentação", account: "Principal",
+      sourceHref: "/transactions?month=2026-07",
+    }]);
+    const { user } = renderUI(<FinancialPrivacyContext value={{ hidden: true, setHidden: vi.fn() }}><DailyExpensesView map={map} /></FinancialPrivacyContext>);
+    const day = screen.getByRole("button", { name: /05\/07\/2026\. Gastos positivos Valor oculto/ });
+    expect(day).toHaveAttribute("title", expect.stringContaining("Valor oculto"));
+    const mapSection = screen.getByRole("region", { name: "Despesas por data da transação ou compra" });
+    expect(mapSection).not.toHaveTextContent(/R\$\s*\d/);
+    await user.click(day);
+    expect(await screen.findByRole("heading", { name: "Movimentos de 05/07/2026" })).toBeVisible();
+    expect(mapSection).not.toHaveTextContent(/R\$\s*\d/);
+    expect(screen.getAllByRole("img", { name: "Valor oculto" }).length).toBeGreaterThan(0);
   });
 });

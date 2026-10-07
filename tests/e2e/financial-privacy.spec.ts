@@ -49,6 +49,18 @@ test("global privacy covers every financial domain, details, charts and reload w
       await expect(page.getByRole("dialog")).not.toContainText(/R\$\s*\d/);
       await page.getByRole("dialog").getByRole("button", { name: /Fechar|Close/ }).click();
     }
+    if (route.startsWith("/reports")) {
+      await page.getByRole("tab", { name: "Despesas por data", exact: true }).click();
+      await expect(page.getByRole("heading", { name: "Despesas por data da transação/compra" })).toBeVisible();
+      await expect(page.locator("body")).not.toContainText(/R\$\s*\d/);
+      const dailyCell = page.getByRole("button", { name: /^11\/07\/2026\./ });
+      await expect(dailyCell).toHaveAttribute("title", /Valor oculto/);
+      await dailyCell.click();
+      await expect(page.getByRole("heading", { name: "Movimentos de 11/07/2026" })).toBeVisible();
+      await expect(page.locator("body")).not.toContainText(/R\$\s*\d/);
+      const dailyTable = page.getByRole("heading", { name: "Resumo diário acessível" }).locator("xpath=ancestor::*[@data-slot='card'][1]").getByRole("table");
+      await expect(dailyTable).not.toContainText(/R\$\s*\d/);
+    }
     if (route.startsWith("/dashboard") || route === "/projected-balance") {
       await expect(page.locator(".recharts-surface")).toHaveCount(0);
       await expect(page.locator('[data-slot="chart"]').first().getByRole("img", { name: "Valor oculto" })).toBeVisible();

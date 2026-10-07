@@ -6,6 +6,7 @@ import { buildReport, reportEntries, reportMetrics } from "@/lib/report-aggregat
 import { reportYearMonths, shiftReportPeriod } from "@/lib/report-periods";
 import { readDashboardRecords } from "@/lib/server/dashboard-records";
 import { getFinanceToday } from "@/lib/server/runtime";
+import { getDailyExpenseMap } from "@/lib/server/daily-expenses";
 
 export async function getReport(selection: ReportPeriod, database?: AppDb, today = getFinanceToday()) {
   const previous = shiftReportPeriod(selection.mode, selection.period, -1);
@@ -35,6 +36,9 @@ export async function getReportInitial(selection: ReportPeriod, database?: AppDb
 }
 
 export async function getReportView(selection: ReportPeriod, view: ReportView, database?: AppDb, today = getFinanceToday()) {
+  if (view === "daily-expenses" && selection.mode === "monthly") {
+    return { map: await getDailyExpenseMap(selection.period, database) };
+  }
   const previous = shiftReportPeriod(selection.mode, selection.period, -1);
   const months = selection.mode === "monthly" ? [selection.period] : reportYearMonths(selection.period, today);
   const previousMonths = view !== "sources" ? selection.mode === "monthly" ? [previous] : reportYearMonths(previous, "9999-12-31") : [];
