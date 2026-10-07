@@ -5,7 +5,7 @@ import { financeIconClassName } from "@/components/finance/finance-styles";
 import { StatusDotBadge } from "@/components/finance/status-dot-badge";
 import { Progress } from "@/components/ui/progress";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
-import type { BudgetRowProps } from "@/lib/interfaces/budgets";
+import type { BudgetMetricValue, BudgetRowProps } from "@/lib/interfaces/budgets";
 import { BudgetDialog } from "./budget-dialog";
 import { BudgetExpenses } from "./budget-expenses";
 import { BudgetRemove } from "./budget-remove";
@@ -16,7 +16,7 @@ const progressTones = { below: "[&_[data-slot=progress-indicator]]:bg-brand", wa
 
 export function BudgetCategoryRow({ row, month }: BudgetRowProps) {
   const { formatCurrency } = useFinancialFormatter();
-  const values = [["Realizado", formatCurrency(row.postedCents)], ["Pendente", formatCurrency(row.pendingCents)], ["Comprometido", formatCurrency(row.committedCents)]];
+  const values: BudgetMetricValue[] = [["Realizado", formatCurrency(row.postedCents)], ["Pendente", formatCurrency(row.pendingCents)], ["Comprometido", formatCurrency(row.committedCents)]];
   if (row.limit) values.push(["Limite", formatCurrency(row.limit.amountCents)], ["Saldo do limite", formatCurrency(row.remainingCents!)]);
   return <article className="space-y-4 py-5" aria-label={row.categoryName}>
     <div className="flex flex-wrap items-center justify-between gap-3">

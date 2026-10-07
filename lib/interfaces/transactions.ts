@@ -118,7 +118,7 @@ export type TransactionDialogProps = {
 
 export type TransactionSummaryCardProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   tone: "cyan" | "blue" | "sky" | "amber";
 };
 

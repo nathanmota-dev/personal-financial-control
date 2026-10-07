@@ -1,8 +1,9 @@
 import type { InvestmentReductionSelection,InvestmentReductionSource } from "@/lib/interfaces/investment-reconciliation";
+import type { ReactNode } from "react";
 
 export interface ReconciliationAlertSection1Props {
-  registrationMessage: string;
-  allocationMessage: string;
+  registrationMessage: ReactNode;
+  allocationMessage: ReactNode;
   reductionCents: number;
   isPending: boolean;
   startTransition: import("react").TransitionStartFunction;

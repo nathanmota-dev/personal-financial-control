@@ -78,14 +78,14 @@ export type InvestmentFieldProps = {
 export type InvestmentSummaryCardProps = {
   icon: ReactNode;
   label: string;
-  value: string;
-  detail: string;
+  value: ReactNode;
+  detail: ReactNode;
   tone: "cyan" | "sky" | "amber";
 };
 
 export type InvestmentGrowthSummaryMetricProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   tone: "cyan" | "amber" | "emerald";
 };
 
@@ -95,7 +95,7 @@ export type InvestmentContributionChartProps = {
 
 export type InvestmentHistoryMetricProps = {
   label: string;
-  value: string;
-  detail?: string;
+  value: ReactNode;
+  detail?: ReactNode;
   tone: "cyan" | "sky" | "amber";
 };

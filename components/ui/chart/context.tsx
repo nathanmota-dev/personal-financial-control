@@ -1,6 +1,7 @@
 "use client";
 
 import { useFinancialPrivacy } from "@/components/finance/privacy/privacy-context";
+import { HiddenFinancialValue } from "@/components/finance/privacy/hidden-financial-value";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import * as RechartsPrimitive from "recharts";
@@ -60,7 +61,7 @@ export function ChartContainer({
   const uniqueId = React.useId()
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`
 
-  if (hidden) return <div data-slot="chart" className={cn("flex items-center justify-center", className)} role="img" aria-label="Valor oculto">Valor oculto</div>
+  if (hidden) return <div data-slot="chart" className={cn("flex items-center justify-center", className)}><HiddenFinancialValue /></div>
 
   return (
     <ChartContext.Provider value={{ config }}>

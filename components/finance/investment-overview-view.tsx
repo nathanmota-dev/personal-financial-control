@@ -19,7 +19,7 @@ export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <InvestmentOverviewMetric icon={<Landmark className="size-5" />} label="Patrimônio investido" value={formatCurrency(overview.totalCents)} detail="Reserva + longo prazo" tone="cyan" />
       <InvestmentOverviewMetric icon={<PiggyBank className="size-5" />} label="Reserva" value={formatCurrency(overview.reserve.amountCents)} detail={overview.reserve.configured ? "Liquidez preservada" : "Ainda não configurada"} tone="teal" href="/investments/emergency-reserve" />
-      <InvestmentOverviewMetric icon={<WalletCards className="size-5" />} label="Longo prazo" value={formatCurrency(overview.portfolioCents)} detail={`Custo conhecido: ${formatCurrency(overview.knownCostCents)}`} tone="blue" />
+      <InvestmentOverviewMetric icon={<WalletCards className="size-5" />} label="Longo prazo" value={formatCurrency(overview.portfolioCents)} detail={<>Custo conhecido: {formatCurrency(overview.knownCostCents)}</>} tone="blue" />
       <InvestmentOverviewMetric icon={<ResultIcon className="size-5" />} label="Resultado conhecido" value={formatCurrency(overview.resultCents)} detail="Somente posições com custo informado" tone={overview.resultCents >= 0 ? "green" : "red"} />
     </section>
     <section className={`${financePanelClassName} p-6`}>

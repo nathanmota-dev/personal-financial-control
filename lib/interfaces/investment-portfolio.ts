@@ -2,6 +2,7 @@ import type {
 Dispatch,
 SetStateAction,
 } from "react";
+import type { ReactNode } from "react";
 
 import type { getInvestmentPortfolioDashboard } from "@/lib/server/investment-portfolio";
 
@@ -77,9 +78,9 @@ export type PortfolioSummaryProps = {
 
 export type SummaryMetricProps = {
   label: string;
-  value: string;
-  detail: string;
-  icon: React.ReactNode;
+  value: ReactNode;
+  detail: ReactNode;
+  icon: ReactNode;
   tone: "cyan" | "sky" | "teal" | "amber";
 };
 
@@ -166,5 +167,5 @@ export type HoldingActionsProps = {
 
 export type HoldingMetricProps = {
   label: string;
-  value: string;
+  value: ReactNode;
 };

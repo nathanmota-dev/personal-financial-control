@@ -67,8 +67,8 @@ export function AllocationDialog({
           />
           <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-content">
             {isRelease
-              ? `Alocado nesta meta: ${formatCurrency(state?.goal.allocatedCents ?? 0)}`
-              : `Reserva livre: ${formatCurrency(freeReserveCents)}`}
+              ? <>Alocado nesta meta: {formatCurrency(state?.goal.allocatedCents ?? 0)}</>
+              : <>Reserva livre: {formatCurrency(freeReserveCents)}</>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="goal-allocation-notes" className="text-content-strong">

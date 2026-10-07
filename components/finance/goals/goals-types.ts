@@ -72,7 +72,7 @@ export type SummaryTone = "cyan" | "sky" | "teal" | "amber" | "violet" | "rose";
 
 export type SummaryCardProps = {
   label: string;
-  value: string;
+  value: ReactNode;
   icon: ReactNode;
   tone: SummaryTone;
 };
@@ -93,7 +93,7 @@ export type GoalArchiveCardProps = {
 
 export type GoalMetricProps = {
   label: string;
-  value: string;
+  value: ReactNode;
 };
 
 export type IconButtonProps = {

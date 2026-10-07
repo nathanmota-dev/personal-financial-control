@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 export type FinanceMetricProps = {
   label: string;
-  value: string;
-  description?: string;
+  value: ReactNode;
+  description?: ReactNode;
   icon?: ReactNode;
   tone?: "neutral" | "brand" | "success" | "warning" | "danger";
   className?: string;

@@ -19,12 +19,12 @@ test("global privacy covers every financial domain, details, charts and reload w
   const before = (await (await request.get("/api/transactions?competenceMonth=2026-07")).json()).transactions;
   const original = await income.locator("p").nth(1).innerText();
   await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();
-  await expect(income).toContainText("Valor oculto");
+  await expect(income.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
   await page.getByRole("button", { name: "Recolher sidebar" }).click();
   await expect(page.getByRole("button", { name: "Mostrar valores", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "julho de 2026" }).click();
   await page.getByRole("button", { name: "Jun", exact: true }).click();
-  await expect(income).toContainText("Valor oculto");
+  await expect(income.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
   await page.addInitScript(() => {
     const leaks: string[] = [];
     Object.assign(window, { privacyLeaks: leaks });
@@ -38,7 +38,7 @@ test("global privacy covers every financial domain, details, charts and reload w
   for (const route of routes) {
     await page.goto(route);
     await expect(page.getByRole("button", { name: "Mostrar valores", exact: true })).toBeVisible();
-    await expect(page.getByText("Valor oculto", { exact: false }).first()).toBeVisible();
+    await expect(page.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
     expect(await page.locator("body").innerText()).not.toMatch(/R\$\s*[−+-]?\s*\d/);
     expect(await page.evaluate(() => (window as unknown as { privacyLeaks: string[] }).privacyLeaks)).toEqual([]);
     if (route === "/projected-balance") {
@@ -51,7 +51,7 @@ test("global privacy covers every financial domain, details, charts and reload w
     }
     if (route.startsWith("/dashboard") || route === "/projected-balance") {
       await expect(page.locator(".recharts-surface")).toHaveCount(0);
-      await expect(page.locator('[data-slot="chart"]').first()).toContainText("Valor oculto");
+      await expect(page.locator('[data-slot="chart"]').first().getByRole("img", { name: "Valor oculto" })).toBeVisible();
     }
   }
   await expect(page.getByRole("button", { name: "Exportar resumo" })).toHaveCount(0);
@@ -59,17 +59,17 @@ test("global privacy covers every financial domain, details, charts and reload w
   await page.goto("/investments/portfolio");
   const assetLink = page.locator('main a[href^="/investments/assets/"]').first();
   await assetLink.click();
-  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]')).toContainText("Valor oculto");
+  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]').getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await page.getByRole("button", { name: "Operação", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("textbox")).toHaveCount(0);
   await dialog.getByRole("button", { name: "Mostrar valores para editar" }).click();
   expect(await page.evaluate(key => localStorage.getItem(key), financialPrivacyKey(true))).toBe("hidden");
   await dialog.getByRole("button", { name: "Fechar", exact: true }).click();
-  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]')).toContainText("Valor oculto");
+  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]').getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await page.goto(routes[0]);
   await page.reload();
-  await expect(page.getByRole("article", { name: "Receitas" })).toContainText("Valor oculto");
+  await expect(page.getByRole("article", { name: "Receitas" }).getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { privacyLeaks: string[] }).privacyLeaks)).toEqual([]);
   await page.screenshot({ path: "reports/privacy-desktop.png" });
   await page.getByRole("button", { name: "Mostrar valores", exact: true }).click();
@@ -126,10 +126,10 @@ test("mobile keyboard control and blocked storage remain usable with isolated de
   await expect(result).toContainText("2.200,00");
   await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();
   await expect(page.getByRole("button", { name: "Mostrar valores para editar" })).toBeVisible();
-  await expect(result).toContainText("Valor oculto");
+  await expect(result.getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await expect(page.locator(".recharts-surface")).toHaveCount(0);
   await page.screenshot({ path: "reports/privacy-mobile.png" });
   await page.getByRole("button", { name: "Mostrar valores para editar" }).click();
   await expect(page.getByLabel("Valor inicial")).toHaveValue("1.000,00");
-  await expect(result).toContainText("Valor oculto");
+  await expect(result.getByRole("img", { name: "Valor oculto" })).toBeVisible();
 });

@@ -65,18 +65,12 @@ export function ReconciliationAlert({ dashboard }: ReconciliationAlertProps) {
   const differenceCents = Math.abs(reconciliation.differenceCents ?? 0);
   const registrationMessage =
     reconciliation.state === "registered_above_global"
-      ? "Os ativos cadastrados superam o saldo global em " + formatCurrency(differenceCents) + "."
-      : "Faltam " +
-        formatCurrency(differenceCents) +
-        " em ativos cadastrados para fechar com o saldo global.";
+      ? <>Os ativos cadastrados superam o saldo global em {formatCurrency(differenceCents)}.</>
+      : <>Faltam {formatCurrency(differenceCents)} em ativos cadastrados para fechar com o saldo global.</>;
   const allocationMessage =
     overAllocatedCents > 0
-      ? "As caixinhas também estão " + formatCurrency(overAllocatedCents) + " acima do saldo global."
-      : "Há " +
-        formatCurrency(
-          Math.max((globalBalanceCents ?? totalRegisteredCents) - dashboard.totalAllocatedCents, 0)
-        ) +
-        " ainda sem caixinha.";
+      ? <>As caixinhas também estão {formatCurrency(overAllocatedCents)} acima do saldo global.</>
+      : <>Há {formatCurrency(Math.max((globalBalanceCents ?? totalRegisteredCents) - dashboard.totalAllocatedCents, 0))} ainda sem caixinha.</>;
 
   const reductionCents = Math.max(reconciliation.differenceCents ?? 0, 0);
 

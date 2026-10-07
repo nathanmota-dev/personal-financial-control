@@ -15,9 +15,9 @@ import { CompoundInterestCalculator } from "@/components/finance/calculators/com
 import { createFinancialPrivacyStore, financialPrivacyKey } from "@/lib/financial-privacy";
 
 function Values() {
-  const { formatCurrency, protect } = useFinancialFormatter();
+  const { formatCurrency, formatCurrencyText, protect } = useFinancialFormatter();
   const [draft, setDraft] = useState("987,65");
-  return <><FinancialPrivacyToggle /><p title={formatCurrency(98765)} aria-label={formatCurrency(98765)}>{formatCurrency(98765)} · {protect("123 unidades")}</p>
+  return <><FinancialPrivacyToggle /><p title={formatCurrencyText(98765)} aria-label={formatCurrencyText(98765)}>{formatCurrency(98765)} · {protect("123 unidades")}</p>
     <FinancialPrivacyForm><MoneyInput aria-label="Rascunho" value={draft} onValueChange={setDraft} /></FinancialPrivacyForm>
     <ChartContainer config={{}}><div data-testid="secret-chart">987,65</div></ChartContainer></>;
 }
@@ -41,6 +41,7 @@ it("persists visibility, keeps drafts, masks titles and charts and isolates demo
   expect(screen.getByRole("button", { name: "Mostrar valores" })).toHaveAttribute("aria-pressed", "true");
   expect(screen.getByRole("button", { name: "Mostrar valores" })).toHaveAttribute("aria-description", "Valores financeiros ocultos");
   expect(document.body.textContent).not.toContain("987,65");
+  expect(screen.getAllByRole("img", { name: "Valor oculto" }).length).toBeGreaterThan(0);
   expect(screen.getByTitle("Valor oculto")).toHaveAttribute("aria-label", "Valor oculto");
   expect(screen.queryByTestId("secret-chart")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Mostrar valores para editar" }));

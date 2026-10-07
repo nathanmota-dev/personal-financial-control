@@ -9,7 +9,7 @@ export function DashboardMetric({
   value,
   comparison,
 }: MetricCardProps) {
-  const { protect } = useFinancialFormatter();
+  const { protect, protectText } = useFinancialFormatter();
   const Icon = comparison.tone === "neutral" && comparison.description.startsWith("Sem movimentações")
     ? Minus : comparison.direction === "up" ? TrendingUp : comparison.direction === "down" ? TrendingDown : Minus;
   const accent = comparison.tone === "positive" ? "text-success" : comparison.tone === "negative" ? "text-danger" : "text-content-subtle";
@@ -19,7 +19,7 @@ export function DashboardMetric({
         {label}
       </p>
       <span className={`absolute top-[23px] right-[18px] ${accent}`}>
-        <Icon className="size-[19px]" aria-label={protect(comparison.description)} />
+        <Icon className="size-[19px]" aria-label={protectText(comparison.description)} />
       </span>
       <p className="absolute top-[50px] left-[18px] right-2 whitespace-nowrap text-[clamp(20px,1.875vw,32px)] leading-[34px] font-[650] tracking-[-0.8px] xl:text-[27px]">
         {value}

@@ -56,8 +56,8 @@ export function InvestmentReductionDialogDiv2({ amountCents, selectedCents, grou
                 {isClosed
                   ? "A distribuição fecha exatamente a redução."
                   : remainingCents > 0
-                    ? `Ainda faltam ${formatCurrency(remainingCents)}.`
-                    : `A distribuição excede em ${formatCurrency(Math.abs(remainingCents))}.`}
+                    ? <>Ainda faltam {formatCurrency(remainingCents)}.</>
+                    : <>A distribuição excede em {formatCurrency(Math.abs(remainingCents))}.</>}
               </p>
               {footerNote ? <div className="mt-1 text-xs opacity-75">{footerNote}</div> : null}
             </div>
