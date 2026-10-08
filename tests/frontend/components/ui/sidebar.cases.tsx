@@ -74,7 +74,7 @@ it.each(["sidebar", "floating", "inset"] as const)(
     await user.type(screen.getByRole("textbox"), "Principal");
     expect(screen.getByRole("textbox")).toHaveValue("Principal");
     await user.click(
-      screen.getAllByRole("button", { name: "Toggle Sidebar" })[1],
+      screen.getAllByRole("button", { name: "Alternar barra lateral" })[1],
     );
     expect(click).toHaveBeenCalledOnce();
     expect(document.cookie).toContain("sidebar_state=false");
@@ -87,7 +87,7 @@ it.each(["sidebar", "floating", "inset"] as const)(
     fireEvent.keyDown(window, { key: "a", metaKey: true });
     expect(document.cookie).toContain("sidebar_state=true");
     await user.click(
-      screen.getAllByRole("button", { name: "Toggle Sidebar" })[0],
+      screen.getAllByRole("button", { name: "Alternar barra lateral" })[0],
     );
     expect(document.cookie).toContain("sidebar_state=false");
   },
@@ -127,7 +127,7 @@ it("supports controlled state and elements composed as links", async () => {
     </S.SidebarProvider>,
   );
   expect(screen.getByRole("heading", { name: "Grupo" })).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Toggle Sidebar" }));
+  await user.click(screen.getByRole("button", { name: "Alternar barra lateral" }));
   expect(change).toHaveBeenCalledWith(false);
 });
 it("opens the mobile sheet through the same navigation trigger", async () => {
@@ -140,8 +140,8 @@ it("opens the mobile sheet through the same navigation trigger", async () => {
       <S.SidebarTrigger />
     </S.SidebarProvider>,
   );
-  await user.click(screen.getByRole("button", { name: "Toggle Sidebar" }));
-  expect(screen.getByRole("dialog", { name: "Sidebar" })).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Alternar barra lateral" }));
+  expect(screen.getByRole("dialog", { name: "Barra lateral" })).toBeVisible();
   expect(screen.getByText("Menu mobile")).toBeVisible();
   await user.keyboard("{Escape}");
   expect(screen.queryByRole("dialog")).toBeNull();

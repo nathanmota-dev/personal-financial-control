@@ -40,7 +40,7 @@ export function RecurringCard({
           <Repeat2 className="size-5" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 className="break-words text-base font-semibold leading-snug text-content-strong">
+          <h3 data-user-content className="break-words text-base font-semibold leading-snug text-content-strong">
             {template.description}
           </h3>
           <p className="mt-1 text-xs text-content">

@@ -23,7 +23,7 @@ export function ContributionDialogDialogContent1({ state, sourceAccounts, invest
         <DialogHeader>
           <DialogTitle>Registrar aporte</DialogTitle>
           <DialogDescription className="text-content">
-            {state?.goal.name ?? "Meta"}
+            {state?.goal ? <span data-user-content>{state.goal.name}</span> : "Meta"}
           </DialogDescription>
         </DialogHeader>
 

@@ -24,7 +24,7 @@ export function ArchiveDialog({
         <DialogHeader>
           <DialogTitle>Arquivar meta</DialogTitle>
           <DialogDescription className="text-content">
-            {goal?.name ?? "Meta"}
+            {goal ? <span data-user-content>{goal.name}</span> : "Meta"}
           </DialogDescription>
         </DialogHeader>
         <p className="text-sm leading-6 text-content">

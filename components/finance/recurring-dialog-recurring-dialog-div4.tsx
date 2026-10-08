@@ -33,7 +33,7 @@ export function RecurringDialogDiv4({ formId, selectedCategoryId, setSelectedCat
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
                     {filteredCategories.map((category) => (
-                      <SelectItem
+                      <SelectItem data-user-content
                         key={category.id}
                         value={category.id}
                         className={recurringSelectItemClassName}

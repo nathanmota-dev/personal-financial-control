@@ -123,7 +123,7 @@ function EventRow({ event, onRemoveSimulation }: EventRowProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium text-content-strong">{event.description}</p>
+            <p data-user-content className="font-medium text-content-strong">{event.description}</p>
             <Badge
               variant="outline"
               className={cn(

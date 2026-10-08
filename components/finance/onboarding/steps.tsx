@@ -42,7 +42,7 @@ export function OnboardingSteps({ name, accounts, disabled, onSaved, onBusyChang
         <div aria-live="polite" className="space-y-2">
           <p className="text-sm font-medium">{credit ? "Cartões" : "Contas"} cadastrados ({items.length})</p>
           {items.length ? <ul className="divide-y rounded-lg border px-3">{items.map(account => <li key={account.id} className="flex justify-between gap-3 py-3 text-sm">
-            <span className="min-w-0 break-words">{account.name}</span><span className="shrink-0 text-muted-foreground">{credit ? `Fecha ${account.creditClosingDay ?? "—"} · Vence ${account.creditDueDay}` : formatCurrency(account.initialBalanceCents)}</span>
+            <span data-user-content className="min-w-0 break-words">{account.name}</span><span className="shrink-0 text-muted-foreground">{credit ? `Fecha ${account.creditClosingDay ?? "—"} · Vence ${account.creditDueDay}` : formatCurrency(account.initialBalanceCents)}</span>
           </li>)}</ul> : <p className="text-sm text-muted-foreground">Nenhum cadastro ainda. Você pode pular esta etapa.</p>}
         </div>
       </Onboarding.Step>)}

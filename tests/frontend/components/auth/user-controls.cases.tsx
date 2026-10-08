@@ -29,6 +29,11 @@ it.each([
       for (const theme of ["Auto", "Claro", "Escuro"]) {
         await user.click(screen.getByRole("button", { name: theme }));
       }
+      expect(screen.getByRole("group", { name: "Idioma" })).toBeVisible();
+      await user.click(screen.getByRole("button", { name: "Inglês" }));
+      expect(screen.getByRole("group", { name: "Language" })).toBeVisible();
+      await user.click(screen.getByRole("button", { name: "Portuguese" }));
+      expect(screen.getByRole("group", { name: "Idioma" })).toBeVisible();
     }
     expect(screen.queryByRole("button", { name: /Sair/ })).toEqual(
       demoMode ? null : expect.any(HTMLElement),

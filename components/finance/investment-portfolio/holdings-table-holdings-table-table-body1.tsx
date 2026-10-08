@@ -23,10 +23,10 @@ export function HoldingsTableTableBody1({ dashboard, onEditAllocation, onEdit, o
                   <TableRow key={holding.id} className="border-border/70 hover:bg-card">
                     <TableCell className="max-w-[230px] pl-6">
                       <div className="min-w-0">
-                        <p className="truncate font-medium text-content-strong">{holding.name}</p>
+                        <p data-user-content className="truncate font-medium text-content-strong">{holding.name}</p>
                         <p className="mt-1 truncate text-xs text-content">
-                          {holding.ticker || "Sem ticker"}
-                          {holding.institutionName ? " · " + holding.institutionName : ""}
+                          {holding.ticker ? <span data-user-content>{holding.ticker}</span> : "Sem ticker"}
+                          {holding.institutionName ? <> · <span data-user-content>{holding.institutionName}</span></> : ""}
                         </p>
                         {holding.allocations.length ? (
                           <div className="mt-2 flex flex-wrap gap-1.5">

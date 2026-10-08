@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { renderUI } from "../../helpers";
 import {
@@ -52,6 +53,20 @@ it("embeds a command in a labelled dialog", () => {
       </Command>
     </CommandDialog>,
   );
-  expect(screen.getByRole("dialog")).toBeVisible();
+  expect(screen.getByRole("dialog", { name: "Buscar página" })).toBeVisible();
+  expect(screen.getByRole("dialog")).toHaveAccessibleDescription("Escolha o destino");
   expect(screen.getByRole("option", { name: "Dashboard" })).toBeVisible();
+});
+it("omits closed dialog text from server HTML and the client DOM", () => {
+  const dialog = (
+    <CommandDialog open={false} title="Menu de comandos" description="Escolha o destino">
+      <Command><CommandInput /></Command>
+    </CommandDialog>
+  );
+
+  expect(renderToString(dialog)).not.toContain("Menu de comandos");
+  expect(renderToString(dialog)).not.toContain("Escolha o destino");
+  renderUI(dialog);
+  expect(screen.queryByText("Menu de comandos")).not.toBeInTheDocument();
+  expect(screen.queryByText("Escolha o destino")).not.toBeInTheDocument();
 });

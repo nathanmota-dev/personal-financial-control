@@ -41,8 +41,8 @@ export function TransactionsViewDiv1({ transactions, accounts, categories, filte
                             <TableCell>{formatDateLabel(transaction.transactionDate)}</TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium text-content-strong">{transaction.description}</p>
-                                {transaction.notes ? <p className="text-xs text-content">{transaction.notes}</p> : null}
+                                <p data-user-content className="font-medium text-content-strong">{transaction.description}</p>
+                                {transaction.notes ? <p data-user-content className="text-xs text-content">{transaction.notes}</p> : null}
                                 {transaction.isGeneratedByFunding ? (
                                   <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
                                 ) : transaction.fundingSource === "investments" ? (
@@ -50,8 +50,8 @@ export function TransactionsViewDiv1({ transactions, accounts, categories, filte
                                 ) : null}
                               </div>
                             </TableCell>
-                            <TableCell>{transaction.account?.name ?? "-"}</TableCell>
-                            <TableCell>{transaction.category?.name ?? "Sem categoria"}</TableCell>
+                            <TableCell data-user-content>{transaction.account?.name ?? "-"}</TableCell>
+                            <TableCell>{transaction.category ? <span data-user-content>{transaction.category.name}</span> : "Sem categoria"}</TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-2">
                                 <StatusDotBadge tone={getTransactionTone(transaction.type)}>

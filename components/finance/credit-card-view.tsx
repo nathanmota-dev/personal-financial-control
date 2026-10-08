@@ -95,7 +95,7 @@ export function CreditCardView({ overview, categories, loadError = false }: Cred
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {overview.accounts.map((account) => (
               <div key={account.id} className="rounded-2xl border border-border bg-muted/30 p-4">
-                <p className="font-medium text-content-strong">{account.name}</p>
+                <p data-user-content className="font-medium text-content-strong">{account.name}</p>
                 <p className="mt-2 text-sm text-content">
                   Fecha dia {account.creditClosingDay ?? "—"} · vence dia {account.creditDueDay}
                 </p>

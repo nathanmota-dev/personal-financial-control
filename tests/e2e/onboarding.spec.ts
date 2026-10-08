@@ -9,6 +9,8 @@ const test = base.extend<{ finance: FinanceServer }>({
   }, { timeout: 60000 }],
 });
 
+test.use({ locale: "pt-BR" });
+
 test("persists setup, reuses saved accounts and permanently completes", async ({ page, context, finance }) => {
   await context.addCookies([{ name: "session", value: "onboarding-a", url: finance.url }]);
   await page.goto(`${finance.url}/dashboard`);

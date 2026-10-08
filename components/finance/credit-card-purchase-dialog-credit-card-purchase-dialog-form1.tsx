@@ -27,7 +27,7 @@ export function CreditCardPurchaseDialogForm1({ startTransition, onSubmit, defau
               <FinanceField label="Categoria">
                 <FormSelect name="categoryId" defaultValue={defaultCategoryId}>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
+                    <SelectItem data-user-content key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
                   ))}

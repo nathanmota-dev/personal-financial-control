@@ -17,7 +17,7 @@ export function DashboardCategoryBars({ distribution, size = "default" }: Dashbo
         <div className="grid gap-[28px] min-[100.0625rem]:gap-5">
           {(size === "expanded" ? positive : positive.slice(0, 5)).map((item, index) => (
             <div key={item.categoryId} className="grid grid-cols-[87px_minmax(0,1fr)_76px] items-center gap-3 text-xs">
-              <span className="truncate font-medium text-content" title={item.categoryName}>{item.categoryName}</span>
+              <span data-user-content className="truncate font-medium text-content" title={item.categoryName}>{item.categoryName}</span>
               <svg className="h-[9px] w-full overflow-visible" viewBox="0 0 198 9" preserveAspectRatio="none" role="img" aria-label={`${item.categoryName}: ${formatCurrencyText(item.amountCents)}`}>
                 <rect width="198" height="9" rx="4.5" fill="var(--chart-rail)" />
                 <rect width={(item.amountCents / max) * 172.2} height="9" rx="4.5" fill={colors[index % colors.length]} />
@@ -29,7 +29,7 @@ export function DashboardCategoryBars({ distribution, size = "default" }: Dashbo
         {!positive.length && <p className="mt-8 text-center text-sm text-content-muted">Nenhuma despesa líquida positiva neste mês.</p>}
         {credits.length > 0 && <div className="mt-5 space-y-2 border-t border-border pt-3">
           <p className="text-xs font-semibold">Categorias com créditos líquidos</p>
-          {credits.map((item) => <p key={item.categoryId} className="flex justify-between gap-3 text-xs text-content"><span>{item.categoryName}</span><span>{formatCurrency(item.amountCents)}</span></p>)}
+          {credits.map((item) => <p key={item.categoryId} className="flex justify-between gap-3 text-xs text-content"><span data-user-content>{item.categoryName}</span><span>{formatCurrency(item.amountCents)}</span></p>)}
         </div>}
       </div>
     </section>

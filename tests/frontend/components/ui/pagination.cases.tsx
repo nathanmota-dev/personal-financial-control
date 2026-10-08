@@ -36,7 +36,7 @@ it("marks the current page and keeps navigation destinations", () => {
     "aria-current",
     "page",
   );
-  expect(screen.getByRole("link", { name: "Go to next page" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: "Ir para a próxima página" })).toHaveAttribute(
     "href",
     "?page=3",
   );

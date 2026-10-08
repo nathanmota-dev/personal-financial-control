@@ -41,7 +41,7 @@ export function InvestmentReductionDialogSection1({ group, amounts, changeAmount
                               <Check className="size-4 shrink-0 text-brand" />
                             ) : null}
                           </div>
-                          <p className="mt-1 text-xs leading-5 text-content">{source.description}</p>
+                          <p data-user-content className="mt-1 text-xs leading-5 text-content">{source.description}</p>
                           <p className="mt-1 text-xs text-content">
                             Disponível: {formatCurrency(source.availableCents)}
                           </p>

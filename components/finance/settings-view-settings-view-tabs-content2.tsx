@@ -28,7 +28,7 @@ export function SettingsViewTabsContent2({ categoriesByGroup }: SettingsViewTabs
                     <div key={category.id} className="rounded-xl bg-surface p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="font-medium text-content-strong">{category.name}</p>
+                          <p data-user-content className="font-medium text-content-strong">{category.name}</p>
                           <p className="mt-1 text-xs text-content-muted">
                             {categoryGroupLabels[category.group]}
                           </p>

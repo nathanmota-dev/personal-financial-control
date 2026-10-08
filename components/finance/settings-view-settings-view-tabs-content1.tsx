@@ -23,7 +23,7 @@ export function SettingsViewTabsContent1({ accounts }: SettingsViewTabsContent1P
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <CardTitle>{account.name}</CardTitle>
+                        <CardTitle data-user-content>{account.name}</CardTitle>
                         <p className="mt-1 text-xs text-content-muted">{accountTypeLabels[account.type]}</p>
                       </div>
                       {account.isArchived ? <Badge variant="outline">Arquivada</Badge> : null}

@@ -20,7 +20,7 @@ export function BudgetCategoryRow({ row, month }: BudgetRowProps) {
   if (row.limit) values.push(["Limite", formatCurrency(row.limit.amountCents)], ["Saldo do limite", formatCurrency(row.remainingCents!)]);
   return <article className="space-y-4 py-5" aria-label={row.categoryName}>
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex min-w-0 items-center gap-3"><span className={`${financeIconClassName} size-10 shrink-0`}><Layers className="size-[18px]" /></span><div><h3 className="text-sm font-semibold">{row.categoryName}</h3>{row.archived && <p className="mt-1 text-xs text-content-subtle">Arquivada</p>}</div></div>
+      <div className="flex min-w-0 items-center gap-3"><span className={`${financeIconClassName} size-10 shrink-0`}><Layers className="size-[18px]" /></span><div><h3 data-user-content className="text-sm font-semibold">{row.categoryName}</h3>{row.archived && <p className="mt-1 text-xs text-content-subtle">Arquivada</p>}</div></div>
       {row.state && <StatusDotBadge tone={tones[row.state]}>{states[row.state]}</StatusDotBadge>}
     </div>
     <dl className={`grid grid-cols-2 gap-4 text-sm tabular-nums ${row.limit ? "sm:grid-cols-3 xl:grid-cols-5" : "sm:grid-cols-3"}`}>

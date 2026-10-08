@@ -51,7 +51,7 @@ export function DashboardBalances({ accounts }: DashboardBalancesProps) {
           <div key={account.id} className="flex items-center gap-3">
             <span className="size-[9px] shrink-0 rounded-full bg-chart-3" />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[13px] font-semibold">
+              <p data-user-content className="truncate text-[13px] font-semibold">
                 {account.name}
               </p>
               <p className="mt-0.5 text-[11px] text-content-subtle">

@@ -33,7 +33,7 @@ export function RecurringDialogDiv3({ formId, selectedAccountId, setSelectedAcco
                   </SelectTrigger>
                   <SelectContent className={recurringSelectContentClassName}>
                     {filteredAccounts.map((account) => (
-                      <SelectItem
+                      <SelectItem data-user-content
                         key={account.id}
                         value={account.id}
                         className={recurringSelectItemClassName}

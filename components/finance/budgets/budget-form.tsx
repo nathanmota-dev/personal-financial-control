@@ -28,7 +28,7 @@ export function BudgetForm({ month, categories, limit, onSaved }: BudgetFormProp
       {!limit && <FinanceField label="Categoria">
         <Select name="categoryId" value={categoryId} onValueChange={setCategoryId} disabled={pending} required>
           <SelectTrigger aria-label="Categoria" className="w-full"><SelectValue placeholder="Selecione uma categoria" /></SelectTrigger>
-          <SelectContent>{categories.map((category) => <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>)}</SelectContent>
+          <SelectContent>{categories.map((category) => <SelectItem data-user-content key={category.id} value={category.id}>{category.name}</SelectItem>)}</SelectContent>
         </Select>
       </FinanceField>}
       <FinanceField label="Limite mensal (R$)">

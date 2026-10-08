@@ -74,7 +74,7 @@ export function ProjectionSimulationPanel({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate font-medium text-content-strong">
+                      <p data-user-content className="truncate font-medium text-content-strong">
                         {simulation.description}
                       </p>
                       <Badge className="bg-warning/10 text-warning ring-1 ring-warning/25">
@@ -82,7 +82,7 @@ export function ProjectionSimulationPanel({
                       </Badge>
                     </div>
                     <p className="mt-1 text-xs text-content">
-                      {formatDateLabel(simulation.date)} · {simulation.accountName}
+                      {formatDateLabel(simulation.date)} · <span data-user-content>{simulation.accountName}</span>
                     </p>
                   </div>
                   <Button

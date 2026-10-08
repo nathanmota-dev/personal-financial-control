@@ -18,7 +18,7 @@ export function BudgetExpenses({ row }: BudgetExpensesProps) {
       <DialogHeader><DialogTitle>Despesas de {row.categoryName}</DialogTitle><DialogDescription>Confira os lançamentos, parcelas e créditos que compõem esta categoria.</DialogDescription></DialogHeader>
       {row.expenses.length ? <ul className="divide-y divide-border">{row.expenses.map((expense) => <li key={expense.id} className="flex gap-3 py-4">
         <span className={`${financeIconClassName} size-10 shrink-0`}><ReceiptText className="size-[18px]" /></span>
-        <div className="min-w-0 flex-1 space-y-1"><p className="text-sm font-semibold">{expense.description}</p><p className="text-xs text-content-subtle">{expense.accountName} · {expense.origin} · {formatDateLabel(expense.date)}</p><StatusDotBadge tone={expense.pending ? "text-warning" : "text-success"}>{expense.pending ? "Pendente" : "Realizado"}</StatusDotBadge></div>
+        <div className="min-w-0 flex-1 space-y-1"><p data-user-content className="text-sm font-semibold">{expense.description}</p><p className="text-xs text-content-subtle"><span data-user-content>{expense.accountName}</span> · {expense.origin} · {formatDateLabel(expense.date)}</p><StatusDotBadge tone={expense.pending ? "text-warning" : "text-success"}>{expense.pending ? "Pendente" : "Realizado"}</StatusDotBadge></div>
         <div className="shrink-0 text-right"><p className="text-sm font-semibold tabular-nums">{formatCurrency(expense.amountCents)}</p>{expense.amountCents < 0 && <p className="mt-1 text-xs text-success">Crédito</p>}</div>
       </li>)}</ul> : <FinanceEmptyState title="Nenhuma despesa nesta competência" description="Os lançamentos desta categoria aparecerão aqui quando forem registrados." />}
     </DialogContent>

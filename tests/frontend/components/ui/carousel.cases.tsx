@@ -33,10 +33,10 @@ it.each(["horizontal", "vertical"] as const)(
       </Carousel>,
     );
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "Next slide" })).toBeEnabled(),
+      expect(screen.getByRole("button", { name: "Próximo slide" })).toBeEnabled(),
     );
-    await user.click(screen.getByRole("button", { name: "Next slide" }));
-    await user.click(screen.getByRole("button", { name: "Previous slide" }));
+    await user.click(screen.getByRole("button", { name: "Próximo slide" }));
+    await user.click(screen.getByRole("button", { name: "Slide anterior" }));
     fireEvent.keyDown(screen.getByRole("region", { name: "Faturas" }), {
       key: "ArrowLeft",
     });
@@ -51,7 +51,7 @@ it.each(["horizontal", "vertical"] as const)(
     expect(setApi).toHaveBeenCalledWith(api);
     api.canScrollNext.mockReturnValue(false);
     act(() => api.on.mock.calls[1][1](api));
-    expect(screen.getByRole("button", { name: "Next slide" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Próximo slide" })).toBeDisabled();
     unmount();
     expect(api.off).toHaveBeenCalledTimes(2);
   },
@@ -67,7 +67,7 @@ it("keeps navigation disabled until the carousel API is ready", () => {
       <CarouselNext />
     </Carousel>,
   );
-  expect(screen.getByRole("button", { name: "Next slide" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Próximo slide" })).toBeDisabled();
   fireEvent.keyDown(screen.getByRole("region", { name: "" }), {
     key: "ArrowRight",
   });

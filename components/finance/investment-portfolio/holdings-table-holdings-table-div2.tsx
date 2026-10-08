@@ -22,12 +22,12 @@ export function HoldingsTableDiv2({ dashboard, onEdit, onAllocate, onArchive, on
               <article key={holding.id} className="rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-lg font-semibold text-content-strong">
+                    <p data-user-content className="truncate text-lg font-semibold text-content-strong">
                       {holding.name}
                     </p>
                     <p className="mt-1 truncate text-xs text-content">
-                      {holding.ticker || "Sem ticker"}
-                      {holding.institutionName ? " · " + holding.institutionName : ""}
+                      {holding.ticker ? <span data-user-content>{holding.ticker}</span> : "Sem ticker"}
+                      {holding.institutionName ? <> · <span data-user-content>{holding.institutionName}</span></> : ""}
                     </p>
                   </div>
                   <HoldingActions

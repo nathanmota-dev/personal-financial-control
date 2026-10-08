@@ -75,7 +75,7 @@ export function DashboardCategoryDistribution({ distribution, size = "default" }
             >
               <span className="font-medium">Total gasto</span>
               <div className="flex items-center justify-between gap-2">
-                <span>{chart[hoveredIndex].categoryName}</span>
+                <span data-user-content>{chart[hoveredIndex].categoryName}</span>
                 <strong>{formatCurrency(chart[hoveredIndex].amountCents)}</strong>
               </div>
             </div>
@@ -84,7 +84,7 @@ export function DashboardCategoryDistribution({ distribution, size = "default" }
         <div className="min-w-0 flex-1 space-y-[21px] min-[100.0625rem]:space-y-4">
           {chart.map((item, index) => <div key={item.categoryId} className="flex items-center gap-2 text-xs">
             <svg width="10" height="10" className="shrink-0"><circle cx="5" cy="5" r="5" fill={colors[index]} /></svg>
-            <span className="min-w-0 flex-1 truncate text-content" title={item.categoryName}>{item.categoryName}</span>
+            <span data-user-content className="min-w-0 flex-1 truncate text-content" title={item.categoryName}>{item.categoryName}</span>
             <span className="font-semibold">{Math.round(item.amountCents / total * 100)}%</span>
           </div>)}
         </div>

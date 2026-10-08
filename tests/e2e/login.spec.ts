@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ locale: "pt-BR" });
+
 test("report exports without a session never expose financial CSV", async ({ request }) => {
   const response = await request.get("/api/reports/export?mode=monthly&period=2026-07&kind=summary");
   expect(response.ok()).toBe(false);

@@ -32,13 +32,13 @@ export function RecurringCardCardContent1({ template, generated, month }: Recurr
         <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-4 text-sm">
           <div className="min-w-0">
             <dt className="text-xs text-content">Conta</dt>
-            <dd className="mt-1 break-words text-content-strong">
+            <dd data-user-content className="mt-1 break-words text-content-strong">
               {template.account?.name ?? "—"}
             </dd>
           </div>
           <div className="min-w-0">
             <dt className="text-xs text-content">Categoria</dt>
-            <dd className="mt-1 break-words text-content-strong">
+            <dd data-user-content className="mt-1 break-words text-content-strong">
               {template.category?.name ?? "—"}
             </dd>
           </div>

@@ -21,7 +21,7 @@ export function CategoryBreakdown({
         <div key={category.categoryId} className="rounded-2xl border border-border bg-muted/30 p-4">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate font-medium text-content-strong">{category.categoryName}</p>
+              <p data-user-content className="truncate font-medium text-content-strong">{category.categoryName}</p>
               <p className="mt-1 text-xs text-content">{category.group === "fixed_expense" ? "Gasto fixo" : "Gasto variável"}</p>
             </div>
             <p className="shrink-0 font-semibold text-brand">{formatCurrency(category.amountCents)}</p>

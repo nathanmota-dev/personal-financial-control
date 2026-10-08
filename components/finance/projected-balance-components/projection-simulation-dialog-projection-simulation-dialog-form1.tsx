@@ -78,7 +78,7 @@ export function ProjectionSimulationDialogForm1({ handleSubmit, formId, descript
                 </SelectTrigger>
                 <SelectContent className={selectContentClassName}>
                   {accounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id} className={selectItemClassName}>
+                    <SelectItem data-user-content key={account.id} value={account.id} className={selectItemClassName}>
                       {account.name}
                     </SelectItem>
                   ))}
