@@ -22,7 +22,7 @@ export function GoalArchiveCard({ goal }: GoalArchiveCardProps) {
             {GOAL_CATEGORY_LABELS[goal.category]}
           </Badge>
         </div>
-        <h3 className="text-lg font-semibold text-content-strong">
+        <h3 data-user-content className="text-lg font-semibold text-content-strong">
           {goal.name}
         </h3>
         <div className="grid gap-3 sm:grid-cols-2">

@@ -50,7 +50,8 @@ it.each([45000, 64000, 80000, -5000])("renders accessible consumption and expens
   expect(screen.getByText("Arquivada")).toBeVisible();
   expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", String(Math.max(0, Math.min(100, amountCents / 80000 * 100))));
   fireEvent.click(screen.getByRole("button", { name: "Conferir despesas de Food (1)" }));
-  expect(screen.getAllByText(/Card · Parcela/).length).toBe(1);
+  expect(screen.getByText("Card", { exact: true })).toBeVisible();
+  expect(screen.getByText(/Parcela \/ ajuste de cartão/)).toBeVisible();
   if (amountCents < 0) expect(screen.getAllByText(/crédito/i).length).toBeGreaterThan(0);
 });
 it("creates and edits limits and shows validation and network errors", async () => {

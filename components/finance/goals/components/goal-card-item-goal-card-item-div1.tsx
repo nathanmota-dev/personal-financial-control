@@ -50,7 +50,7 @@ export function GoalCardItemDiv1({ goal, onEdit, onRelease, onArchive }: GoalCar
                 {GOAL_STATUS_LABELS[goal.status]}
               </Badge>
             </div>
-            <h3 className="break-words text-base font-semibold text-content-strong">
+            <h3 data-user-content className="break-words text-base font-semibold text-content-strong">
               {goal.name}
             </h3>
             <p className="mt-2 flex items-center gap-2 text-xs text-content">

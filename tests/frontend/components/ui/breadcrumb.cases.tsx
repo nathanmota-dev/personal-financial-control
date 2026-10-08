@@ -31,7 +31,7 @@ it("marks the current page and supports links and custom separators", () => {
       </BreadcrumbList>
     </Breadcrumb>,
   );
-  expect(screen.getByRole("navigation", { name: "breadcrumb" })).toBeVisible();
+  expect(screen.getByRole("navigation", { name: "Navegação estrutural" })).toBeVisible();
   expect(screen.getByRole("link", { name: "Carteira" })).toHaveAttribute(
     "aria-current",
     "page",

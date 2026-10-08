@@ -92,5 +92,6 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
   document.cookie = "sidebar_state=; Max-Age=0";
+  document.cookie = "locale=; Max-Age=0; path=/";
   window.localStorage.clear();
 });

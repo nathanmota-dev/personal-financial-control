@@ -50,11 +50,11 @@ export function RecurringCalendarEventItem({
             <EventIcon className="size-3" aria-hidden="true" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[0.72rem] font-semibold leading-4 text-content-strong">
+            <p data-user-content className="truncate text-[0.72rem] font-semibold leading-4 text-content-strong">
               {event.description}
             </p>
             <p className="mt-0.5 truncate text-[0.62rem] leading-3 text-content/90">
-              {event.categoryName} · {transactionTypeLabels[event.type]}
+              <span data-user-content>{event.categoryName}</span> · {transactionTypeLabels[event.type]}
             </p>
           </div>
           {event.isGenerated ? (
@@ -67,7 +67,7 @@ export function RecurringCalendarEventItem({
           ) : null}
         </div>
         <div className="mt-1 flex min-w-0 items-center justify-between gap-2 border-t border-current/15 pt-1">
-          <span className="min-w-0 truncate text-[0.62rem] font-medium text-content/80">
+          <span data-user-content className="min-w-0 truncate text-[0.62rem] font-medium text-content/80">
             {event.accountName}
           </span>
           <span className="shrink-0 tabular-nums text-[0.68rem] font-semibold tabular-nums text-content-strong">

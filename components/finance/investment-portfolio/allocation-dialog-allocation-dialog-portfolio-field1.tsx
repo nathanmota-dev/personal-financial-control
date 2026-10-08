@@ -25,7 +25,7 @@ export function AllocationDialogPortfolioField1({ form, setForm, isExisting, pur
               </SelectTrigger>
               <SelectContent className="border-border bg-surface text-content-strong">
                 {purposes.map((purpose) => (
-                  <SelectItem key={purpose.id} value={purpose.id}>
+                  <SelectItem data-user-content key={purpose.id} value={purpose.id}>
                     {purpose.name}
                   </SelectItem>
                 ))}

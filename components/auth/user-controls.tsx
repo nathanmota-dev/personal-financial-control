@@ -35,6 +35,7 @@ export function UserControls({
       aria-label="Conta e preferências"
     >
       <Avatar
+        data-user-content
         size="lg"
         className={expanded ? "size-9" : undefined}
         title={user.name}
@@ -54,8 +55,8 @@ export function UserControls({
       {expanded ? (
         <>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{names[0]}</p>
-            <p className="mt-0.5 truncate text-xs text-content-subtle" title={user.email ?? undefined}>
+            <p data-user-content className="truncate text-sm font-semibold">{names[0]}</p>
+            <p data-user-content className="mt-0.5 truncate text-xs text-content-subtle" title={user.email ?? undefined}>
               {user.email}
             </p>
           </div>

@@ -14,9 +14,9 @@ export function ReportEntriesTable({ report }: ReportEntriesProps) {
   return <div className="hidden md:block"><Table>
     <TableHeader><TableRow>{["Competência", "Descrição", "Tipo", "Categoria", "Conta", "Situação"].map((label) => <TableHead key={label}>{label}</TableHead>)}<TableHead className="text-right">Valor</TableHead><TableHead className="text-right">Origem</TableHead></TableRow></TableHeader>
     <TableBody>{report.entries.map((entry) => <TableRow key={`${entry.source}-${entry.id}`}>
-      <TableCell>{formatMonthLabel(entry.month)}</TableCell><TableCell className="font-medium">{entry.description}</TableCell>
+      <TableCell>{formatMonthLabel(entry.month)}</TableCell><TableCell data-user-content className="font-medium">{entry.description}</TableCell>
       <TableCell><StatusDotBadge tone={getTransactionTone(entry.type as TransactionType)}>{transactionTypeLabels[entry.type as TransactionType]}</StatusDotBadge></TableCell>
-      <TableCell>{entry.category}</TableCell><TableCell>{entry.account}</TableCell><TableCell><ReportEntryStatus entry={entry} /></TableCell>
+      <TableCell data-user-content>{entry.category}</TableCell><TableCell data-user-content>{entry.account}</TableCell><TableCell><ReportEntryStatus entry={entry} /></TableCell>
       <TableCell className="text-right font-semibold tabular-nums">{formatCurrency(entry.amountCents)}</TableCell><TableCell className="text-right"><ReportEntrySource entry={entry} /></TableCell>
     </TableRow>)}</TableBody>
   </Table></div>;

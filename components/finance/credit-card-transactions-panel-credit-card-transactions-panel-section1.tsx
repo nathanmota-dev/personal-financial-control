@@ -57,7 +57,7 @@ export function CreditCardTransactionsPanelSection1({ entries, view, setView, qu
             >
               <NativeSelectOption value="all">Todas as categorias</NativeSelectOption>
               {categories.map((category) => (
-                <NativeSelectOption key={category.id} value={category.id}>
+                <NativeSelectOption data-user-content key={category.id} value={category.id}>
                   {category.name}
                 </NativeSelectOption>
               ))}

@@ -44,7 +44,7 @@ export function CreditCardTransactionRow({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="break-words text-sm font-semibold text-content-strong">{entry.description}</p>
+          <p data-user-content className="break-words text-sm font-semibold text-content-strong">{entry.description}</p>
           {entry.installmentNumber && entry.installmentCount ? (
             <Badge variant="outline" className="border-input text-[0.68rem] text-content">
               {entry.installmentNumber}/{entry.installmentCount}
@@ -56,7 +56,7 @@ export function CreditCardTransactionRow({
             </Badge>
           ) : null}
         </div>
-        <p className="mt-1 truncate text-xs text-content-muted">{entry.category?.name ?? "Sem categoria"}</p>
+        <p className="mt-1 truncate text-xs text-content-muted">{entry.category ? <span data-user-content>{entry.category.name}</span> : "Sem categoria"}</p>
       </div>
       <div className="col-start-3 flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0 sm:flex-nowrap">
         <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-content-strong")}>

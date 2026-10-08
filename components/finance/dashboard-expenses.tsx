@@ -42,14 +42,14 @@ export function DashboardExpenses({ expenses }: DashboardExpenseListProps) {
                   </span>
                   <div className="mb-[17px] flex min-w-0 flex-1 justify-between gap-3 border-b border-border pb-[17px]">
                     <div className="min-w-0">
-                      <p
+                      <p data-user-content
                         className="truncate text-sm leading-[17px] font-semibold"
                         title={transaction.description}
                       >
                         {transaction.description}
                       </p>
                       <p className="mt-[7px] text-xs leading-[15px] text-content-subtle">
-                        {transaction.category?.name ?? "Sem categoria"} ·{" "}
+                        {transaction.category ? <span data-user-content>{transaction.category.name}</span> : "Sem categoria"} ·{" "}
                         {formatDateLabel(transaction.expenseDate)}
                       </p>
                     </div>
@@ -58,7 +58,7 @@ export function DashboardExpenses({ expenses }: DashboardExpenseListProps) {
                         {formatCurrency(transaction.amountCents)}
                       </p>
                       <p className="mt-[7px] text-[11px] leading-[15px] text-content-subtle">
-                        {transaction.account?.name ?? "Conta"}
+                        {transaction.account ? <span data-user-content>{transaction.account.name}</span> : "Conta"}
                       </p>
                     </div>
                   </div>

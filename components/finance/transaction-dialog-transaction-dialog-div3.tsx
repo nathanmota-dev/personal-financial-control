@@ -34,7 +34,7 @@ export function TransactionDialogDiv3({ formId, selectedCategoryId, setSelectedC
                       </SelectItem>
                     ) : null}
                     {filteredCategories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
+                      <SelectItem data-user-content key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
                     ))}

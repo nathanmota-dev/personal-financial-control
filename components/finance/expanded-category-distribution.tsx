@@ -66,7 +66,7 @@ export function ExpandedCategoryDistribution({ distribution }: DashboardCategory
           {slices.map((item) => (
             <li key={item.categoryId} className="flex items-center gap-2 text-xs">
               <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-              <span className="min-w-0 flex-1 text-content">{item.categoryName}</span>
+              <span data-user-content className="min-w-0 flex-1 text-content">{item.categoryName}</span>
               <span className="font-semibold tabular-nums">{formatCurrency(item.amountCents)}</span>
               <span className="text-content-muted">{Math.round(item.fraction * 100)}%</span>
             </li>

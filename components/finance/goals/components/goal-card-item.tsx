@@ -74,7 +74,7 @@ export function GoalCardItem({
         </div>
 
         {goal.notes ? (
-          <p className="break-words text-xs leading-5 text-content">
+          <p data-user-content className="break-words text-xs leading-5 text-content">
             {goal.notes}
           </p>
         ) : null}

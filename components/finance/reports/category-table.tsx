@@ -16,7 +16,7 @@ export function ReportCategoryTable({ report }: ReportCategoryProps) {
     <CardContent>{report.categories.length ? <Table>
       <TableHeader><TableRow><TableHead>Categoria</TableHead><TableHead>Tipo</TableHead><TableHead className="text-right">Selecionado</TableHead><TableHead className="text-right">Anterior</TableHead><TableHead className="text-right">Variação absoluta</TableHead></TableRow></TableHeader>
       <TableBody>{report.categories.map((row) => <TableRow key={row.id}>
-        <TableCell className="font-medium">{row.name}</TableCell>
+        <TableCell data-user-content className="font-medium">{row.name}</TableCell>
         <TableCell><StatusDotBadge tone={getTransactionTone(row.type as TransactionType)}>{transactionTypeLabels[row.type as TransactionType]}</StatusDotBadge></TableCell>
         <TableCell className="text-right tabular-nums">{formatCurrency(row.amountCents)}</TableCell>
         <TableCell className="text-right tabular-nums">{formatCurrency(row.previousCents)}</TableCell>

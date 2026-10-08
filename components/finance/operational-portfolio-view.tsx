@@ -81,7 +81,7 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
         </CardHeader>
         <CardContent className="divide-y divide-border px-0">{filtered.length ? filtered.map((item) => (
           <Link key={item.id} href={`/investments/assets/${item.id}`} className="grid gap-3 p-5 transition hover:bg-brand/[.04] md:grid-cols-[1.3fr_.7fr_.7fr_.5fr_auto] md:items-center">
-            <div><strong className="text-sm font-semibold text-content-strong">{item.name}</strong><p className="mt-1 text-xs text-content-muted">{item.ticker ?? "Sem código"} · {item.institutionName ?? "Instituição não informada"}</p></div>
+            <div><strong data-user-content className="text-sm font-semibold text-content-strong">{item.name}</strong><p className="mt-1 text-xs text-content-muted">{item.ticker ? <span data-user-content>{item.ticker}</span> : "Sem código"} · {item.institutionName ? <span data-user-content>{item.institutionName}</span> : "Instituição não informada"}</p></div>
             <div><p className="text-[10px] text-content-muted">Valor atual</p><p className="tabular-nums text-sm">{formatCurrency(item.currentValueCents)}</p></div>
             <div><p className="text-[10px] text-content-muted">Resultado</p><p className={item.resultCents === null ? "text-content-muted" : item.resultCents >= 0 ? "text-success" : "text-danger"}>{item.resultCents === null ? "Custo não informado" : formatCurrency(item.resultCents)}</p></div>
             <div><p className="text-[10px] text-content-muted">Participação</p><p className="tabular-nums text-sm">{item.participationPercentage.toFixed(1)}%</p></div><ArrowRight className="size-4 text-content-muted" />

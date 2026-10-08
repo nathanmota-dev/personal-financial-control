@@ -54,11 +54,11 @@ export function DailyExpensesDetails({ day }: DailyExpenseDetailsProps) {
           {visibleEntries.map((entry) => <li key={`${entry.source}-${entry.id}`} className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="break-words text-sm font-medium text-content-strong">{entry.description}</p>
+                <p data-user-content className="break-words text-sm font-medium text-content-strong">{entry.description}</p>
                 <Badge variant="outline">{entry.direction === "credit" ? "Crédito / estorno" : "Gasto"}</Badge>
                 <Badge variant="secondary">{entry.source === "credit_card_charge" ? "Compra no cartão" : "Lançamento"}</Badge>
               </div>
-              <p className="text-xs text-content">{entry.category} · {entry.account}</p>
+              <p className="text-xs text-content"><span data-user-content>{entry.category}</span> · <span data-user-content>{entry.account}</span></p>
             </div>
             <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end">
               <p className={cn("font-semibold tabular-nums", entry.direction === "credit" ? "text-success" : "text-danger")}>

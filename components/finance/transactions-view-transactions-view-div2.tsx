@@ -17,9 +17,9 @@ export function TransactionsViewDiv2({ transactions, accounts, categories, filte
                       <div key={transaction.id} className="rounded-2xl border border-border p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="font-medium text-content-strong">{transaction.description}</p>
+                            <p data-user-content className="font-medium text-content-strong">{transaction.description}</p>
                             <p className="text-sm text-content">
-                              {formatDateLabel(transaction.transactionDate)} • {transaction.account?.name ?? "-"}
+                              {formatDateLabel(transaction.transactionDate)} • {transaction.account ? <span data-user-content>{transaction.account.name}</span> : "-"}
                             </p>
                             {transaction.isGeneratedByFunding ? (
                               <p className="mt-1 text-xs font-medium text-warning">Resgate automático</p>
@@ -29,7 +29,7 @@ export function TransactionsViewDiv2({ transactions, accounts, categories, filte
                           </div>
                           <p className="font-semibold text-content-strong">{formatCurrency(transaction.amountCents)}</p>
                         </div>
-                        <p className="mt-2 text-xs text-content">{transaction.category?.name ?? "Sem categoria"}</p>
+                        <p className="mt-2 text-xs text-content">{transaction.category ? <span data-user-content>{transaction.category.name}</span> : "Sem categoria"}</p>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <StatusDotBadge tone={getTransactionTone(transaction.type)}>{transactionTypeLabels[transaction.type]}</StatusDotBadge>
                           {transaction.isGeneratedByFunding ? (

@@ -48,8 +48,8 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
             <div key={charge.id} className="border-b border-border/70 pb-3 last:border-0 last:pb-0">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-content-strong">{charge.description}</p>
-                  <p className="mt-1 truncate text-xs text-content-subtle">{charge.category?.name ?? "Sem categoria"}</p>
+                  <p data-user-content className="truncate text-sm font-medium text-content-strong">{charge.description}</p>
+                  <p className="mt-1 truncate text-xs text-content-subtle">{charge.category ? <span data-user-content>{charge.category.name}</span> : "Sem categoria"}</p>
                 </div>
                 <p className="shrink-0 text-sm font-semibold text-content">{formatCurrency(charge.remainingAmountCents)}</p>
               </div>

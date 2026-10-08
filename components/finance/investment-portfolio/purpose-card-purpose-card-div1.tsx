@@ -17,7 +17,7 @@ export function PurposeCardDiv1({ purpose, onAllocate, onEdit, onArchive }: Purp
             style={{ backgroundColor: purpose.color, color: purpose.color }}
           />
           <div className="min-w-0">
-            <h3 className="truncate text-lg font-semibold text-content-strong">
+            <h3 data-user-content className="truncate text-lg font-semibold text-content-strong">
               {purpose.name}
             </h3>
             <p className="mt-0.5 text-xs text-content">

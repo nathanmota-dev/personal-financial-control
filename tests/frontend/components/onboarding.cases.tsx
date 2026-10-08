@@ -157,11 +157,11 @@ it("preserves Cult UI substeps, uncontrolled choices, tips and carousel keyboard
     <FeatureCarousel><FeatureCarousel.Item index={0}>Primeiro</FeatureCarousel.Item><FeatureCarousel.Item index={1}>Segundo</FeatureCarousel.Item></FeatureCarousel>
     <TipsList><TipsList.Item number={1}>Dica</TipsList.Item></TipsList>
   </>);
-  await user.click(screen.getByRole("button", { name: "Next" })); expect(screen.getByText("1:1")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Back" })); expect(screen.getByText("1:0")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Next" })); await user.click(screen.getByRole("button", { name: "Next" }));
+  await user.click(screen.getByRole("button", { name: "Próximo" })); expect(screen.getByText("1:1")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Voltar" })); expect(screen.getByText("1:0")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Próximo" })); await user.click(screen.getByRole("button", { name: "Próximo" }));
   expect(screen.getByText("2:0")).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "Back" })); expect(screen.getByText("1:1")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Voltar" })); expect(screen.getByText("1:1")).toBeVisible();
   await user.click(screen.getByLabelText("Escolha A")); expect(screen.getByLabelText("Escolha A")).toBeChecked();
   const first = screen.getByRole("tab", { name: "Primeiro" });
   fireEvent.keyDown(first, { key: "ArrowRight" }); expect(screen.getByRole("tab", { name: "Segundo" })).toHaveAttribute("aria-selected", "true");
