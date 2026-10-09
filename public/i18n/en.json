@@ -4,6 +4,18 @@
     "description": "Personal finance dashboard with transactions, recurring items, and investments."
   },
   "accountPreferences": {
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Display name updated.",
+    "saveError": "Unable to save. Please try again.",
+    "invalidName": "Enter a valid first name (up to 80 characters) and a last name of up to 120 characters.",
+    "emailReadOnly": "Your email is linked to your sign-in account and cannot be changed here.",
+    "demoProfile": "The demo profile cannot be changed.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "accountDescription": "Your account information.",
+    "back": "Back",
     "myAccount": "My account",
     "theme": "Theme",
     "automatic": "Auto",

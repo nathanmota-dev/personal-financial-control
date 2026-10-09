@@ -68,7 +68,12 @@ export function authResponse(error: unknown) {
 }
 export async function requirePageSession() {
   if (isDemoMode()) return { name: "Visitante demo", picture: null };
-  try { return await verifySession((await cookies()).get("session")?.value); }
+  try {
+    const session = await verifySession((await cookies()).get("session")?.value);
+    // Session-cookie claims retain the old name until the user signs in again.
+    const profile = await (await adminAuth()).getUser(session.uid);
+    return { ...session, name: profile.displayName ?? session.name };
+  }
   catch (error) { if (firebaseError(error).status === 401) redirect("/login"); throw firebaseError(error); }
 }
 export async function requireActionSession() {
