@@ -167,7 +167,7 @@ test("account preferences and month picker follow the selected theme", async ({ 
   for (const theme of ["Claro", "Escuro", "Auto"]) {
     await account.getByRole("button", { name: "Abrir preferências da conta" }).click();
     const preferences = page.getByRole("dialog");
-    await expect(preferences.getByRole("button", { name: "Minha conta" })).toHaveAttribute("aria-disabled", "true");
+    await expect(preferences.getByRole("link", { name: "Minha conta" })).toHaveAttribute("href", "/account");
     await expect(preferences.getByRole("group", { name: "Idioma" })).toBeVisible();
     await expect(preferences.getByRole("button", { name: /Buscar/ })).toHaveAttribute("aria-disabled", "true");
     await preferences.getByRole("button", { name: theme, exact: true }).click();

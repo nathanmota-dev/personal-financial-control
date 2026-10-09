@@ -1,5 +1,6 @@
 "use client";
 
+import { CompactAccountControls } from "@/components/auth/compact-account-controls";
 import { UserControls } from "@/components/auth/user-controls";
 import type { SidebarFooterProps } from "@/lib/interfaces/sidebar-navigation";
 import { FINANCE_UTILITY_NAVIGATION } from "@/lib/finance-navigation";
@@ -7,10 +8,10 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function SidebarFooter({ user, demoMode, onNavigate }: SidebarFooterProps) {
+export function SidebarFooter({ user, demoMode, onNavigate, collapsed = false }: SidebarFooterProps) {
   const pathname = usePathname();
   return (
-    <div className="shrink-0 pl-5 pr-4 pb-5 pt-4">
+    <div className={cn("shrink-0 pl-5 pr-4 pb-5 pt-4", collapsed && "px-2")}>
       {FINANCE_UTILITY_NAVIGATION.map((item) => {
         const Icon = item.icon;
         const active = pathname === item.href;
@@ -19,21 +20,23 @@ export function SidebarFooter({ user, demoMode, onNavigate }: SidebarFooterProps
             key={item.href}
             href={item.href}
             onClick={onNavigate}
+            title={collapsed ? item.label : undefined}
             aria-current={active ? "page" : undefined}
             className={cn(
               "flex h-[42px] items-center gap-[11px] rounded-lg px-[9px] text-sm hover:bg-sidebar-accent",
+              collapsed && "justify-center px-0",
               active
                 ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary"
                 : "text-sidebar-foreground",
             )}
           >
             <Icon className="size-[18px]" />
-            {item.label}
+            <span className={collapsed ? "sr-only" : undefined}>{item.label}</span>
           </Link>
         );
       })}
       <div className="mt-4 border-t border-border pt-[19px]">
-        <UserControls user={user} demoMode={demoMode} expanded />
+        {collapsed ? <CompactAccountControls user={user} demoMode={demoMode} /> : <UserControls user={user} demoMode={demoMode} onNavigate={onNavigate} expanded />}
       </div>
     </div>
   );

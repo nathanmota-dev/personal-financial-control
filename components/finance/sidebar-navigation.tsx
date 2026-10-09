@@ -10,6 +10,7 @@ import { useState } from "react";
 
 export function SidebarNavigation({
   mobile = false,
+  collapsed = false,
   onNavigate,
   onOpenCommandPalette,
 }: SidebarNavigationProps) {
@@ -23,9 +24,10 @@ export function SidebarNavigation({
       className={cn(
         "min-h-0 flex-1 overflow-y-auto pl-4 pr-[14px]",
         mobile && "py-4",
+        collapsed && "px-2",
       )}
     >
-      <div className="ml-1 mr-0.5 mb-[22px] flex h-[38px] items-center gap-2 rounded-[11px] bg-card px-3 text-content-muted">
+      {!collapsed && <div className="ml-1 mr-0.5 mb-[22px] flex h-[38px] items-center gap-2 rounded-[11px] bg-card px-3 text-content-muted">
         <Search className="size-3.5 shrink-0" aria-hidden="true" />
         <input
           aria-label="Buscar páginas"
@@ -42,11 +44,12 @@ export function SidebarNavigation({
             className="shrink-0 border border-border/70"
           />
         ) : null}
-      </div>
+      </div>}
       <SidebarNavigationLinks
         pathname={pathname}
         month={searchParams.get("month")}
-        query={query}
+        collapsed={collapsed}
+        query={collapsed ? "" : query}
         onNavigate={onNavigate}
       />
     </nav>

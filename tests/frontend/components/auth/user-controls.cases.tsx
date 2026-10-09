@@ -25,7 +25,7 @@ it.each([
         screen.getByRole("button", { name: "Abrir preferências da conta" }),
       );
       expect(screen.getByText("Tema")).toBeVisible();
-      expect(screen.getByRole("button", { name: "Minha conta" })).toHaveAttribute("aria-disabled", "true");
+      expect(screen.getByRole("link", { name: "Minha conta" })).toHaveAttribute("href", "/account");
       for (const theme of ["Auto", "Claro", "Escuro"]) {
         await user.click(screen.getByRole("button", { name: theme }));
       }

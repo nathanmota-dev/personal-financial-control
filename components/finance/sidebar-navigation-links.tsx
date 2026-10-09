@@ -21,6 +21,7 @@ function navigationHref(path: string, month: string | null) {
 }
 
 export function SidebarNavigationLinks({
+  collapsed = false,
   pathname,
   month,
   query,
@@ -52,7 +53,7 @@ export function SidebarNavigationLinks({
 
         return (
           <div key={item.href}>
-            {index === 5 && !query && (
+            {index === 5 && !query && !collapsed && (
               <p className="mb-[11px] mt-[12px] px-[13px] text-xs text-content-subtle">
                 Análise
               </p>
@@ -60,18 +61,20 @@ export function SidebarNavigationLinks({
             <Link
               href={navigationHref(item.href, month)}
               onClick={onNavigate}
+              title={collapsed ? item.label : undefined}
               aria-current={active ? "page" : undefined}
               className={cn(
                 "mb-[5px] flex h-[39px] items-center gap-[11px] rounded-[11px] px-[13px] text-sm transition-colors hover:bg-sidebar-accent",
+                collapsed && "justify-center px-0",
                 active
                   ? "bg-sidebar-primary font-medium text-sidebar-primary-foreground hover:bg-sidebar-primary"
                   : "text-sidebar-foreground",
               )}
             >
               <Icon className="size-[18px] shrink-0" strokeWidth={1.7} />
-              {item.label}
+              <span className={collapsed ? "sr-only" : undefined}>{item.label}</span>
             </Link>
-            {item.children && (active || query) && children?.length ? (
+            {!collapsed && item.children && (active || query) && children?.length ? (
               <div className="mb-2 ml-[22px] border-l border-border pl-3">
                 {children.map((child) => (
                   <Link

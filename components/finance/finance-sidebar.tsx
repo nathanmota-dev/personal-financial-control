@@ -1,6 +1,5 @@
 "use client";
 
-import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
 import { FinanceCommandTrigger } from "@/components/finance/finance-command-trigger";
@@ -27,7 +26,7 @@ export function FinanceSidebar({
         <div
           className={
             collapsed
-              ? "flex h-[82px] shrink-0 items-start justify-center gap-1 px-2 pt-6"
+              ? "flex shrink-0 flex-col items-center gap-3 px-2 pb-[22px] pt-6"
               : "flex h-[82px] shrink-0 items-start gap-[11px] pl-6 pr-[14px] pt-6"
           }
         >
@@ -70,16 +69,8 @@ export function FinanceSidebar({
             />
           ) : null}
         </div>
-        {collapsed ? (
-          <div className="mt-auto flex justify-center pb-5">
-            <FinancialPrivacyToggle compact />
-          </div>
-        ) : (
-          <>
-            <SidebarNavigation onOpenCommandPalette={onOpenCommandPalette} />
-            <SidebarFooter user={user} demoMode={demoMode} />
-          </>
-        )}
+        <SidebarNavigation collapsed={collapsed} onOpenCommandPalette={onOpenCommandPalette} />
+        <SidebarFooter collapsed={collapsed} user={user} demoMode={demoMode} />
       </div>
     </aside>
   );
