@@ -15,11 +15,13 @@ export type SidebarNavigationItem = {
 
 export type SidebarNavigationProps = {
   mobile?: boolean;
+  collapsed?: boolean;
   onNavigate?: () => void;
   onOpenCommandPalette?: () => void;
 };
 
 export type SidebarNavigationLinksProps = {
+  collapsed?: boolean;
   pathname: string;
   month: string | null;
   query: string;
@@ -27,4 +29,4 @@ export type SidebarNavigationLinksProps = {
 };
 
 export type SidebarFooterProps = UserControlsProps &
-  Pick<SidebarNavigationProps, "onNavigate">;
+  Pick<SidebarNavigationProps, "onNavigate" | "collapsed">;

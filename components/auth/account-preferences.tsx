@@ -4,12 +4,14 @@ import { LogoutButton } from "@/components/auth/logout-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { UserControlsProps } from "@/lib/interfaces/auth";
 import { Languages, Search, Sun, UserRound } from "lucide-react";
+import Link from "next/link";
+import { Popover as PopoverPrimitive } from "radix-ui";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 
 import { useAppLocale } from "@/components/i18n/app-locale-provider";
 
-export function AccountPreferences({ user, demoMode }: UserControlsProps) {
+export function AccountPreferences({ user, demoMode, onNavigate }: UserControlsProps) {
   const { theme, setTheme } = useTheme();
   const { locale, setLocale } = useAppLocale();
   const t = useTranslations("accountPreferences");
@@ -30,9 +32,11 @@ export function AccountPreferences({ user, demoMode }: UserControlsProps) {
           <p data-user-content className="truncate text-xs text-content-subtle" title={user.email ?? undefined}>{user.email}</p>
         </div>
       </div>
-      <button type="button" aria-disabled="true" className="flex h-10 w-full items-center gap-3 rounded-lg px-2 text-left">
+      <PopoverPrimitive.Close asChild>
+      <Link href="/account" onClick={onNavigate} className="flex h-10 w-full items-center gap-3 rounded-lg px-2 text-left hover:bg-muted">
         <UserRound className="size-4 text-content-subtle" />{t("myAccount")}
-      </button>
+      </Link>
+      </PopoverPrimitive.Close>
       <div className="flex items-center justify-between gap-3 px-2">
         <span className="flex items-center gap-3"><Sun className="size-4 text-content-subtle" />{t("theme")}</span>
         <div role="group" aria-label={t("themeGroup")} className="flex rounded-xl bg-muted/50 p-1">
@@ -54,7 +58,7 @@ export function AccountPreferences({ user, demoMode }: UserControlsProps) {
       <button type="button" aria-disabled="true" className="flex h-10 w-full items-center gap-3 px-2 text-xs text-content-subtle">
         <Search className="size-4" />{t("search")} <span className="ml-auto">⌘K</span>
       </button>
-      {!demoMode && <div className="border-t border-border pt-3"><LogoutButton /></div>}
+      {!demoMode && <div className="border-t border-border pt-3"><LogoutButton fullWidth /></div>}
     </div>
   );
 }

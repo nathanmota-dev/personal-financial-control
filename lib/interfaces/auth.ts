@@ -5,6 +5,7 @@ export interface LoginFormProps {
 export interface LogoutButtonProps {
   allDevices?: boolean;
   iconOnly?: boolean;
+  fullWidth?: boolean;
 }
 
 export interface SessionUser {
@@ -14,6 +15,7 @@ export interface SessionUser {
 }
 
 export interface UserControlsProps {
+  onNavigate?: () => void;
   expanded?: boolean;
   demoMode: boolean;
   user: SessionUser;
@@ -21,4 +23,9 @@ export interface UserControlsProps {
 
 export interface LoginPageProps {
   searchParams: Promise<{ next?: string }>;
+}
+
+export interface AccountViewProps {
+  user: SessionUser;
+  demoMode?: boolean;
 }

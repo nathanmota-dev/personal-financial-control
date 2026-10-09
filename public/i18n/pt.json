@@ -4,6 +4,18 @@
     "description": "Painel financeiro pessoal com dashboard, lançamentos, recorrências e carteira."
   },
   "accountPreferences": {
+    "save": "Salvar alterações",
+    "saving": "Salvando…",
+    "saved": "Nome de exibição atualizado.",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "invalidName": "Informe um nome válido (até 80 caracteres) e sobrenome com até 120 caracteres.",
+    "emailReadOnly": "O e-mail está vinculado à sua conta de acesso e não pode ser alterado aqui.",
+    "demoProfile": "O perfil de demonstração não pode ser alterado.",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "email": "E-mail",
+    "accountDescription": "Informações da sua conta.",
+    "back": "Voltar",
     "myAccount": "Minha conta",
     "theme": "Tema",
     "automatic": "Auto",

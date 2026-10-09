@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { LogoutButtonProps } from "@/lib/interfaces/auth";
 import { LoaderCircle,LogOut } from "lucide-react";
 import { useState } from "react";
-export function LogoutButton({ allDevices = false, iconOnly = false }: LogoutButtonProps) {
+export function LogoutButton({ allDevices = false, iconOnly = false, fullWidth = false }: LogoutButtonProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function logout() {
@@ -19,7 +19,7 @@ export function LogoutButton({ allDevices = false, iconOnly = false }: LogoutBut
   const label = busy ? "Saindo…" : allDevices ? "Sair de todos os dispositivos" : "Sair";
 
   return (
-    <div className={iconOnly ? "relative" : "p-3"}>
+    <div className={iconOnly ? "relative" : fullWidth ? "w-full" : "p-3"}>
       <Button
         type="button"
         variant={iconOnly ? "outline" : "ghost"}
@@ -28,7 +28,7 @@ export function LogoutButton({ allDevices = false, iconOnly = false }: LogoutBut
         onClick={logout}
         aria-label={label}
         title={label}
-        className="rounded-xl"
+        className={fullWidth ? "h-10 w-full justify-start gap-3 rounded-lg px-2" : "rounded-xl"}
       >
         {busy ? <LoaderCircle className="animate-spin" aria-hidden="true" /> : <LogOut aria-hidden="true" />}
         {!iconOnly && label}

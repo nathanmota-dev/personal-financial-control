@@ -12,7 +12,16 @@ it("collapses and expands navigation without losing page content", async () => {
   );
   expect(screen.getByText("Demo pública")).toBeVisible();
   await user.click(screen.getByRole("button", { name: "Recolher sidebar" }));
-  expect(screen.queryByRole("navigation")).toBeNull();
+  expect(screen.getByRole("navigation")).toBeVisible();
+  for (const name of ["Dashboard", "Lançamentos", "Investimentos", "Configurações", "Ajuda"]) {
+    const link = screen.getByRole("link", { name });
+    expect(link).toHaveAttribute("title", name);
+    expect(link.querySelector("svg")).not.toBeNull();
+  }
+  expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("aria-current", "page");
+  await user.click(screen.getByRole("button", { name: "Abrir preferências da conta" }));
+  expect(screen.getByRole("link", { name: "Minha conta" })).toHaveAttribute("href", "/account");
+  await user.keyboard("{Escape}");
   expect(
     screen.getByRole("heading", { name: "Conteúdo financeiro" }),
   ).toBeVisible();

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-const sdk = vi.hoisted(() => ({ verifySessionCookie: vi.fn(), verifyIdToken: vi.fn(), createSessionCookie: vi.fn(), revokeRefreshTokens: vi.fn() }));
+const sdk = vi.hoisted(() => ({ getUser: vi.fn(), updateUser: vi.fn(), verifySessionCookie: vi.fn(), verifyIdToken: vi.fn(), createSessionCookie: vi.fn(), revokeRefreshTokens: vi.fn() }));
 vi.mock("firebase-admin/app", () => ({ cert: vi.fn(), getApps: () => [{ name: "pfc-auth" }], initializeApp: vi.fn() }));
 vi.mock("@/lib/auth/users", () => ({ isAuthorizedEmail: async (email: string) => email.toLowerCase() === "owner@gmail.com" }));
 vi.mock("firebase-admin/auth", () => ({ getAuth: () => sdk }));
@@ -11,6 +11,7 @@ import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
 import { apiGuard, verifySession, requirePageSession, requireActionSession } from "@/lib/auth/server";
 import { authConfig, safeDestination, isAllowedOrigin } from "@/lib/auth/config";
+import { PATCH as updateProfile } from "@/app/api/profile/route";
 import { POST, DELETE } from "@/app/api/session/route";
 import { POST as revoke } from "@/app/api/session/revoke/route";
 const claims = { uid: "owner", email: "owner@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" }, auth_time: Math.floor(Date.now() / 1000) };
@@ -21,6 +22,7 @@ beforeEach(() => {
   vi.unstubAllEnvs(); vi.clearAllMocks();
   vi.stubEnv("DEMO_MODE", "false");
   for (const [key, value] of Object.entries({ APP_URL: "http://127.0.0.1:3007", APP_URL_DEVELOPMENT: "http://localhost:3000", FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "public-key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test-app", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
+  sdk.getUser.mockResolvedValue({ displayName: "Ana Lima" }); sdk.updateUser.mockResolvedValue({ displayName: "Ana Silva" });
   sdk.verifySessionCookie.mockResolvedValue(claims); sdk.verifyIdToken.mockResolvedValue(claims); sdk.createSessionCookie.mockResolvedValue("persistent-cookie"); sdk.revokeRefreshTokens.mockResolvedValue(undefined);
 });
 describe("Firebase access boundary", () => {
@@ -263,5 +265,56 @@ describe("public demo access", () => {
     expect((await apiGuard(new Request("http://127.0.0.1:3007/api/accounts", {
       method: "POST", headers: { origin: "http://127.0.0.1:3007", "content-type": "text/plain" },
     })))?.status).toBe(415);
+  });
+});
+
+
+describe("personal profile", () => {
+  function profileRequest(body: unknown, origin = "http://127.0.0.1:3007") {
+    return new Request("http://127.0.0.1:3007/api/profile", { method: "PATCH", headers: { origin, cookie: "session=valid", "content-type": "application/json" }, body: JSON.stringify(body) });
+  }
+  it("updates only the authenticated user's display name and reads it despite stale cookie claims", async () => {
+    const response = await updateProfile(profileRequest({ firstName: " Ana ", lastName: " Silva " }));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(await response.json()).toEqual({ ok: true, displayName: "Ana Silva" });
+    expect(sdk.updateUser).toHaveBeenCalledWith("owner", { displayName: "Ana Silva" });
+    sdk.getUser.mockResolvedValueOnce({ displayName: "Ana Silva" });
+    expect(await requirePageSession()).toMatchObject({ uid: "owner", name: "Ana Silva", email: "owner@gmail.com" });
+    expect(sdk.getUser).toHaveBeenCalledWith("owner");
+  });
+  it("permits a display name without a surname", async () => {
+    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }))).status).toBe(200);
+    expect(sdk.updateUser).toHaveBeenCalledWith("owner", { displayName: "Ana" });
+  });
+  it.each([
+    { firstName: "", lastName: "Silva" }, { firstName: "  ", lastName: "" },
+    { firstName: "a".repeat(81), lastName: "" }, { firstName: "Ana", lastName: "a".repeat(121) },
+    { firstName: "Ana", lastName: "Silva", email: "changed@gmail.com" },
+    { firstName: "Ana", lastName: "Silva", uid: "someone-else" }, null,
+  ])("rejects invalid data or protected fields: %j", async body => {
+    expect((await updateProfile(profileRequest(body))).status).toBe(400);
+    expect(sdk.updateUser).not.toHaveBeenCalled();
+  });
+  it("rejects malformed JSON", async () => {
+    const request = profileRequest({});
+    vi.spyOn(request, "json").mockRejectedValueOnce(new SyntaxError());
+    expect((await updateProfile(request)).status).toBe(400);
+    expect(sdk.updateUser).not.toHaveBeenCalled();
+  });
+  it("rejects cross-origin writes and public-demo edits", async () => {
+    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }, "https://evil.test"))).status).toBe(403);
+    vi.stubEnv("DEMO_MODE", "true");
+    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }))).status).toBe(403);
+    expect(sdk.updateUser).not.toHaveBeenCalled();
+  });
+  it("reports a Firebase failure without claiming the name was saved", async () => {
+    sdk.updateUser.mockRejectedValueOnce(new Error("offline"));
+    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "Silva" }))).status).toBe(503);
+  });
+  it("keeps the token name when Firebase has no display name", async () => {
+    sdk.getUser.mockResolvedValueOnce({});
+    sdk.verifySessionCookie.mockResolvedValueOnce({ ...claims, name: "Original" });
+    expect(await requirePageSession()).toMatchObject({ name: "Original" });
   });
 });

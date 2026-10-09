@@ -18,6 +18,7 @@ export function UserControls({
   user,
   demoMode,
   expanded = false,
+  onNavigate,
 }: UserControlsProps) {
   const names = user.name.trim().split(/\s+/);
   const initials =
@@ -72,7 +73,7 @@ export function UserControls({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-4" align="end" collisionPadding={8}>
-              <AccountPreferences user={user} demoMode={demoMode} />
+              <AccountPreferences user={user} demoMode={demoMode} onNavigate={onNavigate} />
             </PopoverContent>
           </Popover>
         </>
