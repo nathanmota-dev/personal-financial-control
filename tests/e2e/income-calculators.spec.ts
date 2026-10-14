@@ -1,0 +1,77 @@
+import { test, expect } from "./helpers/fixture";
+
+test("CLT catalog, conditional fields, persistence, privacy and clearing", async ({ page }) => {
+  await page.goto("/calculators");
+  await page.getByRole("link", { name: "Salário líquido CLT", exact: true }).click();
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Preencha" })).toContainText("Preencha");
+  await page.getByLabel("Remuneração bruta").fill("5.000,00");
+  await page.getByLabel("Incluir horas extras").check();
+  await page.getByLabel("Quantidade de horas extras").fill("10");
+  await page.getByLabel("Incluir salário-família").check();
+  await page.getByLabel("Dependentes elegíveis ao salário-família").fill("1");
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByRole("table")).toContainText("IRRF");
+  await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();
+  await expect(page.getByRole("table")).not.toContainText("5.000,00");
+  await expect(page.getByLabel("Remuneração bruta")).toHaveCount(0);
+  await expect(page.getByText("Gráfico oculto para proteger os valores financeiros.")).toBeVisible();
+  await page.getByRole("button", { name: "Mostrar valores", exact: true }).click();
+  await page.reload();
+  await expect(page.getByLabel("Remuneração bruta")).toHaveValue("5.000,00");
+  await page.getByRole("button", { name: "Limpar", exact: true }).click();
+  await expect(page.getByRole("table")).toHaveCount(0);
+  await page.reload(); await expect(page.getByLabel("Remuneração bruta")).toHaveValue("");
+});
+test("PJ regimes, activities, manual DAS and partial results", async ({ page }) => {
+  await page.goto("/calculators/pj-income");
+  await page.getByLabel("Receita bruta mensal").fill("5.000,00");
+  await page.getByRole("combobox", { name: "Atividade", exact: true }).click();
+  await page.getByRole("option", { name: "Comércio e serviços", exact: true }).click();
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByRole("table")).toContainText("87,05");
+  await page.getByRole("combobox", { name: "Regime tributário", exact: true }).click();
+  await page.getByRole("option", { name: "Simples Nacional", exact: true }).click();
+  await page.getByRole("combobox", { name: "Ramo de atividade", exact: true }).click();
+  await page.getByRole("option", { name: "Anexo IV — Serviços específicos", exact: true }).click();
+  await page.getByLabel("Informar DAS manualmente").check();
+  await page.getByLabel("Alíquota do DAS (%)").fill("10");
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByText("Líquido parcial estimado", { exact: true })).toBeVisible();
+  await expect(page.getByRole("table")).toContainText("Contribuição patronal");
+  await page.getByRole("combobox", { name: "Regime tributário", exact: true }).click();
+  await page.getByRole("option", { name: "Lucro Presumido", exact: true }).click();
+  await page.getByRole("combobox", { name: "Atividade", exact: true }).click();
+  await page.getByRole("option", { name: "Outras atividades", exact: true }).click();
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByRole("table")).toContainText("CSLL");
+  await expect(page.getByText(/faltam ICMS/)).toBeVisible();
+  await page.reload(); await expect(page.getByRole("combobox", { name: "Regime tributário" })).toHaveText("Lucro Presumido");
+  await page.getByRole("button", { name: "Limpar", exact: true }).click();
+  await expect(page.getByRole("table")).toHaveCount(0);
+});
+
+
+test("CLT deduction overview stays above the monthly chart on desktop and mobile", async ({ page }) => {
+  await page.goto("/calculators/net-salary");
+  await page.getByLabel("Remuneração bruta").fill("6.000,00");
+  await page.getByLabel("Benefícios não tributáveis").fill("100,00");
+  await page.getByRole("button", { name: "Calcular", exact: true }).click();
+  await expect(page.getByText("FGTS estimado · 8%")).toBeVisible();
+  await expect(page.getByText("R$ 480,00", { exact: true })).toBeVisible();
+  const overview = page.getByRole("heading", { name: "Descontos em detalhe" }).locator("..").locator("..").locator("..");
+  await expect(page.getByRole("list", { name: "Legenda dos descontos" })).toContainText("INSS");
+  const detail = await page.getByRole("heading", { name: "Descontos em detalhe" }).boundingBox();
+  const pie = await page.getByRole("heading", { name: "Composição dos descontos" }).boundingBox();
+  const monthly = await page.getByText("Distribuição mensal", { exact: true }).boundingBox();
+  expect(detail!.y).toBe(pie!.y);
+  expect(pie!.x).toBeGreaterThan(detail!.x);
+  expect(monthly!.y).toBeGreaterThan(detail!.y);
+  await overview.screenshot({ path: "reports/income-deductions-desktop.png" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileDetail = await page.getByRole("heading", { name: "Descontos em detalhe" }).boundingBox();
+  const mobilePie = await page.getByRole("heading", { name: "Composição dos descontos" }).boundingBox();
+  expect(mobilePie!.y).toBeGreaterThan(mobileDetail!.y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await overview.screenshot({ path: "reports/income-deductions-mobile.png" });
+});

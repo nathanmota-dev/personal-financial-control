@@ -17,6 +17,8 @@ export function CalculatorsView() {
           description="Projete o crescimento de um valor inicial com aportes recorrentes e compare o capital investido com os juros acumulados."
           badge="Disponível"
         />
+        <CalculatorCatalogCard href="/calculators/net-salary" title="Salário líquido CLT" description="Simule INSS, IRRF, benefícios e descontos com as regras de 2026." badge="Disponível" />
+        <CalculatorCatalogCard href="/calculators/pj-income" title="Renda PJ" description="Estime tributos e renda mensal no MEI, Simples Nacional ou Lucro Presumido." badge="Disponível" />
       </section>
     </div>
   );

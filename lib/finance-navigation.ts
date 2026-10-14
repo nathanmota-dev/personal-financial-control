@@ -92,6 +92,8 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
         label: "Juros compostos",
         aliases: ["juros compostos", "calculadora de juros compostos"],
       },
+      { href: "/calculators/net-salary", label: "Salário líquido CLT", aliases: ["salário", "CLT", "INSS", "IRRF"] },
+      { href: "/calculators/pj-income", label: "Renda PJ", aliases: ["PJ", "MEI", "Simples Nacional", "pró-labore"] },
     ],
   },
 ];

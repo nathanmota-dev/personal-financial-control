@@ -1,14 +1,12 @@
 "use client";
 
 import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { useEffect,useState } from "react";
 
 import { CompoundInterestForm } from "@/components/finance/calculators/compound-interest-form";
 import { CompoundInterestResults } from "@/components/finance/calculators/compound-interest-results";
 import { PageHeader } from "@/components/finance/page-header";
-import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { calculateCompoundInterest } from "@/lib/compound-interest";
 import { formatMoneyInput,moneyInputToCents } from "@/lib/finance-ui";
 import type {
@@ -126,17 +124,11 @@ export function CompoundInterestCalculator() {
   return (
     <div className="space-y-6">
       <PageHeader
+        className="[&>div:last-child]:-order-1"
         eyebrow="Calculadoras · Juros compostos"
         title="Juros compostos"
         description="Combine valor inicial, aportes mensais e taxa de juros para visualizar o efeito do tempo sobre o seu patrimônio."
-        actions={
-          <Button asChild variant="outline">
-            <Link href="/calculators">
-              <ArrowLeft className="size-4" />
-              Todas as calculadoras
-            </Link>
-          </Button>
-        }
+        actions={<BackButton href="/calculators" label="Voltar para calculadoras" />}
       />
 
       <FinancialPrivacyForm><CompoundInterestForm
