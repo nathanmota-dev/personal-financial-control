@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { McpTokenSettingsProps } from "@/lib/interfaces/local-auth";
 export function McpTokenSettings({ hasMcpToken }: McpTokenSettingsProps) {
   const t = useTranslations("security");
@@ -23,12 +24,12 @@ export function McpTokenSettings({ hasMcpToken }: McpTokenSettingsProps) {
     try { await navigator.clipboard.writeText(token); setMessage(t("copied")); }
     catch { setMessage(t("error")); }
   }
-  return <div className="space-y-4 border-t border-border pt-6">
-    <h3 className="font-medium">{t("mcpTitle")}</h3><p className="text-sm text-content-muted">{t("mcpDescription")}</p>
-    <div className="flex flex-wrap gap-3"><Button variant="outline" disabled={busy} onClick={() => change(false)}>{t(exists ? "regenerate" : "generate")}</Button>
+  return <Card className="rounded-xl border-border bg-card">
+    <CardHeader><CardTitle>{t("mcpTitle")}</CardTitle><CardDescription>{t("mcpDescription")}</CardDescription></CardHeader>
+    <CardContent className="space-y-4"><div className="flex flex-wrap gap-3"><Button variant="outline" disabled={busy} onClick={() => change(false)}>{t(exists ? "regenerate" : "generate")}</Button>
       {exists && <Button variant="destructive" disabled={busy} onClick={() => change(true)}>{t("revoke")}</Button>}
     </div>
     {token && <div className="flex flex-wrap items-center gap-3 rounded-lg bg-muted p-3"><code className="break-all text-sm" data-user-content>{token}</code><Button variant="outline" onClick={copy}>{t("copy")}</Button><Button variant="ghost" onClick={() => setToken("")}>{t("hide")}</Button></div>}
     <p role="status" className="text-sm">{message}</p>
-  </div>;
+  </CardContent></Card>;
 }

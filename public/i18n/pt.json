@@ -1226,7 +1226,7 @@
     "setPin": "Definir PIN",
     "unlock": "Destravar",
     "forgotPin": "Esqueci o PIN",
-    "timeout": "Minutos de inatividade (1–120)",
+    "timeout": "Tempo de inatividade",
     "lockOnClose": "Travar ao fechar o app",
     "save": "Salvar",
     "changePin": "Trocar PIN",
@@ -1242,6 +1242,12 @@
     "copy": "Copiar",
     "hide": "Ocultar",
     "logout": "Sair",
-    "loggingOut": "Saindo…"
+    "loggingOut": "Saindo…",
+    "autoLockTitle": "Bloqueio automático",
+    "autoLockDescription": "Defina quando o app deve travar sozinho e pedir seu PIN.",
+    "never": "Nunca",
+    "minutes": "{count} min",
+    "lockOnCloseDescription": "Pede o PIN sempre que o app for aberto novamente.",
+    "pinDescription": "Confirme o PIN atual e escolha 6 novos dígitos."
   }
 }

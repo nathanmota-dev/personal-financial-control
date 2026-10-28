@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export function SessionActivity({ timeoutMinutes }: SessionActivityProps) {
   useEffect(() => {
+    if (!timeoutMinutes) return;
     let lastActivity = Date.now();
     let lastHeartbeat = 0;
     let lastBroadcast = 0;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createSession, createUnlock, readSession, readUnlock, signCookie } from "@/lib/auth/local-session";
 import { hashPin, pinSchema, verifyPin } from "@/lib/auth/pin";
+import { isLockTimeoutOption, lockTimeoutOptions, nearestLockTimeoutIndex } from "@/lib/auth/lock-timeout";
 const session = createSession({ email: "owner@example.com", uid: "owner" }, 2);
 const settings = { lockTimeoutMinutes: 15, lockOnClose: true };
 describe("signed local cookies", () => {
@@ -27,6 +28,20 @@ describe("signed local cookies", () => {
     const persistent = signCookie(createUnlock(session, { ...settings, lockOnClose: false }), "unlock");
     expect(readUnlock(persistent, session)).not.toBeNull();
     expect(readUnlock(persistent, session, settings)).toBeNull();
+  });
+  it("keeps unlocks without an inactivity deadline when the timeout is disabled", () => {
+    const disabled = { ...settings, lockTimeoutMinutes: 0 };
+    const unlock = createUnlock(session, disabled);
+    expect(readUnlock(signCookie(unlock, "unlock"), session, disabled, unlock.lastActivity + 86400000)).toEqual(unlock);
+    expect(readUnlock(signCookie({ ...unlock, timeout: 61 }, "unlock"), session)).toBeNull();
+  });
+});
+describe("lock timeout options", () => {
+  it("offers never, one minute and five-minute steps up to an hour", () => {
+    expect(lockTimeoutOptions).toEqual([0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]);
+    expect([0, 1, 60].every(isLockTimeoutOption)).toBe(true);
+    expect([2, 61, 120].some(isLockTimeoutOption)).toBe(false);
+    expect([0, 1, 7, 8, 90].map(value => lockTimeoutOptions[nearestLockTimeoutIndex(value)])).toEqual([0, 1, 5, 10, 60]);
   });
 });
 describe("scrypt PINs", () => {

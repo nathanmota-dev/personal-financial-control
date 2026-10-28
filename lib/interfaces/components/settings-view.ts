@@ -1,3 +1,4 @@
+import type { SecuritySettingsProps } from "@/lib/interfaces/local-auth";
 
 export type AccountRow = {
   id: string;
@@ -15,4 +16,10 @@ export type CategoryRow = {
   name: string;
   group: "income" | "fixed_expense" | "variable_expense" | "investment";
   isArchived: boolean;
+};
+
+export type SettingsViewProps = {
+  accounts: AccountRow[];
+  categories: CategoryRow[];
+  security?: SecuritySettingsProps;
 };

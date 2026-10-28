@@ -2,6 +2,7 @@ import { createHmac, hkdfSync, timingSafeEqual } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { z } from "zod";
 import { SESSION_SECONDS } from "./config";
+import { maxLockTimeoutMinutes } from "./lock-timeout";
 import type { LocalSession, LockSettings, UnlockSession } from "@/lib/interfaces/local-auth";
 
 // Stable across Next bundles in the same server process, new after a restart.
@@ -37,7 +38,7 @@ const sessionSchema = z.object({
 });
 const unlockSchema = z.object({
   email: z.string().email(), ver: z.number().int().nonnegative(), lastActivity: z.number().int(),
-  timeout: z.number().int().min(1).max(120), bootId: z.string().optional(),
+  timeout: z.number().int().min(0).max(maxLockTimeoutMinutes), bootId: z.string().optional(),
 });
 export function readSession(value?: string, now = Date.now()): LocalSession | null {
   const result = sessionSchema.safeParse(readCookie(value, "session"));
@@ -56,9 +57,10 @@ export function readUnlock(value: string | undefined, session: LocalSession, set
   const parsed = unlockSchema.safeParse(readCookie(value, "unlock"));
   if (!parsed.success) return null;
   const unlock = parsed.data;
+  const timeout = settings?.lockTimeoutMinutes ?? unlock.timeout;
   if ((settings && (unlock.timeout !== settings.lockTimeoutMinutes || (unlock.bootId !== undefined) !== settings.lockOnClose)) ||
       unlock.email !== session.email || unlock.ver !== session.ver || unlock.lastActivity > now ||
-      now - unlock.lastActivity >= (settings?.lockTimeoutMinutes ?? unlock.timeout) * 60000 ||
+      (timeout > 0 && now - unlock.lastActivity >= timeout * 60000) ||
       (unlock.bootId !== undefined && unlock.bootId !== bootId) ||
       (settings?.lockOnClose && unlock.bootId !== bootId)) return null;
   return unlock;

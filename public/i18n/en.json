@@ -1226,7 +1226,7 @@
     "setPin": "Set PIN",
     "unlock": "Unlock",
     "forgotPin": "Forgot PIN",
-    "timeout": "Idle minutes (1–120)",
+    "timeout": "Idle time",
     "lockOnClose": "Lock when closing the app",
     "save": "Save",
     "changePin": "Change PIN",
@@ -1242,6 +1242,12 @@
     "copy": "Copy",
     "hide": "Hide",
     "logout": "Sign out",
-    "loggingOut": "Signing out…"
+    "loggingOut": "Signing out…",
+    "autoLockTitle": "Auto lock",
+    "autoLockDescription": "Choose when the app locks itself and asks for your PIN.",
+    "never": "Never",
+    "minutes": "{count} min",
+    "lockOnCloseDescription": "Asks for the PIN whenever the app is opened again.",
+    "pinDescription": "Confirm your current PIN and choose 6 new digits."
   }
 }
