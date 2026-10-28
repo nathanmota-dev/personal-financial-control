@@ -103,11 +103,10 @@ export async function startFinanceServer(authenticated = false): Promise<Finance
         if (spawnError || child.exitCode !== null)
           throw spawnError ?? new Error(`Finance server exited: ${output}`);
         try {
-          const response = await fetch(`${url}/api/accounts`, {
-            ...(authenticated ? { headers: { cookie: "session=onboarding-a" } } : {}),
+          const response = await fetch(`${url}${authenticated ? "/login" : "/api/accounts"}`, {
             signal: AbortSignal.timeout(1500),
           });
-          if (response.ok && (await response.json()).accounts.length === (authenticated ? 0 : 5))
+          if (response.ok && (authenticated || (await response.json()).accounts.length === 5))
             return {
               url,
               directory,

@@ -2,21 +2,24 @@
 import { Button } from "@/components/ui/button";
 import type { LogoutButtonProps } from "@/lib/interfaces/auth";
 import { LoaderCircle,LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-export function LogoutButton({ allDevices = false, iconOnly = false, fullWidth = false }: LogoutButtonProps) {
+export function LogoutButton({ iconOnly = false, fullWidth = false }: LogoutButtonProps) {
+  const t = useTranslations("security");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function logout() {
     setBusy(true); setError("");
     try {
-      const response = await fetch(allDevices ? "/api/session/revoke" : "/api/session", { method: allDevices ? "POST" : "DELETE", headers: { "Content-Type": "application/json" }, ...(allDevices ? { body: "{}" } : {}) });
-      if (!response.ok) throw new Error("Não foi possível sair. Tente novamente.");
+      const response = await fetch("/api/session", { method: "DELETE" });
+      if (!response.ok) throw new Error(t("error"));
+      try { await (await import("@/lib/auth/client")).googleSignOut(); } catch {}
       // Discard the authenticated router cache and client state on logout.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign("/login");
     } catch (failure) { setError(failure instanceof Error ? failure.message : "Falha de conexão."); setBusy(false); }
   }
-  const label = busy ? "Saindo…" : allDevices ? "Sair de todos os dispositivos" : "Sair";
+  const label = t(busy ? "loggingOut" : "logout");
 
   return (
     <div className={iconOnly ? "relative" : fullWidth ? "w-full" : "p-3"}>

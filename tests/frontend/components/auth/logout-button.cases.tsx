@@ -5,7 +5,7 @@ import { renderUI } from "../../helpers";
 
 describe("logout", () => {
   it.each([false, true])(
-    "ends the session (all devices: %s) and navigates",
+    "ends the session (icon only: %s) and navigates",
     async (allDevices) => {
       const fetcher = vi.fn().mockResolvedValue({ ok: true }),
         assign = vi.fn();
@@ -18,16 +18,14 @@ describe("logout", () => {
         }),
       );
       const { user } = renderUI(
-        <LogoutButton allDevices={allDevices} iconOnly={allDevices} />,
+        <LogoutButton iconOnly={allDevices} />,
       );
       await user.click(screen.getByRole("button"));
       await waitFor(() => expect(assign).toHaveBeenCalledWith("/login"));
       expect(fetcher).toHaveBeenCalledWith(
-        allDevices ? "/api/session/revoke" : "/api/session",
+        "/api/session",
         {
-          method: allDevices ? "POST" : "DELETE",
-          headers: { "Content-Type": "application/json" },
-          ...(allDevices ? { body: "{}" } : {}),
+          method: "DELETE",
         },
       );
       expect(screen.getByRole("button", { name: "Saindo…" })).toBeDisabled();
@@ -49,7 +47,7 @@ describe("logout", () => {
             ? "offline"
             : typeof failure === "string"
               ? "Falha de conexão."
-              : "Não foi possível sair. Tente novamente.",
+              : "Não foi possível concluir. Tente novamente.",
         ),
       );
       expect(screen.getByRole("button", { name: "Sair" })).toBeEnabled();

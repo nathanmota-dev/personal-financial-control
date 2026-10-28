@@ -1206,5 +1206,42 @@
         "Barra lateral"
       ]
     }
+  },
+  "security": {
+    "title": "Segurança",
+    "description": "Controle o bloqueio do app e o acesso das integrações.",
+    "setupTitle": "Defina seu PIN",
+    "lockTitle": "Destrave seu app",
+    "setupDescription": "Escolha 6 dígitos e confirme para proteger seu espaço.",
+    "lockDescription": "Digite seu PIN de 6 dígitos para continuar.",
+    "pin": "PIN",
+    "confirmPin": "Confirmar PIN",
+    "currentPin": "PIN atual",
+    "newPin": "Novo PIN",
+    "mismatch": "Os PINs não coincidem.",
+    "remaining": "{count} tentativas restantes.",
+    "invalidPin": "PIN incorreto. Tente novamente.",
+    "error": "Não foi possível concluir. Tente novamente.",
+    "saving": "Salvando…",
+    "setPin": "Definir PIN",
+    "unlock": "Destravar",
+    "forgotPin": "Esqueci o PIN",
+    "timeout": "Minutos de inatividade (1–120)",
+    "lockOnClose": "Travar ao fechar o app",
+    "save": "Salvar",
+    "changePin": "Trocar PIN",
+    "saved": "Configurações salvas.",
+    "mcpTitle": "Token MCP",
+    "mcpDescription": "Permite acesso local às suas finanças mesmo com o app travado. Regenerar invalida o token anterior.",
+    "generate": "Gerar token",
+    "regenerate": "Regenerar token",
+    "revoke": "Revogar token",
+    "revoked": "Token revogado.",
+    "tokenOnce": "Copie agora. Este token não será exibido novamente.",
+    "copied": "Token copiado.",
+    "copy": "Copiar",
+    "hide": "Ocultar",
+    "logout": "Sair",
+    "loggingOut": "Saindo…"
   }
 }

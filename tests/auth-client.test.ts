@@ -24,7 +24,7 @@ vi.mock("firebase/auth", () => ({
   signOut: sdk.signOut,
 }));
 
-import { googleLogin } from "@/lib/auth/client";
+import { googleLogin, googleSignOut } from "@/lib/auth/client";
 
 const sessionRequest = vi.fn();
 
@@ -172,4 +172,9 @@ describe("Google login attempts", () => {
     expect(sdk.signInWithPopup).not.toHaveBeenCalled();
     expect(sessionRequest).not.toHaveBeenCalled();
   });
+});
+
+it("signs out of an initialized Firebase client after local logout", async () => {
+  await googleSignOut();
+  expect(sdk.signOut).toHaveBeenCalledWith(sdk.auth);
 });

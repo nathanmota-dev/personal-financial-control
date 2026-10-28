@@ -1,3 +1,4 @@
+import { SecuritySettings } from "@/components/auth/security-settings";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { SettingsView } from "@/components/finance/settings-view";
 import { requirePageSession } from "@/lib/auth/server";
@@ -6,7 +7,7 @@ import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 
 export default async function SettingsPage() {
-  await requirePageSession();
+  const session = await requirePageSession();
   let data:
     | {
         accounts: Awaited<ReturnType<typeof listAccounts>>;
@@ -22,5 +23,5 @@ export default async function SettingsPage() {
     data = { accounts, categories };
   } catch {}
 
-  return <>{!isDemoMode() && <LogoutButton allDevices />}<SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} /></>;
+  return <>{!isDemoMode() && <LogoutButton />}{"user" in session && <SecuritySettings lockTimeoutMinutes={session.user.lockTimeoutMinutes} lockOnClose={session.user.lockOnClose} hasMcpToken={Boolean(session.user.mcpTokenHash)} />}<SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} /></>;
 }

@@ -1,320 +1,205 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-const sdk = vi.hoisted(() => ({ getUser: vi.fn(), updateUser: vi.fn(), verifySessionCookie: vi.fn(), verifyIdToken: vi.fn(), createSessionCookie: vi.fn(), revokeRefreshTokens: vi.fn() }));
-vi.mock("firebase-admin/app", () => ({ cert: vi.fn(), getApps: () => [{ name: "pfc-auth" }], initializeApp: vi.fn() }));
-vi.mock("@/lib/auth/users", () => ({ isAuthorizedEmail: async (email: string) => email.toLowerCase() === "owner@gmail.com" }));
-vi.mock("firebase-admin/auth", () => ({ getAuth: () => sdk }));
+const state = vi.hoisted(() => ({ cookies: {} as Record<string, string>, verifyIdToken: vi.fn() }));
+vi.mock("firebase-admin/app", () => ({ cert: vi.fn(), initializeApp: vi.fn(), getApps: () => [{ name: "pfc-auth" }] }));
+vi.mock("firebase-admin/auth", () => ({ getAuth: () => ({ verifyIdToken: state.verifyIdToken }) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => ({ value: "valid" }) }), headers: async () => new Headers({ origin: "http://127.0.0.1:3007", host: "127.0.0.1:3007" }) }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: (name: string) => ({ value: state.cookies[name] }) }), headers: async () => new Headers({ origin: "http://127.0.0.1:3007", host: "127.0.0.1:3007" }) }));
+vi.mock("@/lib/db", async original => ({ ...await original<typeof import("@/lib/db")>(), getDatabase: vi.fn() }));
+import { getDatabase } from "@/lib/db";
+import { getAuthDatabase } from "@/lib/auth/database";
+import { authorizedUsers } from "@/lib/db/user-schema";
+import { createTestDatabase } from "./helpers/database";
+import { createSession, createUnlock, signCookie } from "@/lib/auth/local-session";
+import { hashPin } from "@/lib/auth/pin";
 import { NextRequest } from "next/server";
 import { proxy } from "@/proxy";
-import { apiGuard, verifySession, requirePageSession, requireActionSession } from "@/lib/auth/server";
+import { apiGuard, verifyLocalSession, requirePageSession, requireActionSession } from "@/lib/auth/server";
 import { authConfig, safeDestination, isAllowedOrigin } from "@/lib/auth/config";
-import { PATCH as updateProfile } from "@/app/api/profile/route";
+import { PATCH as profile } from "@/app/api/profile/route";
 import { POST, DELETE } from "@/app/api/session/route";
-import { POST as revoke } from "@/app/api/session/revoke/route";
-const claims = { uid: "owner", email: "owner@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" }, auth_time: Math.floor(Date.now() / 1000) };
-function request(method = "POST", origin = "http://127.0.0.1:3007", cookie = "valid") {
-  return new Request("http://127.0.0.1:3007/api/session", { method, headers: { origin, cookie: `session=${cookie}`, "content-type": "application/json" }, ...(method === "POST" ? { body: JSON.stringify({ idToken: "id-token" }) } : {}) });
+import { POST as setup, PATCH as changePin } from "@/app/api/pin/route";
+import { POST as unlock } from "@/app/api/unlock/route";
+import { POST as activity, DELETE as lock } from "@/app/api/session/activity/route";
+import { PATCH as settings } from "@/app/api/security/route";
+import { POST as generateToken, DELETE as revokeToken } from "@/app/api/security/token/route";
+import { POST as mcp } from "@/app/api/mcp/route";
+import { verifyMcpToken } from "@/lib/auth/mcp-token";
+const origin = "http://127.0.0.1:3007";
+const claims = { uid: "owner", name: "Ana", email: "owner@gmail.com", email_verified: true, firebase: { sign_in_provider: "google.com" }, auth_time: Math.floor(Date.now() / 1000) };
+let database: Awaited<ReturnType<typeof createTestDatabase>>;
+function request(method = "POST", body: unknown = {}, headers: Record<string, string> = {}) {
+  return new Request(origin + "/api/session", { method, headers: { origin, cookie: Object.entries(state.cookies).map(([k, v]) => `${k}=${v}`).join("; "), "content-type": "application/json", ...headers }, ...(!["GET", "HEAD"].includes(method) ? { body: JSON.stringify(body) } : {}) });
 }
-beforeEach(() => {
-  vi.unstubAllEnvs(); vi.clearAllMocks();
-  vi.stubEnv("DEMO_MODE", "false");
-  for (const [key, value] of Object.entries({ APP_URL: "http://127.0.0.1:3007", APP_URL_DEVELOPMENT: "http://localhost:3000", FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "public-key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test-app", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
-  sdk.getUser.mockResolvedValue({ displayName: "Ana Lima" }); sdk.updateUser.mockResolvedValue({ displayName: "Ana Silva" });
-  sdk.verifySessionCookie.mockResolvedValue(claims); sdk.verifyIdToken.mockResolvedValue(claims); sdk.createSessionCookie.mockResolvedValue("persistent-cookie"); sdk.revokeRefreshTokens.mockResolvedValue(undefined);
-});
-describe("Firebase access boundary", () => {
-  it("selects separate origins and rejects cross-environment session requests", async () => {
-    vi.stubEnv("NODE_ENV", "development");
-    expect(authConfig().origin).toBe("http://localhost:3000");
-    expect((await POST(request("POST", "http://localhost:3000"))).status).toBe(200);
-    expect((await POST(request())).status).toBe(403);
-    vi.stubEnv("NODE_ENV", "production");
-    expect(authConfig().origin).toBe("http://127.0.0.1:3007");
-    expect((await POST(request())).status).toBe(200);
-    expect((await POST(request("POST", "http://localhost:3000"))).status).toBe(403);
-  });
-  it("fails closed when the selected environment URL is missing or invalid", () => {
-    for (const environment of ["development", "production"]) {
-      vi.stubEnv("NODE_ENV", environment);
-      const variable = environment === "development" ? "APP_URL_DEVELOPMENT" : "APP_URL";
-      for (const value of ["", "invalid", "http://remote.example", "https://finance.example/path"]) {
-        vi.stubEnv(variable, value);
-        expect(() => authConfig()).toThrow();
-      }
-    }
-  });
-
-  it("accepts local development aliases without redirects and permits HMR only in development", async () => {
-    vi.stubEnv("NODE_ENV", "development");
-    vi.stubEnv("APP_URL_DEVELOPMENT", "http://127.0.0.1:3007");
-    expect(isAllowedOrigin("http://localhost:3007", "http://127.0.0.1:3007")).toBe(true);
-    expect(isAllowedOrigin("http://localhost:3000", "http://127.0.0.1:3007")).toBe(false);
-    expect(isAllowedOrigin("https://evil.test", "http://127.0.0.1:3007")).toBe(false);
-    const login = await proxy(new NextRequest("http://localhost:3007/login"));
-    expect(login.status).toBe(200);
-    expect(login.headers.get("location")).toBeNull();
-    const hmr = new NextRequest("http://127.0.0.1:3007/_next/webpack-hmr", { headers: { host: "127.0.0.1:3007" } });
-    expect((await proxy(hmr)).status).toBe(200);
-    vi.stubEnv("NODE_ENV", "production");
-    expect(isAllowedOrigin("http://localhost:3007", "http://127.0.0.1:3007")).toBe(false);
-    expect((await proxy(hmr)).status).toBe(307);
-  });
-  it("validates revocation on every request", async () => {
-    await verifySession("valid"); await verifySession("valid");
-    expect(sdk.verifySessionCookie).toHaveBeenCalledTimes(2);
-    expect(sdk.verifySessionCookie).toHaveBeenCalledWith("valid", true);
-  });
-  it.each([undefined, "expired", "revoked", "invalid"])("denies absent or invalid session %s", async cookie => {
-    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
-    await expect(verifySession(cookie)).rejects.toMatchObject({ status: 401 });
-  });
-  it.each([{ email: "other@gmail.com" }, { email_verified: false }, { firebase: { sign_in_provider: "password" } }])("rejects forbidden claims %j", async override => {
-    sdk.verifyIdToken.mockResolvedValue({ ...claims, ...override });
-    expect((await POST(request())).status).toBe(403);
-    expect(sdk.createSessionCookie).not.toHaveBeenCalled();
-  });
-  it("rejects stale authentication and CSRF", async () => {
-    sdk.verifyIdToken.mockResolvedValue({ ...claims, auth_time: Date.now() / 1000 - 301 });
-    expect((await POST(request())).status).toBe(401);
-    expect((await POST(request("POST", "https://evil.test"))).status).toBe(403);
-    expect((await apiGuard(request("DELETE", "https://evil.test")))?.status).toBe(403);
-  });
-  it.each(["auth/id-token-expired", "auth/id-token-revoked", "auth/invalid-id-token"])("rejects bad ID token %s", async code => {
-    sdk.verifyIdToken.mockRejectedValue({ code });
-    expect((await POST(request())).status).toBe(401);
-  });
-  it("fails closed for missing config and Firebase outage", async () => {
-    vi.stubEnv("FIREBASE_PRIVATE_KEY", ""); expect((await POST(request())).status).toBe(503);
-    vi.stubEnv("FIREBASE_PRIVATE_KEY", "key"); sdk.verifySessionCookie.mockRejectedValue(new Error("network"));
-    expect((await apiGuard(request()))?.status).toBe(503);
-  });
-  it.each(["http://127.0.0.1:3007", "https://finance.example"])("issues persistent cookie for %s", async origin => {
-    vi.stubEnv("APP_URL", origin);
-    const response = await POST(request("POST", origin));
-    expect(response.status).toBe(200);
-    const cookie = response.headers.get("set-cookie")!;
-    expect(cookie).toContain("Max-Age=1209600"); expect(cookie).toContain("HttpOnly"); expect(cookie).toContain("SameSite=lax"); expect(cookie).toContain("Path=/"); expect(cookie).not.toContain("Domain=");
-    expect(cookie.includes("Secure")).toBe(origin.startsWith("https"));
-    expect(sdk.verifyIdToken).toHaveBeenCalledWith("id-token", true);
-  });
-  it("local logout leaves refresh tokens intact; global logout revokes", async () => {
-    expect((await DELETE(request("DELETE"))).status).toBe(200);
-    expect(sdk.revokeRefreshTokens).not.toHaveBeenCalled();
-    expect((await revoke(request())).status).toBe(200);
-    expect(sdk.revokeRefreshTokens).toHaveBeenCalledWith("owner");
-    sdk.revokeRefreshTokens.mockRejectedValue(new Error("offline"));
-    const failure = await revoke(request()); expect(failure.status).toBe(503); expect(failure.headers.get("set-cookie")).toBeNull();
-  });
-  it.each([
-    "missing", "expired", "revoked", "invalid", "unauthorized", "offline",
-  ])("clears the local cookie through the proxy with a %s session", async state => {
-    if (state === "unauthorized") {
-      sdk.verifySessionCookie.mockResolvedValue({ ...claims, email: "removed@gmail.com" });
-    } else {
-      sdk.verifySessionCookie.mockRejectedValue(new Error(state));
-    }
-    const logoutRequest = new NextRequest("http://127.0.0.1:3007/api/session", {
-      method: "DELETE",
-      headers: {
-        host: "127.0.0.1:3007",
-        origin: "http://127.0.0.1:3007",
-        ...(state === "missing" ? {} : { cookie: `session=${state}` }),
-      },
-    });
-    const forwarded = await proxy(logoutRequest);
-    expect(forwarded.headers.get("x-middleware-next")).toBe("1");
-    const response = await DELETE(logoutRequest);
-    expect(response.status).toBe(200);
-    expect(response.headers.get("set-cookie")).toContain("session=;");
-    expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
-    expect(response.headers.get("set-cookie")).toContain("HttpOnly");
-    expect(response.headers.get("cache-control")).toBe("private, no-store");
-    expect(sdk.verifySessionCookie).not.toHaveBeenCalled();
-    expect(sdk.revokeRefreshTokens).not.toHaveBeenCalled();
-  });
-  it.each([null, "null", "https://evil.test"])("rejects local logout with Origin %s", async origin => {
-    const response = await DELETE(new Request("http://127.0.0.1:3007/api/session", {
-      method: "DELETE",
-      headers: origin === null ? {} : { origin },
-    }));
-    expect(response.status).toBe(403);
-    expect(response.headers.get("set-cookie")).toBeNull();
-  });
-  it("clears a secure cookie on HTTPS and permits repeated logout", async () => {
-    vi.stubEnv("APP_URL", "https://finance.example");
-    for (let attempt = 0; attempt < 2; attempt++) {
-      const response = await DELETE(new Request("https://finance.example/api/session", {
-        method: "DELETE",
-        headers: { origin: "https://finance.example" },
-      }));
-      expect(response.status).toBe(200);
-      expect(response.headers.get("set-cookie")).toContain("Secure");
-      expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
-    }
-  });
-  it("still denies global revocation and financial access with a revoked session", async () => {
-    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
-    const response = await revoke(request());
-    expect(response.status).toBe(401);
-    expect(response.headers.get("set-cookie")).toBeNull();
-    expect(sdk.revokeRefreshTokens).not.toHaveBeenCalled();
-    for (const path of ["/api/session/revoke", "/api/accounts"]) {
-      const denied = await proxy(new NextRequest(`http://127.0.0.1:3007${path}`, {
-        method: "POST",
-        headers: { host: "127.0.0.1:3007", origin: "http://127.0.0.1:3007", cookie: "session=revoked", "content-type": "application/json" },
-      }));
-      expect(denied.status).toBe(401);
-    }
-  });
-  it("accepts internal filters and rejects external destinations", () => {
-    expect(safeDestination("/transactions?month=2026-10")).toBe("/transactions?month=2026-10");
-    for (const target of ["https://evil.test", "//evil.test", "/\\evil.test", "/login", "/api/accounts", "/%6cogin", "/%61pi/accounts", "/%2f/evil.test", "/%", "/api"]) expect(safeDestination(target)).toBe("/dashboard");
-  });
-  it("proxy blocks unknown routes and all API methods and preserves filters", async () => {
-    for (const method of ["GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE"]) {
-      const response = await proxy(new NextRequest("http://127.0.0.1:3007/api/unknown", { method, headers: { host: "127.0.0.1:3007" } }));
-      expect(response.status).toBe(401);
-    }
-    const response = await proxy(new NextRequest("http://127.0.0.1:3007/transactions?month=2026-10", { headers: { host: "127.0.0.1:3007" } }));
-    expect(response.status).toBe(307);
-    expect(new URL(response.headers.get("location")!).searchParams.get("next")).toBe("/transactions?month=2026-10");
-    const alias = await proxy(new NextRequest("http://localhost:3007/login"));
-    expect(alias.headers.get("location")).toBe("http://127.0.0.1:3007/login");
-  });
-  it("direct calls to all financial API handlers fail before reading input", async () => {
-    const routes = import.meta.glob("../app/api/**/route.ts");
-    for (const [path, load] of Object.entries(routes)) {
-      if (path.includes("session")) continue;
-      const route = await load() as Record<string, (request: Request, context: { params: Promise<{ id: string; invoiceMonth: string }> }) => Promise<Response>>;
-      for (const method of ["GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"]) {
-        if (!route[method]) continue;
-        const denied = await route[method](new Request("http://127.0.0.1:3007/api/test", { method }), { params: Promise.resolve({ id: "test", invoiceMonth: "2026-10" }) });
-        expect(denied.status, path + " " + method).toBe(401);
-        expect(denied.headers.get("cache-control")).toBe("private, no-store");
-      }
-    }
-  }, 30000);
-  it("direct calls to all 44 Server Actions stop on invalid session", async () => {
-    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
-    const actions = await import("@/app/actions/finance");
-    for (const action of Object.values(actions)) {
-      await expect((action as () => Promise<unknown>)()).rejects.toMatchObject({ status: 401 });
-    }
-  });
-  it("protects the client help page through the proxy and finance layout", async () => {
-    expect(readFileSync("app/(finance)/layout.tsx", "utf8")).toContain("await requirePageSession();");
-    const helpPage = readFileSync("app/(finance)/help/page.tsx", "utf8");
-    expect(helpPage.startsWith('"use client";')).toBe(true);
-    const helpRequest = (cookie?: string) => new NextRequest("http://127.0.0.1:3007/help", {
-      headers: { host: "127.0.0.1:3007", ...(cookie ? { cookie: `session=${cookie}` } : {}) },
-    });
-
-    const unauthenticated = await proxy(helpRequest());
-    expect(unauthenticated.status).toBe(307);
-    const destination = new URL(unauthenticated.headers.get("location")!);
-    expect(destination.pathname).toBe("/login");
-    expect(destination.searchParams.get("next")).toBe("/help");
-
-    const authenticated = await proxy(helpRequest("valid"));
-    expect(authenticated.headers.get("x-middleware-next")).toBe("1");
-    expect(sdk.verifySessionCookie).toHaveBeenCalledWith("valid", true);
-
-    sdk.verifySessionCookie.mockRejectedValue({ code: "auth/session-cookie-revoked" });
-    expect((await proxy(helpRequest("revoked"))).status).toBe(307);
-  });
-  it("every financial handler/action/page begins with a guard", () => {
-    function files(directory: string): string[] { return readdirSync(directory, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(join(directory, entry.name)) : [join(directory, entry.name)]); }
-    for (const file of files("app/api").filter(file => file.endsWith("route.ts") && !file.includes("session"))) {
-      const source = readFileSync(file, "utf8");
-      for (const match of source.matchAll(/async function handle\w+\([^]*?\) \{([^]*?)\n\}/g)) expect(match[1].trim().startsWith("const denied = await apiGuard(")).toBe(true);
-    }
-    const actions = files("app/actions/finance")
-      .filter((file) => file.endsWith(".ts") && !file.endsWith("action-runtime.ts"))
-      .map((file) => readFileSync(file, "utf8"))
-      .join("\n");
-    expect([...actions.matchAll(/export async function/g)]).toHaveLength(47);
-    expect([...actions.matchAll(/await requireActionSession\(\)/g)]).toHaveLength(47);
-    // The informational client help page uses the guarded layout and proxy,
-    // verified above. Pages that read financial data still require their own guard.
-    for (const file of files("app/(finance)").filter(file => file.endsWith("page.tsx") && file !== join("app/(finance)", "help", "page.tsx"))) expect(readFileSync(file, "utf8")).toContain("await requirePageSession();");
-  });
-});
-
-
-describe("public demo access", () => {
-  it.each(["true", "1", "yes", "on"])("opens demo pages and operations without Firebase for %s", async flag => {
-    vi.stubEnv("DEMO_MODE", flag);
-    vi.stubEnv("FIREBASE_PRIVATE_KEY", "");
-    vi.stubEnv("APP_URL", "");
-    const response = await proxy(new NextRequest("http://127.0.0.1:3007/dashboard"));
-    expect(response.status).toBe(200);
-    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
-    expect(await requirePageSession()).toEqual({ name: "Visitante demo", picture: null });
-    await expect(requireActionSession()).resolves.toBeUndefined();
-    expect(await apiGuard(new Request("http://127.0.0.1:3007/api/accounts"))).toBeNull();
-    expect(await apiGuard(request("POST", "http://127.0.0.1:3007", ""))).toBeNull();
-    expect(sdk.verifySessionCookie).not.toHaveBeenCalled();
-    expect((await proxy(new NextRequest("http://127.0.0.1:3007/api/session"))).status).toBe(404);
-  });
-  it("keeps origin and content-type checks on demo writes", async () => {
-    vi.stubEnv("DEMO_MODE", "true");
-    expect((await apiGuard(request("POST", "https://evil.test", "")))?.status).toBe(403);
-    expect((await apiGuard(new Request("http://127.0.0.1:3007/api/accounts", {
-      method: "POST", headers: { origin: "http://127.0.0.1:3007", "content-type": "text/plain" },
-    })))?.status).toBe(415);
-  });
-});
-
-
-describe("personal profile", () => {
-  function profileRequest(body: unknown, origin = "http://127.0.0.1:3007") {
-    return new Request("http://127.0.0.1:3007/api/profile", { method: "PATCH", headers: { origin, cookie: "session=valid", "content-type": "application/json" }, body: JSON.stringify(body) });
+function accept(response: Response) {
+  for (const cookie of response.headers.getSetCookie()) {
+    const [name, value] = cookie.split(";")[0].split("="); state.cookies[name] = value;
   }
-  it("updates only the authenticated user's display name and reads it despite stale cookie claims", async () => {
-    const response = await updateProfile(profileRequest({ firstName: " Ana ", lastName: " Silva " }));
-    expect(response.status).toBe(200);
-    expect(response.headers.get("cache-control")).toBe("private, no-store");
-    expect(await response.json()).toEqual({ ok: true, displayName: "Ana Silva" });
-    expect(sdk.updateUser).toHaveBeenCalledWith("owner", { displayName: "Ana Silva" });
-    sdk.getUser.mockResolvedValueOnce({ displayName: "Ana Silva" });
-    expect(await requirePageSession()).toMatchObject({ uid: "owner", name: "Ana Silva", email: "owner@gmail.com" });
-    expect(sdk.getUser).toHaveBeenCalledWith("owner");
+}
+async function login() { const response = await POST(request("POST", { idToken: "valid" })); accept(response); return response; }
+beforeEach(async () => {
+  vi.clearAllMocks(); state.cookies = {};
+  for (const [key, value] of Object.entries({ DEMO_MODE: "false", NODE_ENV: "test", APP_URL: origin, APP_URL_DEVELOPMENT: origin, FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
+  database = await createTestDatabase(); vi.mocked(getDatabase).mockReturnValue(database.db);
+  await getAuthDatabase().insert(authorizedUsers).values({ email: claims.email, pinHash: await hashPin("123456") });
+  const session = createSession(claims, 0);
+  state.cookies = { session: signCookie(session, "session"), unlock: signCookie(createUnlock(session, { lockTimeoutMinutes: 15, lockOnClose: true }), "unlock") };
+  state.verifyIdToken.mockResolvedValue(claims);
+});
+afterEach(async () => { await database.cleanup(); vi.unstubAllEnvs(); });
+
+describe("local session and PIN routes", () => {
+  it("uses Firebase only for login and keeps guards/profile completely local", async () => {
+    expect((await login()).status).toBe(200);
+    expect(state.cookies.unlock).toBe("");
+    expect((await apiGuard(request("GET")))?.status).toBe(423);
+    accept(await unlock(request("POST", { pin: "123456" })));
+    state.verifyIdToken.mockImplementation(() => { throw new Error("No network after login"); });
+    expect(await apiGuard(request("GET"))).toBeNull();
+    await requireActionSession();
+    expect(await requirePageSession()).toMatchObject({ name: "Ana" });
+    expect((await profile(request("PATCH", { firstName: "Ana", lastName: "Silva" }))).status).toBe(200);
+    expect(await requirePageSession()).toMatchObject({ name: "Ana Silva" });
+    expect(state.verifyIdToken).toHaveBeenCalledTimes(1);
   });
-  it("permits a display name without a surname", async () => {
-    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }))).status).toBe(200);
-    expect(sdk.updateUser).toHaveBeenCalledWith("owner", { displayName: "Ana" });
+  it("defines a PIN only when none exists, then rejects replacing it without the current PIN", async () => {
+    await getAuthDatabase().update(authorizedUsers).set({ pinHash: null });
+    state.cookies.unlock = "";
+    expect((await setup(request("POST", { pin: "123" }))).status).toBe(400);
+    const response = await setup(request("POST", { pin: "654321" })); expect(response.status).toBe(200); accept(response);
+    expect((await setup(request("POST", { pin: "999999" }))).status).toBe(403);
+    expect((await changePin(request("PATCH", { pin: "999999", currentPin: "654321" }))).status).toBe(200);
+    expect((await unlock(request("POST", { pin: "999999" }))).status).toBe(200);
   });
-  it.each([
-    { firstName: "", lastName: "Silva" }, { firstName: "  ", lastName: "" },
-    { firstName: "a".repeat(81), lastName: "" }, { firstName: "Ana", lastName: "a".repeat(121) },
-    { firstName: "Ana", lastName: "Silva", email: "changed@gmail.com" },
-    { firstName: "Ana", lastName: "Silva", uid: "someone-else" }, null,
-  ])("rejects invalid data or protected fields: %j", async body => {
-    expect((await updateProfile(profileRequest(body))).status).toBe(400);
-    expect(sdk.updateUser).not.toHaveBeenCalled();
+  it("counts wrong attempts atomically, resets after success, and invalidates all sessions on the fifth", async () => {
+    expect(await (await unlock(request("POST", { pin: "000000" }))).json()).toMatchObject({ remaining: 4 });
+    await unlock(request("POST", { pin: "123456" }));
+    for (let i = 1; i <= 5; i++) {
+      const response = await unlock(request("POST", { pin: "000000" }));
+      expect(response.status).toBe(i === 5 ? 401 : 400);
+      expect(await response.json()).toMatchObject({ remaining: 5 - i });
+      if (i === 5) expect(response.headers.get("set-cookie")).toContain("Max-Age=0");
+    }
+    await expect(verifyLocalSession(state.cookies.session)).rejects.toMatchObject({ status: 401 });
+    await login(); expect((await unlock(request("POST", { pin: "123456" }))).status).toBe(200);
   });
-  it("rejects malformed JSON", async () => {
-    const request = profileRequest({});
-    vi.spyOn(request, "json").mockRejectedValueOnce(new SyntaxError());
-    expect((await updateProfile(request)).status).toBe(400);
-    expect(sdk.updateUser).not.toHaveBeenCalled();
+  it("requires a new Google login after requesting a PIN reset", async () => {
+    expect((await DELETE(request("DELETE", {}, { "x-session-intent": "pin-reset" }))).status).toBe(200);
+    expect((await setup(request("POST", { pin: "111111" }))).status).toBe(401);
+    await login();
+    expect((await unlock(request("POST", { pin: "123456" }))).status).toBe(403);
+    accept(await setup(request("POST", { pin: "111111" })));
+    expect(await apiGuard(request("GET"))).toBeNull();
+    expect((await getAuthDatabase().select().from(authorizedUsers).get())?.pinResetRequested).toBe(false);
   });
-  it("rejects cross-origin writes and public-demo edits", async () => {
-    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }, "https://evil.test"))).status).toBe(403);
+  it("logout invalidates copies, clears both cookies and tolerates absent/expired cookies", async () => {
+    const response = await DELETE(request("DELETE"));
+    expect(response.headers.get("set-cookie")).toContain("unlock=;");
+    await expect(verifyLocalSession(state.cookies.session)).rejects.toMatchObject({ status: 401 });
+    expect((await DELETE(request("DELETE"))).status).toBe(200);
+    state.cookies = {}; expect((await DELETE(request("DELETE"))).status).toBe(200);
+  });
+  it("heartbeats require unlock, manual locking clears unlock, settings control persistence", async () => {
+    expect((await activity(request())).headers.get("set-cookie")).not.toContain("Max-Age");
+    const response = await settings(request("PATCH", { lockTimeoutMinutes: 1, lockOnClose: false }));
+    expect(response.status).toBe(200); expect(response.headers.get("set-cookie")).toContain("Max-Age=60");
+    expect((await activity(request())).status).toBe(423); // old settings cannot be renewed
+    accept(response); expect((await activity(request())).status).toBe(200);
+    accept(await lock(request("DELETE"))); expect((await activity(request())).status).toBe(423);
+  });
+  it("validates settings and PIN formats before writing", async () => {
+    for (const minutes of [0, 121, 1.5]) expect((await settings(request("PATCH", { lockTimeoutMinutes: minutes, lockOnClose: true }))).status).toBe(400);
+    for (const pin of [null, 123456, "abcdef", "12345", "1234567"]) expect((await unlock(request("POST", { pin }))).status).toBe(400);
+    expect((await changePin(request("PATCH", { pin: "111111" }))).status).toBe(400);
+  });
+  it("authenticates the MCP HTTP route by bearer even while the browser is locked", async () => {
+    const { token } = await (await generateToken(request())).json();
+    const rpc = (authorization?: string) => new Request(origin + "/api/mcp", {
+      method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...(authorization ? { Authorization: authorization } : {}), cookie: `session=${state.cookies.session}` },
+      body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+    });
+    state.cookies.unlock = "";
+    expect((await mcp(rpc())).status).toBe(401);
+    expect((await mcp(rpc(`Bearer ${token}`))).status).toBe(200);
+    accept(await unlock(request("POST", { pin: "123456" })));
+    await revokeToken(request("DELETE"));
+    expect((await mcp(rpc(`Bearer ${token}`))).status).toBe(401);
+  });
+  it("stores only token hashes; regeneration/revocation immediately invalidate old MCP credentials", async () => {
+    const first = await (await generateToken(request())).json();
+    expect(first.token).toMatch(/^[\w-]{43}$/);
+    expect((await getAuthDatabase().select().from(authorizedUsers).get())?.mcpTokenHash).not.toBe(first.token);
+    expect(await verifyMcpToken(`Bearer ${first.token}`)).toBe(true);
+    const second = await (await generateToken(request())).json();
+    expect(await verifyMcpToken(`Bearer ${first.token}`)).toBe(false);
+    state.cookies.unlock = ""; expect(await verifyMcpToken(`Bearer ${second.token}`)).toBe(true);
+    expect((await revokeToken(request("DELETE"))).status).toBe(423);
+    accept(await unlock(request("POST", { pin: "123456" })));
+    await revokeToken(request("DELETE")); expect(await verifyMcpToken(`Bearer ${second.token}`)).toBe(false);
+    expect(await verifyMcpToken(null)).toBe(false);
+  });
+});
+
+describe("access boundary", () => {
+  it.each([{ email: "other@gmail.com" }, { email_verified: false }, { firebase: { sign_in_provider: "password" } }])("rejects forbidden claims %j", async override => {
+    state.verifyIdToken.mockResolvedValue({ ...claims, ...override }); expect((await login()).status).toBe(403);
+  });
+  it.each([-301, 31, NaN])("rejects nonrecent auth_time %s", async offset => {
+    state.verifyIdToken.mockResolvedValue({ ...claims, auth_time: Date.now() / 1000 + offset }); expect((await login()).status).toBe(401);
+  });
+  it("rejects bad input, CSRF, stale sessions and removed users", async () => {
+    expect((await POST(request("POST", {}))).status).toBe(400);
+    expect((await POST(request("POST", {}, { "content-type": "text/plain" }))).status).toBe(415);
+    expect((await DELETE(request("DELETE", {}, { origin: "https://evil.test" }))).status).toBe(403);
+    expect((await apiGuard(request("POST", {}, { origin: "https://evil.test" })))?.status).toBe(403);
+    expect((await apiGuard(request("POST", {}, { "content-type": "text/plain" })))?.status).toBe(415);
+    await getAuthDatabase().delete(authorizedUsers);
+    await expect(verifyLocalSession(state.cookies.session)).rejects.toMatchObject({ status: 401 });
+  });
+  it("proxy does no database or Firebase access, redirects with next, and slides only valid unlocks", async () => {
+    const req = (path: string, cookie = "") => new NextRequest(origin + path, { headers: { host: "127.0.0.1:3007", cookie } });
+    vi.mocked(getDatabase).mockImplementation(() => { throw new Error("proxy must not touch DB"); });
+    expect((await proxy(req("/api/accounts"))).status).toBe(401);
+    const result = await proxy(req("/transactions?month=2026-10"));
+    expect(new URL(result.headers.get("location")!).searchParams.get("next")).toBe("/transactions?month=2026-10");
+    expect((await proxy(req("/api/accounts", `session=${state.cookies.session}`))).status).toBe(423);
+    expect((await proxy(req("/lock", `session=${state.cookies.session}`))).headers.get("x-middleware-next")).toBe("1");
+    const session = createSession(claims, 0);
+    const unlocked = createUnlock(session, { lockTimeoutMinutes: 15, lockOnClose: true }); unlocked.lastActivity -= 61000;
+    const response = await proxy(req("/dashboard", `session=${signCookie(session, "session")}; unlock=${signCookie(unlocked, "unlock")}`));
+    expect(response.headers.get("set-cookie")).toContain("unlock=");
+    expect((await proxy(req("/api/mcp"))).status).toBe(200);
+  });
+  it("page/action/API guards reject locked and missing sessions", async () => {
+    state.cookies.unlock = "";
+    await expect(requirePageSession()).rejects.toThrow("NEXT_REDIRECT");
+    await expect(requireActionSession()).rejects.toMatchObject({ status: 423 });
+    expect((await apiGuard(request("GET")))?.status).toBe(423);
+    state.cookies.session = "invalid";
+    await expect(requirePageSession()).rejects.toThrow("NEXT_REDIRECT");
+    const actions = await import("@/app/actions/finance");
+    for (const action of Object.values(actions)) await expect((action as () => Promise<unknown>)()).rejects.toMatchObject({ status: 401 });
+  });
+  it("audits every financial page, action and route guard", () => {
+    function files(dir: string): string[] { return readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? files(join(dir, e.name)) : [join(dir, e.name)]); }
+    for (const path of files("app/(finance)").filter(p => p.endsWith("page.tsx"))) expect(readFileSync(path, "utf8"), path).toContain("await requirePageSession();");
+    for (const path of files("app/actions/finance").filter(p => p.endsWith(".ts") && !p.endsWith("action-runtime.ts"))) {
+      const source = readFileSync(path, "utf8"); expect([...source.matchAll(/export async function/g)].length).toBe([...source.matchAll(/await requireActionSession\(\)/g)].length);
+    }
+    for (const path of files("app/api").filter(p => p.endsWith("route.ts") && !/session|pin|unlock|security|mcp/.test(p))) expect(readFileSync(path, "utf8"), path).toContain("await apiGuard(");
+  });
+  it("keeps demo isolated and validates safe destinations and environment origins", async () => {
+    for (const target of ["//evil.test", "/login", "/lock", "/api/a", "/%", "/%2f/evil.test"]) expect(safeDestination(target)).toBe("/dashboard");
+    expect(safeDestination("/transactions?month=2026-10")).toContain("?month=");
+    vi.stubEnv("NODE_ENV", "development"); expect(isAllowedOrigin("http://localhost:3007", origin)).toBe(true);
+    expect(authConfig().origin).toBe(origin);
+    vi.stubEnv("APP_URL_DEVELOPMENT", "invalid"); expect(() => authConfig()).toThrow();
     vi.stubEnv("DEMO_MODE", "true");
-    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "" }))).status).toBe(403);
-    expect(sdk.updateUser).not.toHaveBeenCalled();
-  });
-  it("reports a Firebase failure without claiming the name was saved", async () => {
-    sdk.updateUser.mockRejectedValueOnce(new Error("offline"));
-    expect((await updateProfile(profileRequest({ firstName: "Ana", lastName: "Silva" }))).status).toBe(503);
-  });
-  it("keeps the token name when Firebase has no display name", async () => {
-    sdk.getUser.mockResolvedValueOnce({});
-    sdk.verifySessionCookie.mockResolvedValueOnce({ ...claims, name: "Original" });
-    expect(await requirePageSession()).toMatchObject({ name: "Original" });
+    expect(await requirePageSession()).toEqual({ name: "Visitante demo", picture: null });
+    await requireActionSession(); expect(await apiGuard(request("GET"))).toBeNull();
+    expect((await setup(request())).status).toBe(404);
+    expect((await POST(request())).status).toBe(404);
+    expect((await proxy(new NextRequest(origin + "/api/pin"))).status).toBe(404);
   });
 });

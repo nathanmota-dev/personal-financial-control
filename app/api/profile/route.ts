@@ -1,4 +1,7 @@
-import { adminAuth, apiGuard, authResponse, requireRequestSession } from "@/lib/auth/server";
+import { apiGuard, authResponse, requireRequestSession } from "@/lib/auth/server";
+import { getAuthDatabase } from "@/lib/auth/database";
+import { authorizedUsers } from "@/lib/db/user-schema";
+import { eq } from "drizzle-orm";
 import { profileSchema } from "@/lib/auth/profile-schema";
 import { isDemoMode } from "@/lib/demo/mode";
 import { privateRoute, rejectRouteMethod } from "@/lib/server/route-response";
@@ -16,7 +19,7 @@ async function handlePATCH(request: Request) {
   try {
     const session = await requireRequestSession(request);
     const displayName = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ");
-    await (await adminAuth()).updateUser(session.uid, { displayName });
+    await getAuthDatabase().update(authorizedUsers).set({ displayName }).where(eq(authorizedUsers.email, session.email));
     return Response.json({ ok: true, displayName });
   } catch (error) {
     return authResponse(error);

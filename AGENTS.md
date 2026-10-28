@@ -12,7 +12,7 @@ When naming branches, committing, pushing or opening/updating pull requests, fol
 
 ---
 
-If you need create a new view (using css), learn frontend-design skills for understanding the design principles and create the view accordingly.
+For new views, follow the existing app visual style and reuse its shadcn components.
 
 ----
 

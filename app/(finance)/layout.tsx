@@ -1,3 +1,4 @@
+import { SessionActivity } from "@/components/auth/session-activity";
 import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -27,6 +28,7 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
       fallback={<div className="min-h-screen bg-surface text-content-strong" role="status">Carregando dados financeiros.</div>}
     >
       <FinancialPrivacyProvider key={String(demoMode)} demoMode={demoMode}>
+        {!demoMode && "user" in session && <SessionActivity timeoutMinutes={session.user.lockTimeoutMinutes} />}
         <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
         {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
       </FinancialPrivacyProvider>

@@ -3,7 +3,6 @@ export interface LoginFormProps {
   demoMode: boolean;
 }
 export interface LogoutButtonProps {
-  allDevices?: boolean;
   iconOnly?: boolean;
   fullWidth?: boolean;
 }

@@ -29,7 +29,7 @@ export function safeDestination(value: string | undefined) {
   try {
     const url = new URL(value, "https://internal.invalid");
     const pathname = decodeURIComponent(url.pathname);
-    return url.origin === "https://internal.invalid" && pathname !== "/login" && pathname !== "/api" && !pathname.startsWith("/api/") && !/[\\\x00-\x20]/.test(pathname) && !pathname.startsWith("//") ? url.pathname + url.search : "/dashboard";
+    return url.origin === "https://internal.invalid" && pathname !== "/login" && pathname !== "/lock" && pathname !== "/api" && !pathname.startsWith("/api/") && !/[\\\x00-\x20]/.test(pathname) && !pathname.startsWith("//") ? url.pathname + url.search : "/dashboard";
   } catch {
     return "/dashboard";
   }

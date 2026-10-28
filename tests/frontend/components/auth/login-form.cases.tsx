@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 import { googleLogin } from "@/lib/auth/client";
 import { renderUI } from "../../helpers";
 
-vi.mock("@/lib/auth/client", () => ({ googleLogin: vi.fn() }));
+vi.mock("@/lib/auth/client", () => ({ googleLogin: vi.fn(), googleSignOut: vi.fn() }));
 
 describe("Google login form", () => {
   it("offers the chosen demo destination", () => {

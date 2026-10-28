@@ -1,65 +1,45 @@
-import { authConfig,isAllowedOrigin } from "@/lib/auth/config";
-import { apiGuard,authResponse,firebaseError,verifySession } from "@/lib/auth/server";
+import { authConfig, isAllowedOrigin } from "@/lib/auth/config";
+import { readSession, readUnlock } from "@/lib/auth/local-session";
+import { setUnlockCookie } from "@/lib/auth/cookies";
 import { isDemoMode } from "@/lib/demo/mode";
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+const privateHeaders = { "Cache-Control": "private, no-store" };
+function deny(status: number) { return NextResponse.json({ ok: false }, { status, headers: privateHeaders }); }
+function destination(request: NextRequest, path: string, origin: string) {
+  const url = new URL(path, origin);
+  url.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
+  return NextResponse.redirect(url, { headers: privateHeaders });
+}
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (isDemoMode()) {
-    // Demo has no Firebase session endpoints or persistent user authorization.
-    if (path === "/api/session" || path.startsWith("/api/session/")) {
-      return Response.json({ ok: false }, { status: 404, headers: { "Cache-Control": "private, no-store" } });
-    }
-    const response = NextResponse.next();
-    response.headers.set("Cache-Control", "private, no-store");
-    return response;
+    if (path === "/api/pin" || path === "/api/unlock" || path.startsWith("/api/security") || path === "/api/session" || path.startsWith("/api/session/")) return deny(404);
+    return NextResponse.next({ headers: privateHeaders });
   }
   if (process.env.NODE_ENV === "development" && path === "/_next/webpack-hmr" && request.method === "GET") return NextResponse.next();
-  const asset =
-    path.startsWith("/_next/static/") ||
-    path === "/favicon.ico" ||
-    path === "/icon.png";
-  if (asset && ["GET", "HEAD"].includes(request.method)) return NextResponse.next();
+  if ((path.startsWith("/_next/static/") || path === "/favicon.ico" || path === "/icon.png") && ["GET", "HEAD"].includes(request.method)) return NextResponse.next();
   let origin: string;
-  try { origin = authConfig().origin; } catch (error) {
-    if (path === "/login" && ["GET", "HEAD"].includes(request.method)) {
-      const response = NextResponse.next();
-      response.headers.set("Cache-Control", "private, no-store");
-      return response;
-    }
-    return authResponse(error);
+  try { origin = authConfig().origin; } catch {
+    return path === "/login" && ["GET", "HEAD"].includes(request.method) ? NextResponse.next({ headers: privateHeaders }) : deny(503);
   }
-  // NextURL normalizes loopback IPs to localhost; retain the HTTP Host for
-  // canonical-origin checks so 127.0.0.1 remains a valid configured origin.
   const incoming = new URL(request.url);
   if (request.headers.get("host")) incoming.host = request.headers.get("host")!;
+  // MCP has its own bearer authentication and loopback host/origin validation.
+  if (path === "/api/mcp") return NextResponse.next({ headers: privateHeaders });
   if (!isAllowedOrigin(incoming.origin, origin)) {
-    if (["GET", "HEAD"].includes(request.method) && !path.startsWith("/api/")) return NextResponse.redirect(new URL(path + request.nextUrl.search, origin), { headers: { "Cache-Control": "private, no-store" } });
-    return Response.json({ ok: false }, { status: 403, headers: { "Cache-Control": "private, no-store" } });
+    if (["GET", "HEAD"].includes(request.method) && !path.startsWith("/api/")) return NextResponse.redirect(new URL(path + request.nextUrl.search, origin), { headers: privateHeaders });
+    return deny(403);
   }
-  // Session creation and local logout validate Origin in their own handlers.
-  // Neither requires an existing valid session; global revocation still does.
-  const publicSessionMethod = path === "/api/session" && ["POST", "DELETE"].includes(request.method);
-  if (!(path === "/login" && ["GET", "HEAD"].includes(request.method)) && !publicSessionMethod) {
-    if (path.startsWith("/api/")) {
-      const denied = await apiGuard(request);
-      if (denied) return denied;
-    } else {
-      try { await verifySession(request.cookies.get("session")?.value); }
-      catch (error) {
-        if (firebaseError(error).status !== 401) return authResponse(error);
-        const login = new URL("/login", incoming.origin);
-        login.searchParams.set("next", path + request.nextUrl.search);
-        return NextResponse.redirect(login, { headers: { "Cache-Control": "private, no-store" } });
-      }
-      if (!["GET", "HEAD"].includes(request.method)) {
-        const denied = await apiGuard(request);
-        // Server Actions use multipart or text; their own guard checks Origin.
-        if (denied && denied.status !== 415) return denied;
-      }
-    }
-  }
-  const response = NextResponse.next();
-  response.headers.set("Cache-Control", "private, no-store");
+  if ((path === "/login" && ["GET", "HEAD"].includes(request.method)) || (path === "/api/session" && ["POST", "DELETE"].includes(request.method))) return NextResponse.next({ headers: privateHeaders });
+  const session = readSession(request.cookies.get("session")?.value);
+  if (!session) return path.startsWith("/api/") ? deny(401) : destination(request, "/login", incoming.origin);
+  if (!["GET", "HEAD", "OPTIONS"].includes(request.method) && !isAllowedOrigin(request.headers.get("origin"), origin)) return deny(403);
+  if (["/lock", "/api/pin", "/api/unlock"].includes(path)) return NextResponse.next({ headers: privateHeaders });
+  const unlock = readUnlock(request.cookies.get("unlock")?.value, session);
+  if (!unlock) return path.startsWith("/api/") ? deny(423) : destination(request, "/lock", incoming.origin);
+  const response = NextResponse.next({ headers: privateHeaders });
+  if (Date.now() - unlock.lastActivity >= 60000) setUnlockCookie(response, { ...unlock, lastActivity: Date.now() });
   return response;
 }
 export const config = { matcher: "/:path*" };

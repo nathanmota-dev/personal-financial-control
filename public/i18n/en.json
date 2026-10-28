@@ -1206,5 +1206,42 @@
         "Sidebar"
       ]
     }
+  },
+  "security": {
+    "title": "Security",
+    "description": "Manage app locking and integration access.",
+    "setupTitle": "Set your PIN",
+    "lockTitle": "Unlock your app",
+    "setupDescription": "Choose and confirm 6 digits to protect your space.",
+    "lockDescription": "Enter your 6-digit PIN to continue.",
+    "pin": "PIN",
+    "confirmPin": "Confirm PIN",
+    "currentPin": "Current PIN",
+    "newPin": "New PIN",
+    "mismatch": "The PINs do not match.",
+    "remaining": "{count} attempts remaining.",
+    "invalidPin": "Incorrect PIN. Try again.",
+    "error": "Unable to complete. Please try again.",
+    "saving": "Saving…",
+    "setPin": "Set PIN",
+    "unlock": "Unlock",
+    "forgotPin": "Forgot PIN",
+    "timeout": "Idle minutes (1–120)",
+    "lockOnClose": "Lock when closing the app",
+    "save": "Save",
+    "changePin": "Change PIN",
+    "saved": "Settings saved.",
+    "mcpTitle": "MCP token",
+    "mcpDescription": "Allows local access to your finances even while the app is locked. Regenerating invalidates the previous token.",
+    "generate": "Generate token",
+    "regenerate": "Regenerate token",
+    "revoke": "Revoke token",
+    "revoked": "Token revoked.",
+    "tokenOnce": "Copy now. This token will not be shown again.",
+    "copied": "Token copied.",
+    "copy": "Copy",
+    "hide": "Hide",
+    "logout": "Sign out",
+    "loggingOut": "Signing out…"
   }
 }
