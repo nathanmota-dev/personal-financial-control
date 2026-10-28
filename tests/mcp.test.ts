@@ -6,10 +6,10 @@ import { handleMcpRequest } from "@/lib/mcp/http";
 import { createTestDatabase } from "@/tests/helpers/database";
 
 const token = "test-token-that-is-at-least-thirty-two-characters";
-vi.mock("@/lib/auth/server", () => ({ apiGuard: vi.fn(async (request: Request) => {
-  if (process.env.AUTH_TEST_UNAVAILABLE === "1") return Response.json({}, { status: 503 });
-  return request.headers.get("cookie") === "session=test-session" ? null : Response.json({}, { status: 401 });
-}) }));
+vi.mock("@/lib/auth/mcp-token", () => ({ verifyMcpToken: async (authorization: string) => {
+  if (process.env.AUTH_TEST_UNAVAILABLE === "1") throw new Error("offline");
+  return authorization === "Bearer test-token-that-is-at-least-thirty-two-characters";
+} }));
 afterEach(() => { delete process.env.AUTH_TEST_UNAVAILABLE; });
 
 function request(body: unknown, options?: { token?: string; url?: string; method?: string }) {
@@ -17,7 +17,7 @@ function request(body: unknown, options?: { token?: string; url?: string; method
     "content-type": "application/json",
     accept: "application/json, text/event-stream",
   });
-  if (options?.token) headers.set("cookie", options.token === token ? "session=test-session" : "session=invalid");
+  if (options?.token) headers.set("authorization", `Bearer ${options.token}`);
   return new Request(options?.url ?? "http://127.0.0.1:3007/api/mcp", {
     method: options?.method ?? "POST",
     headers,

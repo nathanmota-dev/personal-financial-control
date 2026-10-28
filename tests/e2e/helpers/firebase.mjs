@@ -2,12 +2,10 @@
 // Application guards, origin protection, allowlist lookup and persistence stay real.
 import { registerHooks } from "node:module";
 const app = `export const cert = () => ({}); export const getApps = () => [{ name: "pfc-auth" }]; export const initializeApp = () => ({});`;
-const auth = `const names = new Map(); export const getAuth = () => ({
-  getUser: async uid => ({ uid, displayName: names.get(uid) ?? "Ana Lima" }),
-  updateUser: async (uid, { displayName }) => { names.set(uid, displayName); return { uid, displayName }; },
-  verifySessionCookie: async cookie => {
-    if (!["onboarding-a", "onboarding-b"].includes(cookie)) throw { code: "auth/invalid-session-cookie" };
-    return { uid: cookie, name: "Ana Lima", email: cookie + "@example.test", email_verified: true, firebase: { sign_in_provider: "google.com" } };
+const auth = `export const getAuth = () => ({
+  verifyIdToken: async token => {
+    if (!["onboarding-a", "onboarding-b"].includes(token)) throw { code: "auth/invalid-id-token" };
+    return { uid: token, name: "Ana Lima", email: token + "@example.test", email_verified: true, firebase: { sign_in_provider: "google.com" }, auth_time: Math.floor(Date.now() / 1000) };
   }
 });`;
 registerHooks({ resolve(specifier, context, nextResolve) {

@@ -299,3 +299,6 @@
     box-shadow: 0 30px 65px -20px rgb(0 0 0 / 0.32);
   }
 }
+
+/* Mask PIN slots while preserving the accessible OTP input. */
+.text-security-disc { -webkit-text-security: disc; }

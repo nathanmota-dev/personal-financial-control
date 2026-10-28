@@ -2,12 +2,14 @@ import { isDemoMode } from "@/lib/demo/mode";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { cookies,headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import "server-only";
 import { authConfig,isAllowedOrigin } from "./config";
-import { isAuthorizedEmail } from "./users";
+import { getAuthorizedUser, isAuthorizedEmail } from "./users";
+import { readSession, readUnlock } from "./local-session";
 
 export class AuthError extends Error {
-  constructor(public status: number) { super(status === 403 ? "Acesso não permitido." : status === 503 ? "Autenticação indisponível." : "Entre novamente."); }
+  constructor(public status: number) { super(status === 423 ? "Destrave o app." : status === 403 ? "Acesso não permitido." : status === 503 ? "Autenticação indisponível." : "Entre novamente."); }
 }
 export async function adminAuth() {
   try {
@@ -30,10 +32,19 @@ export function firebaseError(error: unknown): AuthError {
   const code = (error as { code?: string })?.code;
   return new AuthError(["auth/id-token-expired", "auth/id-token-revoked", "auth/invalid-id-token", "auth/argument-error", "auth/session-cookie-expired", "auth/session-cookie-revoked", "auth/invalid-session-cookie", "auth/user-disabled", "auth/user-not-found"].includes(code || "") ? 401 : 503);
 }
-export async function verifySession(cookie?: string) {
-  const auth = await adminAuth();
-  if (!cookie) throw new AuthError(401);
-  try { return await authorizeClaims(await auth.verifySessionCookie(cookie, true)); } catch (error) { throw firebaseError(error); }
+export async function verifyLocalSession(cookie?: string) {
+  if (isDemoMode()) throw new AuthError(404);
+  const session = readSession(cookie);
+  if (!session) throw new AuthError(401);
+  const user = await getAuthorizedUser(session.email);
+  if (!user || user.sessionVersion !== session.ver) throw new AuthError(401);
+  return { ...session, name: user.displayName ?? session.name, user };
+}
+export function requestCookie(request: Request, name: string) {
+  return request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith(`${name}=`))?.slice(name.length + 1);
+}
+function requireUnlock(value: string | undefined, session: Awaited<ReturnType<typeof verifyLocalSession>>) {
+  if (!session.user.pinHash || session.user.pinResetRequested || !readUnlock(value, session, session.user)) throw new AuthError(423);
 }
 export function checkOrigin(requestHeaders: Headers, demoOrigin?: string) {
   if (isDemoMode()) {
@@ -58,25 +69,41 @@ export async function apiGuard(request: Request) {
     return null;
   } catch (error) { return authResponse(error); }
 }
-export async function requireRequestSession(request: Request) {
-  const cookie = request.headers.get("cookie")?.split(";").map(value => value.trim()).find(value => value.startsWith("session="))?.slice(8);
-  return verifySession(cookie);
+export async function requireRequestSession(request: Request, unlocked = true) {
+  const session = await verifyLocalSession(requestCookie(request, "session"));
+  if (unlocked) requireUnlock(requestCookie(request, "unlock"), session);
+  return session;
+}
+export async function sessionMutation(request: Request, unlocked = false) {
+  const session = await requireRequestSession(request, unlocked);
+  checkOrigin(request.headers);
+  if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") throw new AuthError(415);
+  return session;
 }
 export function authResponse(error: unknown) {
   const failure = firebaseError(error);
   return Response.json({ ok: false, error: failure.message }, { status: failure.status, headers: { "Cache-Control": "private, no-store" } });
 }
-export async function requirePageSession() {
+// Layout and page share one lookup per render.
+export const requirePageSession = cache(async (unlocked = true) => {
   if (isDemoMode()) return { name: "Visitante demo", picture: null };
   try {
-    const session = await verifySession((await cookies()).get("session")?.value);
-    // Session-cookie claims retain the old name until the user signs in again.
-    const profile = await (await adminAuth()).getUser(session.uid);
-    return { ...session, name: profile.displayName ?? session.name };
+    const jar = await cookies();
+    const session = await verifyLocalSession(jar.get("session")?.value);
+    if (unlocked) requireUnlock(jar.get("unlock")?.value, session);
+    return session;
+  } catch (error) {
+    const failure = firebaseError(error);
+    if (failure.status === 401) redirect("/login");
+    if (failure.status === 423) redirect("/lock");
+    throw failure;
   }
-  catch (error) { if (firebaseError(error).status === 401) redirect("/login"); throw firebaseError(error); }
-}
+});
 export async function requireActionSession() {
-  if (!isDemoMode()) await verifySession((await cookies()).get("session")?.value);
+  if (!isDemoMode()) {
+    const jar = await cookies();
+    const session = await verifyLocalSession(jar.get("session")?.value);
+    requireUnlock(jar.get("unlock")?.value, session);
+  }
   checkOrigin(await headers());
 }

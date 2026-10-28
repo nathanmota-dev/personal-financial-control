@@ -6,21 +6,24 @@ despesas e compras de cartão sem acessar diretamente as tabelas do banco.
 
 ## Configuração rápida
 
-Faça login no app com a conta Google autorizada. O MCP aceita somente hosts
-loopback e exige o mesmo cookie Firebase do navegador, além do cabeçalho Origin
-igual a APP_URL em produção ou APP_URL_DEVELOPMENT em desenvolvimento. Copie o cookie `session` nas ferramentas de desenvolvimento do
-navegador após o login e configure seu cliente HTTP MCP com:
+Faça login com Google, destrave com seu PIN e abra **Configurações → Segurança → Token MCP**.
+Gere um token e copie-o enquanto estiver visível: o servidor armazena apenas seu hash.
+Configure o cliente HTTP MCP com:
 
 ```http
-Cookie: session=VALOR_DO_COOKIE
-Origin: http://127.0.0.1:3007
+Authorization: Bearer SEU_TOKEN
 Content-Type: application/json
+Accept: application/json, text/event-stream
 ```
 
-Use a origem e porta da variável do ambiente também na URL `/api/mcp`. O cookie é secreto:
-não o inclua em arquivos versionados. Atualize-o após novo login quando expirar
-(em 14 dias). Sair de todos os dispositivos revoga também o acesso MCP.
-A autenticação por bearer token foi removida.
+Use `http://127.0.0.1:3007/api/mcp` (ou a porta local configurada). Somente hosts
+loopback são aceitos. Se o cliente enviar `Origin`, ele deve coincidir com a origem
+da URL. Cookies do navegador não autenticam o MCP.
+
+O token é secreto e dá acesso às ferramentas financeiras mesmo com o app travado
+ou após sair. Não o inclua em arquivos versionados. Para interromper o acesso,
+revogue o token em Segurança; regenerar também invalida imediatamente o anterior.
+A autenticação bearer volta a ser utilizada para separar a integração do bloqueio por PIN.
 
 ## Convenções dos comandos
 

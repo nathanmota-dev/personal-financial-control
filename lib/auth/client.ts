@@ -20,3 +20,8 @@ export async function googleLogin(): Promise<void> {
     }
   }
 }
+
+export async function googleSignOut() {
+  const app = getApps()[0];
+  if (app) await signOut(getAuth(app));
+}

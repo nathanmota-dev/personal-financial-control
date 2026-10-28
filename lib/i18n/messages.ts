@@ -13,6 +13,7 @@ export function getIntlMessages(locale: Locale): AbstractIntlMessages {
   const catalog = catalogs[locale];
   return {
     metadata: catalog.metadata,
+    security: catalog.security,
     accountPreferences: catalog.accountPreferences,
   };
 }

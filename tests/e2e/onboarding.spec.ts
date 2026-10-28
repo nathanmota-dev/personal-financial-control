@@ -1,4 +1,5 @@
 import { test as base, expect } from "@playwright/test";
+import { loginWithPin } from "./helpers/local-auth";
 import { startFinanceServer } from "./helpers/server";
 import type { FinanceServer } from "./helpers/contracts";
 
@@ -12,7 +13,7 @@ const test = base.extend<{ finance: FinanceServer }>({
 test.use({ locale: "pt-BR" });
 
 test("persists setup, reuses saved accounts and permanently completes", async ({ page, context, finance }) => {
-  await context.addCookies([{ name: "session", value: "onboarding-a", url: finance.url }]);
+  await loginWithPin(context, finance.url, "onboarding-a");
   await page.goto(`${finance.url}/dashboard`);
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByText("Etapa 1 de 5")).toBeVisible();
@@ -47,7 +48,7 @@ test("persists setup, reuses saved accounts and permanently completes", async ({
 
 test("dismisses for navigation, resumes on reload, isolates users and syncs tabs", async ({ page, context, finance }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await context.addCookies([{ name: "session", value: "onboarding-a", url: finance.url }]);
+  await loginWithPin(context, finance.url, "onboarding-a");
   await page.goto(`${finance.url}/dashboard`);
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
@@ -77,7 +78,7 @@ test("dismisses for navigation, resumes on reload, isolates users and syncs tabs
   await otherTab.close();
   await page.reload();
   await expect(dialog).toBeHidden();
-  await context.addCookies([{ name: "session", value: "onboarding-b", url: finance.url }]);
+  await loginWithPin(context, finance.url, "onboarding-b");
   await page.reload();
   await expect(dialog.getByText("Etapa 1 de 5")).toBeVisible();
   await dialog.getByRole("button", { name: "Fechar", exact: true }).click();
@@ -86,7 +87,7 @@ test("dismisses for navigation, resumes on reload, isolates users and syncs tabs
 });
 
 test("updates the authenticated display name, preserves email and refreshes sidebar identity", async ({ page, context, finance }) => {
-  await context.addCookies([{ name: "session", value: "onboarding-a", url: finance.url }]);
+  await loginWithPin(context, finance.url, "onboarding-a");
   await page.addInitScript(() => localStorage.setItem("theme", "dark"));
   await page.goto(`${finance.url}/account`);
   await page.getByRole("dialog").getByRole("button", { name: "Pular configuração", exact: true }).click();

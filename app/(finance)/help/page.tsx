@@ -1,7 +1,6 @@
-"use client";
-
 import { HelpView } from "@/components/finance/help/help-view";
-
-export default function HelpPage() {
+import { requirePageSession } from "@/lib/auth/server";
+export default async function HelpPage() {
+  await requirePageSession();
   return <HelpView />;
 }
