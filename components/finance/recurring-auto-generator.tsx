@@ -12,9 +12,12 @@ formatMonthLabel,
 getDefaultMonth,
 isValidMonth,
 } from "@/lib/finance-ui";
+import {
+claimRecurringGeneration,
+finishRecurringGeneration,
+} from "@/lib/recurring-generation-session";
 
 const autoGeneratePaths = new Set(["/dashboard", "/transactions", "/recurring"]);
-const pendingMonths = new Set<string>();
 
 export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
   const pathname = usePathname();
@@ -28,11 +31,16 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
       : getDefaultMonth();
 
   useEffect(() => {
-    if (!autoGeneratePaths.has(pathname) || pendingMonths.has(month)) {
+    if (!autoGeneratePaths.has(pathname)) {
       return;
     }
 
-    pendingMonths.add(month);
+    const claim = claimRecurringGeneration(month);
+    if (claim === null) {
+      return;
+    }
+
+    let succeeded = false;
 
     generateRecurringTransactionsAction(month)
       .then((result) => {
@@ -40,6 +48,8 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
           toast.error(result.error.message);
           return;
         }
+
+        succeeded = true;
 
         if (!result.data.length) {
           return;
@@ -54,7 +64,7 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
         toast.error(extractErrorMessage(error));
       })
       .finally(() => {
-        pendingMonths.delete(month);
+        finishRecurringGeneration(month, claim, succeeded);
       });
   }, [month, pathname, router]);
 

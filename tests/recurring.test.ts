@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
@@ -6,6 +6,7 @@ import {
   createRecurringTemplate,
   deleteRecurringTemplate,
   generateRecurringTransactions,
+  getRecurringTemplateById,
   updateRecurringTemplate,
 } from "@/lib/server/recurring";
 import { listCategories } from "@/lib/server/categories";
@@ -15,6 +16,7 @@ import { createTestDatabase } from "@/tests/helpers/database";
 const cleanups: Array<() => Promise<void>> = [];
 
 afterEach(async () => {
+  vi.useRealTimers();
   await Promise.all(cleanups.splice(0).map((cleanup) => cleanup()));
 });
 
@@ -225,6 +227,43 @@ describe("recurring", () => {
       "Monthly rent",
       "Utilities",
     ]);
+  });
+
+  it("does not rewrite templates when revisiting an already generated month", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const account = await createAccount(
+      { name: "Main", type: "checking", initialBalanceCents: 0 },
+      db
+    );
+    const category = await createCategory({ name: "Rent", group: "fixed_expense" }, db);
+    const template = await createRecurringTemplate(
+      {
+        accountId: account.id,
+        categoryId: category.id,
+        type: "expense",
+        amountCents: 50000,
+        dayOfMonth: 5,
+        startMonth: "2026-05",
+        description: "Monthly rent",
+      },
+      db
+    );
+
+    await generateRecurringTransactions("2026-06", db);
+    const generated = await getRecurringTemplateById(template.id, db);
+    expect(generated.lastGeneratedMonth).toBe("2026-06");
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(generated.updatedAt.getTime() + 60_000);
+
+    await expect(generateRecurringTransactions("2026-06", db)).resolves.toHaveLength(0);
+    await expect(generateRecurringTransactions("2026-05", db)).resolves.toHaveLength(1);
+
+    const revisited = await getRecurringTemplateById(template.id, db);
+    expect(revisited.lastGeneratedMonth).toBe("2026-06");
+    expect(revisited.updatedAt).toEqual(generated.updatedAt);
   });
 
   it("accepts day 31 and clamps it to the last day of shorter months", async () => {

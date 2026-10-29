@@ -5,6 +5,7 @@ updateRecurringTemplateAction,
 import {
 moneyInputToCents
 } from "@/lib/finance-ui";
+import { resetRecurringGeneration } from "@/lib/recurring-generation-session";
 import type { RecurringDialogOnSubmitContext } from "@/lib/interfaces/component-actions/recurring-dialog-on-submit";
 import type {
 RecurringTemplateRow
@@ -73,6 +74,7 @@ export async function RecurringDialogOnSubmit({ setFormError, template, setOpen,
       return;
     }
 
+    resetRecurringGeneration();
     toast.success(template ? "Recorrência atualizada." : "Recorrência criada.");
     setOpen(false);
     router.refresh();
