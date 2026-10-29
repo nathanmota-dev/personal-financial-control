@@ -2218,6 +2218,9 @@
     "tests/unit/app/api/transactions/route.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
+  "lib/db/keep-alive-fetch.ts": [
+    "tests/unit/lib/db/keep-alive-fetch.test.ts"
+  ],
   "lib/db/migrate.ts": [
     "tests/accounts.test.ts",
     "tests/auth-users.test.ts",

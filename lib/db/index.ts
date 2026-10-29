@@ -1,4 +1,5 @@
 import { protectContentPersistence } from "@/lib/db/content-persistence";
+import { keepAliveFetch } from "@/lib/db/keep-alive-fetch";
 import { migrateDatabase } from "@/lib/db/migrate";
 import { createClient } from "@libsql/client";
 import { is } from "drizzle-orm";
@@ -33,6 +34,7 @@ export function createDatabase(url: string, authToken?: string) {
   const client = createClient({
     url,
     authToken,
+    fetch: keepAliveFetch,
   });
 
   return protectContentPersistence(drizzle({ client, schema }));
