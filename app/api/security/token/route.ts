@@ -8,7 +8,7 @@ async function changeToken(request: Request, revoke: boolean) {
   try {
     const session = await sessionMutation(request, true);
     const token = revoke ? null : generateMcpToken();
-    const changed = await getAuthDatabase().update(authorizedUsers).set({ mcpTokenHash: token ? hashMcpToken(token) : null })
+    const changed = await (await getAuthDatabase()).update(authorizedUsers).set({ mcpTokenHash: token ? hashMcpToken(token) : null })
       .where(and(eq(authorizedUsers.email, session.email), eq(authorizedUsers.sessionVersion, session.ver))).returning({ email: authorizedUsers.email });
     if (!changed.length) throw new AuthError(401);
     return sessionResponse({ ok: true, ...(token ? { token } : {}) });

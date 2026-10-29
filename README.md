@@ -66,6 +66,7 @@ Os dados são preservados. Usar `docker compose down -v` também remove o banco.
 
 Requisitos: Node.js 24, npm e um navegador baseado em Chromium.
 Configure `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` no `.env` para usar o Turso.
+Para acelerar as consultas com uma cópia local sincronizada, veja [Réplica local do Turso](docs/turso-replica.md).
 
 Na raiz do projeto, execute:
 

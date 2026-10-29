@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { z } from "zod";
@@ -36,6 +37,8 @@ async function handlePOST(request: Request, { params }: RouteContext) {
 
     return okJson(contribution, { status: 201 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_CONTRIBUTION_ERROR",
       message: "Unable to create goal contribution.",

@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Select,SelectContent,SelectItem,SelectTrigger,SelectValue } from "@/components/ui/select";
 import { investmentAssetClassLabels } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
+import { useDatabaseSync } from "@/lib/database-sync-context";
 import type { AssetFormState,OperationalPortfolioViewProps } from "@/lib/interfaces/investment-operations";
 
 const initialForm: AssetFormState = { name: "", ticker: "", institutionName: "", assetClass: "equities", instrumentType: "stock", valuationMode: "market_quote", quoteSymbol: "" };
@@ -25,6 +26,7 @@ const supportedTypes = [
 ] as const;
 
 export function OperationalPortfolioView({ positions }: OperationalPortfolioViewProps) {
+  const { canWrite } = useDatabaseSync();
   const { formatCurrency } = useFinancialFormatter();
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -49,6 +51,7 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
   }
 
   function refreshQuotes() {
+    if (!canWrite) { toast.error("Reconecte para atualizar as cotações."); return; }
     startTransition(async () => {
       const result = await refreshInvestmentQuotesAction();
       if (!result.ok) { toast.error(result.error.message); return; }

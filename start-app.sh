@@ -120,7 +120,7 @@ else
   log "Build reaproveitado. Nenhuma mudanca relevante detectada."
 fi
 
-log "Aplicando migracoes locais."
+log "Aplicando migracoes no banco configurado (remoto quando usa replica)."
 npm run db:migrate
 
 if [[ "${START_APP_SKIP_SERVER:-0}" == "1" ]]; then

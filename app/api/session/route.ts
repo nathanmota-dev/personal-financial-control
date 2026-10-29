@@ -33,7 +33,7 @@ export async function DELETE(request: Request) {
     const reset = request.headers.get("x-session-intent") === "pin-reset";
     try {
       const session = await verifyLocalSession(requestCookie(request, "session"));
-      await getAuthDatabase().update(authorizedUsers).set({
+      await (await getAuthDatabase()).update(authorizedUsers).set({
         sessionVersion: sql`${authorizedUsers.sessionVersion} + 1`,
         ...(reset ? { pinResetRequested: true } : {}),
       }).where(and(eq(authorizedUsers.email, session.email), eq(authorizedUsers.sessionVersion, session.ver)));

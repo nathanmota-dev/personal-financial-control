@@ -1,6 +1,7 @@
 "use client";
 
 import { UserControls } from "@/components/auth/user-controls";
+import { DatabaseSyncIndicator } from "@/components/finance/database-sync-indicator";
 import { FinanceCommandPalette } from "@/components/finance/finance-command-palette";
 import { FinanceCommandTrigger } from "@/components/finance/finance-command-trigger";
 import { FinanceSidebar } from "@/components/finance/finance-sidebar";
@@ -56,6 +57,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
           </header>
 
           <main className="min-w-0 flex-1 min-[100.0625rem]:[&>.space-y-6]:space-y-5">
+            <DatabaseSyncIndicator />
             {demoMode ? (
               <div className="mb-6 flex flex-col gap-2 rounded-[1.5rem] border border-warning/25 bg-warning/10 px-5 py-4 text-warning shadow-[0_18px_50px_rgb(var(--surface-rgb) / .2)] sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">

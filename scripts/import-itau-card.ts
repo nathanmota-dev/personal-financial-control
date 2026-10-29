@@ -1,4 +1,5 @@
-import { getDatabase } from "@/lib/db";
+import { getServerEnv } from "@/lib/env";
+import { createDatabase } from "@/lib/db";
 import { createCategory,listCategories } from "@/lib/server/categories";
 
 const baseUrl = process.env.PFC_BASE_URL ?? "http://127.0.0.1:3000";
@@ -196,7 +197,8 @@ async function postJson<T>(path: string, payload: unknown) {
 }
 
 async function ensureCategories() {
-  const db = getDatabase();
+  const environment = getServerEnv();
+  const db = createDatabase(environment.DATABASE_URL, environment.TOKEN);
   const existing = await listCategories({ includeArchived: true }, db);
   const categoryIds = new Map<string, string>();
 

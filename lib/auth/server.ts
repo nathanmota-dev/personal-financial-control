@@ -1,4 +1,5 @@
 import { isDemoMode } from "@/lib/demo/mode";
+import { replicaError } from "@/lib/db/replica-errors";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { cookies,headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -81,6 +82,8 @@ export async function sessionMutation(request: Request, unlocked = false) {
   return session;
 }
 export function authResponse(error: unknown) {
+  const databaseError = replicaError(error);
+  if (databaseError) return Response.json({ ok: false, error: databaseError.message }, { status: 503, headers: { "Cache-Control": "private, no-store" } });
   const failure = firebaseError(error);
   return Response.json({ ok: false, error: failure.message }, { status: failure.status, headers: { "Cache-Control": "private, no-store" } });
 }

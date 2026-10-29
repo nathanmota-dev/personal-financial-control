@@ -1,7 +1,8 @@
 import { protectContentPersistence } from "@/lib/db/content-persistence";
 import { keepAliveFetch } from "@/lib/db/keep-alive-fetch";
 import { migrateDatabase } from "@/lib/db/migrate";
-import { createClient } from "@libsql/client";
+import { createClient, type Client } from "@libsql/client";
+import { getReplicaRuntime } from "@/lib/db/replica";
 import { is } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/libsql";
 import { getTableConfig,SQLiteTable } from "drizzle-orm/sqlite-core";
@@ -30,13 +31,17 @@ import { getServerEnv } from "@/lib/env";
 import type { FinanceDatabaseRuntime } from "@/lib/interfaces/database";
 
 export function createDatabase(url: string, authToken?: string) {
-  for (const value of Object.values(schema)) if (is(value, SQLiteTable)) getTableConfig(value as SQLiteTable);
   const client = createClient({
     url,
     authToken,
     fetch: keepAliveFetch,
   });
 
+  return wrapDatabase(client);
+}
+
+function wrapDatabase(client: Client) {
+  for (const value of Object.values(schema)) if (is(value, SQLiteTable)) getTableConfig(value as SQLiteTable);
   return protectContentPersistence(drizzle({ client, schema }));
 }
 
@@ -47,7 +52,7 @@ let demoDatabasePromise: Promise<AppDb> | undefined;
 // Next.js loads separate module instances for pages, actions and route handlers.
 const databaseRuntime = globalThis as FinanceDatabaseRuntime;
 
-export function getDatabase() {
+export async function getDatabase() {
   if (cachedDatabase) {
     return cachedDatabase;
   }
@@ -58,7 +63,9 @@ export function getDatabase() {
     throw new Error("Demo mode uses its in-memory database. Call getFinanceDatabase instead.");
   }
 
-  cachedDatabase = createDatabase(env.DATABASE_URL, env.TOKEN);
+  cachedDatabase = env.TURSO_REPLICA_PATH
+    ? wrapDatabase((await getReplicaRuntime(env)).client)
+    : createDatabase(env.DATABASE_URL, env.TOKEN);
 
   return cachedDatabase;
 }

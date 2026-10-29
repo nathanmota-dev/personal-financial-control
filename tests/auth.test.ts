@@ -41,8 +41,8 @@ async function login() { const response = await POST(request("POST", { idToken: 
 beforeEach(async () => {
   vi.clearAllMocks(); state.cookies = {};
   for (const [key, value] of Object.entries({ DEMO_MODE: "false", NODE_ENV: "test", APP_URL: origin, APP_URL_DEVELOPMENT: origin, FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "test", NEXT_PUBLIC_FIREBASE_API_KEY: "key", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test", FIREBASE_CLIENT_EMAIL: "admin@test", FIREBASE_PRIVATE_KEY: "key" })) vi.stubEnv(key, value);
-  database = await createTestDatabase(); vi.mocked(getDatabase).mockReturnValue(database.db);
-  await getAuthDatabase().insert(authorizedUsers).values({ email: claims.email, pinHash: await hashPin("123456") });
+  database = await createTestDatabase(); vi.mocked(getDatabase).mockResolvedValue(database.db);
+  await (await getAuthDatabase()).insert(authorizedUsers).values({ email: claims.email, pinHash: await hashPin("123456") });
   const session = createSession(claims, 0);
   state.cookies = { session: signCookie(session, "session"), unlock: signCookie(createUnlock(session, { lockTimeoutMinutes: 15, lockOnClose: true }), "unlock") };
   state.verifyIdToken.mockResolvedValue(claims);
@@ -64,7 +64,7 @@ describe("local session and PIN routes", () => {
     expect(state.verifyIdToken).toHaveBeenCalledTimes(1);
   });
   it("defines a PIN only when none exists, then rejects replacing it without the current PIN", async () => {
-    await getAuthDatabase().update(authorizedUsers).set({ pinHash: null });
+    await (await getAuthDatabase()).update(authorizedUsers).set({ pinHash: null });
     state.cookies.unlock = "";
     expect((await setup(request("POST", { pin: "123" }))).status).toBe(400);
     const response = await setup(request("POST", { pin: "654321" })); expect(response.status).toBe(200); accept(response);
@@ -91,7 +91,7 @@ describe("local session and PIN routes", () => {
     expect((await unlock(request("POST", { pin: "123456" }))).status).toBe(403);
     accept(await setup(request("POST", { pin: "111111" })));
     expect(await apiGuard(request("GET"))).toBeNull();
-    expect((await getAuthDatabase().select().from(authorizedUsers).get())?.pinResetRequested).toBe(false);
+    expect((await (await getAuthDatabase()).select().from(authorizedUsers).get())?.pinResetRequested).toBe(false);
   });
   it("logout invalidates copies, clears both cookies and tolerates absent/expired cookies", async () => {
     const response = await DELETE(request("DELETE"));
@@ -132,7 +132,7 @@ describe("local session and PIN routes", () => {
   it("stores only token hashes; regeneration/revocation immediately invalidate old MCP credentials", async () => {
     const first = await (await generateToken(request())).json();
     expect(first.token).toMatch(/^[\w-]{43}$/);
-    expect((await getAuthDatabase().select().from(authorizedUsers).get())?.mcpTokenHash).not.toBe(first.token);
+    expect((await (await getAuthDatabase()).select().from(authorizedUsers).get())?.mcpTokenHash).not.toBe(first.token);
     expect(await verifyMcpToken(`Bearer ${first.token}`)).toBe(true);
     const second = await (await generateToken(request())).json();
     expect(await verifyMcpToken(`Bearer ${first.token}`)).toBe(false);
@@ -157,7 +157,7 @@ describe("access boundary", () => {
     expect((await DELETE(request("DELETE", {}, { origin: "https://evil.test" }))).status).toBe(403);
     expect((await apiGuard(request("POST", {}, { origin: "https://evil.test" })))?.status).toBe(403);
     expect((await apiGuard(request("POST", {}, { "content-type": "text/plain" })))?.status).toBe(415);
-    await getAuthDatabase().delete(authorizedUsers);
+    await (await getAuthDatabase()).delete(authorizedUsers);
     await expect(verifyLocalSession(state.cookies.session)).rejects.toMatchObject({ status: 401 });
   });
   it("proxy does no database or Firebase access, redirects with next, and slides only valid unlocks", async () => {

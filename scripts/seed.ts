@@ -1,5 +1,5 @@
 import { defaultCategories } from "@/lib/category-defaults";
-import { getDatabase } from "@/lib/db";
+import { createDatabase } from "@/lib/db";
 import { getServerEnv } from "@/lib/env";
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory,listCategories } from "@/lib/server/categories";
@@ -10,7 +10,8 @@ async function main() {
     return;
   }
 
-  const db = getDatabase();
+  const environment = getServerEnv();
+  const db = createDatabase(environment.DATABASE_URL, environment.TOKEN);
   const existing = await listCategories({ includeArchived: true }, db);
   const existingNames = new Set(existing.map((category) => category.name));
 

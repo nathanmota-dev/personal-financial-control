@@ -2,6 +2,7 @@ import type { FinanceActionResult } from "@/lib/interfaces/finance-actions";
 import { DomainError } from "@/lib/server/errors";
 import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
+import { replicaError } from "@/lib/db/replica-errors";
 
 
 export function revalidateFinanceViews() {
@@ -52,6 +53,7 @@ export function validationError(error: ZodError) {
 }
 
 export function actionError(error: unknown) {
+  error = replicaError(error) ?? error;
   if (error instanceof DomainError) {
     return {
       code: error.code,

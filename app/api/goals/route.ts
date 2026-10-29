@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import {
 goalApiError,
 noStoreJson,
@@ -14,6 +15,8 @@ async function handleGET(request: Request) {
   try {
     return noStoreJson(await getGoalsDashboard());
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOALS_DASHBOARD_ERROR",
       message: "Unable to load goals dashboard.",
@@ -33,6 +36,8 @@ async function handlePOST(request: Request) {
 
     return okJson(goal, { status: 201 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_CREATE_ERROR",
       message: "Unable to create financial goal.",
