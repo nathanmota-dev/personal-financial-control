@@ -37,3 +37,9 @@ export interface PinInputProps {
 export interface SessionActivityProps { timeoutMinutes: number; }
 
 export interface McpTokenSettingsProps { hasMcpToken: boolean; }
+
+export interface LockTimeoutSliderProps {
+  value: number;
+  onChange: (minutes: number) => void;
+  disabled?: boolean;
+}

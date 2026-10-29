@@ -20,7 +20,12 @@ test("Google login, PIN setup, idle locking, unlock and PIN recovery", async ({ 
   await expect(page).toHaveURL(`${finance.url}/settings`);
   await page.getByRole("dialog").getByRole("button", { name: "Pular configuração", exact: true }).click();
   await page.goto(`${finance.url}/settings`);
-  await page.getByLabel("Minutos de inatividade (1–120)").fill("1");
+  await expect(page.getByRole("button", { name: "Sair", exact: true })).toHaveCount(0);
+  await page.getByRole("tab", { name: "Segurança", exact: true }).click();
+  const timeout = page.getByRole("slider", { name: "Tempo de inatividade" });
+  await timeout.press("Home");
+  await timeout.press("ArrowRight");
+  await expect(timeout).toHaveAttribute("aria-valuetext", "1 min");
   await page.getByRole("button", { name: "Salvar", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: "Configurações salvas." })).toBeVisible();
   await page.screenshot({ path: "reports/security-settings.png", fullPage: true });

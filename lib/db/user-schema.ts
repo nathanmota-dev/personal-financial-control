@@ -12,7 +12,7 @@ export const authorizedUsers = sqliteTable("authorized_users", {
   lockOnClose: integer("lock_on_close", { mode: "boolean" }).notNull().default(true),
   mcpTokenHash: text("mcp_token_hash"),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
-}, table => [check("lock_timeout_range", sql`${table.lockTimeoutMinutes} BETWEEN 1 AND 120`)]);
+}, table => [check("lock_timeout_range", sql`${table.lockTimeoutMinutes} BETWEEN 0 AND 60`)]);
 
 export const userOnboarding = sqliteTable("user_onboarding", {
   userId: text("user_id").primaryKey(),

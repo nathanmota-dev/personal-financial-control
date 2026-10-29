@@ -25,6 +25,7 @@ RecurringActionButtonProps,
 RecurringDeleteDialogProps,
 RecurringDeleteMode,
 } from "@/lib/interfaces/recurring";
+import { resetRecurringGeneration } from "@/lib/recurring-generation-session";
 
 export function PauseRecurringButton({ id }: RecurringActionButtonProps) {
   const router = useRouter();
@@ -63,6 +64,7 @@ export function ResumeRecurringButton({ id }: RecurringActionButtonProps) {
         return;
       }
 
+      resetRecurringGeneration();
       toast.success("Recorrência retomada.");
       router.refresh();
     });

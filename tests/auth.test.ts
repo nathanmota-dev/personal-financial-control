@@ -106,10 +106,13 @@ describe("local session and PIN routes", () => {
     expect(response.status).toBe(200); expect(response.headers.get("set-cookie")).toContain("Max-Age=60");
     expect((await activity(request())).status).toBe(423); // old settings cannot be renewed
     accept(response); expect((await activity(request())).status).toBe(200);
+    const never = await settings(request("PATCH", { lockTimeoutMinutes: 0, lockOnClose: false }));
+    expect(never.status).toBe(200); expect(never.headers.get("set-cookie")).toContain("Max-Age=1209600");
+    accept(never); expect((await activity(request())).status).toBe(200);
     accept(await lock(request("DELETE"))); expect((await activity(request())).status).toBe(423);
   });
   it("validates settings and PIN formats before writing", async () => {
-    for (const minutes of [0, 121, 1.5]) expect((await settings(request("PATCH", { lockTimeoutMinutes: minutes, lockOnClose: true }))).status).toBe(400);
+    for (const minutes of [-1, 2, 61, 120, 1.5]) expect((await settings(request("PATCH", { lockTimeoutMinutes: minutes, lockOnClose: true }))).status).toBe(400);
     for (const pin of [null, 123456, "abcdef", "12345", "1234567"]) expect((await unlock(request("POST", { pin }))).status).toBe(400);
     expect((await changePin(request("PATCH", { pin: "111111" }))).status).toBe(400);
   });

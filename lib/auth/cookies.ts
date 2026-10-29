@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authConfig } from "./config";
+import { authConfig, SESSION_SECONDS } from "./config";
 import { createUnlock, signCookie } from "./local-session";
 import type { LocalSession, LockSettings, UnlockSession } from "@/lib/interfaces/local-auth";
 
@@ -15,7 +15,7 @@ export function clearSession(response = sessionResponse()) {
 }
 export function setUnlockCookie(response: NextResponse, unlock: UnlockSession) {
   response.cookies.set("unlock", signCookie(unlock, "unlock"), {
-    ...cookieOptions(), ...(unlock.bootId === undefined ? { maxAge: unlock.timeout * 60 } : {}),
+    ...cookieOptions(), ...(unlock.bootId === undefined ? { maxAge: unlock.timeout ? unlock.timeout * 60 : SESSION_SECONDS } : {}),
   });
   return response;
 }

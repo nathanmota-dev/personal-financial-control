@@ -4,7 +4,8 @@ import { getAuthDatabase } from "@/lib/auth/database";
 import { authorizedUsers } from "@/lib/db/user-schema";
 import { authResponse, AuthError, sessionMutation } from "@/lib/auth/server";
 import { unlockResponse } from "@/lib/auth/cookies";
-const settingsSchema = z.object({ lockTimeoutMinutes: z.number().int().min(1).max(120), lockOnClose: z.boolean() }).strict();
+import { isLockTimeoutOption } from "@/lib/auth/lock-timeout";
+const settingsSchema = z.object({ lockTimeoutMinutes: z.number().int().refine(isLockTimeoutOption), lockOnClose: z.boolean() }).strict();
 export async function PATCH(request: Request) {
   try {
     const session = await sessionMutation(request, true);

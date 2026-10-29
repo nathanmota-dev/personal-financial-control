@@ -639,7 +639,8 @@
   ],
   "components/finance/recurring-auto-generator.tsx": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
-    "tests/frontend/components/finance/app-shell.cases.tsx"
+    "tests/frontend/components/finance/app-shell.cases.tsx",
+    "tests/frontend/components/finance/recurring-auto-generator.cases.tsx"
   ],
   "components/finance/recurring-calendar-event.tsx": [
     "tests/frontend/app/(finance)/recurring/page.cases.tsx"
@@ -2217,6 +2218,9 @@
     "tests/unit/app/api/transactions/route.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
+  "lib/db/keep-alive-fetch.ts": [
+    "tests/unit/lib/db/keep-alive-fetch.test.ts"
+  ],
   "lib/db/migrate.ts": [
     "tests/accounts.test.ts",
     "tests/auth-users.test.ts",
@@ -3380,6 +3384,10 @@
   "lib/recurring-calendar.ts": [
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/recurring-calendar.test.ts"
+  ],
+  "lib/recurring-generation-session.ts": [
+    "tests/frontend/components/finance/recurring-auto-generator.cases.tsx",
+    "tests/unit/lib/recurring-generation-session.test.ts"
   ],
   "lib/server/accounts.ts": [
     "tests/accounts.test.ts",

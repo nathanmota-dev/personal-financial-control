@@ -25,6 +25,13 @@ describe("inactivity locking", () => {
     expect(fetcher).toHaveBeenCalledWith("/api/session/activity", expect.objectContaining({ method: "DELETE" }));
     expect(replace).toHaveBeenCalledWith("/lock?next=%2Fgoals");
   });
+  it("never locks or sends heartbeats when inactivity locking is disabled", async () => {
+    const { replace, fetcher } = prepare();
+    renderUI(<SessionActivity timeoutMinutes={0} />);
+    await act(async () => { fireEvent.keyDown(window); await vi.advanceTimersByTimeAsync(3600000); });
+    expect(fetcher).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
+  });
   it("throttles normal heartbeats to a minute and redirects expired identities", async () => {
     const { replace, fetcher } = prepare();
     renderUI(<SessionActivity timeoutMinutes={15} />);

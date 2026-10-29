@@ -5,7 +5,7 @@ import {
 createTransaction
 } from "@/lib/server/transactions";
 import { buildDateInMonth as buildTransactionDate } from "@/lib/utils/finance-month";
-import { and,eq,gte,isNull,lte,or } from "drizzle-orm";
+import { and,eq,gte,inArray,isNull,lte,or } from "drizzle-orm";
 import { RecurringDb,resolveDb } from "./validation";
 
 export { buildDateInMonth as buildTransactionDate } from "@/lib/utils/finance-month";
@@ -15,15 +15,15 @@ export async function markTemplateGenerated(
   competenceMonth: string,
   database: RecurringDb
 ) {
-  const lastGeneratedMonth =
-    !template.lastGeneratedMonth || template.lastGeneratedMonth < competenceMonth
-      ? competenceMonth
-      : template.lastGeneratedMonth;
+  // Revisiting an already generated month must not rewrite the template.
+  if (template.lastGeneratedMonth && template.lastGeneratedMonth >= competenceMonth) {
+    return;
+  }
 
   await database
     .update(recurringTemplates)
     .set({
-      lastGeneratedMonth,
+      lastGeneratedMonth: competenceMonth,
       updatedAt: currentTimestamp(),
     })
     .where(eq(recurringTemplates.id, template.id));
@@ -44,17 +44,27 @@ export async function generateRecurringTransactions(month: string, database?: Ap
     ),
   });
 
+  if (!templates.length) {
+    return [];
+  }
+
+  // One lookup for the whole month instead of one round trip per template.
+  const existing = await db.query.transactions.findMany({
+    where: and(
+      eq(transactions.competenceMonth, competenceMonth),
+      inArray(
+        transactions.recurringTemplateId,
+        templates.map((template) => template.id)
+      )
+    ),
+  });
+  const generatedTemplateIds = new Set(
+    existing.map((transaction) => transaction.recurringTemplateId)
+  );
   const created = [];
 
   for (const template of templates) {
-    const duplicate = await db.query.transactions.findFirst({
-      where: and(
-        eq(transactions.recurringTemplateId, template.id),
-        eq(transactions.competenceMonth, competenceMonth)
-      ),
-    });
-
-    if (duplicate) {
+    if (generatedTemplateIds.has(template.id)) {
       await markTemplateGenerated(template, competenceMonth, db);
       continue;
     }

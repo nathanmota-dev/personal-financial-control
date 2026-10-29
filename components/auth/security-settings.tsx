@@ -3,24 +3,26 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { lockTimeoutOptions, nearestLockTimeoutIndex } from "@/lib/auth/lock-timeout";
+import { LockTimeoutSlider } from "./lock-timeout-slider";
 import { PinInput } from "./pin-input";
-import { McpTokenSettings } from "./mcp-token-settings";
-import type { SecuritySettingsProps } from "@/lib/interfaces/local-auth";
-export function SecuritySettings({ lockTimeoutMinutes, lockOnClose, hasMcpToken }: SecuritySettingsProps) {
+import type { LockSettings } from "@/lib/interfaces/local-auth";
+export function SecuritySettings({ lockTimeoutMinutes, lockOnClose }: LockSettings) {
   const t = useTranslations("security");
   const router = useRouter();
-  const [minutes, setMinutes] = useState(lockTimeoutMinutes);
+  const [minutes, setMinutes] = useState(() => lockTimeoutOptions[nearestLockTimeoutIndex(lockTimeoutMinutes)]);
   const [onClose, setOnClose] = useState(lockOnClose);
   const [currentPin, setCurrentPin] = useState("");
   const [pin, setPin] = useState("");
   const [confirmation, setConfirmation] = useState("");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({ changePin: false, text: "" });
   async function save(changePin: boolean) {
-    if (changePin && pin !== confirmation) { setMessage(t("mismatch")); return; }
-    setBusy(true); setMessage("");
+    const notify = (text: string) => setMessage({ changePin, text });
+    if (changePin && pin !== confirmation) { notify(t("mismatch")); return; }
+    setBusy(true); notify("");
     try {
       const response = await fetch(changePin ? "/api/pin" : "/api/security", {
         method: "PATCH", headers: { "Content-Type": "application/json" },
@@ -28,27 +30,37 @@ export function SecuritySettings({ lockTimeoutMinutes, lockOnClose, hasMcpToken 
       });
       if (response.status === 401 || response.status === 423) { window.location.assign(response.status === 401 ? "/login" : "/lock"); return; }
       const data = await response.json();
-      if (!response.ok) { setMessage(typeof data.remaining === "number" ? t("remaining", { count: data.remaining }) : t("error")); return; }
-      setCurrentPin(""); setPin(""); setConfirmation(""); setMessage(t("saved")); router.refresh();
-    } catch { setMessage(t("error")); } finally { setBusy(false); }
+      if (!response.ok) { notify(typeof data.remaining === "number" ? t("remaining", { count: data.remaining }) : t("error")); return; }
+      setCurrentPin(""); setPin(""); setConfirmation(""); notify(t("saved")); router.refresh();
+    } catch { notify(t("error")); } finally { setBusy(false); }
   }
-  return <section className="space-y-6 rounded-xl border border-border bg-surface-raised p-6">
-    <div><h2 className="text-lg font-semibold">{t("title")}</h2><p className="mt-1 text-sm text-content-muted">{t("description")}</p></div>
-    <div className="grid gap-8 lg:grid-cols-2">
-      <form className="space-y-4" onSubmit={event => { event.preventDefault(); void save(false); }}>
-        <label className="block space-y-2 text-sm font-medium"><span>{t("timeout")}</span><Input type="number" min={1} max={120} required value={minutes} onChange={event => setMinutes(Number(event.target.value))} disabled={busy} /></label>
-        <label className="flex items-center justify-between gap-4 text-sm"><span>{t("lockOnClose")}</span><Switch checked={onClose} onCheckedChange={setOnClose} disabled={busy} /></label>
-        <Button type="submit" disabled={busy}>{t("save")}</Button>
-      </form>
-      <form className="space-y-4" onSubmit={event => { event.preventDefault(); void save(true); }}>
-        <h3 className="font-medium">{t("changePin")}</h3>
-        <PinInput label={t("currentPin")} value={currentPin} onChange={setCurrentPin} disabled={busy} />
-        <PinInput label={t("newPin")} value={pin} onChange={setPin} disabled={busy} />
-        <PinInput label={t("confirmPin")} value={confirmation} onChange={setConfirmation} disabled={busy} />
-        <Button type="submit" disabled={busy || [pin, currentPin, confirmation].some(value => value.length !== 6)}>{t("changePin")}</Button>
-      </form>
-    </div>
-    <p role="status" className="text-sm">{message}</p>
-    <McpTokenSettings hasMcpToken={hasMcpToken} />
-  </section>;
+  return <div className="grid items-start gap-4 lg:grid-cols-2">
+    <Card className="rounded-xl border-border bg-card">
+      <CardHeader><CardTitle>{t("autoLockTitle")}</CardTitle><CardDescription>{t("autoLockDescription")}</CardDescription></CardHeader>
+      <CardContent>
+        <form className="space-y-6" onSubmit={event => { event.preventDefault(); void save(false); }}>
+          <LockTimeoutSlider value={minutes} onChange={setMinutes} disabled={busy} />
+          <label className="flex items-center justify-between gap-4 border-t border-border pt-5 text-sm">
+            <span><span className="block font-medium text-content-strong">{t("lockOnClose")}</span><span className="mt-1 block text-xs text-content-muted">{t("lockOnCloseDescription")}</span></span>
+            <Switch checked={onClose} onCheckedChange={setOnClose} disabled={busy} />
+          </label>
+          <div className="flex flex-wrap items-center gap-3"><Button type="submit" disabled={busy}>{t("save")}</Button><p role="status" className="text-sm">{message.changePin ? "" : message.text}</p></div>
+        </form>
+      </CardContent>
+    </Card>
+    <Card className="rounded-xl border-border bg-card">
+      <CardHeader><CardTitle>{t("changePin")}</CardTitle><CardDescription>{t("pinDescription")}</CardDescription></CardHeader>
+      <CardContent>
+        <form className="space-y-4" onSubmit={event => { event.preventDefault(); void save(true); }}>
+          <PinInput label={t("currentPin")} value={currentPin} onChange={setCurrentPin} disabled={busy} />
+          <PinInput label={t("newPin")} value={pin} onChange={setPin} disabled={busy} />
+          <PinInput label={t("confirmPin")} value={confirmation} onChange={setConfirmation} disabled={busy} />
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="submit" disabled={busy || [pin, currentPin, confirmation].some(value => value.length !== 6)}>{t("changePin")}</Button>
+            <p role="status" className="text-sm">{message.changePin ? message.text : ""}</p>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  </div>;
 }

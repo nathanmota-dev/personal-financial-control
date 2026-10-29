@@ -1,8 +1,5 @@
-import { SecuritySettings } from "@/components/auth/security-settings";
-import { LogoutButton } from "@/components/auth/logout-button";
 import { SettingsView } from "@/components/finance/settings-view";
 import { requirePageSession } from "@/lib/auth/server";
-import { isDemoMode } from "@/lib/demo/mode";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 
@@ -23,5 +20,9 @@ export default async function SettingsPage() {
     data = { accounts, categories };
   } catch {}
 
-  return <>{!isDemoMode() && <LogoutButton />}{"user" in session && <SecuritySettings lockTimeoutMinutes={session.user.lockTimeoutMinutes} lockOnClose={session.user.lockOnClose} hasMcpToken={Boolean(session.user.mcpTokenHash)} />}<SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} /></>;
+  const security = "user" in session
+    ? { lockTimeoutMinutes: session.user.lockTimeoutMinutes, lockOnClose: session.user.lockOnClose, hasMcpToken: Boolean(session.user.mcpTokenHash) }
+    : undefined;
+
+  return <SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} security={security} />;
 }

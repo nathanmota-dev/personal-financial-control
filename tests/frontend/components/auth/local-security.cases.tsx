@@ -42,11 +42,17 @@ describe("local security UI", () => {
   });
   it("saves timeout preferences and requires matching PIN confirmation", async () => {
     const fetcher = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) }); vi.stubGlobal("fetch", fetcher);
-    const { user } = renderUI(<SecuritySettings lockTimeoutMinutes={15} lockOnClose hasMcpToken={false} />);
-    fireEvent.change(screen.getByLabelText("Minutos de inatividade (1–120)"), { target: { value: "30" } });
+    const { user } = renderUI(<SecuritySettings lockTimeoutMinutes={7} lockOnClose />);
+    const slider = screen.getByRole("slider", { name: "Tempo de inatividade" });
+    expect(slider.getAttribute("aria-valuetext")).toBe("5 min");
+    fireEvent.keyDown(slider, { key: "Home" });
+    expect(slider.getAttribute("aria-valuetext")).toBe("Nunca");
+    fireEvent.keyDown(slider, { key: "End" });
+    expect(screen.getByText("60 min")).toBeVisible();
+    fireEvent.keyDown(slider, { key: "ArrowLeft" });
     await user.click(screen.getByRole("button", { name: /^Salvar$/ }));
     await screen.findByText("Configurações salvas.");
-    expect(fetcher).toHaveBeenCalledWith("/api/security", expect.objectContaining({ body: JSON.stringify({ lockTimeoutMinutes: 30, lockOnClose: true }) }));
+    expect(fetcher).toHaveBeenCalledWith("/api/security", expect.objectContaining({ body: JSON.stringify({ lockTimeoutMinutes: 55, lockOnClose: true }) }));
     fillPin("PIN atual", "123456"); fillPin("Novo PIN", "654321"); fillPin("Confirmar PIN", "111111");
     await user.click(screen.getByRole("button", { name: "Trocar PIN" }));
     expect(await screen.findByText("Os PINs não coincidem.")).toBeVisible();
