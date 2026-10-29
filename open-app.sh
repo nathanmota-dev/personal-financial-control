@@ -238,6 +238,7 @@ launch_browser() {
 
   "$BROWSER_BIN" \
     --app="$APP_URL" \
+    --ozone-platform=x11 \
     --new-window \
     --start-maximized \
     --user-data-dir="$BROWSER_PROFILE_DIR" \

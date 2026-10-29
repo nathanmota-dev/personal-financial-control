@@ -79,6 +79,10 @@ Abra **Finance** no menu de aplicativos. O primeiro início instala as
 dependências, prepara o build e aplica as migrações. O servidor é encerrado ao
 fechar a janela.
 
+O launcher usa X11 (XWayland em sessões Wayland) para que a identificação da
+janela corresponda ao atalho Finance e o ícone apareça corretamente na dock/dash.
+Em sessões Wayland, mantenha o XWayland instalado.
+
 Para abrir diretamente pelo terminal:
 
 ```bash
