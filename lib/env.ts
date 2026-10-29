@@ -35,6 +35,8 @@ const serverEnvSchema = z.object({
   TOKEN: z.string().min(1).optional(),
   TURSO_DATABASE_URL: z.string().min(1).optional(),
   TURSO_AUTH_TOKEN: z.string().min(1).optional(),
+  TURSO_REPLICA_PATH: z.string().trim().min(1).optional(),
+  TURSO_SYNC_INTERVAL: z.coerce.number().int().min(1).max(86400).default(30),
   DATA_ENCRYPTION_KEY: z.string().min(1).optional(),
   BRAPI_API_TOKEN: z.string().min(1).optional(),
   INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES: z.coerce.number().int().nonnegative().default(30),
@@ -70,6 +72,15 @@ export function getServerEnv(): ServerEnv {
   const token = url.startsWith("file:")
     ? undefined
     : parsed.data.TOKEN ?? parsed.data.TURSO_AUTH_TOKEN;
+
+  if (!parsed.data.DEMO_MODE && parsed.data.TURSO_REPLICA_PATH) {
+    if (!/^(libsql|https):\/\//.test(url) || !token) {
+      throw new Error("TURSO_REPLICA_PATH requires a remote database URL and authentication token.");
+    }
+    if (/[:\u0000]/.test(parsed.data.TURSO_REPLICA_PATH)) {
+      throw new Error("TURSO_REPLICA_PATH must be a filesystem path, not a database URL.");
+    }
+  }
 
   return {
     ...parsed.data,

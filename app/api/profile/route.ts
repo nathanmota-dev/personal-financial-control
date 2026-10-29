@@ -19,7 +19,7 @@ async function handlePATCH(request: Request) {
   try {
     const session = await requireRequestSession(request);
     const displayName = [parsed.data.firstName, parsed.data.lastName].filter(Boolean).join(" ");
-    await getAuthDatabase().update(authorizedUsers).set({ displayName }).where(eq(authorizedUsers.email, session.email));
+    await (await getAuthDatabase()).update(authorizedUsers).set({ displayName }).where(eq(authorizedUsers.email, session.email));
     return Response.json({ ok: true, displayName });
   } catch (error) {
     return authResponse(error);

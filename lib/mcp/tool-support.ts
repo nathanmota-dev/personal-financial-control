@@ -1,4 +1,5 @@
 import type { AppDb } from "@/lib/db";
+import { replicaError } from "@/lib/db/replica-errors";
 import { getAccountById } from "@/lib/server/accounts";
 import { DomainError } from "@/lib/server/errors";
 import {
@@ -33,6 +34,7 @@ export function success(data: unknown) {
 }
 
 export function failure(error: unknown) {
+  error = replicaError(error) ?? error;
   const body = error instanceof DomainError
     ? { code: error.code, message: error.message }
     : error instanceof ZodError

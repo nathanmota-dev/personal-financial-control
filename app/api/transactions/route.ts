@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { NextResponse } from "next/server";
@@ -18,6 +19,8 @@ async function handlePOST(request: Request) {
     const transaction = await createTransaction(await request.json());
     return NextResponse.json({ ok: true, transaction }, { status: 201 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return NextResponse.json(
       { ok: false, error: error instanceof Error ? error.message : "Transaction creation failed" },
       { status: 400 }

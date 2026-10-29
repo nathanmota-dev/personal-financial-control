@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { NextResponse } from "next/server";
@@ -20,6 +21,8 @@ async function handleGET(_request: Request, { params }: RouteContext) {
     const { id } = await params;
     return NextResponse.json({ ok: true, charge: await getCreditCardCharge(id) });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return creditCardApiError(error, "Unable to load credit card purchase.");
   }
 }
@@ -32,6 +35,8 @@ async function handlePATCH(request: Request, { params }: RouteContext) {
     const charge = await updateCreditCardCharge({ ...(await request.json()), id });
     return NextResponse.json({ ok: true, charge });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return creditCardApiError(error, "Unable to update credit card purchase.");
   }
 }
@@ -44,6 +49,8 @@ async function handleDELETE(_request: Request, { params }: RouteContext) {
     await deleteCreditCardCharge(id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return creditCardApiError(error, "Unable to delete credit card purchase.");
   }
 }

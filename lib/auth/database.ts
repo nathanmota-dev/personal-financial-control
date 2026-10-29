@@ -5,6 +5,6 @@ import { authorizedUsers } from "@/lib/db/user-schema";
 
 // Auth hashes are credentials, not searchable encrypted-content indexes.
 // Reuse the existing connection with the plain authorization schema.
-export function getAuthDatabase() {
-  return drizzle({ client: getDatabase().$client, schema: { authorizedUsers } });
+export async function getAuthDatabase() {
+  return drizzle({ client: (await getDatabase()).$client, schema: { authorizedUsers } });
 }

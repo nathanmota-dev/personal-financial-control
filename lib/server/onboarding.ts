@@ -5,16 +5,16 @@ import { userOnboarding } from "@/lib/db/user-schema";
 import type { OnboardingState, OnboardingUpdate } from "@/lib/interfaces/onboarding";
 import { onboardingUpdateSchema } from "@/lib/onboarding/schema";
 
-export async function getOnboarding(userId: string, database: AppDb = getDatabase()): Promise<OnboardingState> {
+export async function getOnboarding(userId: string, database?: AppDb): Promise<OnboardingState> {
   // Session metadata uses plain columns, outside the encrypted finance adapter.
-  const db = drizzle({ client: database.$client });
+  const db = drizzle({ client: (database ?? await getDatabase()).$client });
   const [row] = await db.select().from(userOnboarding).where(eq(userOnboarding.userId, userId));
   return { step: row?.currentStep ?? 1, completedAt: row?.completedAt ?? null };
 }
 
-export async function updateOnboarding(userId: string, input: OnboardingUpdate, database: AppDb = getDatabase()): Promise<OnboardingState> {
+export async function updateOnboarding(userId: string, input: OnboardingUpdate, database?: AppDb): Promise<OnboardingState> {
   const update = onboardingUpdateSchema.parse(input);
-  const db = drizzle({ client: database.$client });
+  const db = drizzle({ client: (database ?? await getDatabase()).$client });
   const values = "completed" in update
     ? { completedAt: new Date().toISOString() }
     : { currentStep: update.step };

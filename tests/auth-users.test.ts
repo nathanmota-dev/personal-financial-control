@@ -12,13 +12,13 @@ describe("Persistent authorization", () => {
   it("denies an empty database and reads changes without caching, using the shared client", async () => {
     const { db, databaseUrl, cleanup } = await createTestDatabase();
     vi.stubEnv("DATABASE_URL", databaseUrl);
-    vi.mocked(getDatabase).mockReturnValue(db);
+    vi.mocked(getDatabase).mockResolvedValue(db);
     try {
       expect(await isAuthorizedEmail("owner@example.com")).toBe(false);
-      await getAuthDatabase().insert(authorizedUsers).values({ email: "owner@example.com" });
+      await (await getAuthDatabase()).insert(authorizedUsers).values({ email: "owner@example.com" });
       expect(await isAuthorizedEmail("OWNER@example.com")).toBe(true);
       expect(await isAuthorizedEmail("other@example.com")).toBe(false);
-      await getAuthDatabase().delete(authorizedUsers);
+      await (await getAuthDatabase()).delete(authorizedUsers);
       expect(await isAuthorizedEmail("owner@example.com")).toBe(false);
     } finally { await cleanup(); }
   });

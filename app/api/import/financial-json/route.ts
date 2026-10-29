@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { flattenPayload,importPayloadSchema } from "@/lib/server/financial-json";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
@@ -53,6 +54,8 @@ async function handlePOST(request: Request) {
       skippedTransactions,
     });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return NextResponse.json(
       {
         ok: false,

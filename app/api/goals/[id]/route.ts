@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import {
 goalApiError,
 noStoreJson,
@@ -19,6 +20,8 @@ async function handleGET(_request: Request, { params }: RouteContext) {
     const { id } = await params;
     return noStoreJson(await getGoalDetails(id));
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_DETAIL_ERROR",
       message: "Unable to load financial goal.",
@@ -39,6 +42,8 @@ async function handlePATCH(request: Request, { params }: RouteContext) {
 
     return okJson(goal);
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_UPDATE_ERROR",
       message: "Unable to update financial goal.",
@@ -58,6 +63,8 @@ async function handleDELETE(_request: Request, { params }: RouteContext) {
 
     return okJson(goal);
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_ARCHIVE_ERROR",
       message: "Unable to archive financial goal.",

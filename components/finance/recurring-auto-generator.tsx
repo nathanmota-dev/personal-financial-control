@@ -3,6 +3,7 @@
 import { usePathname,useRouter,useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useDatabaseSync } from "@/lib/database-sync-context";
 
 import { generateRecurringTransactionsAction } from "@/app/actions/finance";
 import { DEMO_REFERENCE_MONTH } from "@/lib/demo/constants";
@@ -20,6 +21,7 @@ finishRecurringGeneration,
 const autoGeneratePaths = new Set(["/dashboard", "/transactions", "/recurring"]);
 
 export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
+  const { canWrite, status } = useDatabaseSync();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,7 +33,7 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
       : getDefaultMonth();
 
   useEffect(() => {
-    if (!autoGeneratePaths.has(pathname)) {
+    if (!canWrite || !autoGeneratePaths.has(pathname)) {
       return;
     }
 
@@ -45,6 +47,7 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
     generateRecurringTransactionsAction(month)
       .then((result) => {
         if (!result.ok) {
+          if (result.error.code === "DATABASE_UNAVAILABLE") return;
           toast.error(result.error.message);
           return;
         }
@@ -66,7 +69,7 @@ export function RecurringAutoGenerator({ demoMode }: { demoMode: boolean }) {
       .finally(() => {
         finishRecurringGeneration(month, claim, succeeded);
       });
-  }, [month, pathname, router]);
+  }, [month, pathname, router, canWrite, status?.revision]);
 
   return null;
 }

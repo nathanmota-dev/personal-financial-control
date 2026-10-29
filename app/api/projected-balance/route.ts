@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { domainErrorResponse } from "@/lib/server/domain-error-response";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
@@ -24,6 +25,8 @@ async function handleGET(request: Request) {
       },
     });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     if (error instanceof DomainError) {
       return domainErrorResponse(error);
     }

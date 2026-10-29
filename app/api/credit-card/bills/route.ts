@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { NextResponse } from "next/server";
@@ -20,6 +21,8 @@ async function handleGET(request: Request) {
 
     return NextResponse.json({ ok: true, bills });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return creditCardApiError(error, "Unable to list credit card bills.");
   }
 }
@@ -31,6 +34,8 @@ async function handlePOST(request: Request) {
     const bill = await upsertCreditCardBill(await request.json());
     return NextResponse.json({ ok: true, bill }, { status: 201 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return creditCardApiError(error, "Unable to save credit card bill.");
   }
 }

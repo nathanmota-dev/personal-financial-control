@@ -85,3 +85,36 @@ describe("server environment", () => {
     });
   });
 });
+
+describe("embedded replica environment", () => {
+  afterEach(() => {
+    delete process.env.TURSO_REPLICA_PATH;
+    delete process.env.TURSO_SYNC_INTERVAL;
+  });
+  it("keeps the remote URL and token separate from the replica path", () => {
+    process.env.DEMO_MODE = "false";
+    process.env.DATA_ENCRYPTION_KEY = "key";
+    process.env.DATABASE_URL = "libsql://remote.invalid";
+    process.env.TOKEN = "token";
+    process.env.TURSO_REPLICA_PATH = ".local/replica/finance.db";
+    expect(getServerEnv()).toMatchObject({ DATABASE_URL: "libsql://remote.invalid", TOKEN: "token", TURSO_SYNC_INTERVAL: 30, TURSO_REPLICA_PATH: ".local/replica/finance.db" });
+  });
+  it("rejects a local source, missing credentials, invalid paths and intervals", () => {
+    process.env.DEMO_MODE = "false";
+    process.env.DATA_ENCRYPTION_KEY = "key";
+    process.env.TURSO_REPLICA_PATH = "replica.db";
+    process.env.DATABASE_URL = "file:local.db";
+    expect(() => getServerEnv()).toThrow("remote");
+    process.env.DATABASE_URL = "libsql://remote.invalid";
+    delete process.env.TOKEN; delete process.env.TURSO_AUTH_TOKEN;
+    expect(() => getServerEnv()).toThrow("token");
+    process.env.TOKEN = "token";
+    process.env.TURSO_REPLICA_PATH = "file:replica.db";
+    expect(() => getServerEnv()).toThrow("filesystem");
+    process.env.TURSO_REPLICA_PATH = "replica.db";
+    for (const value of ["0", "-1", "1.5", "invalid", "86401"]) {
+      process.env.TURSO_SYNC_INTERVAL = value;
+      expect(() => getServerEnv()).toThrow("TURSO_SYNC_INTERVAL");
+    }
+  });
+});

@@ -1,3 +1,4 @@
+import { databaseErrorResponse } from "@/lib/server/database-error-response";
 import { apiGuard } from "@/lib/auth/server";
 import { privateRoute,rejectRouteMethod } from "@/lib/server/route-response";
 import { z } from "zod";
@@ -32,6 +33,8 @@ async function handleGET(_request: Request, { params }: RouteContext) {
     const { id } = await params;
     return noStoreJson(await listGoalAllocations(id));
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_ALLOCATIONS_ERROR",
       message: "Unable to load goal allocations.",
@@ -61,6 +64,8 @@ async function handlePOST(request: Request, { params }: RouteContext) {
 
     return okJson(result, { status: 201 });
   } catch (error) {
+    const databaseFailure = databaseErrorResponse(error);
+    if (databaseFailure) return databaseFailure;
     return goalApiError(error, {
       code: "GOAL_ALLOCATION_ERROR",
       message: "Unable to update goal allocation.",
