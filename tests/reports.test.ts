@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildReport, reportMetrics } from "@/lib/report-aggregation";
 import { parseReportPeriod, reportHref, reportYearMonths, shiftReportPeriod } from "@/lib/report-periods";
 import type { ReportRecords } from "@/lib/interfaces/reports";
+import { buildExpenseGroupsReport } from "@/lib/expense-groups";
 
 function records(income = 500000): ReportRecords {
   const base = { competenceMonth: "2024-02", status: "posted", category: null, account: null };
@@ -22,6 +23,7 @@ describe("reports", () => {
     const report = buildReport({ mode: "monthly", period: "2024-02" }, "2024-02-29", records());
     expect(report.totals).toMatchObject({ operatingResultCents: 200000, savingsRate: 40, netInvestmentFlowCents: 80000, netResultCents: 120000 });
     expect(report.pending).toEqual({ count: 1, amountCents: 300000 });
+    expect(buildExpenseGroupsReport(records(), ["2024-02"]).totals.totalCents).toBe(report.totals.expenseCents);
     expect(report.entries).toHaveLength(4);
     expect(report.categories.find((row) => row.type === "expense")).toMatchObject({ name: "Sem categoria", amountCents: 300000 });
     expect(report.partial).toBe(true);

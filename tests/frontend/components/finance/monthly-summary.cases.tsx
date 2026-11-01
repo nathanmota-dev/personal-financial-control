@@ -4,11 +4,12 @@ import { MonthlySummaryContent } from "@/components/finance/reports/monthly-summ
 import { ReportTables } from "@/components/finance/reports/tables";
 import { buildDailyExpenseMap } from "@/lib/daily-expenses";
 import { buildReport } from "@/lib/report-aggregation";
+import { buildExpenseGroupsReport } from "@/lib/expense-groups";
 import { buildMonthlyRetrospective } from "@/lib/monthly-retrospective";
 import type { MonthlyRetrospective } from "@/lib/interfaces/monthly-retrospective";
 import { renderUI } from "@/tests/frontend/helpers";
 
-const empty = () => buildReport({ mode: "monthly", period: "2026-06" }, "2026-07-16", { activeTransactions: [], expenses: [], installments: [] });
+const empty = () => ({ ...buildReport({ mode: "monthly", period: "2026-06" }, "2026-07-16", { activeTransactions: [], expenses: [], installments: [] }), expenseGroups: buildExpenseGroupsReport({ activeTransactions: [], expenses: [], installments: [] }, ["2026-06"]) });
 function summary(): MonthlyRetrospective {
   const report = empty();
   report.comparison.hasHistory = true;

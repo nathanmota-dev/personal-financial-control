@@ -62,6 +62,11 @@ it("reconciles monthly and annual CSVs with the displayed data, including pendin
   for (const selection of [{ mode: "monthly", period: "2026-01" }, { mode: "annual", period: "2026" }] as const) {
     const report = await getReport(selection, db);
     const initial = await getReportInitial(selection, db);
+    expect(initial.expenseGroups.totals).toMatchObject({ totalCents: report.totals.expenseCents, fixedCents: report.totals.fixedExpenseCents, variableCents: report.totals.variableExpenseCents, unclassifiedCents: report.totals.uncategorizedExpenseCents });
+    const expenseItems = Object.values(initial.expenseGroups.groups).flat();
+    expect(expenseItems.some((item) => ["Cancelled", "Payment", "Previous only"].includes(item.description))).toBe(false);
+    expect(expenseItems.find((item) => item.description === "Pending")?.source).toBe("transaction");
+    expect(expenseItems.find((item) => item.description === "Refund")).toMatchObject({ source: "installment", amountCents: -3001 });
     const view = await getReportView(selection, "categories", db) as { categories: typeof report.categories };
     const query = new URLSearchParams(selection);
     const summary = parseReportCsv(await (await route.GET(request("GET", undefined, `?${query}&kind=summary`))).text());

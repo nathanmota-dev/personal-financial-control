@@ -7,6 +7,7 @@ test("explicit downloads match monthly and annual displayed values on mobile", a
   let exportRequests = 0;
   page.on("request", (request) => { if (request.url().includes("/api/reports/export?")) exportRequests++; });
   await page.goto("/reports?mode=monthly&period=2026-07");
+  await page.getByRole("tab", { name: "Meses do ano", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
   expect(exportRequests).toBe(0);
   const downloadSummary = page.waitForEvent("download");

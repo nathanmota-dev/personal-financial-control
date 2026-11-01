@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import Page from "@/app/(finance)/reports/page";
 import { getReportInitial } from "@/lib/server/reports";
 import { buildReport } from "@/lib/report-aggregation";
+import { buildExpenseGroupsReport } from "@/lib/expense-groups";
 import { ReportNotes } from "@/components/finance/reports/notes";
 import { navigation } from "@/tests/frontend/setup";
 import { ReportTables } from "@/components/finance/reports/tables";
@@ -15,7 +16,7 @@ import { renderUI } from "@/tests/frontend/helpers";
 
 vi.mock("@/lib/server/reports", () => ({ getReportInitial: vi.fn() }));
 const empty = { activeTransactions: [], expenses: [], installments: [] };
-const report = () => ({ ...buildReport({ mode: "monthly", period: "2026-07" }, "2026-07-16", empty), entryCount: 0 });
+const report = () => ({ ...buildReport({ mode: "monthly", period: "2026-07" }, "2026-07-16", empty), expenseGroups: buildExpenseGroupsReport(empty, ["2026-07"]), entryCount: 0 });
 
 describe("reports interface", () => {
   beforeEach(() => {
@@ -44,6 +45,9 @@ describe("reports interface", () => {
   it("keeps the reading guide and displays only the selected table view", async () => {
     const { user } = renderUI(<><ReportNotes report={report()} /><ReportTables report={report()} /></>);
     expect(screen.getByRole("heading", { name: "Leitura do relatório" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "Fixos x Variáveis" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Sem despesas no período")).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: "Meses do ano" }));
     expect(screen.getByRole("heading", { name: "Meses do ano" })).toBeVisible();
     expect(screen.queryByRole("heading", { name: "Origens dos totais" })).not.toBeInTheDocument();
     expect(screen.getAllByText("Sem registros")).toHaveLength(7);
@@ -100,11 +104,11 @@ describe("reports interface", () => {
     await user.click(screen.getByRole("tab", { name: "Mensal" }));
     expect(navigation.push).toHaveBeenCalledWith("/reports?mode=monthly&period=2026-08");
   });
-  it("renders months first and loads deferred views while categories are still pending", async () => {
+  it("renders expense groups first and loads deferred views while categories are still pending", async () => {
     let resolveCategories!: (value: Response) => void;
     vi.mocked(fetch).mockImplementationOnce(() => new Promise((resolve) => { resolveCategories = resolve; }));
     const { user } = renderUI(<ReportTables report={report()} />);
-    expect(screen.getByRole("heading", { name: "Meses do ano" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "Fixos x Variáveis" })).toHaveAttribute("aria-selected", "true");
     expect(fetch).toHaveBeenCalledTimes(3);
     expect(fetch).toHaveBeenNthCalledWith(1, "/api/reports?mode=monthly&period=2026-07&view=categories", expect.anything());
     expect(fetch).toHaveBeenNthCalledWith(2, "/api/reports?mode=monthly&period=2026-07&view=sources", expect.anything());

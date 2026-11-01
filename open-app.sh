@@ -8,6 +8,13 @@ export NODE_ENV=production
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 cd "$SCRIPT_DIR"
 
+STATE_DIR="$SCRIPT_DIR/.local/runtime"
+LAUNCHER_LOG_FILE="$STATE_DIR/launcher.log"
+BROWSER_LOG_FILE="$STATE_DIR/browser.log"
+mkdir -p "$STATE_DIR"
+exec > >(tee -a "$LAUNCHER_LOG_FILE") 2>&1
+printf '\n[open-app] Iniciando em %s\n' "$(date -Is)"
+
 # Use the same dotenv precedence and parser as the production build.
 if [[ ! -d node_modules ]]; then
   npm install
@@ -24,7 +31,6 @@ APP_HOST="${HOST:-127.0.0.1}"
 APP_PORT="${PORT:-3007}"
 APP_URL="${APP_URL:-http://$APP_HOST:$APP_PORT}"
 APP_PORT="$(node -e 'const u = new URL(process.argv[1]); process.stdout.write(u.port || (u.protocol === "https:" ? "443" : "80"))' "$APP_URL")"
-STATE_DIR="$SCRIPT_DIR/.local/runtime"
 LOCK_FILE="$STATE_DIR/open-app.lock"
 SESSION_FILE="$STATE_DIR/app.session"
 SERVER_PID_FILE="$STATE_DIR/server.pid"
@@ -37,8 +43,6 @@ BROWSER_PROFILE_DIR="${BROWSER_PROFILE_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}
 SESSION_ID=""
 OWNS_SERVER=0
 SERVER_STARTED=0
-
-mkdir -p "$STATE_DIR"
 
 if [[ -z "$BROWSER_BIN" && -n "${BRAVE_BIN:-}" ]]; then
   BROWSER_BIN="$BRAVE_BIN"
@@ -139,6 +143,9 @@ wait_until_ready() {
   for attempt in $(seq 1 60); do
     if is_http_ready; then
       return 0
+    fi
+    if [[ "$SERVER_STARTED" == "1" ]] && ! is_pid_running "$(server_pid)"; then
+      return 1
     fi
     sleep 1
   done
@@ -246,12 +253,15 @@ launch_browser() {
     --disable-background-mode \
     --no-first-run \
     --no-default-browser-check \
-    >/dev/null 2>&1 &
+    >>"$BROWSER_LOG_FILE" 2>&1 &
 }
 
 monitor_browser_lifecycle() {
   local pid
-  pid="$(wait_for_browser_start)"
+  if ! pid="$(wait_for_browser_start)"; then
+    printf 'Erro: o navegador nao iniciou. Consulte o log em %s\n' "$BROWSER_LOG_FILE" >&2
+    return 1
+  fi
   printf '%s\n' "$pid" > "$BROWSER_PID_FILE"
   log "App aberto no navegador $BROWSER_BIN com PID $pid."
 

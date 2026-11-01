@@ -19,6 +19,14 @@ NEXT_BIN="$SCRIPT_DIR/node_modules/.bin/next"
 
 mkdir -p "$STATE_DIR"
 
+# SWC's native loader rejects symlinks in its cache root. Resolve the user's
+# cache directory physically, while preserving an explicit SWC configuration.
+if [[ -z "${SWC_NATIVE_BINDING_CACHE:-}" ]]; then
+  CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}"
+  mkdir -p "$CACHE_DIR"
+  export SWC_NATIVE_BINDING_CACHE="$(cd "$CACHE_DIR" && pwd -P)"
+fi
+
 log() {
   printf '[start-app] %s\n' "$1"
 }

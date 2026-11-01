@@ -1,4 +1,5 @@
 import { aggregateDashboardMonth } from "@/lib/dashboard-aggregation";
+import { buildExpenseGroupsReport } from "@/lib/expense-groups";
 import { buildMonthlyRetrospective } from "@/lib/monthly-retrospective";
 import { getFinanceDatabase, type AppDb } from "@/lib/db";
 import type { ReportInitialResult, ReportPeriod, ReportView } from "@/lib/interfaces/reports";
@@ -25,6 +26,7 @@ export async function getReportInitial(selection: ReportPeriod, database?: AppDb
   const pending = entries.filter((row) => row.status === "pending");
   return {
     ...selection,
+    expenseGroups: buildExpenseGroupsReport(records, selectedMonths),
     series: months.map((month) => {
       const result = aggregateDashboardMonth(month, records.activeTransactions, records.expenses);
       return { month, metrics: reportMetrics(result.totals), hasMovements: result.hasMovements };

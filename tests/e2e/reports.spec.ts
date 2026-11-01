@@ -1,7 +1,46 @@
 import { test, expect } from "./helpers/fixture";
 
+test("expense groups open by default and reconcile card invoices, shares and annual categories on mobile", async ({ page, request }) => {
+  const { accountIds, categoryIds } = await import("../../lib/demo/fixture");
+  for (const [categoryId, description, amountCents] of [[categoryIds.rent, "Aluguel do relatório", 320000], [categoryIds.food, "Mercado do relatório", 150000]] as const) {
+    const response = await request.post("/api/transactions", { data: { accountId: accountIds.checking, categoryId, description, type: "expense", status: "pending", amountCents, competenceMonth: "2024-06", transactionDate: "2024-06-05" } });
+    expect(response.status()).toBe(201);
+  }
+  for (const [description, totalAmountCents, kind, installmentCount] of [["Compra no cartão do relatório", 80000, "purchase", 2], ["Estorno do relatório", -10000, "adjustment", 1]] as const) {
+    const response = await request.post("/api/credit-card/charges", { data: { accountId: accountIds.credit, categoryId: categoryIds.food, description, totalAmountCents, kind, installmentCount, purchaseDate: "2024-05-20", firstInvoiceMonth: "2024-06" } });
+    expect(response.status()).toBe(201);
+  }
+  await page.goto("/reports?mode=monthly&period=2024-06");
+  const tab = page.getByRole("tab", { name: "Fixos x Variáveis", exact: true });
+  await expect(tab).toHaveAttribute("aria-selected", "true");
+  const cards = page.getByRole("region", { name: "Totais por grupo de despesa" });
+  await expect(cards).toContainText(/Gastos fixos.*3.200,00.*64,0%/);
+  await expect(cards).toContainText(/Gastos variáveis.*1.800,00.*36,0%/);
+  await expect(page.getByText(/Total geral:/)).toContainText("5.000,00");
+  const fixed = page.getByRole("region", { name: "Gastos fixos", exact: true });
+  const variable = page.getByRole("region", { name: "Gastos variáveis", exact: true });
+  await expect(fixed.getByRole("table")).toContainText("Aluguel do relatório");
+  await expect(variable.getByRole("row").filter({ hasText: "Compra no cartão do relatório" })).toContainText(/Parcela de cartão.*20\/05\/2024.*400,00/);
+  await expect(variable.locator("tfoot")).toContainText("1.800,00");
+  await expect(page.getByRole("region", { name: "Sem classificação", exact: true })).toHaveCount(0);
+  await page.screenshot({ path: "reports/expense-groups-desktop.png", fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(variable.getByText("Compra no cartão do relatório", { exact: true }).last()).toBeVisible();
+  await expect(variable.getByRole("table")).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: "reports/expense-groups-mobile.png", fullPage: true });
+  await page.getByRole("tab", { name: "Anual", exact: true }).click();
+  await expect(page).toHaveURL(/mode=annual&period=2024/);
+  await expect(tab).toHaveAttribute("aria-selected", "true");
+  await expect(variable.getByRole("list")).toContainText(/Alimentação.*2.200,00.*Ocorrências: 4.*100,0%/);
+  await expect(variable.getByText("Compra no cartão do relatório", { exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: "reports/expense-groups-annual-mobile.png", fullPage: true });
+});
+
 test("report URL preserves mode, navigation and explicit invalid periods", async ({ page }) => {
   await page.goto("/reports?mode=monthly&period=2026-07");
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("heading", { name: "Relatórios", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Período anterior", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "julho de 2026", exact: true }).click();
@@ -29,6 +68,7 @@ test("report URL preserves mode, navigation and explicit invalid periods", async
 test("reports remain readable on mobile with textual tables and sources", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/reports?mode=monthly&period=2026-07");
+  await page.getByRole("tab", { name: "Meses do ano", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
   await page.getByRole("tab", { name: "Categorias", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Categorias e comparação" })).toBeVisible();
@@ -42,7 +82,7 @@ test("reports remain readable on mobile with textual tables and sources", async 
   await page.screenshot({ path: "reports/reports-mobile.png", fullPage: true });
 });
 
-test("months are visible while secondary report requests are pending", async ({ page }) => {
+test("expense groups are visible while secondary report requests are pending", async ({ page }) => {
   let release!: () => void;
   const blocked = new Promise<void>((resolve) => { release = resolve; });
   const requested: string[] = [];
@@ -53,7 +93,8 @@ test("months are visible while secondary report requests are pending", async ({ 
     await route.continue();
   });
   await page.goto("/reports?mode=monthly&period=2026-07");
-  await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Distribuição dos gastos", exact: true })).toBeVisible();
   await expect.poll(() => [...requested].sort()).toEqual(["categories", "daily-expenses", "sources"]);
   await page.getByRole("tab", { name: "Origens dos totais", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Origens dos totais" })).toBeVisible();
@@ -75,7 +116,7 @@ test("monthly summary explains both months on demand and works by keyboard on mo
   page.on("request", (request) => { if (request.url().includes("/api/reports?")) requested.push(new URL(request.url()).searchParams.get("view")!); });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/reports?mode=monthly&period=2024-06");
-  await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toHaveAttribute("aria-selected", "true");
   expect(requested).not.toContain("summary");
   await page.getByRole("tab", { name: "Meses do ano", exact: true }).focus();
   await page.keyboard.press("End");
@@ -88,11 +129,15 @@ test("monthly summary explains both months on demand and works by keyboard on mo
   await expect(page.locator("details")).toHaveCount(0);
   await expect(page.getByRole("tabpanel", { name: "Resumo do mês" })).not.toContainText(/2024-0[56]/);
   const requestsBefore = requested.length;
-  for (const name of ["Meses do ano", "Categorias", "Origens dos totais", "Resumo do mês"]) await page.getByRole("tab", { name, exact: true }).click();
+  for (const name of ["Fixos x Variáveis", "Meses do ano", "Categorias", "Origens dos totais", "Resumo do mês"]) await page.getByRole("tab", { name, exact: true }).click();
   await expect(evidence.getByText("Mercado anterior", { exact: true })).toBeVisible();
   expect(requested).toHaveLength(requestsBefore);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: "reports/monthly-summary-mobile.png", fullPage: true });
+  await page.getByRole("tab", { name: "Resumo do mês", exact: true }).focus();
+  await page.keyboard.press("Home");
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toBeFocused();
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toHaveAttribute("aria-selected", "true");
   await page.getByRole("button", { name: "Abrir menu", exact: true }).click();
   await page.getByRole("link", { name: "Dashboard", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Visão mensal", exact: true })).toBeVisible();
@@ -140,7 +185,7 @@ test("monthly daily expense map reconciles purchases and credits by purchase dat
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/reports?mode=monthly&period=2026-07");
-  await expect(page.getByRole("heading", { name: "Meses do ano", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Fixos x Variáveis", exact: true })).toHaveAttribute("aria-selected", "true");
   await page.getByRole("tab", { name: "Despesas por data", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Despesas por data da transação/compra" })).toBeVisible();
   const purchaseDay = page.getByRole("button", { name: /12\/07\/2026\. Gastos positivos/ });

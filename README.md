@@ -93,6 +93,12 @@ O navegador padrão é o Google Chrome. Para usar Chromium, altere
 `BROWSER_BIN="chromium"` no `.env`. Se mover o projeto para outra pasta,
 execute `./install-app.sh` novamente.
 
+Se o aplicativo não abrir, consulte `.local/runtime/launcher.log` (inicialização,
+build e migrações), `.local/runtime/server.log` (Next.js) e
+`.local/runtime/browser.log` (navegador). O launcher resolve o caminho real do
+cache para carregar o SWC mesmo quando `~/.cache` é um link simbólico, respeitando
+uma configuração explícita de `SWC_NATIVE_BINDING_CACHE`.
+
 ## Executar em desenvolvimento
 
 Requisitos: Node.js 24 e npm. Configure o `.env`, incluindo as credenciais do

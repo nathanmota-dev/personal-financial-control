@@ -1,4 +1,5 @@
 import type { DashboardTotals } from "@/lib/interfaces/dashboard";
+import type { ExpenseGroupsReport } from "@/lib/interfaces/expense-groups";
 import type { readDashboardRecords } from "@/lib/server/dashboard-records";
 
 export type ReportMode = "monthly" | "annual";
@@ -25,7 +26,7 @@ export type ReportResult = ReportPeriod & {
 };
 export type ReportProps = { report: ReportResult };
 export type ReportControlsProps = ReportPeriod & { defaultMonth: string; rememberedMonth?: string };
-export type ReportInitialResult = Pick<ReportResult, "mode" | "period" | "series" | "pending" | "partial"> & { entryCount: number };
+export type ReportInitialResult = Pick<ReportResult, "mode" | "period" | "series" | "pending" | "partial"> & { entryCount: number; expenseGroups: ExpenseGroupsReport };
 export type ReportInitialProps = { report: ReportInitialResult };
 export type ReportMonthsProps = { report: Pick<ReportResult, "series"> };
 export type ReportCategoryProps = { report: Pick<ReportResult, "categories" | "previousPeriod" | "partial"> };
@@ -40,5 +41,6 @@ export type ReportDeferredState = {
 
 export type ReportYearPickerProps = { year: string; onYearChange: (year: string) => void };
 export type ReportEntryProps = { entry: ReportEntry };
+export type ReportEntrySourceProps = { entry: Pick<ReportEntry, "source" | "month">; badgeOnly?: boolean };
 
 export type ReportViewLoadingProps = { error: boolean; retry: () => void };
