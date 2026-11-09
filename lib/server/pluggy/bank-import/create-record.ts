@@ -2,6 +2,7 @@ import { pluggyImportLedger } from "@/lib/db/schema";
 import type { BankImportLocalRow, BankImportScope, PluggyBankClassification, PluggyBankRow } from "@/lib/interfaces/pluggy-bank-import";
 import { createSingleTransactionInTransaction } from "@/lib/server/transactions/creation";
 import type { TransactionValues } from "@/lib/server/transactions/validation";
+import { resolveRuleCategory } from "../category-rules";
 import { bump, flagAttention, ledgerValues } from "./scope";
 
 const COUNT_NAMES: Record<Exclude<PluggyBankClassification, "own_transfer" | "card_payment">, string> = {
@@ -16,7 +17,7 @@ export async function createBankRecord(scope: BankImportScope, row: PluggyBankRo
   if (isInvestment && !run.investmentCategoryId) return flagAttention(scope, row, "missing_investment_category");
   const values: TransactionValues = {
     accountId: link.accountId,
-    categoryId: isInvestment ? run.investmentCategoryId : null,
+    categoryId: isInvestment ? run.investmentCategoryId : resolveRuleCategory(run.categoryRules, row.description, row.type),
     type: isInvestment ? classification : row.type,
     status: row.status,
     amountCents: row.amountCents,

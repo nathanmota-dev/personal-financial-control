@@ -134,3 +134,5 @@ export const investmentValuationSources = ["market_quote", "manual_balance"] as 
 export const pluggyAccountKinds = ["bank", "credit"] as const;
 export const pluggySyncRunStatuses = ["running", "success", "partial", "failed"] as const;
 export const pluggyLedgerOutcomes = ["created", "matched", "skipped", "review", "pending_card_payment", "cancelled"] as const;
+
+export const pluggyCategoryRuleDirections = ["income", "expense"] as const;

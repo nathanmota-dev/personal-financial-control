@@ -37,6 +37,17 @@ Cada lançamento novo recebe uma classificação, nesta ordem:
 - Transferências entre duas contas vinculadas viram um único registro, pareadas por valor e por uma janela de 1 dia. Sem o outro lado, usam **Outras contas próprias**. Se o outro lado chegar depois, a transferência é corrigida para a conta real. Sem essa conta configurada, a transferência aguarda em **Itens que precisam de atenção**.
 - Transferências e pagamentos de fatura pendentes aguardam a confirmação do banco.
 
+## Categorias aprendidas
+
+A categoria é aprendida com as suas escolhas, sem usar o campo `category` da Pluggy, que é exclusivo do plano Pro.
+
+- Ao mudar a categoria de um lançamento ou compra importados, o app grava uma regra para a descrição normalizada e o sentido (receita ou despesa) e aplica a categoria aos registros iguais ainda sem categoria. A mudança e a regra são gravadas juntas.
+- A descrição normalizada fica em maiúsculas e sem acentos, parcelas (`PARC 03/05`, `3/5`), datas e números longos. Regras de receita e de despesa não colidem.
+- Uma nova sincronização usa a regra ao criar o registro. Uma categoria escolhida por você nunca é sobrescrita, e lançamentos criados manualmente não geram nem recebem regras.
+- Lançamentos bancários sem regra ficam sem categoria. Compras no cartão exigem categoria e usam **A classificar**, um grupo variável tratado como sem categoria no aviso do painel, no filtro de lançamentos e nos totais de fixos e variáveis.
+- Em **Configurações > Open Finance > Pendências de categoria**, cada descrição pendente aparece uma vez, com ocorrências e total. Escolher a categoria cria a regra e a aplica a todos os registros pendentes iguais, inclusive compras de faturas já pagas, porque somente a categoria muda.
+- Uma regra cuja categoria foi arquivada ou mudou de grupo é ignorada. Enquanto existir uma regra, a categoria não pode ser excluída.
+
 ## Nova sincronização
 
 - Datas são convertidas para `America/Sao_Paulo`, e registros anteriores à data de corte são ignorados.

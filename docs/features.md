@@ -337,7 +337,7 @@ As ações cobrem:
 - A carteira atual registra o valor total da posição, não cada compra e venda do ativo.
 - Não há cálculo fiscal, imposto de renda ou processamento completo de eventos corporativos.
 - Não há integração automática com corretoras.
-- A integração Open Finance via MeuPluggy conecta bancos, vincula contas e importa os lançamentos de contas correntes e poupanças, separando transferências próprias, pagamentos de fatura e movimentos de investimento. Faturas e posições de investimento ainda não são importadas. Consulte `open-finance.md`.
+- A integração Open Finance via MeuPluggy conecta bancos, vincula contas e importa os lançamentos de contas correntes e poupanças, separando transferências próprias, pagamentos de fatura e movimentos de investimento, e aprende categorias a partir das suas escolhas. Faturas e posições de investimento ainda não são importadas. Consulte `open-finance.md`.
 - Não há módulo específico para empréstimos e financiamentos.
 
 O plano para evoluir especificamente a carteira de investimentos está documentado em `PLANO_MODULO_INVESTIMENTOS.md`, na raiz do projeto.

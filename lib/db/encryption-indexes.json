@@ -41,5 +41,9 @@
   ],
   "pluggy_import_ledger": [
     "fingerprint"
+  ],
+  "pluggy_category_rules": [
+    "normalized_description",
+    "direction"
   ]
 }

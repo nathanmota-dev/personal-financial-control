@@ -1,6 +1,7 @@
 import type { CategoryGroup } from "@/lib/db/schema";
 import type { ReportRecords } from "@/lib/interfaces/reports";
 import type { ExpenseGroupCategory, ExpenseGroupKey, ExpenseGroupItem, ExpenseGroupsReport } from "@/lib/interfaces/expense-groups";
+import { isPendingCategory } from "@/lib/pending-category";
 
 export function classifyExpenseGroup(group: CategoryGroup | undefined): ExpenseGroupKey {
   if (group === "fixed_expense") return "fixed";
@@ -19,7 +20,7 @@ export function buildExpenseGroupsReport(records: ReportRecords, months: string[
   for (const expense of records.expenses) {
     const month = byMonth.get(expense.competenceMonth);
     if (!month) continue;
-    const group = classifyExpenseGroup(expense.category?.group);
+    const group = isPendingCategory(expense.category) ? "unclassified" : classifyExpenseGroup(expense.category?.group);
     const isInstallment = installments.has(expense.id);
     const isRecurring = !isInstallment && Boolean(transactions.get(expense.id)?.recurringTemplateId);
     groups[group].push({

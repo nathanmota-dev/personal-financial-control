@@ -11,6 +11,7 @@ globalThis.fetch = async function (input, init) {
     const owner = { documentNumber: "12345678909" };
     return json({ results: [
       { id: "e2e-expense", date, amount: -45.9, type: "DEBIT", status: "POSTED", description: "Mercado E2E", operationType: "PIX", paymentData: { payer: owner, receiver: { documentNumber: "98765432100" } } },
+      { id: "e2e-expense-2", date, amount: -54.1, type: "DEBIT", status: "POSTED", description: "MERCADO E2E PARC 02/03", operationType: "PIX", paymentData: { payer: owner, receiver: { documentNumber: "98765432100" } } },
       { id: "e2e-income", date, amount: 1000, type: "CREDIT", status: "POSTED", description: "Salário E2E", operationType: "OUTROS" },
       { id: "e2e-card", date, amount: -300, type: "DEBIT", status: "POSTED", description: "PAGAMENTO FATURA E2E", operationType: "OUTROS" },
     ] });

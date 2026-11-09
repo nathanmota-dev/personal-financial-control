@@ -7,6 +7,9 @@ import type {
   PluggyLinkView,
   PluggySyncRunStatus,
 } from "@/lib/interfaces/pluggy";
+import type { CategoryRow } from "@/lib/interfaces/components/settings-view";
+import type { PluggyCategoryRuleDirection, PluggyCategoryRuleTarget } from "@/lib/interfaces/pluggy-category-rules";
+import { isPendingCategory } from "@/lib/pending-category";
 
 export const pluggyTimeZone = "America/Sao_Paulo";
 
@@ -35,6 +38,18 @@ export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
   missing_other_own_account: "Transferência própria sem a outra conta. Escolha uma conta em Outras contas próprias.",
   missing_investment_category: "Crie uma categoria do grupo investimento para importar este movimento.",
 };
+
+export const pluggyDirectionLabels: Record<PluggyCategoryRuleDirection, string> = { income: "Receita", expense: "Despesa" };
+
+export function pluggyCategoryGroupKey({ direction, normalizedDescription }: PluggyCategoryRuleTarget) {
+  return `${direction}:${normalizedDescription}`;
+}
+
+/** Mirrors the server's check, so a choice offered here is never rejected for its type. */
+export function pluggyRuleCategoryOptions(categories: CategoryRow[], direction: PluggyCategoryRuleDirection) {
+  const groups: CategoryRow["group"][] = direction === "income" ? ["income"] : ["fixed_expense", "variable_expense"];
+  return categories.filter((category) => !category.isArchived && !isPendingCategory(category) && groups.includes(category.group));
+}
 
 export function formatPluggyDateTime(value: string | null) {
   return value ? new Date(value).toLocaleString("pt-BR", { timeZone: pluggyTimeZone }) : "Não informado";

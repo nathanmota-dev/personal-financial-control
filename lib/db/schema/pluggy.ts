@@ -1,9 +1,9 @@
 import { encryptedBoolean, encryptedText, encryptedTimestamp } from "@/lib/db/encrypted-content";
 import { encryptionChecks } from "@/lib/db/encryption-checks";
 import { index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
-import { accounts, timestampColumns } from "./accounts";
+import { accounts, categories, timestampColumns } from "./accounts";
 import { recordId, referenceColumn } from "./columns";
-import { pluggyAccountKinds, pluggyLedgerOutcomes, pluggySyncRunStatuses } from "./enums";
+import { pluggyAccountKinds, pluggyCategoryRuleDirections, pluggyLedgerOutcomes, pluggySyncRunStatuses } from "./enums";
 
 export const pluggyItems = sqliteTable("pluggy_items", {
   id: recordId(),
@@ -72,3 +72,18 @@ export const pluggySettings = sqliteTable("pluggy_settings", {
   otherOwnAccountId: referenceColumn("other_own_account_id", () => accounts.id, "set null"),
   ...timestampColumns("pluggy_settings"),
 }, (table) => [...encryptionChecks(table)]);
+
+/** One category per bank description and direction, learned from the user's own choices. */
+export const pluggyCategoryRules = sqliteTable("pluggy_category_rules", {
+  id: recordId(),
+  normalizedDescription: encryptedText("normalized_description", "pluggy_category_rules.normalized_description").notNull(),
+  normalizedDescriptionHash: text("normalized_description_hash"),
+  direction: encryptedText("direction", "pluggy_category_rules.direction", { enum: pluggyCategoryRuleDirections }).notNull(),
+  directionHash: text("direction_hash"),
+  categoryId: referenceColumn("category_id", () => categories.id, "restrict").notNull(),
+  ...timestampColumns("pluggy_category_rules"),
+}, (table) => [
+  ...encryptionChecks(table),
+  uniqueIndex("pluggy_category_rules_description_direction_unique").on(table.normalizedDescriptionHash, table.directionHash),
+  index("pluggy_category_rules_category_idx").on(table.categoryId),
+]);
