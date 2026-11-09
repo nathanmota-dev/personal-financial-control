@@ -126,6 +126,15 @@
   "app/api/pin/route.ts": [
     "tests/auth.test.ts"
   ],
+  "app/api/pluggy/items/route.ts": [
+    "tests/unit/app/api/pluggy/items/route.test.ts"
+  ],
+  "app/api/pluggy/links/route.ts": [
+    "tests/unit/app/api/pluggy/links/route.test.ts"
+  ],
+  "app/api/pluggy/sync/route.ts": [
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
   "app/api/profile/route.ts": [
     "tests/auth.test.ts"
   ],
@@ -565,6 +574,42 @@
   "components/finance/onboarding/steps.tsx": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/components/onboarding.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-item-card.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-item-form.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-link-row.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-remove-item.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-run-summary.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-settings.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-setup-notice.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-sync-panel.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "components/finance/open-finance/open-finance-workspace.tsx": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
   ],
   "components/finance/operational-portfolio-view.tsx": [
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx"
@@ -1362,6 +1407,10 @@
   "hooks/use-onboarding-flow.ts": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/components/onboarding.cases.tsx"
+  ],
+  "hooks/use-open-finance.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
   ],
   "lib/auth/client.ts": [
     "tests/auth-client.test.ts",
@@ -2346,6 +2395,114 @@
     "tests/unit/app/api/transactions/route.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
+  "lib/db/schema/pluggy.ts": [
+    "tests/accounts.test.ts",
+    "tests/auth-demo-isolation.test.ts",
+    "tests/auth-users.test.ts",
+    "tests/auth.test.ts",
+    "tests/budgets.test.ts",
+    "tests/categories.test.ts",
+    "tests/category-spending.test.ts",
+    "tests/content-encryption.test.ts",
+    "tests/credit-card.test.ts",
+    "tests/dashboard-comparisons.test.ts",
+    "tests/dashboard-data.test.ts",
+    "tests/dashboard.test.ts",
+    "tests/database-sync-route.test.ts",
+    "tests/demo-mode.test.ts",
+    "tests/encrypted-money.test.ts",
+    "tests/expense-groups.test.ts",
+    "tests/finance-ui.test.ts",
+    "tests/frontend/app/(finance)/account/page.cases.tsx",
+    "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
+    "tests/frontend/app/(finance)/calculators/page.cases.tsx",
+    "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
+    "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
+    "tests/frontend/app/(finance)/goals/page.cases.tsx",
+    "tests/frontend/app/(finance)/help/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/page.cases.tsx",
+    "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
+    "tests/frontend/app/(finance)/layout.cases.tsx",
+    "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
+    "tests/frontend/app/(finance)/recurring/page.cases.tsx",
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/app/(finance)/transactions/page.cases.tsx",
+    "tests/frontend/components/auth/user-controls.cases.tsx",
+    "tests/frontend/components/finance/app-shell.cases.tsx",
+    "tests/frontend/components/finance/budgets.cases.tsx",
+    "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
+    "tests/frontend/components/finance/calculators/income-calculator.cases.tsx",
+    "tests/frontend/components/finance/calculators/income-deductions.cases.tsx",
+    "tests/frontend/components/finance/credit-card-view.cases.tsx",
+    "tests/frontend/components/finance/dashboard.cases.tsx",
+    "tests/frontend/components/finance/expense-groups-view.cases.tsx",
+    "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
+    "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
+    "tests/frontend/components/finance/money-input.cases.tsx",
+    "tests/frontend/components/finance/monthly-summary.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx",
+    "tests/frontend/components/finance/privacy/privacy.cases.tsx",
+    "tests/frontend/components/finance/recurring-auto-generator.cases.tsx",
+    "tests/frontend/components/finance/report-export.cases.tsx",
+    "tests/frontend/components/finance/reports.cases.tsx",
+    "tests/frontend/components/finance/setup-dialogs.cases.tsx",
+    "tests/frontend/components/finance/sidebar-footer.cases.tsx",
+    "tests/frontend/components/finance/sidebar-navigation.cases.tsx",
+    "tests/frontend/components/finance/transaction-dialog.cases.tsx",
+    "tests/frontend/components/onboarding.cases.tsx",
+    "tests/frontend/components/ui/chart.cases.tsx",
+    "tests/frontend/components/ui/month-picker-field.cases.tsx",
+    "tests/goals-api.test.ts",
+    "tests/goals.test.ts",
+    "tests/income-calculators.test.ts",
+    "tests/investment-operations.test.ts",
+    "tests/investment-portfolio.test.ts",
+    "tests/investments.test.ts",
+    "tests/mcp.test.ts",
+    "tests/money-input.test.ts",
+    "tests/monthly-retrospective-data.test.ts",
+    "tests/monthly-retrospective.test.ts",
+    "tests/onboarding-api.test.ts",
+    "tests/onboarding.test.ts",
+    "tests/pluggy-client.test.ts",
+    "tests/pluggy-sync.test.ts",
+    "tests/projected-balance-query.test.ts",
+    "tests/projected-balance.test.ts",
+    "tests/recurring-calendar.test.ts",
+    "tests/recurring.test.ts",
+    "tests/report-csv.test.ts",
+    "tests/report-daily-expenses.test.ts",
+    "tests/report-export-demo.test.ts",
+    "tests/report-loading.test.ts",
+    "tests/reports.test.ts",
+    "tests/transaction-navigation.test.ts",
+    "tests/transaction-reduction.test.ts",
+    "tests/transactions.test.ts",
+    "tests/transfers.test.ts",
+    "tests/unit/app/actions/budgets.test.ts",
+    "tests/unit/app/actions/finance.test.ts",
+    "tests/unit/app/api/accounts/route.test.ts",
+    "tests/unit/app/api/credit-card/bills/[invoiceMonth]/payments/route.test.ts",
+    "tests/unit/app/api/credit-card/bills/route.test.ts",
+    "tests/unit/app/api/credit-card/charges/[id]/route.test.ts",
+    "tests/unit/app/api/credit-card/charges/route.test.ts",
+    "tests/unit/app/api/goals/[id]/allocations/route.test.ts",
+    "tests/unit/app/api/goals/[id]/contributions/route.test.ts",
+    "tests/unit/app/api/goals/[id]/route.test.ts",
+    "tests/unit/app/api/goals/route.test.ts",
+    "tests/unit/app/api/import/financial-json/route.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts",
+    "tests/unit/app/api/projected-balance/route.test.ts",
+    "tests/unit/app/api/reports/export/route.test.ts",
+    "tests/unit/app/api/reports/route.test.ts",
+    "tests/unit/app/api/transactions/route.test.ts",
+    "tests/unit/lib/finance-command-catalog.test.ts",
+    "tests/unit/lib/server/investment-operations.test.ts"
+  ],
   "lib/db/user-schema.ts": [
     "tests/accounts.test.ts",
     "tests/auth-users.test.ts",
@@ -2848,6 +3005,10 @@
     "tests/frontend/components/finance/sidebar-footer.cases.tsx",
     "tests/frontend/components/finance/sidebar-navigation.cases.tsx"
   ],
+  "lib/interfaces/components/open-finance.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
   "lib/interfaces/compound-interest.ts": [
     "tests/compound-interest.test.ts",
     "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
@@ -3182,6 +3343,15 @@
     "tests/onboarding-api.test.ts",
     "tests/onboarding.test.ts"
   ],
+  "lib/interfaces/pluggy.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx",
+    "tests/pluggy-client.test.ts",
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
   "lib/interfaces/projected-balance-server.ts": [
     "tests/demo-mode.test.ts",
     "tests/finance-ui.test.ts",
@@ -3367,6 +3537,16 @@
     "tests/frontend/components/onboarding.cases.tsx",
     "tests/onboarding-api.test.ts",
     "tests/onboarding.test.ts"
+  ],
+  "lib/pluggy-account-rules.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts"
+  ],
+  "lib/pluggy-ui.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx"
   ],
   "lib/projected-balance-calendar.ts": [
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -3860,6 +4040,78 @@
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/onboarding-api.test.ts",
     "tests/onboarding.test.ts"
+  ],
+  "lib/server/pluggy/client.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/pluggy-client.test.ts",
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/config.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/errors.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/pluggy-client.test.ts",
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/inputs.ts": [
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/items.ts": [
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts"
+  ],
+  "lib/server/pluggy/links.ts": [
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts"
+  ],
+  "lib/server/pluggy/remote.ts": [
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/route.ts": [
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/schemas.ts": [
+    "tests/frontend/app/(finance)/settings/page.cases.tsx",
+    "tests/frontend/components/finance/open-finance.cases.tsx",
+    "tests/pluggy-client.test.ts",
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/steps/account-check.ts": [
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/steps/item-status.ts": [
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/sync-runs.ts": [
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/sync.ts": [
+    "tests/pluggy-sync.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
   ],
   "lib/server/projected-balance.ts": [
     "tests/demo-mode.test.ts",

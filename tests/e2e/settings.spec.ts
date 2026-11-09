@@ -32,3 +32,10 @@ test("account creation, editing and archiving persist across pages", async ({
   await page.reload();
   await expect(card).toContainText("Arquivada");
 });
+
+test("keeps Open Finance unavailable in demo mode", async ({ page, request }) => {
+  await page.goto("/settings");
+  await expect(page.getByRole("tab", { name: "Contas", exact: true })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Open Finance", exact: true })).toHaveCount(0);
+  expect((await request.get("/api/pluggy/sync")).status()).toBe(404);
+});

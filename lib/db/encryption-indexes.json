@@ -32,5 +32,14 @@
   ],
   "monthly_budgets": [
     "competence_month"
+  ],
+  "pluggy_items": [
+    "external_item_id"
+  ],
+  "pluggy_account_links": [
+    "external_account_id"
+  ],
+  "pluggy_import_ledger": [
+    "fingerprint"
   ]
 }

@@ -12,3 +12,5 @@ export { type AccountType,type AllocationType,type CategoryGroup,type CreditCard
 export { authorizedUsers, userOnboarding } from "./user-schema";
 
 export { monthlyBudgets } from "./schema/budgets";
+export { pluggyAccountKinds, pluggyLedgerOutcomes, pluggySyncRunStatuses } from "./schema/enums";
+export { pluggyAccountLinks, pluggyImportLedger, pluggyItems, pluggySyncRuns } from "./schema/pluggy";

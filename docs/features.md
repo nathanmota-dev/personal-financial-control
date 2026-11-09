@@ -336,7 +336,8 @@ As ações cobrem:
 - Não há cotação automática de ações ou FIIs.
 - A carteira atual registra o valor total da posição, não cada compra e venda do ativo.
 - Não há cálculo fiscal, imposto de renda ou processamento completo de eventos corporativos.
-- Não há integração automática com corretoras ou Open Finance em produção.
+- Não há integração automática com corretoras.
+- A integração Open Finance via MeuPluggy conecta bancos e vincula contas, mas ainda não importa lançamentos, faturas ou investimentos. Consulte `open-finance.md`.
 - Não há módulo específico para empréstimos e financiamentos.
 
 O plano para evoluir especificamente a carteira de investimentos está documentado em `PLANO_MODULO_INVESTIMENTOS.md`, na raiz do projeto.

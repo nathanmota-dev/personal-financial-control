@@ -131,3 +131,6 @@ export const investmentQuoteProviders = ["manual", "brapi"] as const;
 export const investmentMarketStates = ["regular", "closed", "delayed", "unknown"] as const;
 
 export const investmentValuationSources = ["market_quote", "manual_balance"] as const;
+export const pluggyAccountKinds = ["bank", "credit"] as const;
+export const pluggySyncRunStatuses = ["running", "success", "partial", "failed"] as const;
+export const pluggyLedgerOutcomes = ["created", "matched", "skipped", "review"] as const;

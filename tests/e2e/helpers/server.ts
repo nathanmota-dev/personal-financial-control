@@ -48,7 +48,7 @@ export async function startFinanceServer(authenticated = false): Promise<Finance
     }
     const child = spawn(
       process.execPath,
-      ["--import", path.join(root, "tests/e2e/helpers/brapi.mjs"), ...(authenticated ? ["--import", path.join(root, "tests/e2e/helpers/firebase.mjs")] : []), "server.js"],
+      ["--import", path.join(root, "tests/e2e/helpers/brapi.mjs"), ...(authenticated ? ["--import", path.join(root, "tests/e2e/helpers/firebase.mjs"), "--import", path.join(root, "tests/e2e/helpers/pluggy.mjs")] : []), "server.js"],
       {
         cwd: directory,
         env: {
@@ -64,6 +64,7 @@ export async function startFinanceServer(authenticated = false): Promise<Finance
             FIREBASE_PROJECT_ID: "onboarding-test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "onboarding-test",
             NEXT_PUBLIC_FIREBASE_API_KEY: "test", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test",
             FIREBASE_CLIENT_EMAIL: "test@example.test", FIREBASE_PRIVATE_KEY: "test",
+            PLUGGY_CLIENT_ID: "e2e-client", PLUGGY_CLIENT_SECRET: "e2e-secret",
           } : {}),
           TOKEN: "e2e-unused-token",
           DATA_ENCRYPTION_KEY: Buffer.alloc(32, 9).toString("base64"),

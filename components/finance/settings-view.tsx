@@ -6,6 +6,7 @@ import { SettingsViewTabsContent1 } from "./settings-view-settings-view-tabs-con
 import { SettingsViewTabsContent2 } from "./settings-view-settings-view-tabs-content2";
 
 import { McpTokenSettings } from "@/components/auth/mcp-token-settings";
+import { OpenFinanceSettings } from "@/components/finance/open-finance/open-finance-settings";
 import { SecuritySettings } from "@/components/auth/security-settings";
 import { PageHeader } from "@/components/finance/page-header";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
@@ -14,6 +15,7 @@ export function SettingsView({
   accounts,
   categories,
   security,
+  openFinance,
 }: SettingsViewProps) {
   const categoriesByGroup = useMemo(
     () =>
@@ -36,6 +38,7 @@ export function SettingsView({
         <TabsList aria-label="Seções das configurações" className="max-w-full justify-start overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsTrigger value="accounts" className="shrink-0 px-3">Contas</TabsTrigger>
           <TabsTrigger value="categories" className="shrink-0 px-3">Categorias</TabsTrigger>
+          {openFinance ? <TabsTrigger value="open-finance" className="shrink-0 px-3">Open Finance</TabsTrigger> : null}
           {security ? <TabsTrigger value="security" className="shrink-0 px-3">Segurança</TabsTrigger> : null}
           {security ? <TabsTrigger value="mcp" className="shrink-0 px-3">MCP</TabsTrigger> : null}
         </TabsList>
@@ -43,6 +46,12 @@ export function SettingsView({
         <SettingsViewTabsContent1 accounts={accounts} />
 
         <SettingsViewTabsContent2 categoriesByGroup={categoriesByGroup} />
+
+        {openFinance ? (
+          <TabsContent value="open-finance">
+            <OpenFinanceSettings configured={openFinance.configured} accounts={accounts} />
+          </TabsContent>
+        ) : null}
 
         {security ? (
           <TabsContent value="security">

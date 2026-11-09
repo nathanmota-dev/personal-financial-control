@@ -287,5 +287,50 @@
     "amount_cents": "integer",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "pluggy_items": {
+    "id": "technical",
+    "external_item_id": "text",
+    "label": "text",
+    "connector_name": "text",
+    "status": "text",
+    "collected_at": "timestamp",
+    "next_auto_sync_at": "timestamp",
+    "last_synced_at": "timestamp",
+    "last_error_code": "text",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "pluggy_account_links": {
+    "id": "technical",
+    "item_id": "technical",
+    "external_account_id": "text",
+    "account_id": "technical",
+    "remote_name": "text",
+    "kind": "text",
+    "cutoff_date": "text",
+    "is_enabled": "boolean",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "pluggy_sync_runs": {
+    "id": "technical",
+    "started_at": "timestamp",
+    "finished_at": "timestamp",
+    "status": "text",
+    "summary": "text",
+    "error_code": "text",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "pluggy_import_ledger": {
+    "id": "technical",
+    "fingerprint": "text",
+    "outcome": "text",
+    "local_table": "text",
+    "local_id": "text",
+    "last_seen_at": "timestamp",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }
