@@ -9,6 +9,8 @@ const originalValues = {
   TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
   TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
   TOKEN: process.env.TOKEN,
+  PLUGGY_CLIENT_ID: process.env.PLUGGY_CLIENT_ID,
+  PLUGGY_CLIENT_SECRET: process.env.PLUGGY_CLIENT_SECRET,
 };
 
 afterEach(() => {
@@ -22,6 +24,25 @@ afterEach(() => {
 });
 
 describe("server environment", () => {
+  it("treats missing or blank Pluggy credentials as not configured", () => {
+    process.env.DATA_ENCRYPTION_KEY = "test-key";
+    delete process.env.PLUGGY_CLIENT_ID;
+    process.env.PLUGGY_CLIENT_SECRET = "  ";
+
+    const env = getServerEnv();
+
+    expect(env.PLUGGY_CLIENT_ID).toBeUndefined();
+    expect(env.PLUGGY_CLIENT_SECRET).toBeUndefined();
+  });
+
+  it("reads and trims Pluggy credentials", () => {
+    process.env.DATA_ENCRYPTION_KEY = "test-key";
+    process.env.PLUGGY_CLIENT_ID = " client ";
+    process.env.PLUGGY_CLIENT_SECRET = "secret";
+
+    expect(getServerEnv()).toMatchObject({ PLUGGY_CLIENT_ID: "client", PLUGGY_CLIENT_SECRET: "secret" });
+  });
+
   it("defaults demo mode to false", () => {
     delete process.env.DEMO_MODE;
     process.env.DATA_ENCRYPTION_KEY = "test-key";

@@ -29,6 +29,28 @@ describe("app/(finance)/settings/page", () => {
     await user.click(screen.getByRole("tab", { name: "MCP" }));
     expect(screen.getByRole("button", { name: "Gerar token" })).toBeVisible();
   });
+  it("hides the Open Finance tab in demo mode", async () => {
+    vi.stubEnv("DEMO_MODE", "true");
+    vi.mocked(requirePageSession).mockResolvedValueOnce({
+      user: { lockTimeoutMinutes: 15, lockOnClose: true, mcpTokenHash: null },
+    } as never);
+    renderUI(await Page());
+    expect(screen.queryByRole("tab", { name: "Open Finance" })).toBeNull();
+    vi.unstubAllEnvs();
+  });
+  it("explains the setup in the Open Finance tab when credentials are missing", async () => {
+    vi.stubEnv("DEMO_MODE", "false");
+    vi.stubEnv("PLUGGY_CLIENT_ID", "");
+    vi.stubEnv("PLUGGY_CLIENT_SECRET", "");
+    vi.mocked(requirePageSession).mockResolvedValueOnce({
+      user: { lockTimeoutMinutes: 15, lockOnClose: true, mcpTokenHash: null },
+    } as never);
+    const { user } = renderUI(await Page());
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Categorias", "Open Finance", "Segurança", "MCP"]);
+    await user.click(screen.getByRole("tab", { name: "Open Finance" }));
+    expect(screen.getByText("Open Finance não configurado")).toBeVisible();
+    vi.unstubAllEnvs();
+  });
   it("renders a usable fallback after data loading fails", async () => {
     vi.mocked(listAccounts).mockRejectedValueOnce(new Error("offline"));
     renderUI(await Page());

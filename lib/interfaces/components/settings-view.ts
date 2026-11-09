@@ -22,4 +22,5 @@ export type SettingsViewProps = {
   accounts: AccountRow[];
   categories: CategoryRow[];
   security?: SecuritySettingsProps;
+  openFinance?: { configured: boolean };
 };

@@ -5,6 +5,11 @@ const loadEnvConfig = nextEnv.loadEnvConfig ?? (nextEnv as unknown as { default:
 
 loadEnvConfig(process.cwd());
 
+const optionalCredential = z
+  .string()
+  .transform((value) => value.trim() || undefined)
+  .optional();
+
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DEMO_MODE: z
@@ -40,6 +45,8 @@ const serverEnvSchema = z.object({
   DATA_ENCRYPTION_KEY: z.string().min(1).optional(),
   BRAPI_API_TOKEN: z.string().min(1).optional(),
   INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES: z.coerce.number().int().nonnegative().default(30),
+  PLUGGY_CLIENT_ID: optionalCredential,
+  PLUGGY_CLIENT_SECRET: optionalCredential,
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & {
