@@ -4,11 +4,7 @@ A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma co
 
 ## Configurar
 
-1. Autorize seus bancos em [meu.pluggy.ai](https://meu.pluggy.ai).
-2. Em [dashboard.pluggy.ai](https://dashboard.pluggy.ai), crie uma aplicação e copie o `client_id` e o `client_secret`.
-3. Preencha `PLUGGY_CLIENT_ID` e `PLUGGY_CLIENT_SECRET` no `.env` e reinicie o app. Sem as duas variáveis, a aba explica o que falta e o restante do app funciona normalmente.
-4. Execute `npm run db:migrate` para criar as tabelas da integração.
-5. Em **Configurações > Open Finance**, adicione cada Item ID com um nome para o banco e vincule as contas remotas às contas locais.
+O passo a passo está em [Conectar seus bancos](../README.md#conectar-seus-bancos-open-finance). Sem `PLUGGY_CLIENT_ID` e `PLUGGY_CLIENT_SECRET`, a aba explica o que falta e o restante do app funciona normalmente.
 
 ## Vínculos
 

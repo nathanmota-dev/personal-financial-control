@@ -1,108 +1,86 @@
 # Personal Financial Control
 
 Sistema web de finanças pessoais para organizar contas, receitas, despesas,
-transferências, cartões de crédito, investimentos e metas. O painel reúne o
-saldo, os gastos por categoria e as projeções financeiras.
+transferências, cartões de crédito, investimentos e metas, com importação
+automática dos dados do banco via Open Finance.
 
-A validação e a promoção automática das referências de qualidade e performance
-estão descritas em [Workflow baselines](docs/workflow-baselines.md).
+- [Experimentar sem configurar nada](#experimentar-sem-configurar-nada)
+- [Configuração](#configuração)
+- [Como executar](#como-executar)
+- [Conectar seus bancos (Open Finance)](#conectar-seus-bancos-open-finance)
+- [Documentação](#documentação)
 
-## Configuração inicial
+## Experimentar sem configurar nada
 
-Na raiz do projeto, copie o arquivo de exemplo:
+O modo demo não precisa de banco nem de Firebase. Os dados são simulados e as
+alterações são temporárias.
+
+```bash
+cp .example.env .env   # depois defina DEMO_MODE="true" no .env
+npm ci
+npm run dev
+```
+
+Acesse <http://localhost:3000> e clique em **Explorar demo**.
+
+## Configuração
 
 ```bash
 cp .example.env .env
+openssl rand -base64 32   # gera o valor de DATA_ENCRYPTION_KEY
 ```
 
-Para usar o sistema com seus dados, preencha no `.env`:
+| Variável | Quando usar | Para quê |
+|---|---|---|
+| `DATA_ENCRYPTION_KEY` | Sempre | Protege os dados financeiros |
+| `NEXT_PUBLIC_FIREBASE_*` e `FIREBASE_*` | Sempre | Login Google, com credenciais do mesmo projeto |
+| `APP_URL` e `APP_URL_DEVELOPMENT` | Sempre | Endereços de produção e de desenvolvimento |
+| `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` | Fora do Docker | Banco de dados |
+| `PLUGGY_CLIENT_ID` e `PLUGGY_CLIENT_SECRET` | Opcional | [Importação dos bancos](#conectar-seus-bancos-open-finance) |
+| `BRAPI_API_TOKEN` | Opcional | Cotações automáticas. Sem ele, informe as cotações à mão |
+| `BROWSER_BIN` | Opcional | Navegador do app Linux (padrão: Google Chrome) |
 
-- `DATA_ENCRYPTION_KEY`: chave base64 de 32 bytes para proteger os dados financeiros;
-- as variáveis Firebase Web e Admin: credenciais do mesmo projeto Firebase;
-- `APP_URL`: endereço usado pelo Docker e pelo app instalado no Linux;
-- `APP_URL_DEVELOPMENT`: endereço usado pelo servidor de desenvolvimento.
+Guarde a `DATA_ENCRYPTION_KEY` e não a troque: outra chave não consegue ler os
+dados já gravados. Não versione o `.env`.
 
-Você pode gerar a chave de criptografia com:
+**Firebase:** em Authentication, habilite o login Google e autorize `localhost`,
+`127.0.0.1` e o domínio de produção, se houver.
 
-```bash
-openssl rand -base64 32
-```
+**Acesso:** não há cadastro público. Depois das migrações, inclua os e-mails
+permitidos na tabela `authorized_users`.
 
-Guarde essa chave e mantenha o mesmo valor enquanto usar o banco. Trocá-la impede
-a leitura dos dados já criptografados. Não versione o `.env`.
+## Como executar
 
-No Firebase Authentication, habilite o login Google e autorize os domínios
-`localhost`, `127.0.0.1` e o domínio de produção, se houver. Após aplicar as
-migrações, cadastre no banco os e-mails permitidos na tabela `authorized_users`.
-O sistema não oferece cadastro público.
-
-Para experimentar sem configurar banco ou Firebase, defina `DEMO_MODE=true` e
-clique em **Explorar demo** na tela de login. Os dados são simulados e as
-alterações são temporárias.
-
-## Instalar com Docker
-
-Requisitos: Docker e Docker Compose.
-
-Com o `.env` configurado, execute:
+### Docker
 
 ```bash
 docker compose up -d --build
 ```
 
 Acesse <http://127.0.0.1:3007>. O container cria o banco SQLite e aplica as
-migrações automaticamente. Os dados ficam no volume
-`personal_financial_control_data`.
+migrações. Os dados ficam no volume `personal_financial_control_data` e são
+preservados por `docker compose down`; `docker compose down -v` apaga o banco.
 
-Para parar o sistema:
+### Aplicativo no Linux
 
-```bash
-docker compose down
-```
-
-Os dados são preservados. Usar `docker compose down -v` também remove o banco.
-
-## Instalar como aplicativo no Linux
-
-Requisitos: Node.js 24, npm e um navegador baseado em Chromium.
-Configure `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` no `.env` para usar o Turso.
-Para acelerar as consultas com uma cópia local sincronizada, veja [Réplica local do Turso](docs/turso-replica.md).
-
-Na raiz do projeto, execute:
+Requer Node.js 24, npm, um navegador baseado em Chromium e XWayland em sessões
+Wayland.
 
 ```bash
 chmod +x ./*.sh
 ./install-app.sh
 ```
 
-Abra **Finance** no menu de aplicativos. O primeiro início instala as
-dependências, prepara o build e aplica as migrações. O servidor é encerrado ao
-fechar a janela.
+Abra **Finance** no menu de aplicativos, ou rode `./open-app.sh`. O primeiro
+início prepara o build e aplica as migrações, e o servidor é encerrado ao fechar
+a janela. Se mover o projeto de pasta, rode `./install-app.sh` de novo.
 
-O launcher usa X11 (XWayland em sessões Wayland) para que a identificação da
-janela corresponda ao atalho Finance e o ícone apareça corretamente na dock/dash.
-Em sessões Wayland, mantenha o XWayland instalado.
+Se não abrir, veja os logs em `.local/runtime/`: `launcher.log` (build e
+migrações), `server.log` (Next.js) e `browser.log` (navegador).
 
-Para abrir diretamente pelo terminal:
+### Desenvolvimento
 
-```bash
-./open-app.sh
-```
-
-O navegador padrão é o Google Chrome. Para usar Chromium, altere
-`BROWSER_BIN="chromium"` no `.env`. Se mover o projeto para outra pasta,
-execute `./install-app.sh` novamente.
-
-Se o aplicativo não abrir, consulte `.local/runtime/launcher.log` (inicialização,
-build e migrações), `.local/runtime/server.log` (Next.js) e
-`.local/runtime/browser.log` (navegador). O launcher resolve o caminho real do
-cache para carregar o SWC mesmo quando `~/.cache` é um link simbólico, respeitando
-uma configuração explícita de `SWC_NATIVE_BINDING_CACHE`.
-
-## Executar em desenvolvimento
-
-Requisitos: Node.js 24 e npm. Configure o `.env`, incluindo as credenciais do
-Turso, e execute:
+Requer Node.js 24 e npm.
 
 ```bash
 npm ci
@@ -110,34 +88,59 @@ npm run db:migrate
 npm run dev
 ```
 
-Acesse <http://localhost:3000>, conforme `APP_URL_DEVELOPMENT`. No modo demo,
-as migrações e a configuração do Turso não são necessárias.
+Acesse <http://localhost:3000>.
 
-## Cotações de investimentos
+## Conectar seus bancos (Open Finance)
 
-Para habilitar a atualização automática de cotações, preencha `BRAPI_API_TOKEN`
-no `.env`. Sem o token, você pode informar as cotações manualmente.
+O app importa lançamentos, compras no cartão, faturas e o valor dos investimentos
+pelo [MeuPluggy](https://meu.pluggy.ai). A configuração tem três partes.
 
-## Sessão local e PIN
+> O MeuPluggy só pode ser ligado à sua conta de desenvolvedor durante o teste de
+> 15 dias da Pluggy. Depois disso, as conexões já feitas continuam funcionando.
 
-Após o login Google, defina um PIN numérico de 6 dígitos. O Google é consultado
-somente no login; as requisições seguintes verificam cookies HMAC e autorização
-no banco local. A sessão dura 14 dias. Cookies Firebase antigos exigem novo login.
-Execute a migração normal (`npm run db:migrate`) antes de iniciar esta versão.
+**1. Na Pluggy: conecte os bancos e pegue as credenciais**
 
-Em **Configurações → Segurança**, troque o PIN, ajuste a inatividade de 1 a 120
-minutos (padrão: 15) e escolha se o app trava ao fechar (padrão: ligado).
-O heartbeat respeita um intervalo de 1 minuto; com timeout de apenas 1 minuto,
-usamos 30 segundos para evitar bloqueio durante interação contínua.
-O reinício do processo invalida o desbloqueio quando essa opção está ligada.
-Evite “continuar de onde parou” no perfil dedicado do navegador: a restauração
-pode conservar cookies de sessão se o servidor não for reiniciado.
+1. Crie uma conta em [meu.pluggy.ai](https://meu.pluggy.ai) e conecte seus bancos.
+2. Crie uma conta de desenvolvedor em [dashboard.pluggy.ai](https://dashboard.pluggy.ai).
+3. Nas configurações da sua aplicação, adicione o conector **MeuPluggy** à lista de conectores.
+4. Em **Applications**, crie uma aplicação de desenvolvimento e copie o **Client ID** e o **Client Secret**.
+5. Abra a aplicação, clique em **Ir para Demo** e autorize o MeuPluggy. Repita para cada banco.
+6. Ainda no Demo, no menu de três pontos no canto superior direito, use **Copiar Item ID**. Guarde um Item ID por banco.
 
-Cinco PINs errados invalidam todas as sessões e exigem login Google novamente.
-“Esqueci o PIN” encerra a sessão e exige novo login Google antes de definir outro.
-“Sair” invalida todas as sessões locais. O nome do perfil é salvo localmente.
-O PIN protege contra acesso casual; não substitui o bloqueio do sistema operacional
-nem cifra os dados com uma chave derivada do PIN. O modo demo continua sem PIN.
+**2. No `.env`: informe as credenciais**
 
-O MCP usa um token próprio gerado em Segurança, independente do bloqueio e logout.
-Veja [a configuração do MCP](docs/mcp.md).
+```dotenv
+PLUGGY_CLIENT_ID="..."
+PLUGGY_CLIENT_SECRET="..."
+```
+
+Reinicie o app e, fora do launcher e do Docker, rode `npm run db:migrate`. Os Item
+IDs não vão no `.env`: eles são cadastrados na próxima etapa.
+
+**3. No app: em Configurações > Open Finance**
+
+1. Crie antes as contas locais em que os dados vão entrar. O cartão precisa ser uma conta de crédito com dia de fechamento.
+2. Em **Adicionar banco**, informe um nome e o Item ID de cada banco.
+3. Vincule cada conta do banco a uma conta local e defina a data de corte, o primeiro dia importado.
+4. Informe seu nome completo, seu CPF e, se quiser, uma conta em **Outras contas próprias**. Sem isso, transferências entre as suas contas contam como receita e despesa.
+5. Em **Investimentos**, vincule cada posição a um ativo ou crie um novo.
+6. Clique em **Sincronizar bancos**.
+7. Escolha as categorias em **Pendências de categoria**. O app aprende e aplica nas próximas importações.
+
+O botão lê o que a Pluggy já coletou, e o MeuPluggy atualiza os dados uma vez por
+dia. Se você já tem lançamentos manuais no período, faça a
+[migração do histórico](docs/open-finance.md#migração-do-histórico-cutover) antes
+de sincronizar, para não duplicar dados.
+
+## Documentação
+
+| Assunto | Documento |
+|---|---|
+| Funcionalidades | [docs/features.md](docs/features.md) |
+| Regras do Open Finance | [docs/open-finance.md](docs/open-finance.md) |
+| Sessão local e PIN | [docs/sessao-e-pin.md](docs/sessao-e-pin.md) |
+| Privacidade dos dados | [docs/FINANCIAL-PRIVACY.md](docs/FINANCIAL-PRIVACY.md) |
+| Réplica local do Turso | [docs/turso-replica.md](docs/turso-replica.md) |
+| Integração MCP | [docs/mcp.md](docs/mcp.md) |
+| Exportação de relatórios | [docs/reports-csv.md](docs/reports-csv.md) |
+| Quality gate e baselines | [docs/workflow-baselines.md](docs/workflow-baselines.md) |
