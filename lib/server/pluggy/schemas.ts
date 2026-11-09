@@ -18,6 +18,7 @@ export const pluggyAccountSchema = z.object({
   name: z.string().min(1),
   marketingName: optionalText,
   number: optionalText,
+  balance: z.number().nullish(),
 });
 
 const pluggyPartySchema = z.looseObject({

@@ -30,6 +30,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "db:reset": "tsx scripts/reset.ts",
     "import:itau-card": "tsx scripts/import-itau-card.ts",
+    "pluggy:cutover": "tsx --conditions=react-server scripts/pluggy-cutover.ts",
     "db:bundle-migrator": "esbuild scripts/migrate.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/migrate.mjs",
     "test:coverage:target": "npm run test:coverage:ci && tsx tests/coverage/check-target.ts",
     "test:e2e:inspect": "tsx tests/e2e/helpers/inspect.ts"
