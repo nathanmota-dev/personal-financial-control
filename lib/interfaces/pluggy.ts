@@ -84,7 +84,11 @@ export type PluggyAttentionReason =
   | "card_bill_paid_changed"
   | "card_payment_unlinked"
   | "card_payment_ambiguous"
-  | "card_payment_outside_links";
+  | "card_payment_outside_links"
+  | "investment_total_withdrawal"
+  | "investment_below_allocations"
+  | "investment_quote_difference"
+  | "investment_missing_value";
 
 export type PluggyAttentionItem = {
   reason: PluggyAttentionReason;

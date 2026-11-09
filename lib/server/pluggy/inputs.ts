@@ -35,6 +35,13 @@ export const pluggyCategoryRuleInputSchema = z.object({
   categoryId: recordId,
 });
 
+/** A null `holdingId` creates a new holding from the remote position. */
+export const pluggyInvestmentLinkInputSchema = z.object({
+  itemId: recordId,
+  externalAssetId: z.string().trim().min(1).max(100),
+  holdingId: recordId.nullable(),
+});
+
 export const pluggySyncRequestSchema = z.object({ dryRun: z.boolean().default(false) });
 export const pluggyItemIdSchema = recordId;
 
@@ -43,3 +50,4 @@ export type PluggyLinkInput = z.infer<typeof pluggyLinkInputSchema>;
 export type PluggyLinkUpdate = z.infer<typeof pluggyLinkUpdateSchema>;
 export type PluggyIdentityInput = z.infer<typeof pluggyIdentityInputSchema>;
 export type PluggyCategoryRuleInput = z.infer<typeof pluggyCategoryRuleInputSchema>;
+export type PluggyInvestmentLinkInput = z.infer<typeof pluggyInvestmentLinkInputSchema>;

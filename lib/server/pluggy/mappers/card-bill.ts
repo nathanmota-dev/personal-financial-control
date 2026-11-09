@@ -3,7 +3,7 @@ import type { PluggyBillPaymentEntry, PluggyMappedCardBill, PluggyMappedCardBill
 import { toAmountCents } from "./bank-transaction";
 
 /** Bill dates are date-only values at midnight UTC, and converting them would move them to the previous day. */
-function utcDay(value: string | null | undefined) {
+export function utcDay(value: string | null | undefined) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10);

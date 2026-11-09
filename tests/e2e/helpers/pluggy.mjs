@@ -2,6 +2,7 @@
 const previousFetch = globalThis.fetch;
 const json = (body) => new Response(JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
 const CARD_ITEM_ID = "99999999-2222-3333-4444-555555555555";
+const INVESTMENT_ITEM_ID = "77777777-2222-3333-4444-555555555555";
 
 /** Due today and closed a week ago, so the checking payment stubbed below always settles it. */
 function cardBill() {
@@ -25,6 +26,10 @@ globalThis.fetch = async function (input, init) {
   if (url.pathname === "/accounts") {
     if (url.searchParams.get("itemId") === CARD_ITEM_ID) return json({ results: [{ id: "remote-card", type: "CREDIT", name: "Cartão remoto", number: "0099" }], totalPages: 1 });
     return json({ results: [{ id: "remote-checking", type: "BANK", name: "Conta remota", number: "0012345" }], totalPages: 1 });
+  }
+  if (url.pathname === "/investments") {
+    if (url.searchParams.get("itemId") !== INVESTMENT_ITEM_ID) return json({ results: [], totalPages: 1 });
+    return json({ results: [{ id: "e2e-investment", name: "CDB E2E", type: "FIXED_INCOME", subtype: "CDB", balance: 1234.56, amount: 1300, date: "2026-07-15T00:00:00.000Z", issuer: "Banco E2E", status: "ACTIVE" }], totalPages: 1 });
   }
   if (url.pathname === "/bills") return json({ results: [cardBill()], totalPages: 1 });
   if (url.pathname === "/v2/transactions") {

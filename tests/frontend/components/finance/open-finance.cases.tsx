@@ -7,6 +7,7 @@ import { HIDDEN_FINANCIAL_VALUE } from "@/lib/financial-privacy";
 import type { AccountRow, CategoryRow } from "@/lib/interfaces/components/settings-view";
 import type { PluggyIdentityView, PluggyItemView, PluggyLinkView, PluggySyncRunView } from "@/lib/interfaces/pluggy";
 import type { PluggyPendingCategoryGroup } from "@/lib/interfaces/pluggy-category-rules";
+import type { PluggyInvestmentOverview, PluggyInvestmentView } from "@/lib/interfaces/pluggy-investments";
 import { renderUI } from "@/tests/frontend/helpers";
 
 const accounts: AccountRow[] = [
@@ -33,17 +34,22 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 
 const emptyIdentity: PluggyIdentityView = { names: [], cpfMasked: null, otherOwnAccountId: null };
 
-type Api = { items?: PluggyItemView[]; links?: PluggyLinkView[]; run?: PluggySyncRunView | null; running?: boolean; identity?: PluggyIdentityView; pending?: PluggyPendingCategoryGroup[]; onPost?: (url: string, body: unknown, method: string) => Response | Promise<Response> };
+const emptyInvestments: PluggyInvestmentOverview = { investments: [], holdings: [], notices: [] };
+const investment: PluggyInvestmentView = { itemId: "item-1", itemLabel: "Banco Teste", externalAssetId: "asset-1", name: "CDB Banco", institutionName: "Emissor", currentValueCents: 123456, valueAsOf: "2026-07-15", withdrawn: false, link: null, suggestedHoldingId: null };
+const holdingOptions = [{ id: "holding-1", name: "CDB local", institutionName: null }, { id: "holding-2", name: "Tesouro local", institutionName: null }];
 
-function stubApi({ items = [], links = [], run = null, running = false, identity = emptyIdentity, pending = [], onPost }: Api) {
+type Api = { investments?: PluggyInvestmentOverview; items?: PluggyItemView[]; links?: PluggyLinkView[]; run?: PluggySyncRunView | null; running?: boolean; identity?: PluggyIdentityView; pending?: PluggyPendingCategoryGroup[]; onPost?: (url: string, body: unknown, method: string) => Response | Promise<Response> };
+
+function stubApi({ investments = emptyInvestments, items = [], links = [], run = null, running = false, identity = emptyIdentity, pending = [], onPost }: Api) {
   const calls: { url: string; method: string; body: unknown }[] = [];
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
     const method = init?.method ?? "GET";
     if (method !== "GET") {
       const body = init?.body ? JSON.parse(String(init.body)) : undefined;
       calls.push({ url, method, body });
-      return onPost?.(url, body, method) ?? json({ ok: true });
+      return onPost?.(url, body, method) ?? json(url.includes("/investments") ? { ok: true, ...investments } : { ok: true });
     }
+    if (url.includes("/investments")) return json({ ok: true, ...investments });
     if (url.includes("/identity")) return json({ ok: true, identity });
     if (url.includes("/category-rules")) return json({ ok: true, pending });
     return url.includes("/sync") ? json({ ok: true, run, running }) : json({ ok: true, items, links });
@@ -68,6 +74,99 @@ describe("Open Finance settings", () => {
     expect(within(summary).getByText("Com diferença")).toBeInTheDocument();
     expect(within(summary).getByText(/Diferença R\$/)).toBeInTheDocument();
     expect(within(summary).getAllByText(/Pagamento não vinculado/)).toHaveLength(2);
+  });
+
+  describe("investments", () => {
+    const settings = () => renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
+
+    it("preselects a suggestion and links it", async () => {
+      const calls = stubApi({ items: [item], investments: { investments: [{ ...investment, suggestedHoldingId: "holding-1" }], holdings: holdingOptions, notices: [] } });
+      const { user } = settings();
+      const select = await screen.findByLabelText("Ativo local de CDB Banco");
+      expect(select).toHaveValue("holding-1");
+      expect(screen.getByText("Sugestão")).toBeVisible();
+      await user.click(screen.getByRole("button", { name: "Vincular ativo" }));
+      await waitFor(() => expect(calls).toHaveLength(1));
+      expect(calls[0]).toEqual({ url: "/api/pluggy/investments", method: "POST", body: { itemId: "item-1", externalAssetId: "asset-1", holdingId: "holding-1" } });
+    });
+
+    it("drops the suggestion label when another holding is chosen", async () => {
+      stubApi({ items: [item], investments: { investments: [{ ...investment, suggestedHoldingId: "holding-1" }], holdings: holdingOptions, notices: [] } });
+      const { user } = settings();
+      await user.selectOptions(await screen.findByLabelText("Ativo local de CDB Banco"), "holding-2");
+      expect(screen.queryByText("Sugestão")).toBeNull();
+      expect(screen.getByRole("button", { name: "Vincular ativo" })).toBeEnabled();
+    });
+
+    it("requires a choice to link, and creates a new holding without one", async () => {
+      const calls = stubApi({ items: [item], investments: { investments: [investment], holdings: holdingOptions, notices: [] } });
+      const { user } = settings();
+      expect(await screen.findByRole("button", { name: "Vincular ativo" })).toBeDisabled();
+      await user.click(screen.getByRole("button", { name: "Criar novo ativo" }));
+      await waitFor(() => expect(calls).toHaveLength(1));
+      expect(calls[0].body).toEqual({ itemId: "item-1", externalAssetId: "asset-1", holdingId: null });
+    });
+
+    it("shows a linked position and unlinks it", async () => {
+      const calls = stubApi({ items: [item], investments: { investments: [{ ...investment, link: { holdingId: "holding-1", holdingName: "CDB local" } }], holdings: [], notices: [] } });
+      const { user } = settings();
+      expect(await screen.findByText("Vinculado")).toBeVisible();
+      expect(screen.getByText("CDB local")).toBeVisible();
+      expect(screen.queryByLabelText("Ativo local de CDB Banco")).toBeNull();
+      await user.click(screen.getByRole("button", { name: "Desvincular" }));
+      await waitFor(() => expect(calls).toHaveLength(1));
+      expect(calls[0]).toEqual({ url: "/api/pluggy/investments?holdingId=holding-1", method: "DELETE", body: undefined });
+    });
+
+    it("flags a total withdrawal and blocks creating a position without a value", async () => {
+      stubApi({ items: [item], investments: { investments: [{ ...investment, withdrawn: true, currentValueCents: null }], holdings: [], notices: [] } });
+      settings();
+      expect(await screen.findByText("Resgate total")).toBeVisible();
+      expect(screen.getByText("Saldo não informado")).toBeVisible();
+      expect(screen.getByRole("button", { name: "Criar novo ativo" })).toBeDisabled();
+    });
+
+    it("shows connections without positions and read failures", async () => {
+      stubApi({ items: [item], investments: { investments: [], holdings: [], notices: [{ itemId: "a", label: "Sem produtos", message: "Não informou.", failed: false }, { itemId: "b", label: "Com erro", message: "Indisponível.", failed: true }] } });
+      settings();
+      expect(await screen.findByText(/Não informou\./)).toBeVisible();
+      expect(screen.getByRole("alert")).toHaveTextContent("Com erro: Indisponível.");
+    });
+
+    it("shows the error of a rejected link and of a failed load", async () => {
+      stubApi({ items: [item], investments: { investments: [investment], holdings: holdingOptions, notices: [] }, onPost: () => json({ error: { message: "Este investimento já está vinculado." } }, 409) });
+      const { user } = settings();
+      await user.click(await screen.findByRole("button", { name: "Criar novo ativo" }));
+      expect(await screen.findByText("Este investimento já está vinculado.")).toBeVisible();
+    });
+
+    it("explains a failed load", async () => {
+      vi.stubGlobal("fetch", vi.fn(async (url: string) => url.includes("/investments") ? json({ error: "Falha nos investimentos." }, 502) : url.includes("/sync") ? json({ ok: true, run: null, running: false }) : url.includes("/identity") ? json({ ok: true, identity: emptyIdentity }) : url.includes("/category-rules") ? json({ ok: true, pending: [] }) : json({ ok: true, items: [item], links: [] })));
+      settings();
+      expect(await screen.findByText("Falha nos investimentos.")).toBeVisible();
+    });
+
+    it("clears a choice that left the options", async () => {
+      const calls = stubApi({ items: [item], investments: { investments: [{ ...investment, suggestedHoldingId: "gone" }], holdings: holdingOptions, notices: [] } });
+      settings();
+      expect(await screen.findByLabelText("Ativo local de CDB Banco")).toHaveValue("");
+      expect(screen.getByRole("button", { name: "Vincular ativo" })).toBeDisabled();
+      expect(calls).toHaveLength(0);
+    });
+
+    it("masks position values in privacy mode", async () => {
+      stubApi({ items: [item], investments: { investments: [investment], holdings: holdingOptions, notices: [] } });
+      renderUI(<FinancialPrivacyContext value={{ hidden: true, setHidden: vi.fn() }}><OpenFinanceSettings configured accounts={accounts} categories={categories} /></FinancialPrivacyContext>);
+      await screen.findByLabelText("Ativo local de CDB Banco");
+      expect(screen.queryByText(/1\.234,56/)).toBeNull();
+      expect(screen.getByRole("img", { name: HIDDEN_FINANCIAL_VALUE })).toBeVisible();
+    });
+
+    it("lists position outcomes in the run summary", async () => {
+      stubApi({ items: [item], run: { ...successRun, summary: { ...successRun.summary!, counts: { investmentsUpdated: 2, investmentsQuoted: 1, investmentItemsEmpty: 1 } } } });
+      settings();
+      expect(await screen.findByText("2 investimentos atualizados · 1 ativos cotados mantidos · 1 conexões sem investimentos")).toBeVisible();
+    });
   });
 
   it("explains the setup and calls no API when not configured", () => {

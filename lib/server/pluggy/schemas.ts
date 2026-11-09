@@ -62,7 +62,20 @@ export const pluggyBillSchema = z.looseObject({
   payments: z.array(pluggyBillPaymentSchema).nullish().catch(null),
 });
 
-export const pluggyInvestmentSchema = z.looseObject({ id: z.string().min(1) });
+export const pluggyInvestmentSchema = z.looseObject({
+  id: z.string().min(1),
+  name: optionalText,
+  code: optionalText,
+  isin: optionalText,
+  type: optionalText,
+  subtype: optionalText,
+  // A malformed balance must not reject the page: the position is reported as having no value.
+  balance: z.number().nullish().catch(null),
+  currencyCode: optionalText,
+  date: optionalText,
+  issuer: optionalText,
+  status: optionalText,
+});
 
 export function pluggyPageSchema<T extends z.ZodType>(item: T) {
   return z.object({ results: z.array(item), totalPages: z.number().int().nullish() });
