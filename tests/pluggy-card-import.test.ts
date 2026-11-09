@@ -162,6 +162,16 @@ describe("card purchase import", () => {
     expect((await charges())[0].totalAmountCents).toBe(10002);
   });
 
+  it("stores the amounts and months the bank states and follows them until the invoice is paid", async () => {
+    feed = [part("p1", 1, 2, "2026-04", 50.01), part("p2", 2, 2, null, 50)];
+    await sync();
+    const installments = async () => (await database.db.query.creditCardInstallments.findMany()).sort((left, right) => left.installmentNumber - right.installmentNumber).map((row) => [row.amountCents, row.invoiceMonth]);
+    expect(await installments()).toEqual([[5001, "2026-04"], [5000, "2026-05"]]);
+    feed = [part("p1", 1, 2, "2026-04", 50.01), part("p2", 2, 2, "2026-06", 50)];
+    await sync();
+    expect(await installments()).toEqual([[5001, "2026-04"], [5000, "2026-06"]]);
+  });
+
   it("imports a foreign purchase in the account currency and reports one without it", async () => {
     feed = [record("usd", { amount: 10, currencyCode: "USD", amountInAccountCurrency: 55.5 }, { billId: "bill-2026-04" }), record("usd-2", { amount: 20, currencyCode: "USD" })];
     const run = await sync();

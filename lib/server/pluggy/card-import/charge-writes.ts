@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { pluggyImportLedger } from "@/lib/db/schema";
+import { creditCardInstallments, pluggyImportLedger } from "@/lib/db/schema";
 import type { BankImportLedgerEntry } from "@/lib/interfaces/pluggy-bank-import";
 import type { CardImportScope, PluggyCardCharge, PluggyCardLockSubject, PluggyCardPurchase } from "@/lib/interfaces/pluggy-card-import";
 import { DomainError } from "@/lib/server/errors";
@@ -37,6 +37,19 @@ export async function chargeIsLocked(scope: CardImportScope, subject: PluggyCard
 export async function patchCharge(scope: CardImportScope, charge: PluggyCardCharge, patch: ChargePatch) {
   await scope.context.write((db) => updateCreditCardCharge({ id: charge.id, firstInvoiceMonth: charge.firstInvoiceMonth, ...patch, notes: patch.notes === undefined ? charge.notes : patch.notes, importFingerprint: patch.importFingerprint ?? charge.importFingerprint ?? undefined }, db));
   Object.assign(charge, patch);
+}
+
+/** A pending installment gets its real amount and month when billed, so a stored one follows the bank unless its invoice is already paid. */
+export async function syncInstallmentPlan(scope: CardImportScope, charge: PluggyCardCharge, purchase: PluggyCardPurchase) {
+  const { installmentPlan: plan } = purchase;
+  if (!plan) return;
+  const stored = await scope.context.db.query.creditCardInstallments.findMany({ where: eq(creditCardInstallments.chargeId, charge.id) });
+  const changes = stored.filter((row) => plan[row.installmentNumber - 1] && (plan[row.installmentNumber - 1].amountCents !== row.amountCents || plan[row.installmentNumber - 1].invoiceMonth !== row.invoiceMonth));
+  if (!changes.length || await chargeIsLocked(scope, purchase, charge.id)) return;
+  await scope.context.write(async (db) => {
+    for (const row of changes) await db.update(creditCardInstallments).set({ ...plan[row.installmentNumber - 1], updatedAt: scope.context.now }).where(eq(creditCardInstallments.id, row.id));
+  });
+  bump(scope, "cardUpdated");
 }
 
 export async function setLedger(scope: CardImportScope, fingerprint: string, next: BankImportLedgerEntry) {

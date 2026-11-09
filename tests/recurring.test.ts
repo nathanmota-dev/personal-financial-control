@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { pluggyAccountLinks, pluggyItems } from "@/lib/db/schema";
 import { createAccount } from "@/lib/server/accounts";
 import { createCategory } from "@/lib/server/categories";
 import {
@@ -146,6 +147,20 @@ describe("recurring", () => {
     const rows = await listTransactions({}, db);
     expect(rows.map((row) => row.id)).toEqual([manual.id]);
     expect(rows.map((row) => row.id)).not.toContain(generated?.id);
+  });
+
+  it("leaves the ledger of a bank-linked account to the bank", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+    const linked = await createAccount({ name: "Banco", type: "checking", initialBalanceCents: 0 }, db);
+    const manual = await createAccount({ name: "Carteira", type: "checking", initialBalanceCents: 0 }, db);
+    const category = await createCategory({ name: "Rent", group: "fixed_expense" }, db);
+    const [item] = await db.insert(pluggyItems).values({ externalItemId: "item", label: "Banco", connectorName: "MeuPluggy", status: "UPDATED" }).returning();
+    await db.insert(pluggyAccountLinks).values({ itemId: item.id, externalAccountId: "remote", accountId: linked.id, remoteName: "Banco", kind: "bank", cutoffDate: "2026-01-01" });
+    for (const [accountId, description] of [[linked.id, "banco"], [manual.id, "carteira"]]) {
+      await createRecurringTemplate({ accountId, categoryId: category.id, type: "expense", amountCents: 1000, description, dayOfMonth: 5, startMonth: "2026-01" }, db);
+    }
+    expect((await generateRecurringTransactions("2026-03", db)).map((row) => row.description)).toEqual(["carteira"]);
   });
 
   it("generates monthly transactions without duplicating existing occurrences", async () => {

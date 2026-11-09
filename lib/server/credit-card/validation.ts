@@ -27,9 +27,11 @@ export const createCreditCardChargeSchema = z.object({
   kind: z.enum(creditCardChargeKinds).default("purchase"),
   firstInvoiceMonth: z.string().optional(),
   importFingerprint: z.string().trim().min(1).max(255).optional(),
+  /** Amounts and invoice months stated by the bank, one per installment. Without it, the amount is split evenly and billed monthly. */
+  installmentPlan: z.array(z.object({ amountCents: z.number().int(), invoiceMonth: z.string() })).optional(),
 });
 
-export const updateCreditCardChargeSchema = createCreditCardChargeSchema.partial().extend({
+export const updateCreditCardChargeSchema = createCreditCardChargeSchema.omit({ installmentPlan: true }).partial().extend({
   id: z.string().uuid(),
 });
 

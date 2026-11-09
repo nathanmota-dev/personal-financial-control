@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
-import type { PluggyCardPurchase, PluggyCardRow, PluggyInvoicedCardRow } from "@/lib/interfaces/pluggy-card-import";
-import { resolveFirstInvoiceMonth, shiftMonth } from "@/lib/server/credit-card/validation";
+import type { PluggyCardPurchase, PluggyCardRow, PluggyInstallmentPlanEntry, PluggyInvoicedCardRow } from "@/lib/interfaces/pluggy-card-import";
+import { resolveFirstInvoiceMonth, shiftMonth, splitInstallmentAmounts } from "@/lib/server/credit-card/validation";
 import { rebuildInstallmentTotal } from "./card-installment-total";
 import { normalizeDescription } from "./normalize-description";
 
@@ -46,7 +46,9 @@ const purchaseIdentity = (row: InstallmentRow) => `${normalizeDescription(row.de
 
 /** The closing day is only an estimate, so an unbilled installment follows its billed siblings from the same purchase date. */
 function firstInvoiceResolver(rows: InstallmentRow[]) {
-  const billedMonths = new Map(rows.filter((row) => row.billed && row.purchaseDate).map((row) => [purchaseIdentity(row), firstInvoiceOf(row)]));
+  // Highest number first, so the lowest billed installment wins: an anticipated one sits in an earlier invoice than its number implies.
+  const billed = rows.filter((row) => row.billed && row.purchaseDate).sort((left, right) => right.installmentNumber - left.installmentNumber);
+  const billedMonths = new Map(billed.map((row) => [purchaseIdentity(row), firstInvoiceOf(row)]));
   return (row: InstallmentRow) => (row.purchaseDate ? billedMonths.get(purchaseIdentity(row)) : undefined) ?? firstInvoiceOf(row);
 }
 
@@ -61,12 +63,14 @@ function groupBy<T>(rows: T[], keyOf: (row: T) => string) {
   return [...groups.values()];
 }
 
-/** Installments of one purchase can differ by the one cent that `splitInstallmentAmounts` places on the first ones. */
+/** A bank may place the whole remainder on the first installment, so one purchase can spread by up to one cent per other installment. */
+const maxInstallmentSpread = (count: number) => Math.max(1, count - 1);
+
 function splitByAmount(rows: InstallmentRow[]) {
   const buckets: InstallmentRow[][] = [];
   for (const row of [...rows].sort((left, right) => left.amountCents - right.amountCents)) {
     const bucket = buckets.at(-1);
-    if (bucket && row.amountCents - bucket[0].amountCents <= 1) bucket.push(row);
+    if (bucket && row.amountCents - bucket[0].amountCents <= maxInstallmentSpread(row.totalInstallments)) bucket.push(row);
     else buckets.push([row]);
   }
   return buckets;
@@ -101,17 +105,31 @@ function withoutInstallmentMarker({ description, installmentNumber, totalInstall
   return description.replace(marker, "").trim() || description;
 }
 
+/** What the bank states wins: the observed amount and billed month of each installment. The rest follow the monthly schedule. */
+function installmentPlan(sorted: InstallmentRow[], key: PurchaseKey, totalCents: number): PluggyInstallmentPlanEntry[] {
+  const observed = new Map(sorted.map((row) => [row.installmentNumber, row]));
+  const remaining = totalCents - sorted.reduce((sum, row) => sum + row.amountCents, 0);
+  const unseen = splitInstallmentAmounts(remaining, Math.max(1, key.count - sorted.length));
+  return Array.from({ length: key.count }, (_, index) => {
+    const row = observed.get(index + 1);
+    const scheduled = shiftMonth(key.firstInvoiceMonth, index);
+    return row ? { amountCents: row.amountCents, invoiceMonth: row.billed ? row.invoiceMonth : scheduled } : { amountCents: unseen.shift()!, invoiceMonth: scheduled };
+  });
+}
+
 function installmentPurchase(rows: InstallmentRow[], key: PurchaseKey, smallest: number, occurrence: number, options: GroupOptions): PluggyCardPurchase {
   const sorted = [...rows].sort((left, right) => left.installmentNumber - right.installmentNumber);
+  const total = rebuildInstallmentTotal(sorted, key.count);
   return {
     fingerprint: installmentFingerprint(options.accountId, key, smallest, occurrence),
-    alternateFingerprints: [installmentFingerprint(options.accountId, key, smallest + 1, occurrence)],
+    alternateFingerprints: Array.from({ length: maxInstallmentSpread(key.count) }, (_, index) => installmentFingerprint(options.accountId, key, smallest + index + 1, occurrence)),
     kind: "purchase",
     status: rows.some((row) => row.status === "posted") ? "posted" : "pending",
     description: withoutInstallmentMarker(sorted[0]),
-    ...rebuildInstallmentTotal(sorted, key.count),
+    ...total,
     installmentCount: key.count,
     firstInvoiceMonth: key.firstInvoiceMonth,
+    installmentPlan: installmentPlan(sorted, key, total.totalCents),
     ...purchaseDateOf(sorted, key.firstInvoiceMonth, options.closingDay),
   };
 }

@@ -168,10 +168,18 @@ describe("own transfers", () => {
     expect(await ledger()).toHaveLength(4);
   });
 
+  it("pairs a Pix that one bank posts on the next business day", async () => {
+    await setIdentity(parking);
+    feed["remote-a"] = [ownDebit("a1", { date: "2026-03-12T15:00:00.000Z" })];
+    feed["remote-b"] = [ownCredit("b1", { date: "2026-03-10T15:00:00.000Z" })];
+    await sync();
+    expect(await transferRows()).toHaveLength(1);
+  });
+
   it("does not pair amounts or dates outside the window", async () => {
     await setIdentity(parking);
     feed["remote-a"] = [ownDebit("a1"), ownDebit("a2", { date: "2026-03-20T15:00:00.000Z", amount: -40 })];
-    feed["remote-b"] = [ownCredit("b1", { date: "2026-03-12T15:00:00.000Z" }), ownCredit("b2", { date: "2026-03-20T15:00:00.000Z", amount: 41 })];
+    feed["remote-b"] = [ownCredit("b1", { date: "2026-03-15T15:00:00.000Z" }), ownCredit("b2", { date: "2026-03-20T15:00:00.000Z", amount: 41 })];
     await sync();
     expect(await transferRows()).toHaveLength(4);
   });

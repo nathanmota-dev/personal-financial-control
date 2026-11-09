@@ -2,6 +2,8 @@ import type { AppDb } from "@/lib/db";
 import type { PluggyApi } from "@/lib/interfaces/pluggy";
 import type { CutoverAccountReport, CutoverBalanceRow, CutoverInvoiceRow, CutoverMonthTotals, CutoverReport, CutoverWindow } from "@/lib/interfaces/pluggy-cutover";
 import { isPendingCategory } from "@/lib/pending-category";
+import { shiftMonth } from "@/lib/server/credit-card/validation";
+import { reconcileCardBill } from "../card-bill-reconciliation";
 import { mapCardBills } from "../mappers/card-bill";
 import type { CutoverData } from "./data";
 import { loadCutoverData, resolveCutoverWindows } from "./data";
@@ -72,9 +74,18 @@ function invoiceRow(invoiceMonth: string, appTotalCents: number | null, bankTota
   return { invoiceMonth, appTotalCents, bankTotalCents, differenceCents, status: differenceCents ? "difference" : "matched" };
 }
 
+/** What the imported records add up to, so a wrong import cannot agree with the bank just because the bill row was copied from it. */
+function appInvoiceTotal(data: CutoverData, bill: CutoverData["bills"][number]) {
+  const previousMonth = shiftMonth(bill.invoiceMonth, -1);
+  const previous = data.bills.find((row) => row.accountId === bill.accountId && row.invoiceMonth === previousMonth);
+  const currentChargesCents = data.charges.filter((charge) => charge.accountId === bill.accountId).flatMap((charge) => charge.installments).filter((item) => item.invoiceMonth === bill.invoiceMonth).reduce((total, item) => total + item.amountCents, 0);
+  const priorPaidCents = data.payments.filter((payment) => previous && payment.billId === previous.id).reduce((total, payment) => total + payment.amountCents, 0);
+  return reconcileCardBill({ statementTotalCents: bill.statementTotalCents, priorBalanceCents: bill.priorBalanceCents, preStatementPaymentsCents: bill.preStatementPaymentsCents, currentChargesCents, priorPaidCents }).expectedCents;
+}
+
 function accountInvoices(data: CutoverData, window: CutoverWindow, bank: BankState | null) {
   if (window.kind !== "credit") return [];
-  const local = new Map(data.bills.filter((bill) => bill.accountId === window.accountId && bill.invoiceMonth >= window.cutoffMonth).map((bill) => [bill.invoiceMonth, bill.statementTotalCents]));
+  const local = new Map(data.bills.filter((bill) => bill.accountId === window.accountId && bill.invoiceMonth >= window.cutoffMonth).map((bill) => [bill.invoiceMonth, appInvoiceTotal(data, bill)]));
   const remote = new Map([...(bank?.invoices.get(window.accountId) ?? [])].filter(([month]) => month >= window.cutoffMonth));
   return [...new Set([...local.keys(), ...remote.keys()])].sort().map((month) => invoiceRow(month, local.get(month) ?? null, remote.get(month) ?? null, Boolean(bank)));
 }

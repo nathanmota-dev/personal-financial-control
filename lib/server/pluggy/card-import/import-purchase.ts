@@ -4,7 +4,7 @@ import { bump } from "../bank-import/scope";
 import { resolveCardCategoryId } from "../category-rules";
 import { APPROXIMATE_DATE_NOTE, singlePaymentFingerprint } from "../group-card-installments";
 import type { ChargePatch } from "./charge-writes";
-import { chargeIsLocked, chargeLedgerEntry, patchCharge, reportResidual, setLedger } from "./charge-writes";
+import { chargeIsLocked, chargeLedgerEntry, patchCharge, reportResidual, setLedger, syncInstallmentPlan } from "./charge-writes";
 import { adoptReplacedCharge } from "./reconcile";
 
 function findMatch({ charges, run }: CardImportScope, purchase: PluggyCardPurchase): PluggyCardMatch {
@@ -26,11 +26,13 @@ function bankOwnedPatch(charge: PluggyCardCharge, purchase: PluggyCardPurchase, 
 async function mergeIntoCharge(scope: CardImportScope, charge: PluggyCardCharge, { fingerprint, entry }: PluggyCardMatch, purchase: PluggyCardPurchase) {
   scope.seen.push(fingerprint);
   const patch = bankOwnedPatch(charge, purchase, entry?.outcome === "pending_card_charge");
-  if (patch && !await chargeIsLocked(scope, purchase, charge.id)) {
+  const locked = patch ? await chargeIsLocked(scope, purchase, charge.id) : false;
+  if (patch && !locked) {
     await patchCharge(scope, charge, patch);
     bump(scope, "cardUpdated");
     reportResidual(scope, purchase);
   }
+  if (!locked) await syncInstallmentPlan(scope, charge, purchase);
   const expected = chargeLedgerEntry(fingerprint, charge.id, purchase.status);
   // Once a record is posted the charge is confirmed, and a later pending state of another installment cannot undo that.
   if (!entry || (entry.outcome === "pending_card_charge" && expected.outcome === "created")) await setLedger(scope, fingerprint, expected);
@@ -51,6 +53,7 @@ async function createCharge(scope: CardImportScope, purchase: PluggyCardPurchase
       kind: purchase.kind,
       firstInvoiceMonth: purchase.firstInvoiceMonth,
       importFingerprint: purchase.fingerprint,
+      installmentPlan: purchase.installmentPlan,
     }, db);
   });
   // The charge is written first: if the ledger write fails, the next run finds the charge by its fingerprint and restores the entry.
@@ -71,6 +74,7 @@ export async function importCardPurchase(scope: CardImportScope, purchase: Plugg
 
 /** Records no charge: linking the payment to its bill completes it later. */
 export async function recordBillPayment(scope: CardImportScope, row: PluggyCardRow) {
+  if (row.date < scope.link.cutoffDate) return bump(scope, "cardIgnored");
   if (row.status !== "posted") return bump(scope, "cardDeferred");
   const fingerprint = singlePaymentFingerprint(row.remoteId);
   if (scope.run.ledger.has(fingerprint)) return void scope.seen.push(fingerprint);

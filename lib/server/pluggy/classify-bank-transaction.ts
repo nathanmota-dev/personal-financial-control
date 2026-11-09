@@ -80,3 +80,7 @@ export function isPossibleOwnTransfer(row: ClassifierRow, identity: PluggyOwnIde
   const other = matchParty(counterparty(row), identity);
   return other === "owner" || (other === "unknown" && descriptionNamesOwner(row.description, identity));
 }
+
+export function isCardBillPaymentText(description: string) {
+  return CARD_PAYMENT.test(normalizeOwnerName(description));
+}

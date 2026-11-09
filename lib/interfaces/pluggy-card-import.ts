@@ -27,6 +27,8 @@ export type PluggyInvoicedCardRow = PluggyCardRow & { invoiceMonth: string; bill
 export type PluggyInstallmentObservation = { installmentNumber: number; amountCents: number };
 export type PluggyInstallmentTotal = { totalCents: number; residualCents: number };
 
+export type PluggyInstallmentPlanEntry = { amountCents: number; invoiceMonth: string };
+
 export type PluggyCardPurchase = {
   fingerprint: string;
   /** Other fingerprints this purchase may have been stored under, because its smallest installment was not always visible. */
@@ -42,6 +44,8 @@ export type PluggyCardPurchase = {
   firstInvoiceMonth: string;
   purchaseDate: string;
   dateIsApproximate: boolean;
+  /** One entry per installment, present on installment purchases. */
+  installmentPlan?: PluggyInstallmentPlanEntry[];
 };
 
 export type PluggyCardCharge = Pick<

@@ -52,9 +52,18 @@ function claimEntry(target: PluggyCardBillTarget, entry: PluggyBillPaymentEntry 
   if (claimed) claimed.claimed = true;
 }
 
+function nextBill({ state }: PaymentScope, target: PluggyCardBillTarget) {
+  return state.targets.get(target.link.id)?.find((item) => item.invoiceMonth > target.invoiceMonth);
+}
+
 async function linkToBill(scope: PaymentScope, row: PluggyBankRow, target: PluggyCardBillTarget, entry: PluggyBillPaymentEntry | null) {
   claimEntry(target, entry, row.amountCents);
   const { accountId } = target.link;
+  const next = entry?.excess ? nextBill(scope, target) : undefined;
+  if (next && !next.paid) {
+    await writePayment(scope, row, { accountId, invoiceMonth: next.invoiceMonth, kind: "pre_statement" });
+    return bump(scope, "billPaymentsLinked");
+  }
   // A paid bill rejects new payments, but the money did leave the account and is not an expense.
   if (target.paid) {
     await writePayment(scope, row, { accountId, invoiceMonth: target.invoiceMonth, kind: "unlinked" });
@@ -98,7 +107,8 @@ async function linkPayment(scope: PaymentScope, row: PluggyBankRow) {
 export async function linkBankBillPayments(context: PluggySyncStepContext, link: PluggyLinkRecord): Promise<PluggySyncStepResult> {
   const [run, state, { rows }] = await Promise.all([bankImportRunState(context), cardBillRunState(context), readBankRows(context, link)]);
   const scope: PaymentScope = { context, link, run, state, counts: {}, attention: [] };
-  for (const row of rows) {
+  // Oldest first: a bill settled before an earlier payment was linked would refuse it.
+  for (const row of [...rows].sort((left, right) => left.transactionDate.localeCompare(right.transactionDate))) {
     if (row.status === "posted" && run.ledger.get(row.fingerprint)?.outcome === "pending_card_payment") await linkPayment(scope, row);
   }
   state.processedBankLinks.add(link.id);

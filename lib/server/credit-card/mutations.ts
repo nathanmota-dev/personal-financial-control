@@ -21,7 +21,7 @@ export async function createCreditCardCharge(
   database?: AppDb
 ) {
   const db = await resolveDb(database);
-  const values = createCreditCardChargeSchema.parse(input);
+  const { installmentPlan, ...values } = createCreditCardChargeSchema.parse(input);
   values.purchaseDate = normalizeDate(values.purchaseDate);
 
   if (values.importFingerprint) {
@@ -56,7 +56,12 @@ export async function createCreditCardCharge(
   const firstInvoiceMonth = values.firstInvoiceMonth
     ? normalizeCompetenceMonth(values.firstInvoiceMonth)
     : resolveFirstInvoiceMonth(values.purchaseDate, account.creditClosingDay as number);
-  const installmentAmounts = splitInstallmentAmounts(
+  invariant(
+    !installmentPlan || (installmentPlan.length === values.installmentCount && installmentPlan.reduce((sum, row) => sum + row.amountCents, 0) === values.totalAmountCents),
+    "CREDIT_CARD_INSTALLMENT_PLAN_INVALID",
+    "The installment plan must have one entry per installment and add up to the total."
+  );
+  const installmentAmounts = installmentPlan?.map((row) => row.amountCents) ?? splitInstallmentAmounts(
     values.totalAmountCents,
     values.installmentCount
   );
@@ -79,7 +84,7 @@ export async function createCreditCardCharge(
           chargeId: charge.id,
           installmentNumber: index + 1,
           amountCents,
-          invoiceMonth: shiftMonth(firstInvoiceMonth, index),
+          invoiceMonth: installmentPlan?.[index].invoiceMonth ?? shiftMonth(firstInvoiceMonth, index),
           updatedAt: currentTimestamp(),
         }))
       )

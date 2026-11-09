@@ -8,6 +8,7 @@ import { bump } from "../bank-import/scope";
 import { reconcileCardBill } from "../card-bill-reconciliation";
 import { billEntryMatches } from "../match-bill-payment";
 import { mapCardBills } from "../mappers/card-bill";
+import { creditPaymentsBeforeWindow } from "./payments-before-window";
 import { attentionItem, cardBillRunState } from "./run-state";
 
 type StoredBill = Awaited<ReturnType<typeof loadStoredBills>> extends Map<string, infer T> ? T : never;
@@ -69,6 +70,14 @@ function claimRecordedEntries(state: CardBillRunState, target: PluggyCardBillTar
   }
 }
 
+/** A later run must recognize money already moved to the next statement, which is stored on that other bill. */
+function claimCarriedEntries(state: CardBillRunState, targets: PluggyCardBillTarget[]) {
+  const billIds = new Set(targets.map((target) => target.billId));
+  for (const entry of targets.flatMap((target) => target.payments).filter((item) => item.excess && !item.claimed)) {
+    entry.claimed = state.localPayments.some((payment) => payment.billId && billIds.has(payment.billId) && billEntryMatches(entry, { amountCents: payment.amountCents, date: payment.paymentDate }));
+  }
+}
+
 async function importBill(scope: BillScope, bill: PluggyMappedCardBill, stored: StoredBill | undefined, importedCents: number): Promise<PluggyCardBillTarget> {
   const reconciliation = reconcileCardBill({ ...bill, currentChargesCents: importedCents });
   const paid = stored?.status === "paid";
@@ -87,12 +96,14 @@ export async function importLinkBills(context: PluggySyncStepContext, link: Plug
     bump(scope, "cardBillsSkipped");
     if (bill.amountCents !== null) scope.attention.push(attentionItem("card_bill_non_positive", link, `Fatura ${bill.invoiceMonth}`, bill.dueDate, bill.amountCents));
   }
+  await creditPaymentsBeforeWindow(context, link, bills, totals);
   const targets: PluggyCardBillTarget[] = [];
   for (const bill of bills) {
     const target = await importBill(scope, bill, stored.get(bill.invoiceMonth), totals.get(bill.invoiceMonth) ?? 0);
     claimRecordedEntries(state, target);
     targets.push(target);
   }
+  claimCarriedEntries(state, targets);
   state.targets.set(link.id, targets);
   return { counts: scope.counts, attention: scope.attention };
 }
