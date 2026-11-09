@@ -1,6 +1,7 @@
 import type { AppDb } from "@/lib/db";
 import type { BankImportOwnLeg, BankImportParkedTransfer, BankImportRows, BankImportRunState, BankImportScope } from "@/lib/interfaces/pluggy-bank-import";
 import type { PluggyLinkRecord, PluggySyncStepContext } from "@/lib/interfaces/pluggy";
+import { loadCategoryRuleIndex } from "../category-rules";
 import { classifyBankTransaction } from "../classify-bank-transaction";
 import { mapBankTransaction } from "../mappers/bank-transaction";
 import { loadOwnIdentityForImport } from "../own-identity";
@@ -20,16 +21,18 @@ async function parkedTransfers(db: AppDb, ledgerIds: Set<string>, otherOwnAccoun
 }
 
 async function loadRunState({ db }: PluggySyncStepContext): Promise<BankImportRunState> {
-  const [own, links, ledgerRows, categoryId] = await Promise.all([
+  const [own, links, ledgerRows, categoryId, categoryRules] = await Promise.all([
     loadOwnIdentityForImport(db),
     db.query.pluggyAccountLinks.findMany(),
     db.query.pluggyImportLedger.findMany(),
     investmentCategoryId(db),
+    loadCategoryRuleIndex(db),
   ]);
   const transferIds = new Set(ledgerRows.flatMap((row) => row.localTable === "transfers" && row.localId ? [row.localId] : []));
   return {
     ...own,
     investmentCategoryId: categoryId,
+    categoryRules,
     links: links.filter((link) => link.isEnabled && link.kind === "bank"),
     ledger: new Map(ledgerRows.map((row) => [row.fingerprint, row])),
     parkedTransfers: await parkedTransfers(db, transferIds, own.otherOwnAccountId),

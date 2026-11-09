@@ -1,8 +1,17 @@
-import type { AccountRow } from "@/lib/interfaces/components/settings-view";
+import type { AccountRow, CategoryRow } from "@/lib/interfaces/components/settings-view";
 import type { PluggyAccountRow, PluggyAttentionItem, PluggyIdentityDraft, PluggyIdentityView, PluggyItemView, PluggyLinkDraft, PluggySyncRunView } from "@/lib/interfaces/pluggy";
+import type { PluggyPendingCategoryGroup } from "@/lib/interfaces/pluggy-category-rules";
 
-export type OpenFinanceSettingsProps = { configured: boolean; accounts: AccountRow[] };
-export type OpenFinanceWorkspaceProps = { accounts: AccountRow[] };
+export type OpenFinanceSettingsProps = { configured: boolean; accounts: AccountRow[]; categories: CategoryRow[] };
+export type OpenFinanceWorkspaceProps = { accounts: AccountRow[]; categories: CategoryRow[] };
+export type OpenFinanceCategoryReviewProps = { categories: CategoryRow[]; refreshKey: string | null };
+export type OpenFinanceCategoryReviewRowProps = {
+  group: PluggyPendingCategoryGroup;
+  categories: CategoryRow[];
+  applying: boolean;
+  disabled: boolean;
+  onApply: (group: PluggyPendingCategoryGroup, categoryId: string) => void;
+};
 export type OpenFinanceItemFormProps = { busy: boolean; onAdd: (externalItemId: string, label: string) => Promise<boolean> };
 export type OpenFinanceSyncPanelProps = { run: PluggySyncRunView | null; syncing: boolean; onSync: () => void };
 export type OpenFinanceRunSummaryProps = { run: PluggySyncRunView };

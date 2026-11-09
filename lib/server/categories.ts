@@ -4,7 +4,7 @@ import { z } from "zod";
 import { defaultCategories } from "@/lib/category-defaults";
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
-import { categories,monthlyBudgets,creditCardCharges,recurringTemplates,transactions } from "@/lib/db/schema";
+import { categories,monthlyBudgets,creditCardCharges,pluggyCategoryRules,recurringTemplates,transactions } from "@/lib/db/schema";
 import { DomainError,invariant } from "@/lib/server/errors";
 import { currentTimestamp,serializeTimestamps } from "@/lib/server/finance";
 
@@ -122,10 +122,12 @@ export async function deleteCategory(id: string, database?: AppDb) {
 
   const budgetUsage = await db.query.monthlyBudgets.findFirst({ where: eq(monthlyBudgets.categoryId, id) });
 
-  if (usage || recurringUsage || creditCardUsage || budgetUsage) {
+  const ruleUsage = await db.query.pluggyCategoryRules.findFirst({ where: eq(pluggyCategoryRules.categoryId, id) });
+
+  if (usage || recurringUsage || creditCardUsage || budgetUsage || ruleUsage) {
     throw new DomainError(
       "CATEGORY_IN_USE",
-      "Category cannot be deleted because it is already used in transactions, recurring templates, or credit card charges."
+      "Category cannot be deleted because it is already used in transactions, recurring templates, credit card charges, or import rules."
     );
   }
 

@@ -13,6 +13,7 @@ normalizeCompetenceMonth,
 normalizeDate,
 serializeTimestamps
 } from "@/lib/server/finance";
+import { findPendingCategory } from "@/lib/server/pending-category";
 import { and,eq,isNull,or } from "drizzle-orm";
 import { z } from "zod";
 import { createInvestmentFundedExpenseInTransaction,createSingleTransactionInTransaction } from "./creation";
@@ -120,13 +121,16 @@ export async function listTransactions(
   database?: AppDb
 ) {
   const db = await resolveDb(database);
+  const pendingCategory = filters.uncategorized ? await findPendingCategory(db) : null;
   const where = and(
     filters.competenceMonth
       ? eq(transactions.competenceMonth, normalizeCompetenceMonth(filters.competenceMonth))
       : undefined,
     filters.accountId ? eq(transactions.accountId, filters.accountId) : undefined,
     filters.uncategorized
-      ? isNull(transactions.categoryId)
+      ? pendingCategory
+        ? or(isNull(transactions.categoryId), eq(transactions.categoryId, pendingCategory.id))
+        : isNull(transactions.categoryId)
       : filters.categoryId
         ? eq(transactions.categoryId, filters.categoryId)
         : undefined,

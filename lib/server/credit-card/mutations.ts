@@ -11,6 +11,7 @@ normalizeCompetenceMonth,
 normalizeDate,
 serializeTimestamps,
 } from "@/lib/server/finance";
+import { learnFromChargeUpdate } from "@/lib/server/pluggy/category-learning";
 import { eq } from "drizzle-orm";
 import { assertChargeCanMutate,getCreditCardCharge } from "./queries";
 import { CreateCreditCardChargeInput,createCreditCardChargeSchema,resolveDb,resolveFirstInvoiceMonth,serializeCreditCardCharge,shiftMonth,splitInstallmentAmounts,UpdateCreditCardChargeInput,updateCreditCardChargeSchema,validateCreditCardChargeDependencies } from "./validation";
@@ -180,6 +181,8 @@ export async function updateCreditCardCharge(
         }))
       )
       .returning();
+
+    await learnFromChargeUpdate(tx, existing, updatedCharge);
 
     return serializeCreditCardCharge(updatedCharge, account, category, installments);
   });

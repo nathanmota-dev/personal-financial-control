@@ -49,7 +49,7 @@ export function SettingsView({
 
         {openFinance ? (
           <TabsContent value="open-finance">
-            <OpenFinanceSettings configured={openFinance.configured} accounts={accounts} />
+            <OpenFinanceSettings configured={openFinance.configured} accounts={accounts} categories={categories} />
           </TabsContent>
         ) : null}
 

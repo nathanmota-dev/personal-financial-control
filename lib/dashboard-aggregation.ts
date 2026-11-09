@@ -1,5 +1,6 @@
 import type { DashboardExpense, DashboardMonth, DashboardTransaction } from "@/lib/interfaces/dashboard";
 import type { CategorySpendingItem } from "@/lib/interfaces/recurring";
+import { isPendingCategory } from "@/lib/pending-category";
 
 export function aggregateDashboardMonth(competenceMonth: string, transactions: DashboardTransaction[], expenses: DashboardExpense[]): DashboardMonth {
   const rows = transactions.filter((row) => row.competenceMonth === competenceMonth);
@@ -9,8 +10,8 @@ export function aggregateDashboardMonth(competenceMonth: string, transactions: D
   const investmentContributionCents = sumType("investment_contribution");
   const investmentWithdrawalCents = sumType("investment_withdrawal");
   const fixedExpenseCents = entries.filter((row) => row.category?.group === "fixed_expense").reduce((sum, row) => sum + row.amountCents, 0);
-  const variableExpenseCents = entries.filter((row) => row.category?.group === "variable_expense").reduce((sum, row) => sum + row.amountCents, 0);
-  const uncategorizedExpenseCents = entries.filter((row) => !row.category || !["fixed_expense", "variable_expense"].includes(row.category.group)).reduce((sum, row) => sum + row.amountCents, 0);
+  const variableExpenseCents = entries.filter((row) => row.category?.group === "variable_expense" && !isPendingCategory(row.category)).reduce((sum, row) => sum + row.amountCents, 0);
+  const uncategorizedExpenseCents = entries.filter((row) => !row.category || isPendingCategory(row.category) || !["fixed_expense", "variable_expense"].includes(row.category.group)).reduce((sum, row) => sum + row.amountCents, 0);
   const netInvestmentFlowCents = investmentContributionCents - investmentWithdrawalCents;
   return { competenceMonth, hasMovements: rows.length > 0 || entries.length > 0, totals: {
     incomeCents, fixedExpenseCents, variableExpenseCents, uncategorizedExpenseCents,
@@ -22,7 +23,7 @@ export function aggregateDashboardMonth(competenceMonth: string, transactions: D
 export function aggregateDashboardCategories(expenses: DashboardExpense[], includeUncategorized = true): CategorySpendingItem[] {
   const report = new Map<string, CategorySpendingItem>();
   for (const row of expenses) {
-    if (!row.category && !includeUncategorized) continue;
+    if ((!row.category || isPendingCategory(row.category)) && !includeUncategorized) continue;
     const categoryId = row.category?.id ?? "uncategorized";
     const item = report.get(categoryId) ?? { categoryId, categoryName: row.category?.name ?? "Sem categoria", amountCents: 0 };
     item.amountCents += row.amountCents;

@@ -5,6 +5,7 @@ import type {
   PluggyRemoteTransaction,
   PluggySyncStepContext,
 } from "@/lib/interfaces/pluggy";
+import type { PluggyCategoryRuleIndex } from "@/lib/interfaces/pluggy-category-rules";
 
 export type PluggyBankClassification =
   | "ordinary"
@@ -43,6 +44,7 @@ export type BankImportRunState = {
   identity: PluggyOwnIdentity;
   otherOwnAccountId: string | null;
   investmentCategoryId: string | null;
+  categoryRules: PluggyCategoryRuleIndex;
   links: PluggyLinkRecord[];
   ledger: Map<string, BankImportLedgerEntry>;
   parkedTransfers: BankImportParkedTransfer[];

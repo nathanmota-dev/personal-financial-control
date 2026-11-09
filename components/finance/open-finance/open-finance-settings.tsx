@@ -4,6 +4,6 @@ import { OpenFinanceSetupNotice } from "@/components/finance/open-finance/open-f
 import { OpenFinanceWorkspace } from "@/components/finance/open-finance/open-finance-workspace";
 import type { OpenFinanceSettingsProps } from "@/lib/interfaces/components/open-finance";
 
-export function OpenFinanceSettings({ configured, accounts }: OpenFinanceSettingsProps) {
-  return configured ? <OpenFinanceWorkspace accounts={accounts} /> : <OpenFinanceSetupNotice />;
+export function OpenFinanceSettings({ configured, accounts, categories }: OpenFinanceSettingsProps) {
+  return configured ? <OpenFinanceWorkspace accounts={accounts} categories={categories} /> : <OpenFinanceSetupNotice />;
 }

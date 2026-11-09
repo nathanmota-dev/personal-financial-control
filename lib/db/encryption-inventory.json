@@ -340,5 +340,13 @@
     "other_own_account_id": "technical",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "pluggy_category_rules": {
+    "id": "technical",
+    "normalized_description": "text",
+    "direction": "text",
+    "category_id": "technical",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }
