@@ -13,7 +13,7 @@ function paymentEntries(bill: PluggyRemoteBill): PluggyBillPaymentEntry[] {
   return (bill.payments ?? []).flatMap((payment) => {
     const date = utcDay(payment.paymentDate);
     const amountCents = toAmountCents(payment.amount ?? 0);
-    return date && amountCents ? [{ amountCents, date, claimed: false, mirrored: false }] : [];
+    return date && amountCents ? [{ amountCents, date, claimed: false, mirrored: false, excess: false }] : [];
   });
 }
 
@@ -26,9 +26,23 @@ function paidAfterClosing(previous: PluggyMappedCardBill) {
   return sumCents(previous.payments.filter((entry) => !closingDate || entry.date >= closingDate));
 }
 
+/** Payments after closing settle the bill first. The bank lists what goes beyond it on the same bill, and that money reduces the next statement. */
+function markExcessPayments(payments: PluggyBillPaymentEntry[], closingDate: string | null, statementTotalCents: number) {
+  const settling = payments.filter((entry) => !closingDate || entry.date >= closingDate).sort((left, right) => left.date.localeCompare(right.date));
+  const exact = settling.find((entry) => entry.amountCents === statementTotalCents);
+  let remainingCents = exact ? 0 : statementTotalCents;
+  for (const entry of settling.filter((item) => item !== exact)) {
+    entry.excess = remainingCents <= 0;
+    remainingCents -= entry.amountCents;
+  }
+}
+
+const excessCents = (bill: PluggyMappedCardBill | null) => sumCents(bill?.payments.filter((entry) => entry.excess) ?? []);
+
 function mapBill(bill: PluggyRemoteBill, dueDate: string, statementTotalCents: number, previous: PluggyMappedCardBill | null): PluggyMappedCardBill {
   const closingDate = utcDay(bill.billClosingDate);
   const payments = paymentEntries(bill);
+  markExcessPayments(payments, closingDate, statementTotalCents);
   return {
     invoiceMonth: dueDate.slice(0, 7),
     dueDate,
@@ -36,7 +50,7 @@ function mapBill(bill: PluggyRemoteBill, dueDate: string, statementTotalCents: n
     statementTotalCents,
     priorBalanceCents: previous?.statementTotalCents ?? 0,
     priorPaidCents: previous ? paidAfterClosing(previous) : 0,
-    preStatementPaymentsCents: closingDate ? sumCents(payments.filter((entry) => entry.date < closingDate)) : 0,
+    preStatementPaymentsCents: excessCents(previous) + (closingDate ? sumCents(payments.filter((entry) => entry.date < closingDate)) : 0),
     payments,
   };
 }

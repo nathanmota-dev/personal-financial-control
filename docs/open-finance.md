@@ -34,7 +34,7 @@ Cada lançamento novo recebe uma classificação, nesta ordem:
 - Bastar um lado com o titular não prova nada, porque o banco preenche o lado dele em quase todos os lançamentos. Por isso os dois lados precisam corresponder.
 - Um nome só corresponde por inteiro: `JOAO SILVA` não reconhece `JOAO SILVA SANTOS`.
 - Quando só a outra parte parece ser o titular, o lançamento entra como comum e aparece em **Itens que precisam de atenção**.
-- Transferências entre duas contas vinculadas viram um único registro, pareadas por valor e por uma janela de 1 dia. Sem o outro lado, usam **Outras contas próprias**. Se o outro lado chegar depois, a transferência é corrigida para a conta real. Sem essa conta configurada, a transferência aguarda em **Itens que precisam de atenção**.
+- Transferências entre duas contas vinculadas viram um único registro, pareadas por valor e por uma janela de 3 dias, porque um Pix feito no fim de semana ou feriado só é lançado por um dos bancos no dia útil seguinte. Sem o outro lado, usam **Outras contas próprias**. Se o outro lado chegar depois, a transferência é corrigida para a conta real. Sem essa conta configurada, a transferência aguarda em **Itens que precisam de atenção**.
 - Transferências e pagamentos de fatura pendentes aguardam a confirmação do banco.
 
 ## Categorias aprendidas
@@ -66,7 +66,9 @@ Um cartão precisa estar vinculado a uma conta local de crédito com dia de fech
 | Demais valores negativos | Estorno, que reduz a fatura |
 
 - Compras em moeda estrangeira usam `amountInAccountCurrency`. Sem esse campo, a compra não é importada e aparece em **Itens que precisam de atenção**.
-- A Pluggy devolve uma transação por parcela, sem identificador comum. As parcelas são agrupadas por descrição normalizada, valor e número de parcelas, com tolerância de 1 centavo entre elas.
+- A Pluggy devolve uma transação por parcela, sem identificador comum. As parcelas são agrupadas por descrição normalizada, valor e número de parcelas, com tolerância de até 1 centavo por parcela restante, porque alguns bancos colocam todo o resto na primeira.
+- Cada parcela guarda o valor e o mês de fatura informados pelo banco, inclusive quando é antecipada para uma fatura anterior. Uma parcela já gravada acompanha o banco até a fatura ser paga.
+- As compras do cartão são lidas sem filtro de data e selecionadas pelo mês da fatura, para que parcelas de compras feitas antes do corte não se percam.
 - O mês da fatura vem da fatura da parcela (mês de `dueDate`). Sem fatura, como em pendentes, vem do dia de fechamento. A primeira fatura é esse mês menos as parcelas anteriores, e duas compras iguais no mesmo mês continuam separadas.
 - A compra recebe uma categoria das regras aprendidas ou **A classificar**. Categoria, notas e descrição editadas são mantidas nas próximas sincronizações.
 - Com todas as parcelas, o total é a soma delas. Com parte delas, o total é reconstruído pela regra de arredondamento, em que os centavos extras ficam nas primeiras parcelas. Quando as parcelas recebidas não bastam para provar o valor exato, a diferença possível aparece em **Itens que precisam de atenção**.
@@ -80,6 +82,8 @@ Um cartão precisa estar vinculado a uma conta local de crédito com dia de fech
 As faturas são importadas depois das compras, e cada fatura vira uma linha por cartão e mês, o mês de `dueDate`.
 
 - A fatura anterior informa o saldo anterior, e os pagamentos da fatura com data antes de `billClosingDate` entram como pagamentos antes do fechamento.
+- O banco lista na fatura o que foi pago além do total dela. Esse excedente é um pagamento antes do fechamento da fatura seguinte.
+- A primeira fatura não tem uma anterior para listar o que foi antecipado. Os pagamentos de fatura na conta antes da data de corte contam somente quando explicam toda a diferença.
 - Fatura com total zero ou negativo não é importada e aparece em **Itens que precisam de atenção**.
 - Fatura paga nunca é reescrita. Se o banco mudar o total ou o vencimento, a diferença é apenas informada.
 
@@ -91,6 +95,7 @@ Cada pagamento de fatura na conta corrente é procurado primeiro em `payments` d
 |---|---|
 | Na fatura, a partir do fechamento | `settlement`. Quando os pagamentos atingem o total, a fatura fica paga e trava as compras |
 | Antes do fechamento | `pre_statement` |
+| Além do total da fatura | `pre_statement` da fatura seguinte |
 | Sem fatura, com um único cartão vinculado | `unlinked`, informado para revisão |
 | Fatura já paga | `unlinked`, informado para revisão |
 | Mais de um cartão possível | Nada é registrado, e o caso aparece para revisão até só um corresponder |
@@ -118,6 +123,7 @@ A sincronização atualiza apenas valor e data. Nome, tipo e instituição vêm 
 - Cada atualização grava o snapshot da posição no dia da sincronização. Repetir no mesmo dia substitui o snapshot.
 - Esta etapa é a única que altera valores de posição. Aportes e resgates importados da conta corrente não reduzem ativos, então um resgate nunca é descontado duas vezes.
 - A atualização mantém a alocação da reserva de emergência acompanhando o valor do ativo.
+- Quando uma posição vinculada compõe a reserva, cada sincronização grava o total da reserva como saldo de referência do dia, e a tela **Reserva de emergência** parte do valor do banco.
 - Conectores expõem produtos diferentes. Uma conexão sem investimentos, ou com o recurso indisponível, aparece na aba e no resumo, sem contar como falha.
 
 ## Migração do histórico (cutover)
@@ -128,7 +134,7 @@ A janela de cada conta começa em `cutoff_date`. Lançamentos e transferências 
 
 ### Recorrências
 
-Decisão: os modelos ativos das contas vinculadas são **pausados** antes da limpeza, porque o gerador recriaria os meses apagados. Modelos de contas sem vínculo continuam ativos. Enquanto estiverem pausados, salário e aluguel vinculados deixam de aparecer no **Saldo Projetado**.
+Os modelos ativos das contas vinculadas são **pausados** durante a limpeza. Depois da sincronização, reative os que devem continuar projetados: em conta vinculada, o gerador não cria lançamentos, porque o banco é a fonte do extrato, e o modelo só alimenta o **Saldo Projetado** a partir da data atual.
 
 ### O que a limpeza faz
 
@@ -160,7 +166,7 @@ Pare o app durante a limpeza. Os relatórios ficam em `.local/pluggy-cutover/<ba
 7. Capture e compare: `npm run pluggy:cutover -- report --label=after` e `npm run pluggy:cutover -- compare --before=before --after=after`.
 8. Confira a comparação e, na cópia, as telas Painel, Lançamentos, Cartão, Relatórios, Saldo Projetado e Investimentos. Uma segunda sincronização não deve criar nada.
 
-A comparação mostra, por conta e mês, os totais antes e depois, cada fatura contra a do banco e o saldo do app contra o do banco. Se a diferença de saldo vier de dados anteriores à janela, ela propõe um novo saldo inicial, aplicado só depois da sua confirmação:
+A comparação mostra, por conta e mês, os totais antes e depois, cada fatura (calculada a partir das compras importadas e dos pagamentos) contra a do banco e o saldo do app contra o do banco. Se a diferença de saldo vier de dados anteriores à janela, ela propõe um novo saldo inicial, aplicado só depois da sua confirmação:
 
 ```bash
 npm run pluggy:cutover -- adjust --account-id=<id> --initial-balance-cents=<valor> --apply --confirm-target=<banco>

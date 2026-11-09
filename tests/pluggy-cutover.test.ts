@@ -191,7 +191,7 @@ describe("cutover recurring templates", () => {
     await template(seed.wallet.id, "mesada");
     await template(seed.checking.id, "encerrada", "2026-02");
     await generateRecurringTransactions("2026-05", seed.db);
-    expect(await descriptions()).toEqual(["aluguel", "mesada"]);
+    expect(await descriptions()).toEqual(["mesada"]);
     const built = await apply();
     expect(built.totals.recurring_templates_paused).toBe(1);
     const created = await generateRecurringTransactions("2026-05", seed.db);

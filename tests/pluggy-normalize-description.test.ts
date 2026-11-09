@@ -11,6 +11,7 @@ describe("normalizeDescription", () => {
     ["removes PARCELA suffix", "LOJA CENTRAL PARCELA 3 DE 5", "LOJA CENTRAL"],
     ["removes PARC with a dot and no space", "LOJA CENTRAL PARC.03/05", "LOJA CENTRAL"],
     ["removes a bare installment", "LOJA CENTRAL 3/5", "LOJA CENTRAL"],
+    ["removes an installment glued to a truncated word", "PG *LOJA NEGOCIOS I01/06", "PG *LOJA NEGOCIOS I"],
     ["removes a separated suffix", "LOJA CENTRAL - PARC 03/05", "LOJA CENTRAL"],
     ["removes a full date", "PIX LOJA 15/03/2026", "PIX LOJA"],
     ["removes a two-digit year date", "PIX LOJA 15-03-26", "PIX LOJA"],

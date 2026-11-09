@@ -33,16 +33,22 @@ export async function generateRecurringTransactions(month: string, database?: Ap
   const db = await resolveDb(database);
   const competenceMonth = normalizeCompetenceMonth(month);
 
-  const templates = await db.query.recurringTemplates.findMany({
-    where: and(
-      eq(recurringTemplates.status, "active"),
-      lte(recurringTemplates.startMonth, competenceMonth),
-      or(
-        isNull(recurringTemplates.endMonth),
-        gte(recurringTemplates.endMonth, competenceMonth)
-      )
-    ),
-  });
+  const [candidates, links] = await Promise.all([
+    db.query.recurringTemplates.findMany({
+      where: and(
+        eq(recurringTemplates.status, "active"),
+        lte(recurringTemplates.startMonth, competenceMonth),
+        or(
+          isNull(recurringTemplates.endMonth),
+          gte(recurringTemplates.endMonth, competenceMonth)
+        )
+      ),
+    }),
+    db.query.pluggyAccountLinks.findMany(),
+  ]);
+  // The bank is the ledger of a linked account: a generated record would duplicate it. These templates only feed the projection.
+  const bankOwned = new Set(links.filter((link) => link.isEnabled).map((link) => link.accountId));
+  const templates = candidates.filter((template) => !bankOwned.has(template.accountId));
 
   if (!templates.length) {
     return [];

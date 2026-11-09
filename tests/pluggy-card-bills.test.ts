@@ -135,6 +135,71 @@ describe("card bill import", () => {
   });
 });
 
+describe("payments beyond a bill", () => {
+  const april = () => bill("2026-04", 100, { payments: [listed("2026-04-06", 100), listed("2026-04-10", 70)] });
+  const may = () => bill("2026-05", 80, { payments: [listed("2026-05-06", 80)] });
+
+  beforeEach(() => {
+    feeds = {
+      "remote-bank": [bankPayment("late", "2026-05-06", 80), bankPayment("extra", "2026-04-11", 70), bankPayment("settle", "2026-04-06", 100)],
+      "remote-card": [purchase("a", "2026-04", 100), purchase("b", "2026-05", 150)],
+    };
+    billFeeds = { "remote-card": [april(), may()] };
+  });
+
+  it("records the extra payment against the next statement and reconciles both", async () => {
+    const run = await sync();
+    expect(run.summary?.counts).toMatchObject({ billPaymentsLinked: 3 });
+    expect(run.summary?.counts).not.toHaveProperty("billPaymentsUnlinked");
+    expect(run.summary?.invoices?.map((row) => [row.invoiceMonth, row.status])).toEqual([["2026-04", "matched"], ["2026-05", "matched"]]);
+    expect((await bills()).map((row) => [row.invoiceMonth, row.preStatementPaymentsCents, row.status])).toEqual([["2026-04", 0, "paid"], ["2026-05", 7000, "paid"]]);
+    expect((await payments()).filter((row) => row.kind === "pre_statement")).toMatchObject([{ amountCents: 7000, bill: { invoiceMonth: "2026-05" } }]);
+  });
+
+  it("does not report the moved payment as external on later runs", async () => {
+    await sync();
+    const second = await sync();
+    expect(second.summary?.counts).not.toHaveProperty("billPaymentsExternal");
+    expect(second.summary?.invoices?.every((row) => row.status === "matched")).toBe(true);
+    expect(await payments()).toHaveLength(3);
+  });
+
+  it("falls back to unlinked when no later bill exists", async () => {
+    billFeeds = { "remote-card": [april()] };
+    feeds["remote-bank"] = feeds["remote-bank"].filter((row) => row.id !== "late");
+    const { summary } = await sync();
+    expect(summary?.counts).toMatchObject({ billPaymentsLinked: 1, billPaymentsUnlinked: 1 });
+  });
+});
+
+describe("payments made before the import window", () => {
+  const prepaid = (amount: number) => {
+    feeds = { "remote-bank": [bankPayment("old", "2026-03-20", amount), { ...bankPayment("unrelated", "2026-03-21", 5), description: "PIX ENVIADO" }], "remote-card": [purchase("a", "2026-04", 300)] };
+    billFeeds = { "remote-card": [bill("2026-04", 100)] };
+  };
+
+  beforeEach(async () => {
+    await database.db.delete(pluggyAccountLinks);
+    await link("remote-bank", checkingId, "bank", "Conta", "2026-04-01");
+    await link("remote-card", cardId, "credit", "Cartão", "2026-04-01");
+  });
+
+  it("explains the oldest bill with the bank's payments before the cutoff", async () => {
+    prepaid(200);
+    const { summary } = await sync();
+    expect(summary?.invoices?.[0]).toMatchObject({ status: "matched", differenceCents: 0 });
+    expect((await bills())[0]).toMatchObject({ preStatementPaymentsCents: 20000 });
+    expect(await expenseRows()).toHaveLength(0);
+  });
+
+  it("keeps the difference visible when the payments do not explain all of it", async () => {
+    prepaid(150);
+    const { summary } = await sync();
+    expect(summary?.invoices?.[0]).toMatchObject({ status: "difference", differenceCents: -20000 });
+    expect((await bills())[0]).toMatchObject({ preStatementPaymentsCents: 0 });
+  });
+});
+
 describe("bill payment linking", () => {
   it("turns a checking payment into one bill payment with one transaction and marks the bill paid", async () => {
     feeds = { "remote-bank": [bankPayment("pay", "2026-04-10", 100)], "remote-card": [purchase("a", "2026-04", 100)] };

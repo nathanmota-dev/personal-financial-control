@@ -6,7 +6,8 @@ import { createTransfer } from "@/lib/server/transfers";
 import { ownTransferLegs } from "./run-state";
 import { bump, closestByDate, dayDistance, flagAttention, ledgerValues } from "./scope";
 
-const TRANSFER_WINDOW_DAYS = 1;
+/** A Pix made on a weekend or holiday is posted by one bank only on the next business day. */
+const TRANSFER_WINDOW_DAYS = 3;
 
 type TransferInput = Parameters<typeof createTransfer>[0];
 

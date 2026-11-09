@@ -5,6 +5,7 @@ import { investmentHoldings, investmentOperations, pluggyItems } from "@/lib/db/
 import type { PluggyApi, PluggyRemoteInvestment } from "@/lib/interfaces/pluggy";
 import { createInvestmentHolding, createInvestmentPurpose, getInvestmentPortfolioDashboard, upsertInvestmentPurposeAllocation } from "@/lib/server/investment-portfolio";
 import { createInvestmentOperation, createOperationalInvestmentAsset, getEmergencyReserveComposition, getInvestmentAssetDetails } from "@/lib/server/investment-operations";
+import { configureInvestmentPortfolio, getInvestmentProjection } from "@/lib/server/investments";
 import { pluggyRuntime } from "@/lib/server/pluggy/config";
 import { pluggyHttpError } from "@/lib/server/pluggy/errors";
 import { getPluggyInvestmentOverview, linkPluggyInvestment, unlinkPluggyInvestment } from "@/lib/server/pluggy/investments/links";
@@ -300,5 +301,34 @@ describe("Pluggy investment links", () => {
     await expect(getPluggyInvestmentOverview(database.db, api())).resolves.toMatchObject({ investments: [], notices: [{ failed: true, message: "A Pluggy está indisponível no momento." }] });
     listInvestments = vi.fn(async () => { throw new Error("boom"); });
     await expect(getPluggyInvestmentOverview(database.db, api())).rejects.toThrow("boom");
+  });
+});
+
+describe("emergency reserve checkpoint", () => {
+  const portfolio = () => configureInvestmentPortfolio({ checkpointBalanceCents: 5000, expectedMonthlyRateBps: 100, checkpointDate: "2026-01-01" }, database.db);
+
+  it("uses the bank's value as the balance of the reserve screen", async () => {
+    await portfolio();
+    const id = await linkedManual("a", 1234.56);
+    await reserveAllocation(id, 100000);
+    const run = await sync();
+    expect(run.summary?.counts).toMatchObject({ reserveCheckpointUpdated: 1 });
+    expect((await getInvestmentProjection(database.db))?.currentBalanceCents).toBe(123456);
+    expect((await getEmergencyReserveComposition(database.db)).differenceCents).toBe(0);
+    expect((await sync()).summary?.counts).not.toHaveProperty("reserveCheckpointUpdated");
+  });
+
+  it("leaves a reserve without linked positions and a dry run untouched", async () => {
+    await portfolio();
+    const manual = await manualHolding("Manual", 70000);
+    await reserveAllocation(manual.id, 70000);
+    await sync();
+    expect((await database.db.query.investmentPortfolio.findFirst())?.checkpointBalanceCents).toBe(5000);
+    await linkedManual("a", 1000);
+    const linked = (await database.db.query.investmentHoldings.findMany()).find((row) => row.externalAssetId)!;
+    const purpose = (await database.db.query.investmentPurposes.findFirst())!;
+    await upsertInvestmentPurposeAllocation({ holdingId: linked.id, purposeId: purpose.id, amountCents: 100000, allocatedOn: "2026-01-01" }, database.db);
+    await sync(true);
+    expect((await database.db.query.investmentPortfolio.findFirst())?.checkpointBalanceCents).toBe(5000);
   });
 });

@@ -17,6 +17,36 @@ const installment = (number: number, total: number, overrides: Partial<PluggyCar
 const months = new Map([["b4", "2026-04"], ["b5", "2026-05"], ["b6", "2026-06"], ["b1", "2027-01"], ["b2", "2027-02"]]);
 const group = (rows: PluggyCardRow[], bills: ReadonlyMap<string, string> = months) => groupCardPurchases(assignInvoiceMonths(rows, bills, CLOSING_DAY), options);
 
+describe("installments as the bank states them", () => {
+  it("keeps one purchase when the first installment holds the whole remainder", () => {
+    const purchases = group([
+      installment(1, 6, { amountCents: 16639, billId: "b4", purchaseDate: "2026-03-20", description: "LOJA I01/06" }),
+      ...[2, 3, 4, 5, 6].map((number) => installment(number, 6, { amountCents: 16634, purchaseDate: "2026-03-20", description: `LOJA I0${number}/06`, status: "pending" })),
+    ]);
+    expect(purchases).toHaveLength(1);
+    expect(purchases[0]).toMatchObject({ totalCents: 99809, residualCents: 0, installmentCount: 6 });
+    expect(purchases[0].installmentPlan?.map((item) => item.amountCents)).toEqual([16639, 16634, 16634, 16634, 16634, 16634]);
+    expect(purchases[0].installmentPlan?.map((item) => item.invoiceMonth)).toEqual(["2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09"]);
+    expect(purchases[0].alternateFingerprints).toHaveLength(5);
+  });
+
+  it("keeps an anticipated installment in the invoice that billed it", () => {
+    const [purchase, ...others] = group([
+      installment(2, 2, { amountCents: 8694, billId: "b6", purchaseDate: "2026-05-07", date: "2026-05-20", description: "LOJA02/02" }),
+      installment(1, 2, { amountCents: 8694, billId: "b6", purchaseDate: "2026-05-07", description: "LOJA01/02" }),
+    ]);
+    expect(others).toHaveLength(0);
+    expect(purchase).toMatchObject({ firstInvoiceMonth: "2026-06", description: "LOJA" });
+    expect(purchase.installmentPlan).toEqual([{ amountCents: 8694, invoiceMonth: "2026-06" }, { amountCents: 8694, invoiceMonth: "2026-06" }]);
+  });
+
+  it("splits what the bank has not delivered yet over the remaining months", () => {
+    const [purchase] = group([installment(1, 3, { amountCents: 3334, billId: "b4", purchaseDate: "2026-03-20" })]);
+    expect(purchase.installmentPlan?.reduce((sum, item) => sum + item.amountCents, 0)).toBe(purchase.totalCents);
+    expect(purchase.installmentPlan?.map((item) => item.invoiceMonth)).toEqual(["2026-04", "2026-05", "2026-06"]);
+  });
+});
+
 describe("grouping card installments", () => {
   it("joins every installment of a purchase into one charge (pattern A)", () => {
     const [purchase, ...others] = group([

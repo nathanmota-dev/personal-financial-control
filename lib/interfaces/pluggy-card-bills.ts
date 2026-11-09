@@ -1,7 +1,8 @@
 import type { PluggyLinkRecord } from "@/lib/interfaces/pluggy";
 
 /** One entry of a bill's `payments`. The flags keep each entry paired with at most one record per side. */
-export type PluggyBillPaymentEntry = { amountCents: number; date: string; claimed: boolean; mirrored: boolean };
+/** `excess` marks money paid beyond this bill, which belongs to the next statement. */
+export type PluggyBillPaymentEntry = { amountCents: number; date: string; claimed: boolean; mirrored: boolean; excess: boolean };
 
 export type PluggyMappedCardBill = {
   invoiceMonth: string;

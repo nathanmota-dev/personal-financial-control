@@ -16,9 +16,23 @@ function target(accountId: string, overrides: Partial<PluggyCardBillTarget> = {}
     billId: `bill-${accountId}`, paid: false, settledCents: 0, importedCents: 10000, differenceCents: 0, ...overrides,
   };
 }
-const entry = (date: string, amountCents: number) => ({ amountCents, date, claimed: false, mirrored: false });
+const entry = (date: string, amountCents: number) => ({ amountCents, date, claimed: false, mirrored: false, excess: false });
 
 describe("card bill mapper", () => {
+  it("moves what was paid beyond a bill to the next statement", () => {
+    const { bills } = mapCardBills([
+      remote("2026-04", 100, { payments: [payment("2026-04-06", 50), payment("2026-04-07", 100), payment("2026-04-20", 30)] }),
+      remote("2026-05", 90, { payments: [payment("2026-05-07", 90)] }),
+    ]);
+    expect(bills[0].payments.map((item) => [item.amountCents, item.excess])).toEqual([[5000, true], [10000, false], [3000, true]]);
+    expect(bills[1]).toMatchObject({ preStatementPaymentsCents: 8000, priorBalanceCents: 10000 });
+  });
+
+  it("settles in date order when no payment equals the statement", () => {
+    const { bills } = mapCardBills([remote("2026-04", 100, { payments: [payment("2026-04-06", 60), payment("2026-04-07", 40), payment("2026-04-08", 25)] })]);
+    expect(bills[0].payments.map((item) => item.excess)).toEqual([false, false, true]);
+  });
+
   it("reads the invoice month and dates in UTC", () => {
     const [bill] = mapCardBills([remote("2026-04", 100)]).bills;
     expect(bill).toMatchObject({ invoiceMonth: "2026-04", dueDate: "2026-04-12", closingDate: "2026-04-05", statementTotalCents: 10000 });

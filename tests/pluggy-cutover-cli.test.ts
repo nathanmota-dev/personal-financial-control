@@ -178,7 +178,10 @@ describe("cutover report", () => {
   });
 
   it("compares each invoice with the bank's bill", async () => {
-    const add = (invoiceMonth: string, statementTotalCents: number) => upsertCreditCardBill({ accountId: seed.card.id, invoiceMonth, dueDate: `${invoiceMonth}-12`, statementTotalCents, currentChargesTotalCents: statementTotalCents }, seed.db);
+    const add = async (invoiceMonth: string, statementTotalCents: number) => {
+      await upsertCreditCardBill({ accountId: seed.card.id, invoiceMonth, dueDate: `${invoiceMonth}-12`, statementTotalCents, currentChargesTotalCents: statementTotalCents }, seed.db);
+      await createCreditCardCharge({ accountId: seed.card.id, categoryId: seed.category.id, description: `compras ${invoiceMonth}`, purchaseDate: `${invoiceMonth}-01`, totalAmountCents: statementTotalCents, installmentCount: 1, kind: "purchase", firstInvoiceMonth: invoiceMonth }, seed.db);
+    };
     await add("2026-02", 100);
     await add("2026-03", 15000);
     await add("2026-04", 2000);
@@ -191,6 +194,13 @@ describe("cutover report", () => {
       { invoiceMonth: "2026-06", appTotalCents: null, bankTotalCents: 4000, differenceCents: null, status: "missing_in_app" },
     ]);
     expect((await report()).accounts.find((row) => row.kind === "credit")!.invoices[0].status).toBe("bank_unavailable");
+  });
+
+  it("compares what was imported, not the copy of the bank's total", async () => {
+    await upsertCreditCardBill({ accountId: seed.card.id, invoiceMonth: "2026-03", dueDate: "2026-03-12", statementTotalCents: 15000, currentChargesTotalCents: 15000, preStatementPaymentsCents: 1000 }, seed.db);
+    await createCreditCardCharge({ accountId: seed.card.id, categoryId: seed.category.id, description: "duplicada", purchaseDate: "2026-03-01", totalAmountCents: 30000, installmentCount: 1, kind: "purchase", firstInvoiceMonth: "2026-03" }, seed.db);
+    const { accounts } = await report(api(0, [remoteBill("2026-03", 150)]));
+    expect(accounts.find((row) => row.kind === "credit")!.invoices).toEqual([{ invoiceMonth: "2026-03", appTotalCents: 29000, bankTotalCents: 15000, differenceCents: -14000, status: "difference" }]);
   });
 
   it("proposes an initial balance only when the bank differs", async () => {

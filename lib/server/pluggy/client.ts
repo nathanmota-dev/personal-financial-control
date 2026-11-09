@@ -17,12 +17,19 @@ import {
 const API_KEY_LIFETIME_MS = 2 * 60 * 60 * 1000;
 const API_KEY_RENEWAL_MARGIN_MS = 5 * 60 * 1000;
 const MAX_PAGE_SIZE = 500;
+/** `GET /v2/transactions` rejects `pageSize` and `from`: the page size is fixed and the dates are `dateFrom` and `dateTo`. */
+const TRANSACTION_DATE_PARAMS = { from: "dateFrom", to: "dateTo" } as const;
 const REQUEST_TIMEOUT_MS = 30_000;
 
 /** `next` may be a URL or an opaque cursor; only its query is reused, so the key stays on the configured host. */
 function cursorQuery(next: string) {
   if (/^(https?:\/\/|\/|\?)/i.test(next)) return new URL(next, "https://api.invalid").searchParams;
   return new URLSearchParams({ cursor: next });
+}
+
+function transactionQuery({ from, to }: PluggyTransactionFilter) {
+  const dates = { [TRANSACTION_DATE_PARAMS.from]: from, [TRANSACTION_DATE_PARAMS.to]: to };
+  return new URLSearchParams(Object.entries(dates).flatMap(([name, value]) => value ? [[name, value]] : []));
 }
 
 export class PluggyClient implements PluggyApi {
@@ -48,10 +55,10 @@ export class PluggyClient implements PluggyApi {
     const schema = pluggyCursorSchema(pluggyTransactionSchema);
     const results: z.infer<typeof pluggyTransactionSchema>[] = [];
     const seen = new Set<string>();
-    let query = new URLSearchParams(Object.entries(filter).filter(([, value]) => value));
+    let query = transactionQuery(filter);
     for (;;) {
       query.set("accountId", accountId);
-      query.set("pageSize", String(MAX_PAGE_SIZE));
+      query.delete("pageSize");
       const page = await this.get(`/v2/transactions?${query}`, schema);
       results.push(...page.results);
       if (!page.next) return results;
