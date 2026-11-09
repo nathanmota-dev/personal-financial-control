@@ -21,7 +21,7 @@ export function closestByDate<T>(candidates: T[], date: string, dateOf: (candida
   return best;
 }
 
-export function bump(scope: BankImportScope, name: string) {
+export function bump(scope: Pick<BankImportScope, "counts">, name: string) {
   scope.counts[name] = (scope.counts[name] ?? 0) + 1;
 }
 

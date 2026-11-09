@@ -3,11 +3,11 @@
 import { OpenFinanceRunAttention } from "@/components/finance/open-finance/open-finance-run-attention";
 import { Badge } from "@/components/ui/badge";
 import type { OpenFinanceRunSummaryProps } from "@/lib/interfaces/components/open-finance";
-import { formatPluggyDateTime, pluggyBankCountLabels, pluggyRunStatusLabels } from "@/lib/pluggy-ui";
+import { formatPluggyDateTime, pluggyBankCountLabels, pluggyCardCountLabels, pluggyRunStatusLabels } from "@/lib/pluggy-ui";
 
 export function OpenFinanceRunSummary({ run }: OpenFinanceRunSummaryProps) {
   const { summary } = run;
-  const imported = pluggyBankCountLabels.flatMap(([name, label]) => summary?.counts[name] ? [`${summary.counts[name]} ${label}`] : []);
+  const imported = [...pluggyBankCountLabels, ...pluggyCardCountLabels].flatMap(([name, label]) => summary?.counts[name] ? [`${summary.counts[name]} ${label}`] : []);
   return (
     <div role="status" aria-label="Última sincronização" className="space-y-2 text-sm">
       <div className="flex flex-wrap items-center gap-2">

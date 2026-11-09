@@ -182,6 +182,26 @@ describe("Open Finance settings", () => {
     expect(screen.getByText(/Escolha uma conta em Outras contas próprias/)).toBeVisible();
   });
 
+  it("shows card purchase counts, residuals and items locked by a paid bill", async () => {
+    const summary = {
+      ...successRun.summary!,
+      counts: { cardPurchases: 4, cardRefunds: 1, cardUpdated: 2, cardBillPayment: 1, cardCancelled: 1, cardResidual: 1, cardLocked: 1, cardIgnored: 3, cardDeferred: 1 },
+      attention: [
+        { reason: "card_total_residual" as const, accountLabel: "Cartão", description: "LOJA", date: "2026-03-20", amountCents: 2 },
+        { reason: "card_locked_by_paid_bill" as const, accountLabel: "Cartão", description: "MERCADO", date: "2026-03-21", amountCents: 12000 },
+        { reason: "card_missing_account_currency" as const, accountLabel: "Cartão", description: "STORE", date: "2026-03-22", amountCents: 500 },
+      ],
+    };
+    stubApi({ run: { ...successRun, summary } });
+    renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
+    const status = await screen.findByRole("status", { name: "Última sincronização" });
+    expect(status).toHaveTextContent("4 compras no cartão · 1 estornos no cartão · 2 compras atualizadas · 1 pagamentos recebidos no cartão · 1 compras canceladas · 1 totais com diferença de centavos · 1 compras travadas por fatura paga · 3 registros do cartão ignorados");
+    expect(screen.getByText("LOJA")).toBeVisible();
+    expect(screen.getByText(/pode diferir do banco/)).toBeVisible();
+    expect(screen.getByText(/uma fatura paga impede a mudança/)).toBeVisible();
+    expect(screen.getByText(/moeda estrangeira sem o valor em reais/)).toBeVisible();
+  });
+
   it("renders a run stored before bank imports existed", async () => {
     const { attention: _attention, ...legacy } = { ...successRun.summary!, attention: [] };
     void _attention;

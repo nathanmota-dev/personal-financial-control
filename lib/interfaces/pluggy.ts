@@ -73,7 +73,13 @@ export type PluggySyncFailure = {
   message: string;
 };
 
-export type PluggyAttentionReason = "possible_own_transfer" | "missing_other_own_account" | "missing_investment_category";
+export type PluggyAttentionReason =
+  | "possible_own_transfer"
+  | "missing_other_own_account"
+  | "missing_investment_category"
+  | "card_total_residual"
+  | "card_locked_by_paid_bill"
+  | "card_missing_account_currency";
 
 export type PluggyAttentionItem = {
   reason: PluggyAttentionReason;
@@ -130,6 +136,7 @@ export type PluggySyncStepContext = {
   remoteAccounts(item: PluggyItemRecord): Promise<PluggyRemoteAccount[]>;
   /** Cached per run, because pairing an own transfer also reads the other linked accounts. */
   remoteTransactions(link: PluggyLinkRecord): Promise<PluggyRemoteTransaction[]>;
+  remoteBills(link: PluggyLinkRecord): Promise<PluggyRemoteBill[]>;
 };
 
 export type PluggyItemSyncStep = {

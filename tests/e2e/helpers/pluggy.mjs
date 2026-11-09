@@ -1,12 +1,32 @@
 // Runs in the production server process, so tests never reach the real Pluggy API.
 const previousFetch = globalThis.fetch;
 const json = (body) => new Response(JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
+const CARD_ITEM_ID = "99999999-2222-3333-4444-555555555555";
+
+function shiftedMonth(delta) {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + delta, 1)).toISOString().slice(0, 7);
+}
+
+/** Every installment is delivered at once: the first posted on a bill, and the future ones still pending. */
+function cardTransactions() {
+  const date = new Date().toISOString();
+  const purchaseDate = `${date.slice(0, 10)}T00:00:00.000Z`;
+  const part = (number, overrides) => ({ id: `e2e-card-${number}`, date, amount: 30, type: "DEBIT", status: "PENDING", description: `COMPRA CARTAO E2E ${number}/3`, creditCardMetadata: { installmentNumber: number, totalInstallments: 3, purchaseDate }, ...overrides });
+  return [part(1, { status: "POSTED", creditCardMetadata: { installmentNumber: 1, totalInstallments: 3, purchaseDate, billId: "e2e-bill" } }), part(2), part(3)];
+}
+
 globalThis.fetch = async function (input, init) {
   const url = new URL(typeof input === "string" ? input : input instanceof URL ? input.href : input.url);
   if (url.hostname !== "api.pluggy.ai") return previousFetch(input, init);
   if (url.pathname === "/auth") return json({ apiKey: "e2e-api-key" });
-  if (url.pathname === "/accounts") return json({ results: [{ id: "remote-checking", type: "BANK", name: "Conta remota", number: "0012345" }], totalPages: 1 });
+  if (url.pathname === "/accounts") {
+    if (url.searchParams.get("itemId") === CARD_ITEM_ID) return json({ results: [{ id: "remote-card", type: "CREDIT", name: "Cartão remoto", number: "0099" }], totalPages: 1 });
+    return json({ results: [{ id: "remote-checking", type: "BANK", name: "Conta remota", number: "0012345" }], totalPages: 1 });
+  }
+  if (url.pathname === "/bills") return json({ results: [{ id: "e2e-bill", dueDate: `${shiftedMonth(0)}-12T00:00:00.000Z` }], totalPages: 1 });
   if (url.pathname === "/v2/transactions") {
+    if (url.searchParams.get("accountId") === "remote-card") return json({ results: cardTransactions() });
     const date = new Date().toISOString();
     const owner = { documentNumber: "12345678909" };
     return json({ results: [

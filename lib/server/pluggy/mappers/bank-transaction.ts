@@ -6,7 +6,7 @@ const FALLBACK_DESCRIPTION = "Lançamento bancário";
 const dayFormatter = new Intl.DateTimeFormat("en-CA", { timeZone: pluggyTimeZone });
 
 /** Banks stamp `date` at varying times near midnight, so the UTC day can be the wrong local day. */
-function localDay(value: string) {
+export function localDay(value: string) {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : dayFormatter.format(date);
 }
