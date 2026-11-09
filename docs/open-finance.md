@@ -1,6 +1,6 @@
 # Open Finance via MeuPluggy
 
-A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças. Lançamentos de cartão, faturas e posições de investimento ainda não são importados.
+A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças e as compras de cartão. Faturas e posições de investimento ainda não são importadas.
 
 ## Configurar
 
@@ -54,6 +54,26 @@ A categoria é aprendida com as suas escolhas, sem usar o campo `category` da Pl
 - Um lançamento existente só recebe o que pertence ao banco: status e, enquanto pendente, valor e data. Categoria, notas e descrição nunca são sobrescritas.
 - Se a Pluggy recriar um pendente com outro `id`, o lançamento confirmado assume a linha local com mesma conta, tipo e valor, em uma janela de 3 dias.
 - Um pendente que some da Pluggy é cancelado e volta se reaparecer.
+
+## Compras no cartão
+
+Um cartão precisa estar vinculado a uma conta local de crédito com dia de fechamento. Caso contrário, o vínculo é ignorado e o motivo aparece nas falhas da sincronização.
+
+| Registro no cartão | Resultado |
+|---|---|
+| Valor positivo | Compra ou parcela |
+| Valor negativo com `PAGAMENTO_FATURA` ou descrição iniciada por `PAGAMENTO` | Nenhuma compra, apenas o registro para o vínculo com a fatura |
+| Demais valores negativos | Estorno, que reduz a fatura |
+
+- Compras em moeda estrangeira usam `amountInAccountCurrency`. Sem esse campo, a compra não é importada e aparece em **Itens que precisam de atenção**.
+- A Pluggy devolve uma transação por parcela, sem identificador comum. As parcelas são agrupadas por descrição normalizada, valor e número de parcelas, com tolerância de 1 centavo entre elas.
+- O mês da fatura vem da fatura da parcela (mês de `dueDate`). Sem fatura, como em pendentes, vem do dia de fechamento. A primeira fatura é esse mês menos as parcelas anteriores, e duas compras iguais no mesmo mês continuam separadas.
+- A compra recebe uma categoria das regras aprendidas ou **A classificar**. Categoria, notas e descrição editadas são mantidas nas próximas sincronizações.
+- Com todas as parcelas, o total é a soma delas. Com parte delas, o total é reconstruído pela regra de arredondamento, em que os centavos extras ficam nas primeiras parcelas. Quando as parcelas recebidas não bastam para provar o valor exato, a diferença possível aparece em **Itens que precisam de atenção**.
+- A data da compra vem de `purchaseDate` ou da parcela 1. Sem nenhuma delas, usa o fechamento da primeira fatura e registra nas notas que a data é aproximada, até a data real chegar.
+- Uma nova entrega da mesma compra atualiza o registro existente. Compra em fatura paga não é alterada e aparece no resumo.
+- Compras cujas faturas terminam antes do mês da data de corte são ignoradas. Compras iniciadas antes, com parcelas dentro da janela, são importadas por inteiro.
+- Uma compra só com registros pendentes que a Pluggy recria confirmada com outro `id` assume a compra local de mesmo valor e parcelas, em uma janela de 3 dias. Se sumir da Pluggy, é removida e volta se reaparecer.
 
 ## Limites
 

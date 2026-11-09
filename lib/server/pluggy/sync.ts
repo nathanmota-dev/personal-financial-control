@@ -7,6 +7,7 @@ import type {
   PluggyItemRecord,
   PluggyLinkRecord,
   PluggyRemoteAccount,
+  PluggyRemoteBill,
   PluggyRemoteTransaction,
   PluggySyncFailure,
   PluggySyncOptions,
@@ -21,11 +22,12 @@ import { DomainError } from "@/lib/server/errors";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
 import { importBankTransactionsStep } from "./steps/import-bank-transactions";
+import { importCardPurchasesStep } from "./steps/import-card-purchases";
 import { itemStatusStep } from "./steps/item-status";
 import { closePluggyRun, openPluggyRun } from "./sync-runs";
 
 /** Steps run in this order. Import steps from later issues are appended here, each in its own file. */
-export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep];
+export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep, importCardPurchasesStep];
 
 const MAX_ATTENTION_ITEMS = 50;
 
@@ -94,6 +96,7 @@ function resolveStatus(state: Pipeline): PluggySyncRunStatus {
 function createContext(options: PluggySyncOptions, dryRun: boolean, now: Date): PluggySyncStepContext {
   const accounts = new Map<string, Promise<PluggyRemoteAccount[]>>();
   const transactions = new Map<string, Promise<PluggyRemoteTransaction[]>>();
+  const bills = new Map<string, Promise<PluggyRemoteBill[]>>();
   return {
     db: options.db,
     client: options.client,
@@ -107,6 +110,10 @@ function createContext(options: PluggySyncOptions, dryRun: boolean, now: Date): 
     remoteTransactions(link) {
       if (!transactions.has(link.id)) transactions.set(link.id, options.client.listTransactions(link.externalAccountId, { from: link.cutoffDate }));
       return transactions.get(link.id)!;
+    },
+    remoteBills(link) {
+      if (!bills.has(link.id)) bills.set(link.id, options.client.listBills(link.externalAccountId));
+      return bills.get(link.id)!;
     },
   };
 }

@@ -27,11 +27,20 @@ const pluggyPartySchema = z.looseObject({
 
 const pluggyPaymentDataSchema = z.looseObject({ payer: pluggyPartySchema.nullish(), receiver: pluggyPartySchema.nullish() });
 
+const pluggyCardMetadataSchema = z.looseObject({
+  installmentNumber: z.number().int().nullish(),
+  totalInstallments: z.number().int().nullish(),
+  purchaseDate: optionalText,
+  billId: optionalText,
+});
+
 // Later import steps read more fields, so unknown ones are kept on these records.
 export const pluggyTransactionSchema = z.looseObject({
   id: z.string().min(1),
   date: z.string().min(1),
   amount: z.number(),
+  amountInAccountCurrency: z.number().nullish(),
+  currencyCode: optionalText,
   type: optionalText,
   status: optionalText,
   description: optionalText,
@@ -39,6 +48,7 @@ export const pluggyTransactionSchema = z.looseObject({
   operationType: optionalText,
   // A malformed counterparty must not reject the whole page of transactions.
   paymentData: pluggyPaymentDataSchema.nullish().catch(null),
+  creditCardMetadata: pluggyCardMetadataSchema.nullish().catch(null),
 });
 
 export const pluggyBillSchema = z.looseObject({

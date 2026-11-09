@@ -33,10 +33,24 @@ export const pluggyBankCountLabels: readonly (readonly [string, string])[] = [
   ["bankIgnored", "ignorados"],
 ];
 
+export const pluggyCardCountLabels: readonly (readonly [string, string])[] = [
+  ["cardPurchases", "compras no cartão"],
+  ["cardRefunds", "estornos no cartão"],
+  ["cardUpdated", "compras atualizadas"],
+  ["cardBillPayment", "pagamentos recebidos no cartão"],
+  ["cardCancelled", "compras canceladas"],
+  ["cardResidual", "totais com diferença de centavos"],
+  ["cardLocked", "compras travadas por fatura paga"],
+  ["cardIgnored", "registros do cartão ignorados"],
+];
+
 export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
   possible_own_transfer: "Pode ser transferência própria; foi importado como lançamento comum.",
   missing_other_own_account: "Transferência própria sem a outra conta. Escolha uma conta em Outras contas próprias.",
   missing_investment_category: "Crie uma categoria do grupo investimento para importar este movimento.",
+  card_total_residual: "Nem todas as parcelas foram recebidas. O total da compra pode diferir do banco em até o valor indicado.",
+  card_locked_by_paid_bill: "O banco alterou esta compra, mas uma fatura paga impede a mudança. Valor indicado: total informado pelo banco.",
+  card_missing_account_currency: "Compra em moeda estrangeira sem o valor em reais. Não foi importada, e o valor indicado está na moeda original.",
 };
 
 export const pluggyDirectionLabels: Record<PluggyCategoryRuleDirection, string> = { income: "Receita", expense: "Despesa" };
