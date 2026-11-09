@@ -44,6 +44,39 @@ authenticatedTest("shows a stubbed Open Finance purchase in the correct invoices
   await expect(page.getByText("COMPRA CARTAO E2E", { exact: true })).toHaveCount(0);
 });
 
+authenticatedTest("marks an invoice paid from a stubbed checking payment shown only as a bill payment", async ({ page, context, finance }) => {
+  await loginWithPin(context, finance.url);
+  for (const data of [{ name: "Cartão local E2E", type: "credit", initialBalanceCents: 0, creditClosingDay: 5, creditDueDay: 12 }, { name: "Conta local E2E", type: "checking", initialBalanceCents: 0 }]) {
+    const created = await context.request.post(`${finance.url}/api/accounts`, { headers: { Origin: finance.url }, data });
+    expect(created.status()).toBeLessThan(300);
+  }
+  await page.goto(`${finance.url}/settings`);
+  await page.getByRole("dialog").getByRole("button", { name: "Pular configuração", exact: true }).click();
+  await page.goto(`${finance.url}/settings`);
+  await page.getByRole("tab", { name: "Open Finance", exact: true }).click();
+  const connections = [["Banco Cartão E2E", "99999999-2222-3333-4444-555555555555", "Cartão remoto", "Cartão local E2E"], ["Banco Conta E2E", "11111111-2222-3333-4444-555555555555", "Conta remota", "Conta local E2E"]];
+  for (const [label, itemId, remote, local] of connections) {
+    await page.getByLabel("Nome do banco").fill(label);
+    await page.getByLabel("Item ID").fill(itemId);
+    await page.getByRole("button", { name: "Adicionar conexão", exact: true }).click();
+    await page.getByLabel(`Conta local de ${remote}`).selectOption({ label: local });
+    await page.getByRole("button", { name: "Vincular conta", exact: true }).click();
+    await expect(page.getByLabel(`Conta local de ${remote}`)).toHaveValue(/.+/);
+    await expect(page.getByRole("button", { name: "Vincular conta", exact: true })).toHaveCount(0);
+  }
+  await page.getByRole("button", { name: "Sincronizar bancos", exact: true }).click();
+  const result = page.getByRole("status", { name: "Última sincronização" });
+  await expect(result).toContainText("1 pagamentos vinculados a faturas");
+  await expect(result).toContainText("Conferência das faturas");
+
+  const month = monthFromNow(0);
+  await page.goto(`${finance.url}/credit-card?month=${month}`);
+  await expect(page.getByRole("region", { name: "Resumo da fatura" })).toContainText("Paga em");
+  await page.goto(`${finance.url}/transactions?month=${month}`);
+  await expect(page.getByText(`Pagamento da fatura do cartão ${month}`).first()).toBeVisible();
+  await expect(page.getByText("PAGAMENTO FATURA E2E")).toHaveCount(0);
+});
+
 test("creates and edits installment purchases and verifies future invoices", async ({
   page,
   request,

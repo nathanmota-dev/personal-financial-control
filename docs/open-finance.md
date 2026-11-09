@@ -1,6 +1,6 @@
 # Open Finance via MeuPluggy
 
-A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças e as compras de cartão. Faturas e posições de investimento ainda não são importadas.
+A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças, as compras de cartão e as faturas, com o vínculo dos pagamentos. Posições de investimento ainda não são importadas.
 
 ## Configurar
 
@@ -74,6 +74,31 @@ Um cartão precisa estar vinculado a uma conta local de crédito com dia de fech
 - Uma nova entrega da mesma compra atualiza o registro existente. Compra em fatura paga não é alterada e aparece no resumo.
 - Compras cujas faturas terminam antes do mês da data de corte são ignoradas. Compras iniciadas antes, com parcelas dentro da janela, são importadas por inteiro.
 - Uma compra só com registros pendentes que a Pluggy recria confirmada com outro `id` assume a compra local de mesmo valor e parcelas, em uma janela de 3 dias. Se sumir da Pluggy, é removida e volta se reaparecer.
+
+## Faturas e pagamentos
+
+As faturas são importadas depois das compras, e cada fatura vira uma linha por cartão e mês, o mês de `dueDate`.
+
+- A fatura anterior informa o saldo anterior, e os pagamentos da fatura com data antes de `billClosingDate` entram como pagamentos antes do fechamento.
+- Fatura com total zero ou negativo não é importada e aparece em **Itens que precisam de atenção**.
+- Fatura paga nunca é reescrita. Se o banco mudar o total ou o vencimento, a diferença é apenas informada.
+
+A conferência de cada fatura usa `total = compras importadas + saldo anterior não pago - pagamentos antes do fechamento`. IOF e encargos já chegam como registros do cartão, por isso `financeCharges` não é somado. O resumo da sincronização mostra cada fatura como **Conferida**, **Com diferença** ou **Pagamento não vinculado**. Faturas anteriores ao mês da data de corte são gravadas, mas não comparadas.
+
+Cada pagamento de fatura na conta corrente é procurado primeiro em `payments` das faturas, com mesmo valor e até 3 dias de distância, e depois em `totalAmount`, com até 15 dias do vencimento.
+
+| Situação | Resultado |
+|---|---|
+| Na fatura, a partir do fechamento | `settlement`. Quando os pagamentos atingem o total, a fatura fica paga e trava as compras |
+| Antes do fechamento | `pre_statement` |
+| Sem fatura, com um único cartão vinculado | `unlinked`, informado para revisão |
+| Fatura já paga | `unlinked`, informado para revisão |
+| Mais de um cartão possível | Nada é registrado, e o caso aparece para revisão até só um corresponder |
+
+- O pagamento é sempre um registro de `credit_card_bill_payments` com uma única transação, e por isso fica fora das despesas.
+- Um pagamento já lançado manualmente, com mesma conta, valor e até 3 dias de distância, é reaproveitado.
+- Um pagamento listado na fatura sem lançamento em conta vinculada só é informado, sem criar transação. A fatura continua em aberto.
+- Enquanto um cartão ou uma conta não puder ser lido, os pagamentos sem correspondência aguardam a próxima sincronização.
 
 ## Limites
 

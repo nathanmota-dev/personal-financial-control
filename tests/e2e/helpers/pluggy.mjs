@@ -3,9 +3,11 @@ const previousFetch = globalThis.fetch;
 const json = (body) => new Response(JSON.stringify(body), { headers: { "Content-Type": "application/json" } });
 const CARD_ITEM_ID = "99999999-2222-3333-4444-555555555555";
 
-function shiftedMonth(delta) {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + delta, 1)).toISOString().slice(0, 7);
+/** Due today and closed a week ago, so the checking payment stubbed below always settles it. */
+function cardBill() {
+  const now = Date.now();
+  const utcMidnight = (time) => `${new Date(time).toISOString().slice(0, 10)}T00:00:00.000Z`;
+  return { id: "e2e-bill", dueDate: utcMidnight(now), billClosingDate: utcMidnight(now - 7 * 86_400_000), totalAmount: 300, payments: [] };
 }
 
 /** Every installment is delivered at once: the first posted on a bill, and the future ones still pending. */
@@ -24,7 +26,7 @@ globalThis.fetch = async function (input, init) {
     if (url.searchParams.get("itemId") === CARD_ITEM_ID) return json({ results: [{ id: "remote-card", type: "CREDIT", name: "Cartão remoto", number: "0099" }], totalPages: 1 });
     return json({ results: [{ id: "remote-checking", type: "BANK", name: "Conta remota", number: "0012345" }], totalPages: 1 });
   }
-  if (url.pathname === "/bills") return json({ results: [{ id: "e2e-bill", dueDate: `${shiftedMonth(0)}-12T00:00:00.000Z` }], totalPages: 1 });
+  if (url.pathname === "/bills") return json({ results: [cardBill()], totalPages: 1 });
   if (url.pathname === "/v2/transactions") {
     if (url.searchParams.get("accountId") === "remote-card") return json({ results: cardTransactions() });
     const date = new Date().toISOString();
