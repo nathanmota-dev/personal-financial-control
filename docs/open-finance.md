@@ -120,6 +120,60 @@ A sincronização atualiza apenas valor e data. Nome, tipo e instituição vêm 
 - A atualização mantém a alocação da reserva de emergência acompanhando o valor do ativo.
 - Conectores expõem produtos diferentes. Uma conexão sem investimentos, ou com o recurso indisponível, aparece na aba e no resumo, sem contar como falha.
 
+## Migração do histórico (cutover)
+
+O cutover troca os dados lançados à mão pelos dados do banco dentro da janela de cada conta. Depois dele, não use `scripts/import-itau-card.ts` nem lançamentos manuais nos períodos sincronizados, porque eles duplicariam o que vem do banco.
+
+A janela de cada conta começa em `cutoff_date`. Lançamentos e transferências entram pela data; faturas e compras entram pelo mês da fatura. Uma conta com mais de um vínculo usa a data mais antiga, e vínculos desativados são ignorados.
+
+### Recorrências
+
+Decisão: os modelos ativos das contas vinculadas são **pausados** antes da limpeza, porque o gerador recriaria os meses apagados. Modelos de contas sem vínculo continuam ativos. Enquanto estiverem pausados, salário e aluguel vinculados deixam de aparecer no **Saldo Projetado**.
+
+### O que a limpeza faz
+
+Cada conta roda em uma transação própria, nesta ordem:
+
+| # | Ação | Motivo |
+|---|---|---|
+| 0 | Pausa os modelos recorrentes | O gerador não recria os meses |
+| 1 | Apaga as transações de pagamento de fatura | Remove também os registros de pagamento |
+| 2 | Apaga as faturas | Uma fatura paga travaria as compras |
+| 3 | Apaga as compras com **qualquer** parcela na janela | A sincronização importa a compra inteira e duplicaria as parcelas |
+| 4 | Apaga os demais lançamentos | Reverte resgates e remove o resgate automático junto da despesa |
+| 5 | Apaga as transferências | A sincronização as recria |
+
+Registros que já vieram do banco nunca são apagados, porque o histórico de importação impediria que voltassem. Por isso, repetir a limpeza depois de uma sincronização não apaga nada.
+
+O relatório lista o que precisa de revisão: parcelas fora da janela de compras removidas, metas que perdem o lançamento, reversões de resgate, transferências cujo outro lado não está na janela e pagamentos separados da fatura.
+
+### Procedimento
+
+Pare o app durante a limpeza. Os relatórios ficam em `.local/pluggy-cutover/<banco>/`, fora do git. Não publique esses arquivos, pois contêm dados financeiros reais.
+
+1. Crie uma cópia do banco: `turso db create <copia> --from-db <origem>`.
+2. Aponte `DATABASE_URL` e `TOKEN` para a cópia, com a mesma `DATA_ENCRYPTION_KEY` e um `TURSO_REPLICA_PATH` novo ou sem réplica.
+3. Capture o estado inicial: `npm run pluggy:cutover -- report --label=before`.
+4. Revise a simulação, que não grava nada e mostra o banco de destino e as contagens por tabela: `npm run pluggy:cutover`.
+5. Aplique, repetindo o nome do banco mostrado: `npm run pluggy:cutover -- --apply --confirm-target=<banco>`.
+6. Rode **Sincronizar bancos** no app apontado para a cópia.
+7. Capture e compare: `npm run pluggy:cutover -- report --label=after` e `npm run pluggy:cutover -- compare --before=before --after=after`.
+8. Confira a comparação e, na cópia, as telas Painel, Lançamentos, Cartão, Relatórios, Saldo Projetado e Investimentos. Uma segunda sincronização não deve criar nada.
+
+A comparação mostra, por conta e mês, os totais antes e depois, cada fatura contra a do banco e o saldo do app contra o do banco. Se a diferença de saldo vier de dados anteriores à janela, ela propõe um novo saldo inicial, aplicado só depois da sua confirmação:
+
+```bash
+npm run pluggy:cutover -- adjust --account-id=<id> --initial-balance-cents=<valor> --apply --confirm-target=<banco>
+```
+
+### Produção
+
+1. Só avance depois de aprovar o resultado da cópia.
+2. Crie uma cópia nova da produção como ponto de retorno e guarde-a por pelo menos um ciclo completo de fatura.
+3. Repita o procedimento acima na produção.
+
+**Reversão:** aponte o app de volta para a cópia.
+
 ## Limites
 
 - **Sincronizar bancos** lê o que a Pluggy já coletou. Itens do MeuPluggy rejeitam `PATCH /items/{id}`, então o app não consegue forçar uma nova coleta. A aba mostra quando os dados foram coletados e quando a próxima coleta está prevista.

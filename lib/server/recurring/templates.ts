@@ -137,7 +137,7 @@ export async function deleteRecurringTemplate(
   });
 }
 
-export async function pauseRecurringTemplate(id: string, database?: AppDb) {
+export async function pauseRecurringTemplate(id: string, database?: RecurringDb) {
   const db = await resolveDb(database);
   await getRecurringTemplateById(id, db);
 
