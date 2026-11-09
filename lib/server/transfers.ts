@@ -4,6 +4,7 @@ import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { transfers } from "@/lib/db/schema";
 import { getAccountById } from "@/lib/server/accounts";
+import type { TransactionDb } from "@/lib/server/transactions";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp,normalizeCompetenceMonth,normalizeDate,serializeTimestamps } from "@/lib/server/finance";
 
@@ -16,11 +17,11 @@ const transferSchema = z.object({
   description: z.string().trim().min(1),
 });
 
-async function resolveDb(database?: AppDb) {
+async function resolveDb(database?: TransactionDb) {
   return database ?? getFinanceDatabase();
 }
 
-export async function createTransfer(input: z.input<typeof transferSchema>, database?: AppDb) {
+export async function createTransfer(input: z.input<typeof transferSchema>, database?: TransactionDb) {
   const db = await resolveDb(database);
   const values = transferSchema.parse(input);
 

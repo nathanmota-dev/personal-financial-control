@@ -20,11 +20,25 @@ export const pluggyAccountSchema = z.object({
   number: optionalText,
 });
 
+const pluggyPartySchema = z.looseObject({
+  documentNumber: z.union([z.string(), z.looseObject({ value: optionalText })]).nullish(),
+  name: optionalText,
+});
+
+const pluggyPaymentDataSchema = z.looseObject({ payer: pluggyPartySchema.nullish(), receiver: pluggyPartySchema.nullish() });
+
 // Later import steps read more fields, so unknown ones are kept on these records.
 export const pluggyTransactionSchema = z.looseObject({
   id: z.string().min(1),
   date: z.string().min(1),
   amount: z.number(),
+  type: optionalText,
+  status: optionalText,
+  description: optionalText,
+  providerId: optionalText,
+  operationType: optionalText,
+  // A malformed counterparty must not reject the whole page of transactions.
+  paymentData: pluggyPaymentDataSchema.nullish().catch(null),
 });
 
 export const pluggyBillSchema = z.looseObject({

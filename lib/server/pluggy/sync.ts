@@ -7,6 +7,7 @@ import type {
   PluggyItemRecord,
   PluggyLinkRecord,
   PluggyRemoteAccount,
+  PluggyRemoteTransaction,
   PluggySyncFailure,
   PluggySyncOptions,
   PluggySyncRunStatus,
@@ -19,11 +20,14 @@ import type {
 import { DomainError } from "@/lib/server/errors";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
+import { importBankTransactionsStep } from "./steps/import-bank-transactions";
 import { itemStatusStep } from "./steps/item-status";
 import { closePluggyRun, openPluggyRun } from "./sync-runs";
 
 /** Steps run in this order. Import steps from later issues are appended here, each in its own file. */
-export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep];
+export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep];
+
+const MAX_ATTENTION_ITEMS = 50;
 
 type Pipeline = {
   context: PluggySyncStepContext;
@@ -33,7 +37,7 @@ type Pipeline = {
 };
 
 function emptySummary(dryRun: boolean, items: number, accounts: number): PluggySyncSummary {
-  return { dryRun, items: { total: items, failed: 0 }, accounts: { total: accounts, failed: 0, skipped: 0 }, counts: {}, failures: [] };
+  return { dryRun, items: { total: items, failed: 0 }, accounts: { total: accounts, failed: 0, skipped: 0 }, counts: {}, failures: [], attention: [] };
 }
 
 function describeFailure(error: unknown) {
@@ -44,8 +48,10 @@ function describeFailure(error: unknown) {
     : { code: "PLUGGY_STEP_FAILED", message: "Não foi possível concluir esta etapa." };
 }
 
-function addCounts(summary: PluggySyncSummary, result: PluggySyncStepResult) {
+function addResult(summary: PluggySyncSummary, result: PluggySyncStepResult) {
   for (const [name, value] of Object.entries(result?.counts ?? {})) summary.counts[name] = (summary.counts[name] ?? 0) + value;
+  const attention = (summary.attention ??= []);
+  attention.push(...(result?.attention ?? []).slice(0, Math.max(0, MAX_ATTENTION_ITEMS - attention.length)));
 }
 
 function recordFailure(summary: PluggySyncSummary, failure: Omit<PluggySyncFailure, "code" | "message">, error: unknown) {
@@ -56,7 +62,7 @@ async function runItemStep(step: Extract<PluggySyncStep, { scope: "item" }>, ite
   for (const item of items) {
     if (state.failedItems.has(item.id)) continue;
     try {
-      addCounts(state.summary, await step.run(state.context, item));
+      addResult(state.summary, await step.run(state.context, item));
     } catch (error) {
       recordFailure(state.summary, { scope: "item", step: step.name, targetId: item.id, label: item.label }, error);
       state.failedItems.add(item.id);
@@ -69,7 +75,7 @@ async function runAccountStep(step: Extract<PluggySyncStep, { scope: "account" }
   for (const link of links) {
     if (state.failedLinks.has(link.id) || state.failedItems.has(link.itemId)) continue;
     try {
-      addCounts(state.summary, await step.run(state.context, link, itemsById.get(link.itemId)!));
+      addResult(state.summary, await step.run(state.context, link, itemsById.get(link.itemId)!));
     } catch (error) {
       recordFailure(state.summary, { scope: "account", step: step.name, targetId: link.id, label: link.remoteName }, error);
       state.failedLinks.add(link.id);
@@ -87,6 +93,7 @@ function resolveStatus(state: Pipeline): PluggySyncRunStatus {
 
 function createContext(options: PluggySyncOptions, dryRun: boolean, now: Date): PluggySyncStepContext {
   const accounts = new Map<string, Promise<PluggyRemoteAccount[]>>();
+  const transactions = new Map<string, Promise<PluggyRemoteTransaction[]>>();
   return {
     db: options.db,
     client: options.client,
@@ -96,6 +103,10 @@ function createContext(options: PluggySyncOptions, dryRun: boolean, now: Date): 
     remoteAccounts(item) {
       if (!accounts.has(item.id)) accounts.set(item.id, options.client.listAccounts(item.externalItemId));
       return accounts.get(item.id)!;
+    },
+    remoteTransactions(link) {
+      if (!transactions.has(link.id)) transactions.set(link.id, options.client.listTransactions(link.externalAccountId, { from: link.cutoffDate }));
+      return transactions.get(link.id)!;
     },
   };
 }

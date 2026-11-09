@@ -63,6 +63,10 @@ export function isInvestmentMovementType(type: TransactionValues["type"]) {
   return type === "investment_contribution" || type === "investment_withdrawal";
 }
 
+export function isImportedInvestmentMovement(value: { type: TransactionValues["type"]; importFingerprint: string | null }) {
+  return isInvestmentMovementType(value.type) && Boolean(value.importFingerprint?.startsWith("pluggy:"));
+}
+
 export function automaticWithdrawalDescription(description: string) {
   return `Resgate automático: ${description}`;
 }

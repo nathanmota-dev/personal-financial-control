@@ -5,3 +5,8 @@ import type { PluggyAccountKind } from "@/lib/interfaces/pluggy";
 export function isLinkableAccountType(kind: PluggyAccountKind, type: AccountType) {
   return kind === "credit" ? type === "credit" : type === "checking" || type === "savings";
 }
+
+/** Receives the side of an own transfer whose real account is not linked. */
+export function isOtherOwnAccountType(type: AccountType) {
+  return type === "checking" || type === "savings" || type === "cash";
+}

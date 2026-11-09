@@ -2,12 +2,13 @@ import type {
   PluggyAccountKind,
   PluggyAccountRow,
   PluggyApiErrorBody,
+  PluggyAttentionReason,
   PluggyItemView,
   PluggyLinkView,
   PluggySyncRunStatus,
 } from "@/lib/interfaces/pluggy";
 
-const timeZone = "America/Sao_Paulo";
+export const pluggyTimeZone = "America/Sao_Paulo";
 
 export const pluggyAccountKindLabels: Record<PluggyAccountKind, string> = { bank: "Conta bancária", credit: "Cartão de crédito" };
 export const pluggyRunStatusLabels: Record<PluggySyncRunStatus, string> = {
@@ -17,12 +18,30 @@ export const pluggyRunStatusLabels: Record<PluggySyncRunStatus, string> = {
   failed: "Falhou",
 };
 
+/** Run counts shown to the user, in display order. Zero counts are hidden. */
+export const pluggyBankCountLabels: readonly (readonly [string, string])[] = [
+  ["bankOrdinary", "lançamentos comuns"],
+  ["bankOwnTransfer", "transferências próprias"],
+  ["bankCardPayment", "pagamentos de fatura"],
+  ["bankInvestmentContribution", "aportes"],
+  ["bankInvestmentWithdrawal", "resgates"],
+  ["bankUpdated", "atualizados"],
+  ["bankCancelled", "cancelados"],
+  ["bankIgnored", "ignorados"],
+];
+
+export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
+  possible_own_transfer: "Pode ser transferência própria; foi importado como lançamento comum.",
+  missing_other_own_account: "Transferência própria sem a outra conta. Escolha uma conta em Outras contas próprias.",
+  missing_investment_category: "Crie uma categoria do grupo investimento para importar este movimento.",
+};
+
 export function formatPluggyDateTime(value: string | null) {
-  return value ? new Date(value).toLocaleString("pt-BR", { timeZone }) : "Não informado";
+  return value ? new Date(value).toLocaleString("pt-BR", { timeZone: pluggyTimeZone }) : "Não informado";
 }
 
 export function pluggyToday() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone }).format(new Date());
+  return new Intl.DateTimeFormat("en-CA", { timeZone: pluggyTimeZone }).format(new Date());
 }
 
 /** Keeps saved links visible when Pluggy cannot list the accounts of a connection. */

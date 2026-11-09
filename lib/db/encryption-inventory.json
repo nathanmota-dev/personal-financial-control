@@ -332,5 +332,13 @@
     "last_seen_at": "timestamp",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "pluggy_settings": {
+    "id": "technical",
+    "owner_names": "text",
+    "owner_cpf": "text",
+    "other_own_account_id": "technical",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }

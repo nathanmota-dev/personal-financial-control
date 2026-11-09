@@ -63,3 +63,12 @@ export const pluggyImportLedger = sqliteTable("pluggy_import_ledger", {
   ...encryptionChecks(table),
   uniqueIndex("pluggy_import_ledger_fingerprint_unique").on(table.fingerprintHash),
 ]);
+
+/** Single row with the account owner's identity, used only to recognize own transfers. */
+export const pluggySettings = sqliteTable("pluggy_settings", {
+  id: recordId(),
+  ownerNames: encryptedText("owner_names", "pluggy_settings.owner_names").notNull(),
+  ownerCpf: encryptedText("owner_cpf", "pluggy_settings.owner_cpf"),
+  otherOwnAccountId: referenceColumn("other_own_account_id", () => accounts.id, "set null"),
+  ...timestampColumns("pluggy_settings"),
+}, (table) => [...encryptionChecks(table)]);
