@@ -1,6 +1,6 @@
 # Open Finance via MeuPluggy
 
-A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças, as compras de cartão e as faturas, com o vínculo dos pagamentos. Posições de investimento ainda não são importadas.
+A integração conecta bancos pelo MeuPluggy, vincula cada conta remota a uma conta local e importa os lançamentos de contas correntes e poupanças, as compras de cartão e as faturas, com o vínculo dos pagamentos. Também mantém o valor atual das posições de investimento vinculadas, sem reconstruir o histórico de operações.
 
 ## Configurar
 
@@ -99,6 +99,26 @@ Cada pagamento de fatura na conta corrente é procurado primeiro em `payments` d
 - Um pagamento já lançado manualmente, com mesma conta, valor e até 3 dias de distância, é reaproveitado.
 - Um pagamento listado na fatura sem lançamento em conta vinculada só é informado, sem criar transação. A fatura continua em aberto.
 - Enquanto um cartão ou uma conta não puder ser lido, os pagamentos sem correspondência aguardam a próxima sincronização.
+
+## Investimentos
+
+Em **Configurações > Open Finance > Investimentos**, cada posição do banco pode ser vinculada a um ativo existente ou virar um ativo novo. O app sugere o ativo por ticker, nome e instituição, e a escolha é sempre sua. O vínculo guarda somente o `id` da Pluggy, porque `code` e `isin` podem se repetir ou faltar, e não muda em novas sincronizações. **Desvincular** devolve o ativo ao controle manual.
+
+A sincronização atualiza apenas valor e data. Nome, tipo e instituição vêm do banco só na criação do ativo.
+
+| Situação | Resultado |
+|---|---|
+| Saldo manual (`manual_balance`) ou estimativa (`contract_estimate`) | Recebe `balance`, líquido de taxas e impostos, e a data informada pelo banco |
+| Ativo cotado (`market_quote`) | Mantém a cotação, e a diferença para o banco aparece em **Itens que precisam de atenção** |
+| Valor menor que o total alocado | Não muda e é informado, sem interromper as demais posições |
+| `TOTAL_WITHDRAWAL` | É informado e nunca arquivado automaticamente |
+| Sem saldo ou em outra moeda | Não muda e é informado |
+| Ativo arquivado | É ignorado |
+
+- Cada atualização grava o snapshot da posição no dia da sincronização. Repetir no mesmo dia substitui o snapshot.
+- Esta etapa é a única que altera valores de posição. Aportes e resgates importados da conta corrente não reduzem ativos, então um resgate nunca é descontado duas vezes.
+- A atualização mantém a alocação da reserva de emergência acompanhando o valor do ativo.
+- Conectores expõem produtos diferentes. Uma conexão sem investimentos, ou com o recurso indisponível, aparece na aba e no resumo, sem contar como falha.
 
 ## Limites
 

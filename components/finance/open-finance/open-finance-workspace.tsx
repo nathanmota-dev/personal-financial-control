@@ -3,6 +3,7 @@
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { OpenFinanceCategoryReview } from "@/components/finance/open-finance/open-finance-category-review";
 import { OpenFinanceIdentityCard } from "@/components/finance/open-finance/open-finance-identity-card";
+import { OpenFinanceInvestments } from "@/components/finance/open-finance/open-finance-investments";
 import { OpenFinanceItemCard } from "@/components/finance/open-finance/open-finance-item-card";
 import { OpenFinanceItemForm } from "@/components/finance/open-finance/open-finance-item-form";
 import { OpenFinanceSyncPanel } from "@/components/finance/open-finance/open-finance-sync-panel";
@@ -38,6 +39,7 @@ export function OpenFinanceWorkspace({ accounts, categories }: OpenFinanceWorksp
           onSaveLink={saveLink}
         />
       ))}
+      {items.length ? <OpenFinanceInvestments refreshKey={`${run?.finishedAt ?? ""}:${items.map((item) => item.id).join()}`} /> : null}
     </div>
   );
 }

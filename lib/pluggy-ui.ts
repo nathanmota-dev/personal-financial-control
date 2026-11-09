@@ -54,6 +54,18 @@ export const pluggyCardCountLabels: readonly (readonly [string, string])[] = [
   ["billPaymentsExternal", "pagamentos só na fatura"],
 ];
 
+export const pluggyInvestmentCountLabels: readonly (readonly [string, string])[] = [
+  ["investmentsUpdated", "investimentos atualizados"],
+  ["investmentsQuoted", "ativos cotados mantidos"],
+  ["investmentsBelowAllocations", "investimentos abaixo das alocações"],
+  ["investmentsWithdrawn", "investimentos com resgate total"],
+  ["investmentsWithoutValue", "investimentos sem saldo informado"],
+  ["investmentsUnlinked", "investimentos sem vínculo"],
+  ["investmentsIgnored", "investimentos de ativos arquivados"],
+  ["investmentItemsEmpty", "conexões sem investimentos"],
+  ["investmentItemsUnavailable", "conexões com investimentos indisponíveis"],
+];
+
 export const pluggyInvoiceStatusLabels: Record<PluggyInvoiceReconciliationStatus, string> = {
   matched: "Conferida",
   difference: "Com diferença",
@@ -72,6 +84,10 @@ export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
   card_payment_unlinked: "Pagamento sem fatura correspondente. Foi registrado como pagamento de cartão, fora dos gastos, sem vínculo com uma fatura.",
   card_payment_ambiguous: "Pagamento compatível com mais de um cartão. Nada foi registrado até que só um corresponda.",
   card_payment_outside_links: "Pagamento listado na fatura sem lançamento em uma conta vinculada. Nenhuma transação foi criada.",
+  investment_total_withdrawal: "O banco informa resgate total desta posição. O ativo não foi arquivado. Confira e arquive quando quiser. Valor indicado: saldo informado pelo banco.",
+  investment_below_allocations: "O valor do banco é menor que o total alocado neste ativo. O valor não foi alterado até que as alocações sejam ajustadas. Valor indicado: saldo informado pelo banco.",
+  investment_quote_difference: "Ativo cotado mantido pela cotação. Valor indicado: saldo do banco menos o valor no app.",
+  investment_missing_value: "O banco não informou o saldo em reais desta posição. O valor não foi alterado. Valor indicado: valor atual no app.",
 };
 
 export const pluggyDirectionLabels: Record<PluggyCategoryRuleDirection, string> = { income: "Receita", expense: "Despesa" };
