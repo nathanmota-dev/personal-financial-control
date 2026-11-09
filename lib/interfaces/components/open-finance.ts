@@ -1,5 +1,5 @@
 import type { AccountRow, CategoryRow } from "@/lib/interfaces/components/settings-view";
-import type { PluggyAccountRow, PluggyAttentionItem, PluggyIdentityDraft, PluggyIdentityView, PluggyItemView, PluggyLinkDraft, PluggySyncRunView } from "@/lib/interfaces/pluggy";
+import type { PluggyAccountRow, PluggyAttentionItem, PluggyIdentityDraft, PluggyIdentityView, PluggyInvoiceReconciliation, PluggyItemView, PluggyLinkDraft, PluggySyncRunView } from "@/lib/interfaces/pluggy";
 import type { PluggyPendingCategoryGroup } from "@/lib/interfaces/pluggy-category-rules";
 
 export type OpenFinanceSettingsProps = { configured: boolean; accounts: AccountRow[]; categories: CategoryRow[] };
@@ -16,6 +16,7 @@ export type OpenFinanceItemFormProps = { busy: boolean; onAdd: (externalItemId: 
 export type OpenFinanceSyncPanelProps = { run: PluggySyncRunView | null; syncing: boolean; onSync: () => void };
 export type OpenFinanceRunSummaryProps = { run: PluggySyncRunView };
 export type OpenFinanceRunAttentionProps = { items: PluggyAttentionItem[] };
+export type OpenFinanceRunInvoicesProps = { invoices: PluggyInvoiceReconciliation[] };
 export type OpenFinanceIdentityCardProps = { accounts: AccountRow[] };
 export type OpenFinanceIdentityFieldsProps = { identity: PluggyIdentityView; accounts: AccountRow[]; saving: boolean; onSave: (draft: PluggyIdentityDraft) => void };
 export type OpenFinanceRemoveItemProps = { label: string; busy: boolean; onRemove: () => void };

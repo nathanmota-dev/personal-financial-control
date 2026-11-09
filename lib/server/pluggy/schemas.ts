@@ -51,9 +51,15 @@ export const pluggyTransactionSchema = z.looseObject({
   creditCardMetadata: pluggyCardMetadataSchema.nullish().catch(null),
 });
 
+const pluggyBillPaymentSchema = z.looseObject({ amount: z.number().nullish(), paymentDate: optionalText });
+
 export const pluggyBillSchema = z.looseObject({
   id: z.string().min(1),
   dueDate: z.string().min(1),
+  billClosingDate: optionalText,
+  totalAmount: z.number().nullish(),
+  // A malformed payment list must not reject the bill it belongs to.
+  payments: z.array(pluggyBillPaymentSchema).nullish().catch(null),
 });
 
 export const pluggyInvestmentSchema = z.looseObject({ id: z.string().min(1) });

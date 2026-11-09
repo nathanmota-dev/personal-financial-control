@@ -1,6 +1,7 @@
 "use client";
 
 import { OpenFinanceRunAttention } from "@/components/finance/open-finance/open-finance-run-attention";
+import { OpenFinanceRunInvoices } from "@/components/finance/open-finance/open-finance-run-invoices";
 import { Badge } from "@/components/ui/badge";
 import type { OpenFinanceRunSummaryProps } from "@/lib/interfaces/components/open-finance";
 import { formatPluggyDateTime, pluggyBankCountLabels, pluggyCardCountLabels, pluggyRunStatusLabels } from "@/lib/pluggy-ui";
@@ -29,6 +30,7 @@ export function OpenFinanceRunSummary({ run }: OpenFinanceRunSummaryProps) {
           ))}
         </ul>
       ) : null}
+      {summary?.invoices?.length ? <OpenFinanceRunInvoices invoices={summary.invoices} /> : null}
       {summary?.attention?.length ? <OpenFinanceRunAttention items={summary.attention} /> : null}
     </div>
   );

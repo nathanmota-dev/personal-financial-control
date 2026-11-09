@@ -22,14 +22,16 @@ import { DomainError } from "@/lib/server/errors";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
 import { importBankTransactionsStep } from "./steps/import-bank-transactions";
+import { importCardBillsStep, matchBillPaymentsStep, reportCardBillsStep } from "./steps/import-card-bills";
 import { importCardPurchasesStep } from "./steps/import-card-purchases";
 import { itemStatusStep } from "./steps/item-status";
 import { closePluggyRun, openPluggyRun } from "./sync-runs";
 
 /** Steps run in this order. Import steps from later issues are appended here, each in its own file. */
-export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep, importCardPurchasesStep];
+export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep, importCardPurchasesStep, importCardBillsStep, matchBillPaymentsStep, reportCardBillsStep];
 
 const MAX_ATTENTION_ITEMS = 50;
+const MAX_INVOICE_ROWS = 50;
 
 type Pipeline = {
   context: PluggySyncStepContext;
@@ -54,6 +56,10 @@ function addResult(summary: PluggySyncSummary, result: PluggySyncStepResult) {
   for (const [name, value] of Object.entries(result?.counts ?? {})) summary.counts[name] = (summary.counts[name] ?? 0) + value;
   const attention = (summary.attention ??= []);
   attention.push(...(result?.attention ?? []).slice(0, Math.max(0, MAX_ATTENTION_ITEMS - attention.length)));
+  if (result?.invoices?.length) {
+    const invoices = (summary.invoices ??= []);
+    invoices.push(...result.invoices.slice(0, Math.max(0, MAX_INVOICE_ROWS - invoices.length)));
+  }
 }
 
 function recordFailure(summary: PluggySyncSummary, failure: Omit<PluggySyncFailure, "code" | "message">, error: unknown) {

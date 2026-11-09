@@ -54,6 +54,22 @@ function stubApi({ items = [], links = [], run = null, running = false, identity
 afterEach(() => vi.unstubAllGlobals());
 
 describe("Open Finance settings", () => {
+  it("shows each invoice's reconciliation state in the run summary", async () => {
+    const invoices = [
+      { accountLabel: "Cartão", invoiceMonth: "2026-04", statementTotalCents: 10000, importedCents: 10000, differenceCents: 0, unlinkedPaymentCents: 0, status: "matched" as const },
+      { accountLabel: "Cartão", invoiceMonth: "2026-05", statementTotalCents: 5500, importedCents: 5000, differenceCents: 500, unlinkedPaymentCents: 0, status: "difference" as const },
+      { accountLabel: "Cartão", invoiceMonth: "2026-06", statementTotalCents: 7000, importedCents: 7000, differenceCents: 0, unlinkedPaymentCents: 7000, status: "unlinked_payment" as const },
+    ];
+    stubApi({ items: [item], links: [link], run: { ...successRun, summary: { ...successRun.summary!, invoices } } });
+    renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
+    const summary = await screen.findByRole("status", { name: "Última sincronização" });
+    expect(within(summary).getByText("Conferência das faturas")).toBeInTheDocument();
+    expect(within(summary).getByText("Conferida")).toBeInTheDocument();
+    expect(within(summary).getByText("Com diferença")).toBeInTheDocument();
+    expect(within(summary).getByText(/Diferença R\$/)).toBeInTheDocument();
+    expect(within(summary).getAllByText(/Pagamento não vinculado/)).toHaveLength(2);
+  });
+
   it("explains the setup and calls no API when not configured", () => {
     const calls = vi.fn();
     vi.stubGlobal("fetch", calls);

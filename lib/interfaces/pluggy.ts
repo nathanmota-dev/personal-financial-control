@@ -79,7 +79,12 @@ export type PluggyAttentionReason =
   | "missing_investment_category"
   | "card_total_residual"
   | "card_locked_by_paid_bill"
-  | "card_missing_account_currency";
+  | "card_missing_account_currency"
+  | "card_bill_non_positive"
+  | "card_bill_paid_changed"
+  | "card_payment_unlinked"
+  | "card_payment_ambiguous"
+  | "card_payment_outside_links";
 
 export type PluggyAttentionItem = {
   reason: PluggyAttentionReason;
@@ -87,6 +92,19 @@ export type PluggyAttentionItem = {
   description: string;
   date: string;
   amountCents: number;
+};
+
+export type PluggyInvoiceReconciliationStatus = "matched" | "difference" | "unlinked_payment";
+
+export type PluggyInvoiceReconciliation = {
+  accountLabel: string;
+  invoiceMonth: string;
+  statementTotalCents: number;
+  importedCents: number;
+  /** Positive when the statement is higher than the imported records explain. */
+  differenceCents: number;
+  unlinkedPaymentCents: number;
+  status: PluggyInvoiceReconciliationStatus;
 };
 
 export type PluggySyncSummary = {
@@ -97,6 +115,8 @@ export type PluggySyncSummary = {
   failures: PluggySyncFailure[];
   /** Absent on runs stored before bank imports existed. */
   attention?: PluggyAttentionItem[];
+  /** Absent on runs stored before bills were imported, and on dry runs. */
+  invoices?: PluggyInvoiceReconciliation[];
 };
 
 export type PluggySyncRunView = {
@@ -124,7 +144,7 @@ export type PluggyLinkRecord = {
   cutoffDate: string;
 };
 
-export type PluggySyncStepResult = { counts?: Record<string, number>; attention?: PluggyAttentionItem[] } | void;
+export type PluggySyncStepResult = { counts?: Record<string, number>; attention?: PluggyAttentionItem[]; invoices?: PluggyInvoiceReconciliation[] } | void;
 
 export type PluggySyncStepContext = {
   /** Reads only. Every mutation must go through `write`, which a dry run skips. */

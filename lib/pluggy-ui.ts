@@ -3,6 +3,7 @@ import type {
   PluggyAccountRow,
   PluggyApiErrorBody,
   PluggyAttentionReason,
+  PluggyInvoiceReconciliationStatus,
   PluggyItemView,
   PluggyLinkView,
   PluggySyncRunStatus,
@@ -42,7 +43,22 @@ export const pluggyCardCountLabels: readonly (readonly [string, string])[] = [
   ["cardResidual", "totais com diferença de centavos"],
   ["cardLocked", "compras travadas por fatura paga"],
   ["cardIgnored", "registros do cartão ignorados"],
+  ["cardBills", "faturas importadas"],
+  ["cardBillsUpdated", "faturas atualizadas"],
+  ["cardBillsSkipped", "faturas sem valor a pagar"],
+  ["cardBillsLocked", "faturas pagas com diferença no banco"],
+  ["billPaymentsLinked", "pagamentos vinculados a faturas"],
+  ["billPaymentsUnlinked", "pagamentos sem fatura"],
+  ["billPaymentsAmbiguous", "pagamentos ambíguos"],
+  ["billPaymentsDeferred", "pagamentos aguardando faturas"],
+  ["billPaymentsExternal", "pagamentos só na fatura"],
 ];
+
+export const pluggyInvoiceStatusLabels: Record<PluggyInvoiceReconciliationStatus, string> = {
+  matched: "Conferida",
+  difference: "Com diferença",
+  unlinked_payment: "Pagamento não vinculado",
+};
 
 export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
   possible_own_transfer: "Pode ser transferência própria; foi importado como lançamento comum.",
@@ -51,6 +67,11 @@ export const pluggyAttentionLabels: Record<PluggyAttentionReason, string> = {
   card_total_residual: "Nem todas as parcelas foram recebidas. O total da compra pode diferir do banco em até o valor indicado.",
   card_locked_by_paid_bill: "O banco alterou esta compra, mas uma fatura paga impede a mudança. Valor indicado: total informado pelo banco.",
   card_missing_account_currency: "Compra em moeda estrangeira sem o valor em reais. Não foi importada, e o valor indicado está na moeda original.",
+  card_bill_non_positive: "Fatura sem valor a pagar. Não foi importada.",
+  card_bill_paid_changed: "O banco alterou esta fatura, mas ela já está paga e não foi mudada. Valor indicado: total informado pelo banco.",
+  card_payment_unlinked: "Pagamento sem fatura correspondente. Foi registrado como pagamento de cartão, fora dos gastos, sem vínculo com uma fatura.",
+  card_payment_ambiguous: "Pagamento compatível com mais de um cartão. Nada foi registrado até que só um corresponda.",
+  card_payment_outside_links: "Pagamento listado na fatura sem lançamento em uma conta vinculada. Nenhuma transação foi criada.",
 };
 
 export const pluggyDirectionLabels: Record<PluggyCategoryRuleDirection, string> = { income: "Receita", expense: "Despesa" };
