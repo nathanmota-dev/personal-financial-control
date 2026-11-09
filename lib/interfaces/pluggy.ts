@@ -73,12 +73,24 @@ export type PluggySyncFailure = {
   message: string;
 };
 
+export type PluggyAttentionReason = "possible_own_transfer" | "missing_other_own_account" | "missing_investment_category";
+
+export type PluggyAttentionItem = {
+  reason: PluggyAttentionReason;
+  accountLabel: string;
+  description: string;
+  date: string;
+  amountCents: number;
+};
+
 export type PluggySyncSummary = {
   dryRun: boolean;
   items: { total: number; failed: number };
   accounts: { total: number; failed: number; skipped: number };
   counts: Record<string, number>;
   failures: PluggySyncFailure[];
+  /** Absent on runs stored before bank imports existed. */
+  attention?: PluggyAttentionItem[];
 };
 
 export type PluggySyncRunView = {
@@ -106,7 +118,7 @@ export type PluggyLinkRecord = {
   cutoffDate: string;
 };
 
-export type PluggySyncStepResult = { counts?: Record<string, number> } | void;
+export type PluggySyncStepResult = { counts?: Record<string, number>; attention?: PluggyAttentionItem[] } | void;
 
 export type PluggySyncStepContext = {
   /** Reads only. Every mutation must go through `write`, which a dry run skips. */
@@ -116,6 +128,8 @@ export type PluggySyncStepContext = {
   now: Date;
   write(mutation: (db: AppDb) => Promise<unknown>): Promise<void>;
   remoteAccounts(item: PluggyItemRecord): Promise<PluggyRemoteAccount[]>;
+  /** Cached per run, because pairing an own transfer also reads the other linked accounts. */
+  remoteTransactions(link: PluggyLinkRecord): Promise<PluggyRemoteTransaction[]>;
 };
 
 export type PluggyItemSyncStep = {
@@ -143,6 +157,10 @@ export type PluggyOverview = {
   items: PluggyItemView[];
   links: PluggyLinkView[];
 };
+
+/** The CPF is never sent back in full. */
+export type PluggyIdentityView = { names: string[]; cpfMasked: string | null; otherOwnAccountId: string | null };
+export type PluggyIdentityDraft = { names: string[]; cpf?: string; otherOwnAccountId: string | null };
 
 export type PluggyLatestRun = { run: PluggySyncRunView | null; running: boolean };
 

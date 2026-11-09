@@ -70,10 +70,13 @@ export async function applyReductionIfEffective(
 
 export async function createSingleTransactionInTransaction(
   database: TransactionDbTransaction,
-  values: TransactionValues
+  values: TransactionValues,
+  options: { externallyTracked?: boolean } = {}
 ) {
   await validateTransactionDependencies(values, database);
-  const isIncludedInInvestmentCheckpoint = await investmentCheckpointFlag(
+  // An externally tracked movement is already reflected in the positions the provider reports,
+  // so marking it as part of the checkpoint keeps it from reducing a holding a second time.
+  const isIncludedInInvestmentCheckpoint = options.externallyTracked || await investmentCheckpointFlag(
     database,
     values.type,
     values.transactionDate

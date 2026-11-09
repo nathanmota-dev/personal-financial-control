@@ -18,7 +18,7 @@ import { z } from "zod";
 import { applyReductionIfEffective } from "./creation";
 import { isEffectiveInvestmentWithdrawal } from "./mutations";
 import { getTransactionById } from "./queries";
-import { TransactionDbTransaction,TransactionLinkRow,TransactionValues,investmentCheckpointFlag,updateTransactionSchema,validateTransactionDependencies } from "./validation";
+import { TransactionDbTransaction,TransactionLinkRow,TransactionValues,investmentCheckpointFlag,isImportedInvestmentMovement,updateTransactionSchema,validateTransactionDependencies } from "./validation";
 
 export function resolvedTransactionValues(
   existing: typeof transactions.$inferSelect,
@@ -79,7 +79,8 @@ export async function updateSingleTransactionInTransaction(
   values: TransactionValues,
   database: TransactionDbTransaction
 ) {
-  const isIncludedInInvestmentCheckpoint = await investmentCheckpointFlag(
+  // Editing an imported movement must not start reducing holdings that the provider already reports.
+  const isIncludedInInvestmentCheckpoint = isImportedInvestmentMovement(existing) || await investmentCheckpointFlag(
     database,
     values.type,
     values.transactionDate

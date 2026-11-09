@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { OpenFinanceSettings } from "@/components/finance/open-finance/open-finance-settings";
 import type { AccountRow } from "@/lib/interfaces/components/settings-view";
-import type { PluggyItemView, PluggyLinkView, PluggySyncRunView } from "@/lib/interfaces/pluggy";
+import type { PluggyIdentityView, PluggyItemView, PluggyLinkView, PluggySyncRunView } from "@/lib/interfaces/pluggy";
 import { renderUI } from "@/tests/frontend/helpers";
 
 const accounts: AccountRow[] = [
@@ -21,9 +21,11 @@ const successRun: PluggySyncRunView = {
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 
-type Api = { items?: PluggyItemView[]; links?: PluggyLinkView[]; run?: PluggySyncRunView | null; running?: boolean; onPost?: (url: string, body: unknown, method: string) => Response | Promise<Response> };
+const emptyIdentity: PluggyIdentityView = { names: [], cpfMasked: null, otherOwnAccountId: null };
 
-function stubApi({ items = [], links = [], run = null, running = false, onPost }: Api) {
+type Api = { items?: PluggyItemView[]; links?: PluggyLinkView[]; run?: PluggySyncRunView | null; running?: boolean; identity?: PluggyIdentityView; onPost?: (url: string, body: unknown, method: string) => Response | Promise<Response> };
+
+function stubApi({ items = [], links = [], run = null, running = false, identity = emptyIdentity, onPost }: Api) {
   const calls: { url: string; method: string; body: unknown }[] = [];
   vi.stubGlobal("fetch", vi.fn(async (url: string, init?: RequestInit) => {
     const method = init?.method ?? "GET";
@@ -32,6 +34,7 @@ function stubApi({ items = [], links = [], run = null, running = false, onPost }
       calls.push({ url, method, body });
       return onPost?.(url, body, method) ?? json({ ok: true });
     }
+    if (url.includes("/identity")) return json({ ok: true, identity });
     return url.includes("/sync") ? json({ ok: true, run, running }) : json({ ok: true, items, links });
   }));
   return calls;
@@ -143,7 +146,74 @@ describe("Open Finance settings", () => {
   it("reports a load failure", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
     renderUI(<OpenFinanceSettings configured accounts={accounts} />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("offline");
+    await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(2));
+    for (const alert of screen.getAllByRole("alert")) expect(alert).toHaveTextContent("offline");
+  });
+
+  it("shows counts per classification and the items that need attention", async () => {
+    const summary = {
+      ...successRun.summary!,
+      counts: { bankOrdinary: 3, bankOwnTransfer: 1, bankCardPayment: 2, bankInvestmentWithdrawal: 1, bankIgnored: 0, itemsChecked: 1 },
+      attention: [
+        { reason: "possible_own_transfer" as const, accountLabel: "Corrente", description: "TED ENVIADA", date: "2026-03-10", amountCents: 12345 },
+        { reason: "missing_other_own_account" as const, accountLabel: "Corrente", description: "PIX ENVIADO", date: "2026-03-11", amountCents: 500 },
+      ],
+    };
+    stubApi({ run: { ...successRun, summary } });
+    renderUI(<OpenFinanceSettings configured accounts={accounts} />);
+    const status = await screen.findByRole("status", { name: "Última sincronização" });
+    expect(status).toHaveTextContent("3 lançamentos comuns · 1 transferências próprias · 2 pagamentos de fatura · 1 resgates");
+    expect(status).not.toHaveTextContent("ignorados");
+    expect(screen.getByText("Itens que precisam de atenção")).toBeVisible();
+    expect(screen.getByText("TED ENVIADA")).toBeVisible();
+    expect(screen.getByText(/R\$\s*123,45/)).toBeVisible();
+    expect(screen.getByText(/Pode ser transferência própria/)).toBeVisible();
+    expect(screen.getByText(/Escolha uma conta em Outras contas próprias/)).toBeVisible();
+  });
+
+  it("renders a run stored before bank imports existed", async () => {
+    const { attention: _attention, ...legacy } = { ...successRun.summary!, attention: [] };
+    void _attention;
+    stubApi({ run: { ...successRun, summary: legacy } });
+    renderUI(<OpenFinanceSettings configured accounts={accounts} />);
+    expect(await screen.findByText("Concluída")).toBeVisible();
+    expect(screen.queryByText("Itens que precisam de atenção")).toBeNull();
+  });
+
+  it("saves the owner identity and offers only eligible destination accounts", async () => {
+    const saved: PluggyIdentityView = { names: ["João da Silva", "Joao Silva"], cpfMasked: "***.456.789-**", otherOwnAccountId: "local-1" };
+    const calls = stubApi({ onPost: () => json({ ok: true, identity: saved }) });
+    const { user } = renderUI(<OpenFinanceSettings configured accounts={accounts} />);
+    const names = await screen.findByLabelText("Nomes completos do titular");
+    expect(within(screen.getByLabelText("Outras contas próprias")).queryByRole("option", { name: "Cartão local" })).toBeNull();
+    await user.type(names, "João da Silva{enter}{enter} Joao Silva ");
+    await user.type(screen.getByLabelText("CPF do titular"), " 123.456.789-09 ");
+    await user.selectOptions(screen.getByLabelText("Outras contas próprias"), "local-1");
+    await user.click(screen.getByRole("button", { name: "Salvar identidade" }));
+    await waitFor(() => expect(calls).toHaveLength(1));
+    expect(calls[0]).toEqual({ url: "/api/pluggy/identity", method: "PUT", body: { names: ["João da Silva", "Joao Silva"], otherOwnAccountId: "local-1", cpf: "123.456.789-09" } });
+    expect(await screen.findByText("Identidade salva.")).toBeVisible();
+    expect(screen.getByLabelText("CPF do titular")).toHaveValue("");
+  });
+
+  it("loads the stored identity and keeps the CPF when left blank", async () => {
+    const identity: PluggyIdentityView = { names: ["João da Silva"], cpfMasked: "***.456.789-**", otherOwnAccountId: null };
+    const calls = stubApi({ identity });
+    const { user } = renderUI(<OpenFinanceSettings configured accounts={accounts} />);
+    expect(await screen.findByLabelText("Nomes completos do titular")).toHaveValue("João da Silva");
+    expect(screen.getByLabelText("CPF do titular")).toHaveAttribute("placeholder", "***.456.789-**");
+    expect(screen.getByText("Deixe em branco para manter o CPF salvo.")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Salvar identidade" }));
+    await waitFor(() => expect(calls).toHaveLength(1));
+    expect(calls[0].body).toEqual({ names: ["João da Silva"], otherOwnAccountId: null });
+  });
+
+  it("reports a failure to save the identity", async () => {
+    stubApi({ onPost: () => json({ ok: false, error: { code: "INVALID_PLUGGY_REQUEST", message: "Dados inválidos." } }, 400) });
+    const { user } = renderUI(<OpenFinanceSettings configured accounts={accounts} />);
+    await user.click(await screen.findByRole("button", { name: "Salvar identidade" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Dados inválidos.");
+    expect(screen.queryByText("Identidade salva.")).toBeNull();
   });
 
   it("removes a connection only after confirmation", async () => {

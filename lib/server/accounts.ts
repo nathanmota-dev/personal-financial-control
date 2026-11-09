@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { accounts,transactions,transfers } from "@/lib/db/schema";
+import type { TransactionDb } from "@/lib/server/transactions";
 import { invariant } from "@/lib/server/errors";
 import { calculateNetBalance,currentTimestamp,serializeTimestamps } from "@/lib/server/finance";
 
@@ -77,8 +78,8 @@ export async function listAccounts(
   return Promise.all(rows.map((row) => getAccountDetails(row.id, db)));
 }
 
-export async function getAccountById(id: string, database?: AppDb) {
-  const db = await resolveDb(database);
+export async function getAccountById(id: string, database?: TransactionDb) {
+  const db = database ?? await resolveDb();
   const account = await db.query.accounts.findFirst({
     where: eq(accounts.id, id),
   });

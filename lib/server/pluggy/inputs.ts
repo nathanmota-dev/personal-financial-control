@@ -21,9 +21,16 @@ export const pluggyLinkUpdateSchema = z.object({
   isEnabled: z.boolean().optional(),
 });
 
+export const pluggyIdentityInputSchema = z.object({
+  names: z.array(z.string().trim().max(120).regex(/^\S+\s+\S/)).max(5),
+  cpf: z.string().transform((value) => value.replace(/\D/g, "")).pipe(z.string().regex(/^\d{11}$/)).optional(),
+  otherOwnAccountId: recordId.nullable(),
+});
+
 export const pluggySyncRequestSchema = z.object({ dryRun: z.boolean().default(false) });
 export const pluggyItemIdSchema = recordId;
 
 export type PluggyItemInput = z.infer<typeof pluggyItemInputSchema>;
 export type PluggyLinkInput = z.infer<typeof pluggyLinkInputSchema>;
 export type PluggyLinkUpdate = z.infer<typeof pluggyLinkUpdateSchema>;
+export type PluggyIdentityInput = z.infer<typeof pluggyIdentityInputSchema>;

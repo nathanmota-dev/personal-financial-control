@@ -31,9 +31,17 @@ test("adds a connection, links an account and records a sync with Pluggy stubbed
   const result = page.getByRole("status", { name: "Última sincronização" });
   await expect(result).toContainText("Concluída");
   await expect(result).toContainText("1 conexões · 1 contas · 0 falhas");
+  await expect(result).toContainText("2 lançamentos comuns · 1 pagamentos de fatura");
   await page.reload();
   await page.getByRole("tab", { name: "Open Finance", exact: true }).click();
   await expect(page.getByRole("status", { name: "Última sincronização" })).toContainText("Concluída");
   await expect(page.getByLabel("Conta local de Conta remota")).toHaveValue(/.+/);
+  const month = new Date().toISOString().slice(0, 7);
+  await page.goto(`${finance.url}/transactions?month=${month}`);
+  await expect(page.getByText("Mercado E2E").first()).toBeVisible();
+  await expect(page.getByText("Salário E2E").first()).toBeVisible();
+  await expect(page.getByText("PAGAMENTO FATURA E2E")).toHaveCount(0);
+  await expect(page.getByText("R$ 1.000,00").first()).toBeVisible();
+  await expect(page.getByText("R$ 45,90").first()).toBeVisible();
   expect(finance.logs()).not.toMatch(/e2e-secret|e2e-api-key/);
 });
