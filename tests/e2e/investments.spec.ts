@@ -8,7 +8,7 @@ test("consolidated investment overview links to portfolio and reserve", async ({
     page.getByRole("heading", { name: "Investimentos", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Patrimônio investido", { exact: true }),
+    page.getByRole("region", { name: "Patrimônio investido", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Distribuição por classe" }),
