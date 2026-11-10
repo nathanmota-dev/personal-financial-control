@@ -2,7 +2,7 @@
 
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
-import { Plus } from "lucide-react";
+import { Plus, FlaskConical } from "lucide-react";
 import { useId,useState,type FormEvent } from "react";
 import { ProjectionSimulationDialogForm1 } from "./projection-simulation-dialog-projection-simulation-dialog-form1";
 
@@ -98,7 +98,7 @@ export function ProjectionSimulationDialog({
         </Button>
       </DialogTrigger>
       <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader>
+        <DialogHeader icon={<FlaskConical />} tone="violet">
           <DialogTitle>Simular compra</DialogTitle>
           <DialogDescription className="text-content">
             A compra será aplicada apenas nesta projeção, entre {formatDateLabel(filters.startDate)} e{" "}

@@ -119,10 +119,41 @@ export type TransactionDialogProps = {
   command?: FinanceCommandIntent | null;
 };
 
-export type TransactionSummaryCardProps = {
-  label: string;
-  value: ReactNode;
-  tone: "cyan" | "blue" | "sky" | "amber";
+export type TransactionTotals = {
+  income: number;
+  expense: number;
+  investment: number;
+  withdrawal: number;
+};
+
+export type TransactionsHeroProps = {
+  month: string;
+  totals: TransactionTotals;
+  transactions: TransactionRow[];
+};
+
+export type TransactionListProps = {
+  transactions: TransactionRow[];
+  accounts: TransactionAccountOption[];
+  categories: TransactionCategoryOption[];
+  filters: TransactionFilters;
+  afterLastCategorization: string | undefined;
+};
+
+export type TransactionListRowProps = Omit<TransactionListProps, "transactions"> & {
+  transaction: TransactionRow;
+};
+
+export type TransferListProps = {
+  transfers: TransferRow[];
+  accounts: TransactionAccountOption[];
+  filters: TransactionFilters;
+};
+
+export type CategoryShare = {
+  name: string | null;
+  amountCents: number;
+  percent: number;
 };
 
 export type TransferDialogProps = {

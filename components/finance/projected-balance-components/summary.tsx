@@ -1,5 +1,9 @@
 "use client";
 
+import { HeroPanel } from "@/components/finance/ds/hero-panel";
+import { HeroStat } from "@/components/finance/ds/hero-stat";
+import { ShieldCheck } from "lucide-react";
+
 import {
 AlertTriangle,
 CalendarClock,
@@ -16,9 +20,14 @@ ProjectionSummaryCardsProps,
 import { formatDateLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
-import { ProjectionMetricCard } from "./metric-card";
 
 import { formatAlertDetail,formatAlertTitle } from "./labels";
+
+const statusCopy = {
+  safe: { label: "Caixa seguro", className: "bg-emerald-400/25 text-emerald-50" },
+  warning: { label: "Atenção à reserva", className: "bg-amber-300/25 text-amber-50" },
+  negative: { label: "Saldo negativo previsto", className: "bg-rose-400/30 text-rose-50" },
+};
 
 export function ProjectionSummaryCards({
   summary,
@@ -30,60 +39,33 @@ export function ProjectionSummaryCards({
     ? formatDateLabel(summary.nextIncomeDate)
     : formatDateLabel(summary.endDate);
 
+  const delta = summary.finalProjectedBalanceCents - summary.initialBalanceCents;
+  const status = statusCopy[summary.status];
   return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-      <ProjectionMetricCard
-        label="Saldo atual"
-        value={formatCurrency(summary.initialBalanceCents)}
-        description={selectedAccountName ?? "Consolidado das contas"}
-        icon={<Wallet className="size-4" />}
-        tone={summary.initialBalanceCents >= 0 ? "cyan" : "rose"}
-      />
-      <ProjectionMetricCard
-        label="Disponível por dia"
-        value={formatCurrency(summary.availablePerDayCents)}
-        description={availableBlocked ? "Sem margem segura" : "Margem até o fim do período"}
-        icon={<CircleDollarSign className="size-4" />}
-        tone={
-          availableBlocked
-            ? summary.status === "negative"
-              ? "rose"
-              : "amber"
-            : "emerald"
-        }
-      />
-      <ProjectionMetricCard
-        label="Saldo final projetado"
-        value={formatCurrency(summary.finalProjectedBalanceCents)}
-        description={`Até ${formatDateLabel(summary.endDate)}`}
-        icon={<TrendingUp className="size-4" />}
-        tone={summary.finalProjectedBalanceCents >= 0 ? "cyan" : "rose"}
-      />
-      <ProjectionMetricCard
-        label="Menor saldo projetado"
-        value={formatCurrency(summary.minimumProjectedBalanceCents)}
-        description={formatDateLabel(summary.minimumProjectedBalanceDate)}
-        icon={<TrendingDown className="size-4" />}
-        tone={
-          summary.status === "safe"
-            ? "sky"
-            : summary.status === "warning"
-              ? "amber"
-              : "rose"
-        }
-      />
-      <ProjectionMetricCard
-        label={summary.nextIncomeDate ? "Próxima receita" : "Fim do período"}
-        value={nextIncomeValue}
-        description={
-          summary.nextIncomeDate
-            ? "Primeira entrada encontrada"
-            : "Sem receita futura no período"
-        }
-        icon={<CalendarClock className="size-4" />}
-        tone={summary.nextIncomeDate ? "emerald" : "amber"}
-      />
-    </section>
+    <HeroPanel
+      eyebrow="Saldo final projetado"
+      value={formatCurrency(summary.finalProjectedBalanceCents)}
+      caption={`Até ${formatDateLabel(summary.endDate)} · ${selectedAccountName ?? "Consolidado das contas"}`}
+      badge={<span className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold", status.className)}>{status.label}</span>}
+      aside={
+        <div className="flex w-full flex-col justify-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm">
+          <div>
+            <p className="flex items-center gap-1.5 text-xs font-semibold text-white/80"><CircleDollarSign aria-hidden="true" className="size-3.5" />Disponível por dia</p>
+            <p className="mt-1 text-[28px] leading-8 font-semibold tracking-tight tabular-nums">{formatCurrency(summary.availablePerDayCents)}</p>
+            <p className="mt-1 text-[11px] text-white/70">{availableBlocked ? "Sem margem segura" : "Margem até o fim do período"}</p>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-t border-white/15 pt-3 text-xs text-white/80">
+            <span>Variação no período</span>
+            <span className="flex items-center gap-1 font-semibold text-white tabular-nums">{delta >= 0 ? <TrendingUp aria-hidden="true" className="size-3.5" /> : <TrendingDown aria-hidden="true" className="size-3.5" />}{formatCurrency(delta)}</span>
+          </div>
+        </div>
+      }
+    >
+      <HeroStat label="Saldo atual" value={formatCurrency(summary.initialBalanceCents)} hint={selectedAccountName ?? "Consolidado das contas"} icon={<Wallet />} />
+      <HeroStat label="Menor saldo projetado" value={formatCurrency(summary.minimumProjectedBalanceCents)} hint={formatDateLabel(summary.minimumProjectedBalanceDate)} icon={<TrendingDown />} />
+      <HeroStat label={summary.nextIncomeDate ? "Próxima receita" : "Fim do período"} value={nextIncomeValue} hint={summary.nextIncomeDate ? "Primeira entrada encontrada" : "Sem receita futura no período"} icon={<CalendarClock />} />
+      <HeroStat label="Reserva mínima" value={formatCurrency(summary.minimumReserveCents)} hint="Piso de segurança do caixa" icon={<ShieldCheck />} />
+    </HeroPanel>
   );
 }
 
@@ -98,7 +80,7 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
         <div
           key={`${alert.code}-${alert.date ?? "period"}`}
           className={cn(
-            "flex gap-3 rounded-xl border p-4 text-sm",
+            "flex gap-3 rounded-2xl border p-4 text-sm",
             alert.code === "PROJECTED_BALANCE_NEGATIVE" ||
               alert.code === "CURRENT_BALANCE_NEGATIVE"
               ? "border-danger/25 bg-danger/10 text-danger"

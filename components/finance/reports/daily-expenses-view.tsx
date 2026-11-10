@@ -38,7 +38,7 @@ export function DailyExpensesView({ map }: DailyExpensesViewProps) {
         ))}
       </div>
 
-      {map.entries.length === 0 && <p className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-content">Nenhuma despesa ou crédito registrado neste mês.</p>}
+      {map.entries.length === 0 && <p className="rounded-[20px] border border-border bg-card px-4 py-3 text-sm text-content">Nenhuma despesa ou crédito registrado neste mês.</p>}
       <DailyExpensesCalendar period={map.period} calendar={map.calendar} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
       <DailyExpensesDetails key={selectedDay?.date ?? "empty"} day={selectedDay} />
       <DailyExpensesTable days={map.days} selectedDate={selectedDate} onSelectDate={setSelectedDate} />

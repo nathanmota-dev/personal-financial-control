@@ -1,5 +1,7 @@
 "use client";
 
+import { IconTile } from "@/components/finance/ds/icon-tile";
+
 import { CreditCardMonthCard } from "@/components/finance/credit-card-month-card";
 import { CreditCardTimelineChart } from "@/components/finance/credit-card-timeline-chart";
 import { Button } from "@/components/ui/button";
@@ -9,7 +11,7 @@ import { CalendarDays,ChevronLeft,ChevronRight } from "lucide-react";
 export function CreditCardMonthStripSection1({ isLoading, visiblePoints, activePageIndex, showPreviousPage, cardsViewportRef, pageStart, points, selectedMonth, onSelectMonth, maxPageIndex, showNextPage }: CreditCardMonthStripSection1Props) {
   return (
 <section
-      className="rounded-xl border border-border bg-card px-[22px] py-5"
+      className="rounded-[20px] border border-border bg-card px-[22px] py-5"
       aria-busy={isLoading}
     >
       <div className="flex items-start justify-between gap-4">
@@ -17,7 +19,7 @@ export function CreditCardMonthStripSection1({ isLoading, visiblePoints, activeP
           <h2 className="text-lg font-semibold text-content-strong">Suas faturas</h2>
           <p className="mt-1 text-xs text-content-muted">Evolução mensal e seleção do período</p>
         </div>
-        <CalendarDays className="size-5 text-content" />
+        <IconTile tone="brand" size="sm"><CalendarDays /></IconTile>
       </div>
 
       <div className="mt-5 rounded-xl bg-[var(--chart-surface)] px-2 py-2 sm:px-3">

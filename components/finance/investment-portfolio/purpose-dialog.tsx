@@ -1,5 +1,7 @@
 "use client";
 
+import { Boxes } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { PortfolioField } from "@/components/finance/investment-portfolio/portfolio-field";
@@ -36,7 +38,7 @@ export function PurposeDialog({
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader>
+        <DialogHeader icon={<Boxes />} tone="violet">
           <DialogTitle>{state?.mode === "edit" ? "Editar caixinha" : "Nova caixinha"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
             Caixinhas representam finalidades patrimoniais. Para prazos e aportes futuros, use

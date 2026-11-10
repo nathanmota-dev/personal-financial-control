@@ -1,5 +1,7 @@
 "use client";
 
+import { HandCoins } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { LabeledInput } from "@/components/finance/goals/components/labeled-input";
@@ -20,7 +22,7 @@ import type { ContributionDialogDialogContent1Props } from "@/lib/interfaces/ren
 export function ContributionDialogDialogContent1({ state, sourceAccounts, investmentCategories, onSubmit, form, setForm, onOpenChange, isPending, canSubmit }: ContributionDialogDialogContent1Props) {
   return (
 <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader>
+        <DialogHeader icon={<HandCoins />} tone="success">
           <DialogTitle>Registrar aporte</DialogTitle>
           <DialogDescription className="text-content">
             {state?.goal ? <span data-user-content>{state.goal.name}</span> : "Meta"}

@@ -1,8 +1,8 @@
-import { LoadingBar, LoadingChart, LoadingMetrics, LoadingPage, LoadingPanel, LoadingRows, LoadingTabs } from "./primitives";
+import { LoadingHero, LoadingBar, LoadingChart, LoadingPage, LoadingPanel, LoadingRows, LoadingTabs } from "./primitives";
 
 export function GoalsSkeleton() {
   return <LoadingPage label="metas" actions={2}>
-    <LoadingMetrics count={5} className="xl:grid-cols-5" />
+    <LoadingHero />
     <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1fr)_340px]">
       <div className="space-y-4">
         <LoadingTabs count={2} />

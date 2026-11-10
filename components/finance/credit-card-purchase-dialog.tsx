@@ -3,7 +3,7 @@
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import type { CreditCardPurchaseDialogProps } from "@/lib/interfaces/finance-fields";
-import { Pencil,Plus } from "lucide-react";
+import { Pencil, Plus, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect,useId,useRef,useState,useTransition } from "react";
 import { toast } from "sonner";
@@ -105,7 +105,7 @@ export function CreditCardPurchaseDialog({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-xl">
-        <DialogHeader>
+        <DialogHeader icon={<CreditCard />} tone="brand">
           <DialogTitle>
             {isEditing ? "Editar compra no cartão" : "Nova compra no cartão"}
           </DialogTitle>

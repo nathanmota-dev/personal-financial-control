@@ -42,7 +42,7 @@ export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPi
                 </PopoverTrigger>
                 <PopoverContent
                   align="start"
-                  className="w-auto overflow-hidden rounded-xl border border-border bg-card p-0 text-content-strong shadow-none"
+                  className="w-auto overflow-hidden rounded-[20px] border border-border bg-card p-0 text-content-strong shadow-none"
                 >
                   <MonthPicker
                     selectedMonth={selectedSimulationDate}

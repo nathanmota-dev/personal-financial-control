@@ -2,7 +2,7 @@ import { LoadingBar, LoadingMetrics, LoadingPage, LoadingPanel, LoadingRows } fr
 
 export function CreditCardSkeleton() {
   return <LoadingPage label="cartão de crédito" actions={2}>
-    <LoadingMetrics count={4} className="sm:grid-cols-2" />
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)]"><LoadingBar className="h-[208px] w-full rounded-[24px]" /><LoadingMetrics count={3} className="md:grid-cols-3 xl:grid-cols-3" /></div>
     <LoadingPanel>
       <LoadingBar className="h-[226px] w-full rounded-xl" />
       <div className="flex gap-3">

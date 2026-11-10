@@ -2,6 +2,7 @@
 "use client";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PinInput } from "./pin-input";
 import { LogoutButton } from "./logout-button";
@@ -35,16 +36,16 @@ export function LockForm({ setup, destination, attempts }: LockFormProps) {
       window.location.assign(`/login?next=${encodeURIComponent(destination)}`);
     } catch { setError(t("error")); setBusy(false); }
   }
-  return <div className="space-y-6">
-    <div><h1 className="text-2xl font-semibold tracking-tight">{t(setup ? "setupTitle" : "lockTitle")}</h1><p className="mt-2 text-sm text-content-muted">{t(setup ? "setupDescription" : "lockDescription")}</p></div>
-    <form className="space-y-5" onSubmit={event => { event.preventDefault(); void submit(); }}>
+  return <div className="space-y-6 text-center">
+    <div><span aria-hidden="true" className="tone-brand tone-soft mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl"><LockKeyhole className="size-6" /></span><h1 className="text-[30px] leading-tight font-semibold tracking-[-0.04em]">{t(setup ? "setupTitle" : "lockTitle")}</h1><p className="mt-3 text-sm leading-6 text-content">{t(setup ? "setupDescription" : "lockDescription")}</p></div>
+    <form className="space-y-5 [&_[data-input-otp-container]]:justify-center [&_[data-slot=input-otp-slot]]:size-12 [&_[data-slot=input-otp-slot]]:text-lg" onSubmit={event => { event.preventDefault(); void submit(); }}>
       <PinInput label={t("pin")} value={pin} onChange={setPin} disabled={busy} />
       {setup && <PinInput label={t("confirmPin")} value={confirmation} onChange={setConfirmation} disabled={busy} />}
       {!setup && <p className="text-xs text-content-muted">{t("remaining", { count: remaining })}</p>}
       <p role="status" className="text-sm text-danger">{error}</p>
-      <Button type="submit" className="w-full" disabled={busy || pin.length !== 6 || (setup && confirmation.length !== 6)}>{t(busy ? "saving" : setup ? "setPin" : "unlock")}</Button>
+      <Button type="submit" className="h-12 w-full rounded-xl text-sm" disabled={busy || pin.length !== 6 || (setup && confirmation.length !== 6)}>{t(busy ? "saving" : setup ? "setPin" : "unlock")}</Button>
     </form>
     {!setup && <Button variant="link" onClick={reset} disabled={busy}>{t("forgotPin")}</Button>}
-    <LogoutButton fullWidth />
+    <div className="border-t border-border pt-4 [&_button]:justify-center"><LogoutButton fullWidth /></div>
   </div>;
 }

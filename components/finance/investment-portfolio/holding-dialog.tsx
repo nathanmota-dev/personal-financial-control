@@ -1,5 +1,7 @@
 "use client";
 
+import { Landmark } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 import { HoldingDialogForm1 } from "./holding-dialog-holding-dialog-form1";
 
@@ -25,7 +27,7 @@ export function HoldingDialog({
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[min(760px,calc(100vh-2rem))] overflow-y-auto border-border bg-card text-content-strong sm:max-w-2xl">
-        <DialogHeader>
+        <DialogHeader icon={<Landmark />} tone="violet">
           <DialogTitle>{state?.mode === "edit" ? "Editar ativo" : "Cadastrar ativo"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
             Registre o valor atual informado pela instituição. Esse cadastro organiza o patrimônio

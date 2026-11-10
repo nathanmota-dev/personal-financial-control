@@ -1,5 +1,7 @@
 "use client";
 
+import { PiggyBank } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,7 @@ export function AllocationDialog({
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader>
+        <DialogHeader icon={<PiggyBank />} tone="success">
           <DialogTitle>{isRelease ? "Liberar saldo" : "Alocar saldo"}</DialogTitle>
           <DialogDescription className="text-content">
             {state?.goal ? <span data-user-content>{state.goal.name}</span> : "Meta"}

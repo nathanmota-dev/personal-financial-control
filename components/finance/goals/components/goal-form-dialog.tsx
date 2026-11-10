@@ -1,5 +1,7 @@
 "use client";
 
+import { Target } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { Button } from "@/components/ui/button";
@@ -36,7 +38,7 @@ export function GoalFormDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card text-content-strong sm:max-w-2xl">
-        <DialogHeader>
+        <DialogHeader icon={<Target />} tone="success">
           <DialogTitle>{isCreate ? "Nova meta" : "Editar meta"}</DialogTitle>
           <DialogDescription className="text-content">
             Defina o alvo, prazo e quanto da carteira já deve ficar separado.

@@ -1,4 +1,5 @@
 "use client";
+import { CategoryChip } from "@/components/finance/ds/category-chip";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,7 +21,7 @@ export function ExpenseGroupTable({ title, items, totalCents, groupByCategory }:
           <TableHeader><TableRow><TableHead>Descrição</TableHead><TableHead>Categoria</TableHead><TableHead>Conta/Cartão</TableHead><TableHead>Data</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
           <TableBody>{items.map((item) => <TableRow key={`${item.source}-${item.id}`}>
             <TableCell className="max-w-72 whitespace-normal"><p data-user-content className="break-words font-medium">{item.description}</p><div className="mt-2"><ReportEntrySource entry={{ source: item.source, month: item.competenceMonth }} badgeOnly /></div></TableCell>
-            <TableCell data-user-content className="whitespace-normal">{item.categoryName}</TableCell><TableCell data-user-content className="whitespace-normal">{item.accountName}</TableCell>
+            <TableCell className="whitespace-normal"><CategoryChip name={item.categoryName} /></TableCell><TableCell data-user-content className="whitespace-normal">{item.accountName}</TableCell>
             <TableCell>{formatDateLabel(item.expenseDate)}</TableCell><TableCell className="text-right tabular-nums">{formatCurrency(item.amountCents)}</TableCell>
           </TableRow>)}</TableBody>
           <TableFooter><TableRow><TableCell colSpan={4}>Total</TableCell><TableCell className="text-right tabular-nums">{formatCurrency(totalCents)}</TableCell></TableRow></TableFooter>

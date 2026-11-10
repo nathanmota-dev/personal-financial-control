@@ -1,5 +1,7 @@
 "use client";
 
+import { Archive } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
@@ -21,7 +23,7 @@ export function ArchiveDialog({
   return (
     <Dialog open={Boolean(goal)} onOpenChange={onOpenChange}>
       <DialogContent className="border-border bg-card text-content-strong sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader icon={<Archive />} tone="warning">
           <DialogTitle>Arquivar meta</DialogTitle>
           <DialogDescription className="text-content">
             {goal ? <span data-user-content>{goal.name}</span> : "Meta"}

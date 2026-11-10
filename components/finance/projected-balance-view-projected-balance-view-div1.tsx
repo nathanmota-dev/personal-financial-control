@@ -46,14 +46,12 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
               selectedAccountName={selectedAccount?.name}
             />
           ) : null}
-          <ProjectionFilters
-            accounts={accounts}
-            creditAccounts={creditAccounts}
-            filters={filters}
-          />
 
           {loadError ? (
-            <ErrorPanel title="Filtros inválidos" message={loadError} />
+            <>
+              <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
+              <ErrorPanel title="Filtros inválidos" message={loadError} />
+            </>
           ) : visibleProjection ? (
             visibleProjection.daily.length ? (
               <>
@@ -62,6 +60,7 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
                   minimumReserveCents={visibleProjection.summary.minimumReserveCents}
                 />
                 <ProjectionAlerts alerts={visibleProjection.summary.alerts} />
+                <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
                 <DailyProjectionExplorer
                   daily={visibleProjection.daily}
                   onRemoveSimulation={removeSimulation}
@@ -69,16 +68,22 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
                 />
               </>
             ) : (
+              <>
+              <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
               <FinanceEmptyState
                 title="Projeção sem dias"
                 description="Ajuste o período para visualizar a evolução diária do saldo."
               />
+              </>
             )
           ) : (
-            <FinanceEmptyState
+            <>
+              <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
+              <FinanceEmptyState
               title="Saldo projetado indisponível"
               description="Ajuste os filtros ou confira se as contas possuem dados suficientes para a projeção."
             />
+              </>
           )}
         </>
       )}

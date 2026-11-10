@@ -7,4 +7,3 @@ export { GoalCardItem } from "./goal-card-item";
 export { GoalFormDialog } from "./goal-form-dialog";
 export { MonthlyEvolutionCard } from "./monthly-evolution-card";
 export { RecentAllocationsCard } from "./recent-allocations-card";
-export { SummaryCard } from "./summary-card";

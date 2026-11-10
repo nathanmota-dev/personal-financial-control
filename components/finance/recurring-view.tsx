@@ -1,6 +1,7 @@
 "use client";
 
-import { RecurringCard } from "@/components/finance/recurring-card";
+import { RecurringGroup } from "@/components/finance/recurring-group";
+import { RecurringHero } from "@/components/finance/recurring-hero";
 
 import { CategorySpendingCharts } from "@/components/finance/category-spending-charts";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
@@ -13,10 +14,15 @@ AccountSetupDialog,
 CategorySetupDialog,
 SetupCallout,
 } from "@/components/finance/setup-dialogs";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { Tabs,TabsContent } from "@/components/ui/tabs";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import type { RecurringViewProps } from "@/lib/interfaces/recurring";
+
+const groups = [
+  { type: "expense", title: "Despesas fixas", description: "Contas e assinaturas ordenadas pelo dia de vencimento." },
+  { type: "income", title: "Receitas fixas", description: "Entradas previstas todos os meses." },
+  { type: "investment_contribution", title: "Aportes programados", description: "Investimentos automáticos do mês." },
+] as const;
 
 export function RecurringView({
   accounts,
@@ -42,37 +48,34 @@ export function RecurringView({
         }
       />
 
+      <RecurringHero month={month} templates={templates} />
       <Tabs defaultValue="recurring" className="gap-4">
         <RecurringSegmentedControl />
 
         <TabsContent value="recurring" className="mt-0">
-          <Card className="gap-5 overflow-visible border-0 bg-transparent py-0 shadow-none">
-            <CardHeader className="border-0 px-0 pb-0">
-              <CardTitle className="text-lg">Recorrências cadastradas <span className="ml-2 text-sm font-normal text-content">({templates.length})</span></CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 px-0 md:grid-cols-2 2xl:grid-cols-3">
-              {templates.length ? (
-                templates.map((template) => (
-                  <RecurringCard key={template.id} template={template} accounts={accounts} categories={categories} month={month} />
-                ))
-              ) : (
-                <FinanceEmptyState
-                  title="Sem recorrências"
-                  description="Crie a base de conta e categoria e depois cadastre a primeira recorrência."
-                  action={
-                    hasSetup ? (
-                      <RecurringDialog accounts={accounts} categories={categories} month={month} />
-                    ) : (
-                      <SetupCallout
-                        title="Base inicial obrigatória"
-                        description="Você precisa de uma conta e uma categoria para criar uma recorrência."
-                      />
-                    )
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
+          {templates.length ? (
+            <div className="space-y-5">
+              {groups.map((group) => {
+                const rows = templates.filter((template) => template.type === group.type).sort((left, right) => left.dayOfMonth - right.dayOfMonth);
+                return rows.length ? <RecurringGroup key={group.type} {...group} templates={rows} accounts={accounts} categories={categories} month={month} /> : null;
+              })}
+            </div>
+          ) : (
+            <FinanceEmptyState
+              title="Sem recorrências"
+              description="Crie a base de conta e categoria e depois cadastre a primeira recorrência."
+              action={
+                hasSetup ? (
+                  <RecurringDialog accounts={accounts} categories={categories} month={month} />
+                ) : (
+                  <SetupCallout
+                    title="Base inicial obrigatória"
+                    description="Você precisa de uma conta e uma categoria para criar uma recorrência."
+                  />
+                )
+              }
+            />
+          )}
         </TabsContent>
 
         <TabsContent value="category" className="mt-0">

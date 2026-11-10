@@ -1,4 +1,7 @@
 "use client";
+
+import { Meter } from "@/components/finance/ds/meter";
+import { toneForKey } from "@/lib/finance-tone";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardTransactionsPanelProps } from "@/lib/interfaces/credit-card-view";
 import { TransactionEmptyState } from "./transaction-empty-state";
@@ -8,7 +11,7 @@ export function CategoryBreakdown({
 }: {
   categoryTotals: CreditCardTransactionsPanelProps["categoryTotals"];
 }) {
-  const { formatCurrency } = useFinancialFormatter();
+  const { formatCurrency, hidden } = useFinancialFormatter();
   const largest = Math.max(...categoryTotals.map((category) => Math.abs(category.amountCents)), 1);
 
   if (!categoryTotals.length) {
@@ -24,11 +27,9 @@ export function CategoryBreakdown({
               <p data-user-content className="truncate font-medium text-content-strong">{category.categoryName}</p>
               <p className="mt-1 text-xs text-content">{category.group === "fixed_expense" ? "Gasto fixo" : "Gasto variável"}</p>
             </div>
-            <p className="shrink-0 font-semibold text-brand">{formatCurrency(category.amountCents)}</p>
+            <p className="shrink-0 font-semibold text-content-strong tabular-nums">{formatCurrency(category.amountCents)}</p>
           </div>
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-surface-elevated">
-            <div className="h-full rounded-full bg-chart-1" style={{ width: `${Math.max((Math.abs(category.amountCents) / largest) * 100, 4)}%` }} />
-          </div>
+          <Meter className="mt-4" tone={toneForKey(category.categoryName)} value={hidden ? 0 : Math.max((Math.abs(category.amountCents) / largest) * 100, 4)} />
         </div>
       ))}
     </div>

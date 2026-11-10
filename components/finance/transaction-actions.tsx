@@ -85,15 +85,16 @@ export function DeleteTransactionDialog({ id }: DeleteTransactionDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon-sm"
           aria-label="Excluir lançamento"
+          className="text-content hover:bg-danger-soft hover:text-danger"
         >
           <Trash2 className="size-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader icon={<Trash2 />} tone="danger">
           <DialogTitle>Excluir lançamento</DialogTitle>
           <DialogDescription>
             Esta ação remove o registro em definitivo.

@@ -1,5 +1,7 @@
 "use client";
 
+import { PieChart } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 import { AllocationDialogDialogFooter3 } from "./allocation-dialog-allocation-dialog-dialog-footer3";
 import { AllocationDialogDiv2 } from "./allocation-dialog-allocation-dialog-div2";
@@ -42,7 +44,7 @@ export function AllocationDialog({
   return (
     <Dialog open={Boolean(state)} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[min(720px,calc(100vh-2rem))] overflow-y-auto border-border bg-card text-content-strong sm:max-w-xl">
-        <DialogHeader>
+        <DialogHeader icon={<PieChart />} tone="violet">
           <DialogTitle>{isExisting ? "Editar alocação" : "Alocar ativo"}</DialogTitle>
           <DialogDescription className="leading-6 text-content">
             Divida uma posição entre finalidades sem alterar o valor do ativo, os aportes ou as

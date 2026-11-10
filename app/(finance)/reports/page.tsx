@@ -19,8 +19,7 @@ export default async function ReportsPage({ searchParams }: DashboardPageProps) 
   if (!selection) return <section role="alert" className="space-y-4"><h1 className="text-2xl font-semibold">Período inválido</h1><p>Use modo mensal com AAAA-MM ou anual com AAAA, entre os anos 0002 e 9998.</p><Link className="text-brand underline" href="/reports">Consultar período atual</Link></section>;
   const report = await getReportInitial(selection);
   return <div className="space-y-6 min-[100.0625rem]:space-y-5">
-    <PageHeader title="Relatórios" description="Consulte o histórico por competência e entenda o resultado antes e depois dos investimentos." actions={<ReportControls {...selection} defaultMonth={defaultMonth} rememberedMonth={remembered?.period} />} />
-    <ReportExportActions key={`export:${selection.mode}:${selection.period}`} {...selection} />
+    <PageHeader title="Relatórios" description="Consulte o histórico por competência e entenda o resultado antes e depois dos investimentos." actions={<><ReportExportActions key={`export:${selection.mode}:${selection.period}`} {...selection} /><ReportControls {...selection} defaultMonth={defaultMonth} rememberedMonth={remembered?.period} /></>} />
     <ReportTables key={`${selection.mode}:${selection.period}`} report={report} />
     <ReportNotes report={report} />
   </div>;

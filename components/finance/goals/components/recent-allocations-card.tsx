@@ -20,7 +20,7 @@ import type { RecentAllocationsCardProps } from "../goals-types";
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Card className="rounded-xl border-border bg-card">
+    <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Histórico recente</CardTitle>
         <p className="text-sm text-content">

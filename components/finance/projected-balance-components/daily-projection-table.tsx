@@ -15,7 +15,7 @@ import { DailyProjectionTableDiv1 } from "./daily-projection-table-daily-project
 export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Card className="rounded-xl border-border bg-card">
+    <Card className="border-border bg-card">
         <CardHeader>
           <CardTitle>Projeção por dia</CardTitle>
         </CardHeader>

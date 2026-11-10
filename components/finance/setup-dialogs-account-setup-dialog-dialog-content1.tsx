@@ -1,5 +1,7 @@
 "use client";
 
+import { Wallet } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { FinanceField } from "@/components/finance/finance-field";
@@ -27,7 +29,7 @@ import type { AccountSetupDialogDialogContent1Props } from "@/lib/interfaces/ren
 export function AccountSetupDialogDialogContent1({ account, startTransition, onSubmit, selectedAccountType, setSelectedAccountType, isPending }: AccountSetupDialogDialogContent1Props) {
   return (
 <DialogContent>
-        <DialogHeader>
+        <DialogHeader icon={<Wallet />} tone="brand">
           <DialogTitle>{account ? "Editar conta" : "Nova conta"}</DialogTitle>
           <DialogDescription>
             Crie a base para lançamentos, transferências e recorrências.

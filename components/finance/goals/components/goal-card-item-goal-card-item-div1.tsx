@@ -34,12 +34,9 @@ export function GoalCardItemDiv1({ goal, onEdit, onRelease, onArchive }: GoalCar
                 className="size-2.5 rounded-full"
                 style={{ backgroundColor: goal.color }}
               />
-              <Badge
-                variant="outline"
-                className="border-input text-content-strong"
-              >
+              <span className="inline-flex h-6 items-center rounded-lg bg-[color-mix(in_srgb,var(--goal-color)_16%,transparent)] px-2 text-xs font-medium text-[var(--goal-color)]">
                 {GOAL_CATEGORY_LABELS[goal.category]}
-              </Badge>
+              </span>
               <Badge
                 variant="outline"
                 className={cn(

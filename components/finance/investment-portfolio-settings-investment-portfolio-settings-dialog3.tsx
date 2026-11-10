@@ -1,5 +1,7 @@
 "use client";
 
+import { Scale } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { InvestmentField } from "@/components/finance/investment-field";
@@ -18,7 +20,7 @@ export function InvestmentPortfolioSettingsDialog3({ isReconcileOpen, setIsRecon
   return (
 <Dialog open={isReconcileOpen} onOpenChange={setIsReconcileOpen}>
         <DialogContent className="border-border bg-card text-content-strong sm:max-w-lg">
-          <DialogHeader>
+          <DialogHeader icon={<Scale />} tone="brand">
             <DialogTitle>Conferir saldo real</DialogTitle>
             <DialogDescription className="leading-6 text-content">
               Use o valor exibido pela corretora. Esse valor passa a ser a nova base para os

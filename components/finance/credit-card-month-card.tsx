@@ -25,8 +25,8 @@ export function CreditCardMonthCard({
       className={cn(
         "min-w-0 rounded-2xl border px-3 py-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         selected
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-transparent bg-surface hover:border-border"
+          ? "bg-hero shadow-elevation border-transparent text-primary-foreground"
+          : "border-border bg-muted/40 hover:border-brand/40"
       )}
     >
       <div className="flex items-center justify-between gap-1">

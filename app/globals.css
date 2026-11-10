@@ -61,6 +61,11 @@
   --color-violet: var(--violet);
   --color-orange: var(--orange);
   --color-overlay: var(--overlay);
+  --color-income: var(--income);
+  --color-expense: var(--expense);
+  --color-invest: var(--invest);
+  --color-redeem: var(--redeem);
+  --color-tone: var(--tone);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -124,7 +129,7 @@
   --card-foreground: var(--content-strong);
   --popover: var(--surface-raised);
   --popover-foreground: var(--content-strong);
-  --primary: #2d2d2d;
+  --primary: #2f73df;
   --primary-foreground: #ffffff;
   --secondary: var(--surface-elevated);
   --secondary-foreground: var(--content-strong);
@@ -146,7 +151,25 @@
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
   --app-shell-gradient: var(--surface);
-  --sidebar-shell-gradient: var(--sidebar);
+  --sidebar-shell-gradient: linear-gradient(180deg, var(--hero-from), var(--hero-to));
+  /* Design system: semantic money tones and the categorical palette. */
+  --income: #1f9d61;
+  --expense: #e0494f;
+  --invest: #7a5bd8;
+  --redeem: #dd7f0a;
+  --tone-1: #2f73df;
+  --tone-2: #7a5bd8;
+  --tone-3: #d2439c;
+  --tone-4: #e2681c;
+  --tone-5: #b98207;
+  --tone-6: #1f9d61;
+  --tone-7: #0d97a6;
+  --tone-8: #e0494f;
+  --tone: var(--content-muted);
+  --hero-from: #2f73df;
+  --hero-to: #173f8a;
+  --hero-glow: rgb(255 255 255 / 0.2);
+  --elevation: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -12px rgb(16 24 40 / 0.1);
 }
 
 .dark {
@@ -179,8 +202,8 @@
   --brand-deep-rgb: 47 115 223;
   --success-rgb: 112 199 149;
   --warning-rgb: 245 190 96;
-  --primary: #ededeb;
-  --primary-foreground: #202223;
+  --primary: #2f73df;
+  --primary-foreground: #ffffff;
   --border: #37393c;
   --sidebar: #1b1d1e;
   --sidebar-foreground: #c8c9cb;
@@ -191,6 +214,22 @@
   --chart-grid: #333b47;
   --chart-rail: #2b3442;
   --chart-neutral: #aecbf5;
+  --income: #5fd39a;
+  --expense: #f58a8f;
+  --invest: #b3a0f2;
+  --redeem: #f6b25c;
+  --tone-1: #7fb0f5;
+  --tone-2: #b3a0f2;
+  --tone-3: #f08ccb;
+  --tone-4: #f59e62;
+  --tone-5: #ecc054;
+  --tone-6: #5fd39a;
+  --tone-7: #5fd0dc;
+  --tone-8: #f58a8f;
+  --hero-from: #2a66cc;
+  --hero-to: #14315f;
+  --hero-glow: rgb(255 255 255 / 0.14);
+  --elevation: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 32px -18px rgb(0 0 0 / 0.6);
 }
 
 @layer base {
@@ -221,6 +260,81 @@
   .bg-sidebar-shell {
     background: var(--sidebar-shell-gradient);
   }
+
+  /* Blue sidebar: re-scope the neutral tokens so every child reads on the brand surface. */
+  .sidebar-surface {
+    --card: rgb(255 255 255 / 0.12);
+    --border: rgb(255 255 255 / 0.18);
+    --input: rgb(255 255 255 / 0.18);
+    --muted: rgb(255 255 255 / 0.12);
+    --accent: rgb(255 255 255 / 0.14);
+    --foreground: #ffffff;
+    --content: rgb(255 255 255 / 0.84);
+    --content-strong: #ffffff;
+    --content-muted: rgb(255 255 255 / 0.72);
+    --content-subtle: rgb(255 255 255 / 0.62);
+    --muted-foreground: rgb(255 255 255 / 0.72);
+    --brand: #ffffff;
+    --brand-soft: rgb(255 255 255 / 0.16);
+    --ring: rgb(255 255 255 / 0.7);
+    --sidebar: transparent;
+    --sidebar-foreground: rgb(255 255 255 / 0.86);
+    --sidebar-primary: #ffffff;
+    --sidebar-primary-foreground: #173f8a;
+    --sidebar-accent: rgb(255 255 255 / 0.14);
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: rgb(255 255 255 / 0.18);
+    color: #ffffff;
+  }
+
+  /* Tone system: a tone class sets --tone; the helpers below consume it. */
+  .tone-1 { --tone: var(--tone-1); }
+  .tone-2 { --tone: var(--tone-2); }
+  .tone-3 { --tone: var(--tone-3); }
+  .tone-4 { --tone: var(--tone-4); }
+  .tone-5 { --tone: var(--tone-5); }
+  .tone-6 { --tone: var(--tone-6); }
+  .tone-7 { --tone: var(--tone-7); }
+  .tone-8 { --tone: var(--tone-8); }
+  .tone-brand { --tone: var(--brand); }
+  .tone-success { --tone: var(--income); }
+  .tone-danger { --tone: var(--expense); }
+  .tone-warning { --tone: var(--redeem); }
+  .tone-violet { --tone: var(--invest); }
+  .tone-neutral { --tone: var(--content-muted); }
+
+  .tone-soft {
+    background-color: color-mix(in srgb, var(--tone) 15%, transparent);
+    color: var(--tone);
+  }
+  .tone-text { color: var(--tone); }
+  .tone-fill { background-color: var(--tone); }
+  .tone-ring { border-color: color-mix(in srgb, var(--tone) 38%, transparent); }
+  .tone-track { background-color: color-mix(in srgb, var(--tone) 16%, transparent); }
+  .tone-stripes {
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--tone) 34%, transparent) 0 3px,
+      transparent 3px 7px
+    );
+  }
+
+  .bg-hero {
+    background:
+      radial-gradient(90% 130% at 100% 0%, var(--hero-glow), transparent 60%),
+      radial-gradient(70% 90% at 0% 100%, rgb(255 255 255 / 0.08), transparent 55%),
+      linear-gradient(135deg, var(--hero-from), var(--hero-to));
+    color: #ffffff;
+  }
+  .shadow-elevation { box-shadow: var(--elevation); }
+}
+
+/* Desktop shell: the brand-blue frame holds the sidebar and shows around the rounded content panel. */
+@media (min-width: 64rem) {
+  .app-shell-frame {
+    background: var(--sidebar-shell-gradient);
+    background-attachment: fixed;
+  }
 }
 
 .no-scrollbar {
@@ -232,21 +346,44 @@
   display: none;
 }
 
-.recurring-calendar .rc-bg-white,
+/* Monthly calendars: borderless grid of soft rounded day tiles. */
 .finance-monthly-calendar .rc-bg-white {
-  background-color: var(--surface);
+  background-color: transparent;
+  border: 0;
+  padding: 0.75rem;
 }
 
-.recurring-calendar .rc-border-l-2,
-.recurring-calendar .rc-border-t-2,
-.recurring-calendar .rc-border-r-2,
-.recurring-calendar .rc-border-b-2,
-.finance-monthly-calendar .rc-border-l-2,
-.finance-monthly-calendar .rc-border-t-2,
-.finance-monthly-calendar .rc-border-r-2,
+.finance-monthly-calendar .rc-grid {
+  gap: 0.5rem;
+}
+
 .finance-monthly-calendar .rc-border-b-2 {
-  border-color: rgb(var(--surface-border-rgb) / 0.82);
-  border-width: 1px;
+  border: 0;
+}
+
+.finance-monthly-calendar .rc-p-2.rc-hidden {
+  padding: 0.25rem 0.5rem;
+  color: rgb(var(--content-muted-rgb));
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.finance-monthly-calendar .rc-h-48 {
+  height: 9.25rem;
+  border: 1px solid rgb(var(--surface-border-rgb) / 0.7);
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--muted) 45%, transparent);
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.finance-monthly-calendar .rc-h-48:hover {
+  border-color: rgb(var(--brand-rgb) / 0.45);
+}
+
+.finance-monthly-calendar .rc-max-h-36 {
+  max-height: 6.75rem;
 }
 
 .recurring-calendar .rc-font-bold,

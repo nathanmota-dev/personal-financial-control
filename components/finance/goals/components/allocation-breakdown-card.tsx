@@ -26,7 +26,7 @@ export function AllocationBreakdownCard({
   const hasData = data.some((item) => item.amount > 0);
 
   return (
-    <Card className="rounded-xl border-border bg-card">
+    <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Divisão da carteira</CardTitle>
         <p className="text-sm text-content">Metas visíveis e reserva livre.</p>

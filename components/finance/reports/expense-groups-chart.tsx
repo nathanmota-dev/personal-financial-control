@@ -22,7 +22,7 @@ export function ExpenseGroupsChart({ totals, series, mode }: ExpenseGroupChartPr
     <CardContent>
       {totals.totalCents <= 0 || negativeGroup ? <FinanceEmptyState title="Distribuição indisponível"
         description={negativeGroup ? "Há um grupo com créditos líquidos negativos. Confira os valores e percentuais nos cards." : "O gráfico exige um total líquido de despesas maior que zero."} /> : <>
-        <ChartContainer config={config} className="h-64 w-full aspect-auto" aria-label={mode === "annual" ? "Gastos por grupo e competência" : "Participação dos grupos nas despesas"}>
+        <div className={mode === "annual" ? "" : "grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"}><ChartContainer config={config} className="h-64 w-full aspect-auto" aria-label={mode === "annual" ? "Gastos por grupo e competência" : "Participação dos grupos nas despesas"}>
           {mode === "annual" ? <BarChart data={series} stackOffset="sign" accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="month" tickFormatter={(month: string) => formatMonthLabel(month).split(" de ")[0].slice(0, 3)} tickLine={false} axisLine={false} />
@@ -36,9 +36,9 @@ export function ExpenseGroupsChart({ totals, series, mode }: ExpenseGroupChartPr
             </Pie>
           </PieChart>}
         </ChartContainer>
-        <ul aria-label="Legenda dos grupos" className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-content">
-          {expenseGroupDefinitions.map((group) => <li key={group.key} className="flex items-center gap-2"><span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: group.color }} />{group.label}</li>)}
-        </ul>
+        <ul aria-label="Legenda dos grupos" className={mode === "annual" ? "mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-content" : "grid gap-2.5 text-sm"}>
+          {expenseGroupDefinitions.map((group) => <li key={group.key} className={mode === "annual" ? "flex items-center gap-2" : "flex items-center justify-between gap-3 rounded-2xl bg-muted/50 px-4 py-3"}><span className="flex items-center gap-2"><span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: group.color }} />{group.label}</span>{mode !== "annual" && <span className="font-semibold tabular-nums">{formatCurrency(totals[group.amountKey])}</span>}</li>)}
+        </ul></div>
       </>}
     </CardContent>
   </Card>;
