@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowLeftRight } from "lucide-react";
+
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
 
 import { FinanceField } from "@/components/finance/finance-field";
@@ -27,7 +29,7 @@ export function TransferDialogDialog1({ open, setOpen, canTransfer, startTransit
         <Button variant="outline">Nova transferência</Button>
       </DialogTrigger>
       <DialogContent className="border border-border bg-card text-content-strong sm:max-w-lg">
-        <DialogHeader className="pr-8">
+        <DialogHeader icon={<ArrowLeftRight />} tone="brand" className="pr-8">
           <DialogTitle className="text-xl font-semibold">
             Transferência entre contas
           </DialogTitle>

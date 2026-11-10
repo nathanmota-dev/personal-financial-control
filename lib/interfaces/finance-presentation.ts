@@ -5,7 +5,8 @@ export type FinanceMetricProps = {
   value: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
-  tone?: "neutral" | "brand" | "success" | "warning" | "danger";
+  footer?: ReactNode;
+  tone?: "neutral" | "brand" | "success" | "warning" | "danger" | "violet";
   className?: string;
 };
 

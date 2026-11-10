@@ -100,3 +100,12 @@ export type RecurringMonthPickerProps = {
 export type RecurringCardProps = Pick<RecurringViewProps, "accounts" | "categories" | "month"> & {
   template: RecurringTemplateRow;
 };
+
+export type RecurringHeroProps = Pick<RecurringViewProps, "month" | "templates">;
+
+export type RecurringGroupProps = Pick<RecurringViewProps, "accounts" | "categories" | "month"> & {
+  title: string;
+  description: string;
+  type: RecurringTransactionType;
+  templates: RecurringTemplateRow[];
+};

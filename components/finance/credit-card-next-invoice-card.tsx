@@ -56,7 +56,7 @@ export function CreditCardNextInvoiceCard({
         <button
           type="button"
           aria-label={`Configurar vencimento da próxima fatura. Atualmente, dia ${creditDueDay}.`}
-          className="group min-w-0 cursor-pointer rounded-xl text-left outline-none transition-colors hover:ring-1 hover:ring-border focus-visible:ring-2 focus-visible:ring-ring"
+          className="group min-w-0 cursor-pointer rounded-[20px] text-left outline-none transition-colors hover:ring-1 hover:ring-brand/50 focus-visible:ring-2 focus-visible:ring-ring"
         >
           <FinanceMetric
             label="Próxima fatura"
@@ -65,6 +65,7 @@ export function CreditCardNextInvoiceCard({
               ? `Estimativa para ${upcomingInvoice.month.slice(5, 7)}/${upcomingInvoice.month.slice(0, 4)} · vence dia ${creditDueDay}`
               : `Sem parcelas futuras · vence dia ${creditDueDay}`}
             icon={<PencilLine aria-hidden="true" />}
+            tone="brand"
             className="h-full"
           />
         </button>

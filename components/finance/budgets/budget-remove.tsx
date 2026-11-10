@@ -18,5 +18,5 @@ export function BudgetRemove({ categoryId, competenceMonth }: Omit<BudgetInput, 
     });
   }
   function report(value: string) { setMessage(value); toast(value); }
-  return <div><Button variant="outline" size="icon-sm" aria-label="Remover limite" disabled={pending} onClick={remove}><Trash2 className="size-4" /></Button><p role="status" className="sr-only">{message}</p></div>;
+  return <div><Button variant="ghost" size="icon-sm" className="text-content hover:bg-danger-soft hover:text-danger" aria-label="Remover limite" disabled={pending} onClick={remove}><Trash2 className="size-4" /></Button><p role="status" className="sr-only">{message}</p></div>;
 }

@@ -61,7 +61,28 @@ export type OperationalAssetInput = {
 export type InvestmentOverviewViewProps = { overview: InvestmentOverview };
 export type OperationalPortfolioViewProps = { positions: InvestmentPosition[] };
 export type InvestmentAssetDetailViewProps = { asset: InvestmentAssetDetails };
-export type OverviewMetricProps = { icon: ReactNode; label: string; value: ReactNode; detail: ReactNode; tone: "cyan" | "teal" | "blue" | "green" | "red"; href?: string };
 export type AssetFormState = { name: string; ticker: string; institutionName: string; assetClass: OperationalAssetInput["assetClass"]; instrumentType: OperationalAssetInput["instrumentType"]; valuationMode: OperationalAssetInput["valuationMode"]; quoteSymbol: string };
 export type OperationFormState = { type: InvestmentOperationInput["type"]; operatedOn: string; quantity: string; unitPrice: string; grossAmount: string; fees: string; notes: string };
-export type DetailMetricProps = { label: string; value: ReactNode; tone?: "neutral" | "positive" | "negative" };
+
+export type InvestmentOverviewLinkProps = {
+  href: string;
+  icon: ReactNode;
+  tone: import("@/lib/interfaces/design-system").Tone;
+  title: string;
+  value: ReactNode;
+  detail: string;
+  action: string;
+};
+
+export type InvestmentPositionRowProps = { item: InvestmentPosition };
+
+export type OperationalPortfolioHeroProps = { positions: InvestmentPosition[] };
+
+export type InvestmentAssetHeroProps = { asset: InvestmentAssetDetails };
+
+export type InvestmentOperationRowProps = {
+  item: InvestmentAssetDetails["operations"][number];
+  label: string;
+  onEdit: () => void;
+  onRemove: () => void;
+};

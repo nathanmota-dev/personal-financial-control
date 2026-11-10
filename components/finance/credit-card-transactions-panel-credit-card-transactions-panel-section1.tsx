@@ -12,7 +12,7 @@ import { ArrowDownUp,ChartPie,Search } from "lucide-react";
 
 export function CreditCardTransactionsPanelSection1({ entries, view, setView, query, setQuery, categoryFilter, setCategoryFilter, categories, filteredEntries, accountId, month, categoryTotals }: CreditCardTransactionsPanelSection1Props) {
   return (
-<section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-none">
+<section className="min-w-0 overflow-hidden rounded-[20px] border border-border bg-card shadow-none">
       <div className="border-b border-border px-5 py-5 sm:px-6">
         <div className="flex flex-col justify-between gap-4 2xl:flex-row 2xl:items-center">
           <div>

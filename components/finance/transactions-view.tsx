@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo,useState } from "react";
-import { TransactionsViewDiv1 } from "./transactions-view-transactions-view-div1";
-import { TransactionsViewDiv2 } from "./transactions-view-transactions-view-div2";
-import { TransactionsViewTabsContent3 } from "./transactions-view-transactions-view-tabs-content3";
+import { SectionCard } from "@/components/finance/ds/section-card";
+import { TransactionList } from "@/components/finance/transaction-list";
+import { TransactionsHero } from "@/components/finance/transactions-hero";
+import { TransferList } from "@/components/finance/transfer-list";
+import { ArrowLeftRight, ListFilter, Receipt } from "lucide-react";
 
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
@@ -14,11 +16,8 @@ SetupCallout,
 import { TransferDialog } from "@/components/finance/transaction-actions";
 import { TransactionDialog } from "@/components/finance/transaction-dialog";
 import { TransactionFilters } from "@/components/finance/transaction-filters";
-import { TransactionSummaryCard } from "@/components/finance/transaction-summary-card";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
 import { formatMonthLabel } from "@/lib/finance-ui";
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
 import type { FinanceCommandIntent } from "@/lib/interfaces/finance-command";
 import { TRANSACTION_COMMAND_ACTIONS } from "@/lib/finance-command-catalog";
@@ -33,7 +32,6 @@ export function TransactionsView({
   filters,
   loadError = false,
 }: TransactionsViewProps) {
-  const { formatCurrency } = useFinancialFormatter();
   const [commandIntent, setCommandIntent] = useState<FinanceCommandIntent | null>(null);
   useFinanceCommandIntent(TRANSACTION_COMMAND_ACTIONS, (intent) => {
     if (loadError) {
@@ -92,51 +90,42 @@ export function TransactionsView({
         }
       />
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <TransactionSummaryCard label="Receitas filtradas" value={formatCurrency(totals.income)} tone="cyan" />
-        <TransactionSummaryCard label="Despesas filtradas" value={formatCurrency(totals.expense)} tone="blue" />
-        <TransactionSummaryCard label="Aportes filtrados" value={formatCurrency(totals.investment)} tone="sky" />
-        <TransactionSummaryCard label="Resgates filtrados" value={formatCurrency(totals.withdrawal)} tone="amber" />
-      </section>
-
-      <TransactionFilters accounts={accounts} categories={categories} filters={filters} />
+      <TransactionsHero month={filters.month} totals={totals} transactions={transactions} />
 
       <Tabs defaultValue={filters.section === "transfers" ? "transfers" : "transactions"}>
-        <TabsList variant="line">
-          <TabsTrigger value="transactions">Lançamentos</TabsTrigger>
-          <TabsTrigger value="transfers">Transferências</TabsTrigger>
-        </TabsList>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <TabsList variant="line">
+            <TabsTrigger value="transactions"><Receipt />Lançamentos</TabsTrigger>
+            <TabsTrigger value="transfers"><ArrowLeftRight />Transferências</TabsTrigger>
+          </TabsList>
+          <p className="flex items-center gap-1.5 text-xs text-content-muted"><ListFilter aria-hidden="true" className="size-3.5" />{transactions.length} lançamento(s) no filtro atual</p>
+        </div>
+
+        <TransactionFilters accounts={accounts} categories={categories} filters={filters} />
 
         <TabsContent value="transactions">
-          <Card className="rounded-xl border-border bg-card">
-            <CardHeader>
-              <CardTitle>Lista principal</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {transactions.length ? (
-                <>
-                  <TransactionsViewDiv1 transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
-
-                  <TransactionsViewDiv2 transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
-                </>
-              ) : (
-                <FinanceEmptyState
-                  title="Nenhum lançamento encontrado"
-                  description="Registre uma receita ou despesa; a categoria pode ser escolhida agora ou adicionada depois."
-                  action={
-                    hasSetup ? (
-                      <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
-                    ) : (
-                      <SetupCallout title="Cadastre uma conta" description="Você precisa de ao menos uma conta antes do primeiro lançamento." />
-                    )
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
+          <SectionCard title="Extrato do período" count={transactions.length} icon={<Receipt />} description={`Agrupados por data em ${formatMonthLabel(filters.month)}.`}>
+            {transactions.length ? (
+              <TransactionList transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
+            ) : (
+              <FinanceEmptyState
+                title="Nenhum lançamento encontrado"
+                description="Registre uma receita ou despesa; a categoria pode ser escolhida agora ou adicionada depois."
+                action={
+                  hasSetup ? (
+                    <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
+                  ) : (
+                    <SetupCallout title="Cadastre uma conta" description="Você precisa de ao menos uma conta antes do primeiro lançamento." />
+                  )
+                }
+              />
+            )}
+          </SectionCard>
         </TabsContent>
 
-        <TransactionsViewTabsContent3 transfers={transfers} accounts={accounts} filters={filters} />
+        <TabsContent value="transfers">
+          <TransferList transfers={transfers} accounts={accounts} filters={filters} />
+        </TabsContent>
       </Tabs>
     </div>
   );

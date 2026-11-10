@@ -55,7 +55,7 @@ export function ProjectedBalanceChart({
   );
 
   return (
-    <Card className="rounded-xl border-border bg-card">
+    <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Evolução diária</CardTitle>
       </CardHeader>

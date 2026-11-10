@@ -1,6 +1,6 @@
 "use client";
 
-import { Landmark,Layers3,Plus } from "lucide-react";
+import { Landmark, Layers3, Plus, Tags } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState,useTransition } from "react";
 import { toast } from "sonner";
@@ -105,7 +105,7 @@ export function AccountSetupDialog({
     >
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button>
+          <Button variant="outline">
             <Landmark className="size-4" />
             Nova conta
           </Button>
@@ -165,7 +165,7 @@ export function CategorySetupDialog({
         )}
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader icon={<Tags />} tone="brand">
           <DialogTitle>
             {category ? "Editar categoria" : "Nova categoria"}
           </DialogTitle>

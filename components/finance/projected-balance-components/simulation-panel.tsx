@@ -25,7 +25,7 @@ export function ProjectionSimulationPanel({
 }: ProjectionSimulationPanelProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Card className="rounded-xl border-border bg-card shadow-none">
+    <Card className="border-border bg-card shadow-none">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">

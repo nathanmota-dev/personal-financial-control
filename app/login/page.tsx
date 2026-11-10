@@ -1,10 +1,11 @@
+import { AppBrand } from "@/components/finance/app-brand";
 import { LoginArt } from "@/components/auth/login-art";
 import { LoginForm } from "@/components/auth/login-form";
 import { ThemeToggle } from "@/components/finance/theme-toggle";
 import { safeDestination } from "@/lib/auth/config";
 import { isDemoMode } from "@/lib/demo/mode";
 import type { LoginPageProps } from "@/lib/interfaces/auth";
-import { ChartPie,LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
@@ -15,7 +16,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <div className="grid w-full max-w-6xl overflow-hidden rounded-[28px] border border-border bg-surface-raised shadow-xl shadow-black/5 lg:min-h-[680px] lg:grid-cols-2">
         <section className="relative flex flex-col px-7 py-7 sm:px-12 sm:py-9 lg:px-16">
           <header className="flex items-center justify-between">
-            <span className="flex items-center gap-2.5 text-xl font-semibold tracking-tight"><span className="flex size-8 items-center justify-center rounded-lg bg-orange text-white"><ChartPie className="size-5" aria-hidden="true" /></span>finance</span>
+            <AppBrand />
             <ThemeToggle />
           </header>
           <div className="mx-auto flex w-full max-w-[340px] flex-1 flex-col justify-center py-16 text-center lg:py-20">

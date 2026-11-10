@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import type { RecurringDialogDialog7Props } from "@/lib/interfaces/render/recurring-dialog-recurring-dialog-dialog7";
 import { cn } from "@/lib/utils";
 import { recurringFieldClassName,recurringFieldLabelClassName } from "@/lib/utils/components/recurring-dialog";
-import { Plus } from "lucide-react";
+import { Plus, Repeat } from "lucide-react";
 
 export function RecurringDialogDialog7({ open, handleOpenChange, trigger, template, hasSetup, startTransition, onSubmit, formId, selectedType, handleTypeChange, selectedAccountId, setSelectedAccountId, filteredAccounts, selectedCategoryId, setSelectedCategoryId, filteredCategories, startMonth, setStartMonth, endMonth, setEndMonth, formError, isPending }: RecurringDialogDialog7Props) {
   return (
@@ -33,7 +33,7 @@ export function RecurringDialogDialog7({ open, handleOpenChange, trigger, templa
         )}
       </DialogTrigger>
       <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-card sm:max-w-2xl">
-        <DialogHeader>
+        <DialogHeader icon={<Repeat />} tone="violet">
           <DialogTitle>
             {template ? "Editar recorrência" : "Nova recorrência"}
           </DialogTitle>

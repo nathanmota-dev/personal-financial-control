@@ -43,6 +43,8 @@ export type CreditCardHeroDetailProps = {
   label: string;
   value: ReactNode;
   detail: ReactNode;
+  icon?: ReactNode;
+  tone?: "neutral" | "brand" | "success" | "warning" | "danger" | "violet";
 };
 
 export type CreditCardNextInvoiceCardProps = {

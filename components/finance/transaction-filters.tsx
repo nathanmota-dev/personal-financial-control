@@ -2,7 +2,6 @@
 
 import { usePathname,useRouter } from "next/navigation";
 
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
 import {
 Select,
@@ -19,7 +18,7 @@ TransactionFiltersProps,
 const EMPTY_FILTER_VALUE = "__empty-filter__";
 export const UNCATEGORIZED_FILTER_VALUE = "__uncategorized-filter__";
 const FILTER_SELECT_TRIGGER_CLASSNAME =
-  "h-10 w-full rounded-xl border-input bg-card pr-11 pl-4 text-left text-sm text-content-strong shadow-none hover:bg-card focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
+  "h-10 w-full rounded-xl border-transparent bg-muted/50 pr-11 pl-4 text-left text-sm text-content-strong shadow-none hover:bg-muted focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
 const FILTER_SELECT_CONTENT_CLASSNAME =
   "rounded-xl border-border bg-card p-1 text-content-strong shadow-none";
 const FILTER_SELECT_ITEM_CLASSNAME =
@@ -92,12 +91,7 @@ export function TransactionFilters({ accounts, categories, filters }: Transactio
     : filters.categoryId;
 
   return (
-    <Card className="rounded-xl border-border bg-card">
-      <CardHeader>
-        <CardTitle>Filtros</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div role="group" aria-label="Filtros" className="grid gap-2.5 rounded-[20px] border border-border bg-card p-2.5 sm:grid-cols-2 xl:grid-cols-5">
           <MonthPickerField
             month={filters.month}
             onMonthChange={(month) => updateFilters({ month })}
@@ -146,7 +140,5 @@ export function TransactionFilters({ accounts, categories, filters }: Transactio
             onValueChange={(status) => updateFilters({ status })}
           />
         </div>
-      </CardContent>
-    </Card>
   );
 }

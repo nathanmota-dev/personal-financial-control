@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { TransactionDialogDialog7Props } from "@/lib/interfaces/render/transaction-dialog-transaction-dialog-dialog7";
 import { labelClassName } from "@/lib/utils/components/transaction-dialog";
-import { Plus } from "lucide-react";
+import { Plus, Receipt } from "lucide-react";
 
 export function TransactionDialogDialog7({ open, handleOpenChange, trigger, transaction, accounts, startTransition, onSubmit, formId, selectedType, handleTypeChange, isManualExpense, fundingSource, setFundingSource, isInvestmentExpense, selectedAccountId, setSelectedAccountId, filteredAccounts, selectedCategoryId, setSelectedCategoryId, categoryRequired, filteredCategories, transactionDate, setTransactionDate, competenceMonth, setCompetenceMonth, formError, isPending }: TransactionDialogDialog7Props) {
   return (
@@ -32,7 +32,7 @@ export function TransactionDialogDialog7({ open, handleOpenChange, trigger, tran
           )}
         </DialogTrigger>
         <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto border-border bg-card sm:max-w-2xl">
-          <DialogHeader>
+          <DialogHeader icon={<Receipt />} tone="brand">
             <DialogTitle>
               {transaction ? "Editar lançamento" : "Novo lançamento"}
             </DialogTitle>

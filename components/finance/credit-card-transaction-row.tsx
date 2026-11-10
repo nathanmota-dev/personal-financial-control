@@ -1,6 +1,10 @@
 "use client";
+
+import { CategoryChip } from "@/components/finance/ds/category-chip";
+import { IconTile } from "@/components/finance/ds/icon-tile";
+import { ToneChip } from "@/components/finance/ds/tone-chip";
+import { toneForKey } from "@/lib/finance-tone";
 import { CreditCardChargeActions } from "@/components/finance/credit-card-charge-actions";
-import { Badge } from "@/components/ui/badge";
 import { formatCreditCardMonth } from "@/lib/credit-card-view";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardTransactionRowProps } from "@/lib/interfaces/credit-card-view";
@@ -30,7 +34,7 @@ export function CreditCardTransactionRow({
     : null;
 
   return (
-    <article className="group grid grid-cols-[2rem_2.25rem_minmax(0,1fr)] gap-3 px-5 py-4 transition-colors hover:bg-surface sm:flex sm:px-6">
+    <article className="group grid grid-cols-[2rem_2.25rem_minmax(0,1fr)] gap-3 px-5 py-4 transition-colors hover:bg-muted/40 sm:flex sm:px-6">
       <div className="w-8 shrink-0 pt-0.5 text-center">
         <p className="text-[0.68rem] font-semibold text-content-subtle">
           {formatCreditCardMonth(entry.purchaseDate.slice(0, 7)).split(" ")[0]}
@@ -39,24 +43,22 @@ export function CreditCardTransactionRow({
           {entry.purchaseDate.slice(8, 10)}
         </p>
       </div>
-      <div className={cn("mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl", isAdjustment ? "bg-warning/10 text-warning" : "bg-brand/10 text-brand")}>
-        {isAdjustment ? <ArrowDownUp className="size-4" /> : <Tag className="size-4" />}
-      </div>
+      <IconTile tone={isAdjustment ? "warning" : toneForKey(entry.category?.name)} size="sm" className="mt-0.5 size-9">
+        {isAdjustment ? <ArrowDownUp /> : <Tag />}
+      </IconTile>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p data-user-content className="break-words text-sm font-semibold text-content-strong">{entry.description}</p>
           {entry.installmentNumber && entry.installmentCount ? (
-            <Badge variant="outline" className="border-input text-[0.68rem] text-content">
+            <ToneChip tone="brand" className="h-5 px-1.5 text-[0.68rem]">
               {entry.installmentNumber}/{entry.installmentCount}
-            </Badge>
+            </ToneChip>
           ) : null}
           {isAdjustment ? (
-            <Badge variant="outline" className="border-warning/30 text-[0.68rem] text-warning">
-              Ajuste
-            </Badge>
+            <ToneChip tone="warning" className="h-5 px-1.5 text-[0.68rem]">Ajuste</ToneChip>
           ) : null}
         </div>
-        <p className="mt-1 truncate text-xs text-content-muted">{entry.category ? <span data-user-content>{entry.category.name}</span> : "Sem categoria"}</p>
+        <div className="mt-1.5"><CategoryChip name={entry.category?.name} /></div>
       </div>
       <div className="col-start-3 flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0 sm:flex-nowrap">
         <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-content-strong")}>

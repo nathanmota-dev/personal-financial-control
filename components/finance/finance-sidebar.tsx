@@ -18,8 +18,8 @@ export function FinanceSidebar({
     <aside
       className={
         collapsed
-          ? "hidden w-[64px] shrink-0 bg-sidebar lg:block"
-          : "hidden w-[238px] shrink-0 bg-sidebar lg:block"
+          ? "sidebar-surface hidden w-[64px] shrink-0 lg:block"
+          : "sidebar-surface hidden w-[238px] shrink-0 lg:block"
       }
     >
       <div className="sticky top-0 flex h-dvh max-h-[1056px] flex-col">

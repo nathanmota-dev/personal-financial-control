@@ -1,39 +1,34 @@
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { IconTile } from "@/components/finance/ds/icon-tile";
 import type { FinanceMetricProps } from "@/lib/interfaces/finance-presentation";
 import { cn } from "@/lib/utils";
-
-const iconTones = {
-  neutral: "text-muted-foreground",
-  brand: "text-brand",
-  success: "text-success",
-  warning: "text-warning",
-  danger: "text-danger",
-};
 
 export function FinanceMetric({
   label,
   value,
   description,
   icon,
+  footer,
   tone = "neutral",
   className,
 }: FinanceMetricProps) {
   return (
-    <Card className={cn("min-w-0 gap-3 py-5", className)}>
-      <CardHeader className="gap-0 px-5">
-        <CardTitle className="text-sm font-medium text-content">{label}</CardTitle>
-        {icon && (
-          <CardAction className={cn("[&>svg]:size-4", iconTones[tone])}>
-            {icon}
-          </CardAction>
-        )}
-      </CardHeader>
-      <CardContent className="mt-auto space-y-1.5 px-5">
-        <p className="break-words text-2xl leading-8 font-semibold tracking-tight tabular-nums">
-          {value}
-        </p>
-        {description && <CardDescription className="text-xs leading-4">{description}</CardDescription>}
-      </CardContent>
-    </Card>
+    <article
+      aria-label={label}
+      data-slot="card"
+      className={cn(
+        "group/metric relative flex min-w-0 flex-col gap-3 overflow-hidden rounded-[20px] border border-border bg-card p-5 text-card-foreground transition-colors hover:border-content-subtle/40",
+        className,
+      )}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 text-[13px] leading-4 font-medium text-content">{label}</p>
+        {icon && <IconTile tone={tone} size="sm">{icon}</IconTile>}
+      </div>
+      <div className="mt-auto space-y-1">
+        <p className="text-[clamp(20px,1.7vw,26px)] leading-8 font-semibold tracking-[-0.6px] break-words tabular-nums">{value}</p>
+        {description && <p className="text-xs leading-4 text-content-muted">{description}</p>}
+      </div>
+      {footer}
+    </article>
   );
 }

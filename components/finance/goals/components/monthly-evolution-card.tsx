@@ -36,7 +36,7 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
   }));
 
   return (
-    <Card className="rounded-xl border-border bg-card">
+    <Card className="border-border bg-card">
       <CardHeader>
         <CardTitle>Evolução mensal</CardTitle>
         <p className="text-sm text-content">Alocações, liberações e acumulado.</p>

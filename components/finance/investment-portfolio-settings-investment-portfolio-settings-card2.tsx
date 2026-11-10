@@ -1,48 +1,31 @@
 "use client";
 
-import { financeIconClassName } from "@/components/finance/finance-styles";
+import { IconTile } from "@/components/finance/ds/icon-tile";
+
 import { InvestmentField } from "@/components/finance/investment-field";
 import { Button } from "@/components/ui/button";
 import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { centsToMoneyInput, formatDateLabel, formatRateFromBps } from "@/lib/finance-ui";
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
+import { centsToMoneyInput, formatRateFromBps } from "@/lib/finance-ui";
 import type { InvestmentPortfolioSettingsCard2Props } from "@/lib/interfaces/render/investment-portfolio-settings-investment-portfolio-settings-card2";
-import { cn } from "@/lib/utils";
 import { RefreshCcw,Save,SlidersHorizontal } from "lucide-react";
 
 export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, isPending, startTransition, onUpdateRate, setReconciledBalance, setReconciledDate, setIsReconcileOpen }: InvestmentPortfolioSettingsCard2Props) {
-  const { formatCurrency } = useFinancialFormatter();
   return (
-<Card className="h-full rounded-xl border-border bg-card">
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3">
+<Card className="gap-0 py-0">
+        <CardHeader className="border-b border-border px-5 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <IconTile tone="brand" size="sm"><SlidersHorizontal /></IconTile>
             <div>
-              <CardTitle>Premissas e conferência</CardTitle>
-              <p className="mt-2 text-sm leading-6 text-content">
+              <CardTitle className="text-base">Premissas e conferência</CardTitle>
+              <p className="text-xs leading-5 text-content-muted">
                 O saldo é estimado diariamente. Use a conferência quando o valor real da corretora
                 divergir da taxa modelada.
               </p>
             </div>
-            <div className={cn(financeIconClassName, "bg-brand/10 text-brand")}>
-              <SlidersHorizontal className="size-5" />
-            </div>
           </div>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-2">
-            <div>
-              <p className="text-xs font-medium text-content">Checkpoint</p>
-              <p className="mt-1 font-semibold text-content-strong">
-                {formatCurrency(projection.checkpointBalanceCents)}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-content">Data</p>
-              <p className="mt-1 font-semibold text-content-strong">
-                {formatDateLabel(projection.checkpointDate)}
-              </p>
-            </div>
-          </div>
+        <CardContent className="grid items-end gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <div className="space-y-2">
           <InvestmentField
             id="investment-expected-rate"
             label="Taxa mensal esperada (%)"
@@ -54,7 +37,8 @@ export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, is
             A taxa atual é {formatRateFromBps(projection.expectedMonthlyRateBps)} e serve para
             estimar o rendimento entre movimentações.
           </p>
-          <div className="grid gap-3 sm:grid-cols-2">
+          </div>
+          <div className="flex flex-wrap gap-2.5">
             <Button
               variant="outline"
               disabled={isPending}

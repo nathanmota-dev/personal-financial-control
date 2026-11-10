@@ -1,5 +1,8 @@
 "use client";
 
+import { CategoryChip } from "@/components/finance/ds/category-chip";
+import { IconTile } from "@/components/finance/ds/icon-tile";
+
 import { ArrowRight,CalendarRange,Layers3,Receipt } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +17,13 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
 
   return (
     <aside className="space-y-6">
-      <section className="rounded-xl border border-border bg-card px-[22px] py-5">
+      <section className="rounded-[20px] border border-border bg-card px-[22px] py-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-content-strong">Próximas faturas</h2>
             <p className="mt-1 text-xs text-content-muted">Previsão dos próximos três meses</p>
           </div>
-          <CalendarRange className="size-5 text-brand" />
+          <IconTile tone="brand" size="sm"><CalendarRange /></IconTile>
         </div>
         <div className="mt-4 divide-y divide-border">
           {upcomingPoints.map((point) => (
@@ -35,13 +38,13 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
         </div>
       </section>
 
-      <section className="rounded-xl border border-border bg-card px-[22px] py-5">
+      <section className="rounded-[20px] border border-border bg-card px-[22px] py-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-content-strong">Parcelas em aberto</h2>
             <p className="mt-1 text-xs text-content-muted">Compromissos das próximas faturas</p>
           </div>
-          <Layers3 className="size-5 text-brand" />
+          <IconTile tone="violet" size="sm"><Layers3 /></IconTile>
         </div>
         <div className="mt-5 space-y-3">
           {futureCharges.length ? futureCharges.map((charge) => (
@@ -49,7 +52,7 @@ export function CreditCardCommitments({ overview, monthPoints }: CreditCardCommi
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p data-user-content className="truncate text-sm font-medium text-content-strong">{charge.description}</p>
-                  <p className="mt-1 truncate text-xs text-content-subtle">{charge.category ? <span data-user-content>{charge.category.name}</span> : "Sem categoria"}</p>
+                  <div className="mt-1.5"><CategoryChip name={charge.category?.name} /></div>
                 </div>
                 <p className="shrink-0 text-sm font-semibold text-content">{formatCurrency(charge.remainingAmountCents)}</p>
               </div>
