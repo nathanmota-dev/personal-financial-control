@@ -34,6 +34,9 @@ export const recurringIds = {
   rent: id("c0000000-0000-4000-8000", 2),
   utilities: id("c0000000-0000-4000-8000", 3),
   investments: id("c0000000-0000-4000-8000", 4),
+  internet: id("c0000000-0000-4000-8000", 5),
+  health: id("c0000000-0000-4000-8000", 6),
+  streaming: id("c0000000-0000-4000-8000", 7),
 } as const;
 
 export const months = [
@@ -116,6 +119,27 @@ export const utilityTransactions = monthlyTransactions({
   day: 15,
   description: "Contas da casa",
 });
+
+/** Bills due after the demo reference date: pending, except the health plan paid ahead of its due date. */
+const upcomingBills = [
+  { n: 1, templateId: recurringIds.internet, amountCents: 11990, day: 20, description: "Internet", status: "pending" as const },
+  { n: 2, templateId: recurringIds.health, amountCents: 38900, day: 25, description: "Plano de saúde", status: "posted" as const },
+  { n: 3, templateId: recurringIds.streaming, amountCents: 5590, day: 28, description: "Streaming", status: "pending" as const },
+];
+
+export const upcomingBillTransactions: DemoFixture["transactions"] = upcomingBills.map((bill) => ({
+  id: id("c0000000-0000-4000-8010", bill.n),
+  accountId: accountIds.checking,
+  categoryId: categoryIds.utilities,
+  recurringTemplateId: bill.templateId,
+  type: "expense" as const,
+  status: bill.status,
+  amountCents: bill.amountCents,
+  transactionDate: dateFor("2026-07", bill.day),
+  competenceMonth: "2026-07",
+  description: bill.description,
+  isIncludedInInvestmentCheckpoint: true,
+}));
 
 export const investmentTransactions = monthlyTransactions({
   prefix: "c0000000-0000-4000-8004",
