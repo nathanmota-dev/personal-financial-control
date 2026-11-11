@@ -61,6 +61,7 @@ export default async function DashboardPage({
       <DashboardDetails
         dashboard={resolved.dashboard}
         cards={resolved.cards}
+        bills={resolved.bills}
         month={month}
         investmentOverview={resolved.investmentOverview}
       />

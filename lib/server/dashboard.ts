@@ -5,6 +5,8 @@ import { shiftMonth } from "@/lib/dashboard-cards";
 import { aggregateDashboardCategories, aggregateDashboardMonth, selectDashboardTopExpenses, sortDashboardExpenses } from "@/lib/dashboard-aggregation";
 import { buildDashboardChartSummary, buildDashboardComparisons } from "@/lib/dashboard-comparisons";
 import type { DashboardData } from "@/lib/interfaces/dashboard";
+import { readDashboardBills } from "@/lib/server/dashboard-bills";
+import { getFinanceToday } from "@/lib/server/runtime";
 import { getInvestmentOverview } from "@/lib/server/investment-operations";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import { normalizeCompetenceMonth } from "@/lib/server/finance";
@@ -27,6 +29,7 @@ export async function getDashboardData(month: string, database?: AppDb): Promise
   return {
     dashboard: { ...current, accountBalances: await readDashboardBalances(competenceMonth, expenses, db, accountRows) },
     previous, comparisons, evolution, investmentOverview, cards: await readDashboardCards(competenceMonth, records.expenses, accountRows, db),
+    bills: await readDashboardBills(getFinanceToday(), db),
     chartSummary: buildDashboardChartSummary(evolution, comparisons.netResultCents),
     categorySpending: aggregateDashboardCategories(expenses),
     expenses: selectDashboardTopExpenses(expenses),

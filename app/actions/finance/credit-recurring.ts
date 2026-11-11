@@ -10,6 +10,7 @@ import {
 createRecurringTemplate,
 deleteRecurringTemplate,
 generateRecurringTransactions,
+markRecurringExpensePaid,
 pauseRecurringTemplate,
 updateRecurringTemplate,
 } from "@/lib/server/recurring";
@@ -80,4 +81,12 @@ export async function deleteRecurringTemplateAction(
 export async function generateRecurringTransactionsAction(month: string) {
   await requireActionSession();
   return runFinanceAction(() => generateRecurringTransactions(month));
+}
+
+export async function markRecurringExpensePaidAction(templateId: string, month: string) {
+  await requireActionSession();
+  return runFinanceAction(async () => {
+    await markRecurringExpensePaid(templateId, month);
+    return null;
+  });
 }

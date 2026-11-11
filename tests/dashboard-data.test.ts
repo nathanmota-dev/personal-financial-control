@@ -7,6 +7,10 @@ import { createCategory } from "@/lib/server/categories";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createCreditCardBillPayment, upsertCreditCardBill } from "@/lib/server/credit-card-bills";
 import { getDashboardData, getMonthlyDashboard, getCategorySpendingReport, getMonthlyExpenseFeed } from "@/lib/server/dashboard";
+import { readDashboardBills } from "@/lib/server/dashboard-bills";
+import { createRecurringTemplate } from "@/lib/server/recurring/templates";
+import { generateRecurringTransactions } from "@/lib/server/recurring/generation";
+import { markRecurringExpensePaid } from "@/lib/server/recurring/payment";
 import { configureInvestmentPortfolio } from "@/lib/server/investments";
 import { createOperationalInvestmentAsset, updateManualInvestmentBalance, getInvestmentOverview } from "@/lib/server/investment-operations";
 import { createTestDatabase } from "@/tests/helpers/database";
@@ -109,6 +113,43 @@ describe("consolidated dashboard data", () => {
     expect(cards[0].invoices.map((item) => [item.month, item.totalCents, item.status])).toEqual([["2026-01", 20000, null], ["2026-02", 33300, "open"], ["2026-03", 20000, null]]);
     expect(cards[0].dueDate).toBe("2026-01-10");
     expect(cards[1]).toMatchObject({ dueDate: "2026-01-15", invoices: [{ totalCents: 0 }, { totalCents: 0 }, { totalCents: 0 }] });
+  });
+  it("lists only unpaid recurring expenses due from today until the end of the month", async () => {
+    const { db, account, fixed } = await setup();
+    const salary = await createCategory({ name: "Pay", group: "income" }, db);
+    const base = { accountId: account.id, categoryId: fixed.id, type: "expense" as const, startMonth: "2026-01" };
+    await createRecurringTemplate({ ...base, description: "Past", amountCents: 100, dayOfMonth: 5 }, db);
+    const paid = await createRecurringTemplate({ ...base, description: "Paid", amountCents: 200, dayOfMonth: 15 }, db);
+    const pending = await createRecurringTemplate({ ...base, description: "Pending", amountCents: 300, dayOfMonth: 20 }, db);
+    await createRecurringTemplate({ ...base, description: "Open", amountCents: 400, dayOfMonth: 31 }, db);
+    await createRecurringTemplate({ ...base, categoryId: salary.id, type: "income", description: "Salary", amountCents: 500, dayOfMonth: 25 }, db);
+    const common = { accountId: account.id, competenceMonth: "2026-11", type: "expense" as const, amountCents: 1 };
+    await db.insert(transactions).values([
+      { ...common, recurringTemplateId: paid.id, transactionDate: "2026-11-15", status: "posted", description: "Paid" },
+      { ...common, recurringTemplateId: pending.id, transactionDate: "2026-11-20", status: "pending", description: "Pending" },
+    ]);
+    const { bills } = await readDashboardBills("2026-11-11", db);
+    expect(bills.map((bill) => [bill.description, bill.dueDate])).toEqual([["Pending", "2026-11-20"], ["Open", "2026-11-30"]]);
+  });
+  it("generates future recurring expenses as pending, settles due ones and lets a bill be paid early", async () => {
+    const { db, account, fixed } = await setup();
+    const salary = await createCategory({ name: "Pay", group: "income" }, db);
+    const rent = await createRecurringTemplate({ accountId: account.id, categoryId: fixed.id, type: "expense", startMonth: "2000-01", description: "Rent", amountCents: 100, dayOfMonth: 5 }, db);
+    await createRecurringTemplate({ accountId: account.id, categoryId: salary.id, type: "income", startMonth: "2000-01", description: "Salary", amountCents: 900, dayOfMonth: 5 }, db);
+    const status = async (month: string) => (await db.query.transactions.findMany({ where: eq(transactions.competenceMonth, month) })).map((row) => [row.description, row.status]).sort();
+    await generateRecurringTransactions("2000-01", db);
+    expect(await status("2000-01")).toEqual([["Rent", "posted"], ["Salary", "posted"]]);
+    await generateRecurringTransactions("2099-01", db);
+    expect(await status("2099-01")).toEqual([["Rent", "pending"], ["Salary", "posted"]]);
+    await markRecurringExpensePaid(rent.id, "2099-01", db);
+    expect(await status("2099-01")).toEqual([["Rent", "posted"], ["Salary", "posted"]]);
+    await markRecurringExpensePaid(rent.id, "2099-02", db);
+    expect(await status("2099-02")).toEqual([["Rent", "posted"]]);
+    // A pending occurrence whose due date has passed is settled by the next generation.
+    await db.update(transactions).set({ status: "pending" }).where(eq(transactions.description, "Rent"));
+    await generateRecurringTransactions("2099-01", db);
+    expect(await status("2000-01")).toEqual([["Rent", "posted"], ["Salary", "posted"]]);
+    expect(await status("2099-01")).toEqual([["Rent", "pending"], ["Salary", "posted"]]);
   });
   it("keeps the reserve and long-term portfolio at their current position regardless of competence", async () => {
     const { db, account } = await setup();
