@@ -37,6 +37,7 @@ export function FinanceSidebar({
                 width={30}
                 height={30}
                 sizes="30px"
+                unoptimized
                 alt=""
                 className="size-[30px] shrink-0 rounded-[7px] object-contain"
               />
