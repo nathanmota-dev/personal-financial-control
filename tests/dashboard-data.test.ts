@@ -99,6 +99,17 @@ describe("consolidated dashboard data", () => {
     expect(data.expenses.map((row) => row.id)).toEqual(Array.from({ length: 5 }, (_, index) => `00000000-0000-4000-8000-00000000000${index}`));
     expect(data.comparisons.netResultCents).toMatchObject({ tone: "neutral", description: "Sem movimentações no mês anterior" });
   });
+  it("lists credit cards with the next invoices, letting a stored bill override the computed total", async () => {
+    const { db, card, variable } = await setup();
+    await createAccount({ name: "Nubank Roxinho", type: "credit", initialBalanceCents: 0, creditClosingDay: 4, creditDueDay: 15 }, db);
+    await createCreditCardCharge({ accountId: card.id, categoryId: variable.id, description: "Installment", totalAmountCents: 60000, installmentCount: 3, purchaseDate: "2025-12-01", firstInvoiceMonth: "2026-01" }, db);
+    await upsertCreditCardBill({ accountId: card.id, invoiceMonth: "2026-02", dueDate: "2026-02-12", statementTotalCents: 33300, currentChargesTotalCents: 33300 }, db);
+    const { cards } = await getDashboardData("2026-01", db);
+    expect(cards.map((item) => [item.name, item.brand])).toEqual([["Card", "generic"], ["Nubank Roxinho", "nubank"]]);
+    expect(cards[0].invoices.map((item) => [item.month, item.totalCents, item.status])).toEqual([["2026-01", 20000, null], ["2026-02", 33300, "open"], ["2026-03", 20000, null]]);
+    expect(cards[0].dueDate).toBe("2026-01-10");
+    expect(cards[1]).toMatchObject({ dueDate: "2026-01-15", invoices: [{ totalCents: 0 }, { totalCents: 0 }, { totalCents: 0 }] });
+  });
   it("keeps the reserve and long-term portfolio at their current position regardless of competence", async () => {
     const { db, account } = await setup();
     await configureInvestmentPortfolio({ checkpointBalanceCents: 200000, checkpointDate: "2026-01-01", expectedMonthlyRateBps: 0 }, db);

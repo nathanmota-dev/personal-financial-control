@@ -2,6 +2,7 @@ import type { accounts, categories, transactions } from "@/lib/db/schema";
 import type { CategorySpendingItem } from "@/lib/interfaces/recurring";
 import type { InvestmentOverview } from "@/lib/interfaces/investment-operations";
 import type { serializeTimestamps } from "@/lib/server/finance";
+import type { DashboardCardsData } from "@/lib/interfaces/dashboard-cards";
 import type { ReactNode } from "react";
 
 export type DashboardPageProps = {
@@ -64,6 +65,7 @@ export type DashboardData = {
   categorySpending: CategorySpendingItem[];
   expenses: DashboardExpense[];
   investmentOverview: InvestmentOverview;
+  cards: DashboardCardsData;
 };
 export type MetricCardProps = {
   label: string;
@@ -90,8 +92,7 @@ export type CategorySpendingChartsProps = {
   size?: "default" | "expanded";
 };
 export type DashboardActionsProps = { month: string };
-export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "expenses" | "investmentOverview">;
-export type DashboardExpenseListProps = Pick<DashboardData, "expenses">;
+export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "cards" | "investmentOverview"> & { month: string };
 export type DashboardBalancesProps = { accounts: DashboardAccountBalance[] };
 export type DashboardPortfolioProps = Pick<DashboardData, "investmentOverview">;
 export type DashboardMetricListProps = Pick<DashboardData, "comparisons"> & { totals: DashboardTotals };

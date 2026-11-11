@@ -60,14 +60,14 @@ describe("demo mode", () => {
         getInvestmentPortfolioDashboard(),
       ]);
 
-    expect(accounts).toHaveLength(5);
+    expect(accounts).toHaveLength(7);
     expect(categories.length).toBeGreaterThan(5);
     expect(transactions.length).toBeGreaterThanOrEqual(10);
     expect(transfers).toHaveLength(2);
     expect(recurring).toHaveLength(4);
     expect(dashboard.totals.incomeCents).toBeGreaterThan(0);
     expect(spending.length).toBeGreaterThan(0);
-    expect(creditCard.state).toBe("ready");
+    expect(creditCard.state).toBe("multiple_accounts");
     expect(investments?.currentBalanceCents).toBeGreaterThan(0);
     expect(history.points.length).toBeGreaterThan(0);
     expect(goals.goals.length).toBe(3);

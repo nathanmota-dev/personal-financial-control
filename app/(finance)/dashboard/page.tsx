@@ -63,7 +63,8 @@ export default async function DashboardPage({
 
       <DashboardDetails
         dashboard={resolved.dashboard}
-        expenses={resolved.expenses}
+        cards={resolved.cards}
+        month={month}
         investmentOverview={resolved.investmentOverview}
       />
     </div>

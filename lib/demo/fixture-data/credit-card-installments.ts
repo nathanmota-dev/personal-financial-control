@@ -25,4 +25,18 @@ export const creditCardInstallments: DemoFixture["creditCardInstallments"] = [
       amountCents: 60000,
       invoiceMonth,
     })),
+    ...["2026-06", "2026-07", "2026-08", "2026-09", "2026-10"].map((invoiceMonth, index) => ({
+      id: id("f0000000-0000-4000-8003", index + 1),
+      chargeId: id("e0000000-0000-4000-8000", 4),
+      installmentNumber: index + 1,
+      amountCents: 100000,
+      invoiceMonth,
+    })),
+    ...["2026-06", "2026-07", "2026-08", "2026-09", "2026-10"].map((invoiceMonth, index) => ({
+      id: id("f0000000-0000-4000-8004", index + 1),
+      chargeId: id("e0000000-0000-4000-8000", 5),
+      installmentNumber: index + 1,
+      amountCents: 48000,
+      invoiceMonth,
+    })),
   ];

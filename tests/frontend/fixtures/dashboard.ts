@@ -13,4 +13,5 @@ export const dashboardFixture: DashboardData = {
   categorySpending: fixtures.spending,
   expenses: selectDashboardTopExpenses(fixtures.expenses.map((expense) => ({ ...expense, competenceMonth: "2026-07" })) as DashboardExpense[]),
   investmentOverview: fixtures.overview as DashboardData["investmentOverview"],
+  cards: [],
 };

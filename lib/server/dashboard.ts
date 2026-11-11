@@ -1,20 +1,23 @@
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { buildRecentMonths } from "@/lib/finance-ui";
+import { shiftMonth } from "@/lib/dashboard-cards";
 import { aggregateDashboardCategories, aggregateDashboardMonth, selectDashboardTopExpenses, sortDashboardExpenses } from "@/lib/dashboard-aggregation";
 import { buildDashboardChartSummary, buildDashboardComparisons } from "@/lib/dashboard-comparisons";
 import type { DashboardData } from "@/lib/interfaces/dashboard";
 import { getInvestmentOverview } from "@/lib/server/investment-operations";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import { normalizeCompetenceMonth } from "@/lib/server/finance";
-import { readDashboardBalances, readDashboardRecords } from "@/lib/server/dashboard-records";
+import { readDashboardAccounts, readDashboardBalances, readDashboardCards, readDashboardRecords } from "@/lib/server/dashboard-records";
 
 export async function getDashboardData(month: string, database?: AppDb): Promise<DashboardData> {
   const competenceMonth = normalizeCompetenceMonth(month);
   const db = database ?? await getFinanceDatabase();
   const months = buildRecentMonths(6, competenceMonth).reverse();
-  const [records, investmentOverview] = await Promise.all([
-    readDashboardRecords(months, db), getInvestmentOverview(db),
+  // Two extra months are read in the same batch so cards can show upcoming invoices.
+  const upcomingMonths = [shiftMonth(competenceMonth, 1), shiftMonth(competenceMonth, 2)];
+  const [records, investmentOverview, accountRows] = await Promise.all([
+    readDashboardRecords([...months, ...upcomingMonths], db), getInvestmentOverview(db), readDashboardAccounts(db),
   ]);
   const evolution = months.map((item) => aggregateDashboardMonth(item, records.activeTransactions, records.expenses));
   const current = evolution[5];
@@ -22,8 +25,8 @@ export async function getDashboardData(month: string, database?: AppDb): Promise
   const expenses = records.expenses.filter((row) => row.competenceMonth === competenceMonth);
   const comparisons = buildDashboardComparisons(current, previous);
   return {
-    dashboard: { ...current, accountBalances: await readDashboardBalances(competenceMonth, expenses, db) },
-    previous, comparisons, evolution, investmentOverview,
+    dashboard: { ...current, accountBalances: await readDashboardBalances(competenceMonth, expenses, db, accountRows) },
+    previous, comparisons, evolution, investmentOverview, cards: await readDashboardCards(competenceMonth, records.expenses, accountRows, db),
     chartSummary: buildDashboardChartSummary(evolution, comparisons.netResultCents),
     categorySpending: aggregateDashboardCategories(expenses),
     expenses: selectDashboardTopExpenses(expenses),

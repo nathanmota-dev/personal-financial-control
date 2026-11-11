@@ -10,6 +10,8 @@ export const accountIds = {
   cash: id("a0000000-0000-4000-8000", 3),
   credit: id("a0000000-0000-4000-8000", 4),
   investment: id("a0000000-0000-4000-8000", 5),
+  santanderCredit: id("a0000000-0000-4000-8000", 6),
+  itauCredit: id("a0000000-0000-4000-8000", 7),
 } as const;
 
 export const categoryIds = {
