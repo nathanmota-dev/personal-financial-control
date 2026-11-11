@@ -7,7 +7,6 @@ import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
 import { getDashboardData } from "@/lib/server/dashboard";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 import { DashboardMetrics } from "@/components/finance/dashboard-metrics";
-import { DashboardUncategorizedNotice } from "@/components/finance/dashboard-uncategorized-notice";
 import { DashboardDetails } from "@/components/finance/dashboard-details";
 
 export default async function DashboardPage({
@@ -40,8 +39,6 @@ export default async function DashboardPage({
       </header>
 
       <DashboardMetrics totals={resolved.dashboard.totals} comparisons={resolved.comparisons} />
-
-      <DashboardUncategorizedNotice amountCents={resolved.dashboard.totals.uncategorizedExpenseCents} month={month} />
 
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({

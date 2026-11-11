@@ -98,4 +98,3 @@ export type DashboardPortfolioProps = Pick<DashboardData, "investmentOverview">;
 export type DashboardMetricListProps = Pick<DashboardData, "comparisons"> & { totals: DashboardTotals };
 export type DashboardCategoryDistribution = ReturnType<typeof import("@/lib/dashboard-categories").buildDashboardCategoryDistribution>;
 export type DashboardCategorySectionProps = { distribution: DashboardCategoryDistribution; size?: "default" | "expanded" };
-export type DashboardUncategorizedNoticeProps = { amountCents: number; month: string };
