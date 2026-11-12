@@ -23,6 +23,8 @@ When naming branches, committing, pushing or opening/updating pull requests, fol
 
 For new views, follow the existing app visual style and reuse its shadcn components.
 
+Any UI change (new view, redesign or visual adjustment of an existing page) must follow [DESIGN.md](DESIGN.md), which documents the `/dashboard` route as the visual baseline: layout grid, tokens, typography, card anatomy, illustrations, components and loading skeletons. Use its semantic tokens instead of hardcoded colors, and update the route's `loading.tsx` skeleton so it matches the new layout.
+
 ----
 
 Never create helper components inside a parent component; instead, create a helper component and import it into the parent.

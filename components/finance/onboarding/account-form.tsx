@@ -2,9 +2,11 @@
 
 import { useRef, useState } from "react";
 import { createAccountAction } from "@/app/actions/finance";
+import { FormSelect } from "@/components/finance/form-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SelectItem } from "@/components/ui/select";
 import type { OnboardingAccountFormProps } from "@/lib/interfaces/onboarding";
 
 export function OnboardingAccountForm({ credit, onSaved, onBusyChange, disabled }: OnboardingAccountFormProps) {
@@ -46,9 +48,9 @@ export function OnboardingAccountForm({ credit, onSaved, onBusyChange, disabled 
         <div className="space-y-2"><Label htmlFor={`${prefix}-due`}>Dia de vencimento</Label><Input id={`${prefix}-due`} name="due" type="number" min="1" max="31" step="1" required /></div>
       </div> : <>
         <div className="space-y-2"><Label htmlFor={`${prefix}-type`}>Tipo de conta</Label>
-          <select id={`${prefix}-type`} name="type" className="h-10 w-full rounded-md border border-input bg-background px-3 focus-visible:outline-2 focus-visible:outline-ring">
-            <option value="checking">Corrente</option><option value="savings">Poupança</option><option value="cash">Dinheiro</option>
-          </select>
+          <FormSelect id={`${prefix}-type`} name="type" defaultValue="checking" className="w-full">
+            <SelectItem value="checking">Corrente</SelectItem><SelectItem value="savings">Poupança</SelectItem><SelectItem value="cash">Dinheiro</SelectItem>
+          </FormSelect>
         </div>
         <div className="space-y-2"><Label htmlFor={`${prefix}-balance`}>Saldo inicial (R$)</Label><Input id={`${prefix}-balance`} name="balance" type="number" step="0.01" defaultValue="0" required /></div>
       </>}

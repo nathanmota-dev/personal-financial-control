@@ -5,7 +5,7 @@ test("collapsed sidebar keeps navigation and account returns to the previous mon
   await page.goto("/dashboard?month=2026-08");
   await page.getByRole("button", { name: "Recolher sidebar" }).click();
   const sidebar = page.locator("aside");
-  for (const name of ["Dashboard", "Lançamentos", "Cartão", "Orçamentos", "Recorrentes", "Saldo Projetado", "Investimentos", "Relatórios", "Metas", "Calculadoras", "Configurações", "Ajuda"]) {
+  for (const name of ["Dashboard", "Lançamentos", "Cartões", "Orçamentos", "Recorrentes", "Saldo Projetado", "Investimentos", "Relatórios", "Metas", "Calculadoras", "Configurações", "Ajuda"]) {
     const link = sidebar.getByRole("link", { name, exact: true });
     await expect(link).toBeVisible();
     await expect(link.locator("svg")).toBeVisible();

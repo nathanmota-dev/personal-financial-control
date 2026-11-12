@@ -1,81 +1,48 @@
 "use client";
 
-import { IconTile } from "@/components/finance/ds/icon-tile";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { CreditCardMonthCard } from "@/components/finance/credit-card-month-card";
-import { CreditCardTimelineChart } from "@/components/finance/credit-card-timeline-chart";
+import { CreditCardInvoiceLine } from "@/components/finance/credit-card-invoice-line";
+import { CreditCardInvoiceTile } from "@/components/finance/credit-card-invoice-tile";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { Button } from "@/components/ui/button";
+import { buildCreditCardTimeline } from "@/lib/credit-card-timeline";
+import { getDefaultMonth } from "@/lib/finance-ui";
 import type { CreditCardMonthStripSection1Props } from "@/lib/interfaces/render/credit-card-month-strip-credit-card-month-strip-section1";
-import { CalendarDays,ChevronLeft,ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function CreditCardMonthStripSection1({ isLoading, visiblePoints, activePageIndex, showPreviousPage, cardsViewportRef, pageStart, points, selectedMonth, onSelectMonth, maxPageIndex, showNextPage }: CreditCardMonthStripSection1Props) {
+  const nodes = buildCreditCardTimeline(visiblePoints, points[pageStart - 1]?.totalCents, getDefaultMonth());
   return (
-<section
-      className="rounded-[20px] border border-border bg-card px-[22px] py-5"
-      aria-busy={isLoading}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-content-strong">Suas faturas</h2>
-          <p className="mt-1 text-xs text-content-muted">Evolução mensal e seleção do período</p>
-        </div>
-        <IconTile tone="brand" size="sm"><CalendarDays /></IconTile>
-      </div>
+    <section className="relative rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6" aria-busy={isLoading}>
+      <DashboardCardIllustration src="/images/projected-balance-trend.webp" />
+      <h2 className="text-lg font-semibold leading-[25px]">Suas faturas</h2>
+      <p className="mt-1 pr-16 text-xs text-content-muted">Evolução mensal e seleção do período</p>
 
-      <div className="mt-5 rounded-xl bg-[var(--chart-surface)] px-2 py-2 sm:px-3">
-        <CreditCardTimelineChart points={visiblePoints} />
-      </div>
-
-      <div className="mt-3 flex items-center gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          aria-label="Mostrar faturas anteriores"
-          disabled={activePageIndex === 0}
-          onClick={showPreviousPage}
-          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
-        >
-          <ChevronLeft className="size-4" />
+      <div className="mt-5 flex items-center gap-2">
+        <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 rounded-full" aria-label="Mostrar faturas anteriores" disabled={activePageIndex === 0} onClick={showPreviousPage}>
+          <ChevronLeft />
         </Button>
-
         <div
           ref={cardsViewportRef}
-          className="min-w-0 flex-1"
+          className={cn("relative min-w-0 flex-1 rounded-[18px] bg-surface p-1.5 transition-opacity", isLoading && "opacity-60")}
           aria-label={`Faturas ${pageStart + 1} a ${Math.min(pageStart + visiblePoints.length, points.length)}`}
         >
-          <div
-            className="grid gap-3"
-            style={{ gridTemplateColumns: `repeat(${Math.max(visiblePoints.length, 1)}, minmax(0, 1fr))` }}
-          >
-            {visiblePoints.map((point) => (
-              <CreditCardMonthCard
-                key={point.month}
-                point={point}
-                previousPoint={points[points.indexOf(point) - 1]}
-                selected={point.month === selectedMonth}
-                onSelect={() => onSelectMonth(point.month)}
-              />
-            ))}
+          <div className="relative">
+            <div className="grid" style={{ gridTemplateColumns: `repeat(${Math.max(nodes.length, 1)}, minmax(0, 1fr))` }}>
+              {nodes.map((node) => (
+                <div key={node.point.month} className="p-1">
+                  <CreditCardInvoiceTile node={node} selected={node.point.month === selectedMonth} onSelect={() => onSelectMonth(node.point.month)} />
+                </div>
+              ))}
+            </div>
+            <CreditCardInvoiceLine nodes={nodes} />
           </div>
         </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          aria-label="Mostrar próximas faturas"
-          disabled={activePageIndex >= maxPageIndex}
-          onClick={showNextPage}
-          className="rounded-xl border-input bg-card text-content hover:bg-surface-elevated hover:text-content-strong"
-        >
-          <ChevronRight className="size-4" />
+        <Button type="button" variant="ghost" size="icon-sm" className="shrink-0 rounded-full" aria-label="Mostrar próximas faturas" disabled={activePageIndex >= maxPageIndex} onClick={showNextPage}>
+          <ChevronRight />
         </Button>
       </div>
-
-      <p className="mt-3 text-center text-[0.68rem] text-content-subtle">
-        Mostrando {pageStart + 1}–{Math.min(pageStart + visiblePoints.length, points.length)} de {points.length} meses
-      </p>
     </section>
   );
 }

@@ -6,8 +6,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CreditCardNextInvoiceCardDialogContent1 } from "./credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1";
 
-import { FinanceMetric } from "@/components/finance/finance-metric";
-
 import { updateAccountAction } from "@/app/actions/finance";
 import {
 Dialog,
@@ -56,18 +54,20 @@ export function CreditCardNextInvoiceCard({
         <button
           type="button"
           aria-label={`Configurar vencimento da próxima fatura. Atualmente, dia ${creditDueDay}.`}
-          className="group min-w-0 cursor-pointer rounded-[20px] text-left outline-none transition-colors hover:ring-1 hover:ring-brand/50 focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-border px-4 py-3 text-left outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <FinanceMetric
-            label="Próxima fatura"
-            value={upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
-            description={upcomingInvoice
-              ? `Estimativa para ${upcomingInvoice.month.slice(5, 7)}/${upcomingInvoice.month.slice(0, 4)} · vence dia ${creditDueDay}`
-              : `Sem parcelas futuras · vence dia ${creditDueDay}`}
-            icon={<PencilLine aria-hidden="true" />}
-            tone="brand"
-            className="h-full"
-          />
+          <span className="min-w-0">
+            <span className="block text-xs text-content">Próxima fatura</span>
+            <span className="mt-1 block text-[15px] font-semibold text-content-strong">
+              {upcomingInvoice ? formatCurrency(upcomingInvoice.totalCents) : `Dia ${creditDueDay}`}
+            </span>
+            <span className="mt-0.5 block text-xs text-content-muted">
+              {upcomingInvoice
+                ? `Estimativa para ${upcomingInvoice.month.slice(5, 7)}/${upcomingInvoice.month.slice(0, 4)} · vence dia ${creditDueDay}`
+                : `Sem parcelas futuras · vence dia ${creditDueDay}`}
+            </span>
+          </span>
+          <PencilLine aria-hidden="true" className="size-4 shrink-0 text-content" />
         </button>
       </DialogTrigger>
 

@@ -14,7 +14,7 @@ export function BudgetDialog({ month, categories, limit, trigger }: BudgetDialog
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger ?? <Button disabled={!limit && !categories.length} variant={limit ? "ghost" : "default"} size={limit ? "icon-sm" : "default"} aria-label={limit ? `Editar limite de ${categories[0]?.name}` : "Novo limite"}>
+      <DialogTrigger asChild>{trigger ?? <Button className={limit ? undefined : "h-10 gap-[10px]"} disabled={!limit && !categories.length} variant={limit ? "ghost" : "default"} size={limit ? "icon-sm" : "default"} aria-label={limit ? `Editar limite de ${categories[0]?.name}` : "Novo limite"}>
         {limit ? <Pencil className="size-4" /> : <><Plus className="size-4" />Novo limite</>}
       </Button>}</DialogTrigger>
       <DialogContent className="border-border bg-card sm:max-w-md">

@@ -22,12 +22,6 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
     aliases: ["início", "resumo", "visão mensal"],
   },
   {
-    href: "/transactions",
-    label: "Lançamentos",
-    icon: ListPlus,
-    aliases: ["lançamento", "transação", "receita", "despesa", "entrada", "saída"],
-  },
-  {
     href: "/housing",
     label: "Casa",
     icon: House,
@@ -35,9 +29,15 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
   },
   {
     href: "/credit-card",
-    label: "Cartão",
+    label: "Cartões",
     icon: CreditCard,
-    aliases: ["cartão de crédito", "fatura", "compras"],
+    aliases: ["cartão", "cartão de crédito", "fatura", "compras"],
+  },
+  {
+    href: "/transactions",
+    label: "Lançamentos",
+    icon: ListPlus,
+    aliases: ["lançamento", "transação", "receita", "despesa", "entrada", "saída"],
   },
   {
     href: "/budgets",

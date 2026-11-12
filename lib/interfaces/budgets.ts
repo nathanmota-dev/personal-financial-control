@@ -25,4 +25,5 @@ export type BudgetKey = Omit<BudgetInput, "amountCents">;
 
 export type BudgetDialogProps = BudgetFormProps & { trigger?: ReactNode };
 export type BudgetExpensesProps = { row: BudgetRow };
-export type BudgetSectionProps = { title: string; description: string; rows: BudgetRow[]; month: string; icon?: ReactNode; tone?: import("@/lib/interfaces/design-system").Tone };
+export type BudgetSectionProps = { title: string; description: string; rows: BudgetRow[]; month: string; illustrationSrc?: string };
+export type BudgetCardProps = { title: string; description: string; count?: number; illustrationSrc?: string; children: ReactNode };

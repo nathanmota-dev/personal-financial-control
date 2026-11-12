@@ -18,11 +18,12 @@ AccountSetupDialog
 import { buildCreditCardMonthPoints } from "@/lib/credit-card-view";
 import type { CreditCardViewProps } from "@/lib/interfaces/credit-card-view";
 
-export function CreditCardView({ overview, categories, loadError = false }: CreditCardViewProps) {
+export function CreditCardView({ overview, categories, loadError = false, cards = [], selectedCardId }: CreditCardViewProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [selectedMonth, setSelectedMonth] = useOptimistic(overview.month);
+  const [selectedCard, setSelectedCard] = useOptimistic(selectedCardId ?? (overview.state === "ready" ? overview.account.id : ""));
   const [purchaseCommandId, setPurchaseCommandId] = useState<string | null>(null);
   const [setupCommandId, setSetupCommandId] = useState<string | null>(null);
   const [categoryCommandId, setCategoryCommandId] = useState<string | null>(null);
@@ -59,8 +60,8 @@ export function CreditCardView({ overview, categories, loadError = false }: Cred
     return (
       <div className="space-y-6">
         <PageHeader
-          eyebrow="Cartão de crédito"
-          title={`Sua fatura em ${overview.month}`}
+          eyebrow="Cartões"
+          title="Cartões"
           description="Cadastre um cartão para acompanhar faturas, compras e parcelas futuras em uma visão dedicada."
           actions={<CreditCardMonthPicker month={overview.month} />}
         />
@@ -82,8 +83,8 @@ export function CreditCardView({ overview, categories, loadError = false }: Cred
     return (
       <div className="space-y-6">
         <PageHeader
-          eyebrow="Cartão de crédito"
-          title={`Seus cartões em ${overview.month}`}
+          eyebrow="Cartões"
+          title="Cartões"
           description="A visão detalhada precisa de um único cartão ativo para organizar o ciclo e as parcelas."
           actions={<CreditCardMonthPicker month={overview.month} />}
         />
@@ -110,20 +111,36 @@ export function CreditCardView({ overview, categories, loadError = false }: Cred
   const monthPoints = buildCreditCardMonthPoints(overview);
   const canCreatePurchase = expenseCategories.length > 0 && !overview.needsConfiguration;
 
+  function navigate(month: string, card: string) {
+    const params = new URLSearchParams();
+    params.set("month", month);
+    if (cards.length) params.set("card", card);
+    return `${pathname}?${params.toString()}`;
+  }
+
   function selectMonth(month: string) {
     if (month === overview.month) {
       return;
     }
 
-    const params = new URLSearchParams();
-    params.set("month", month);
     startTransition(() => {
       setSelectedMonth(month);
-      router.replace(`${pathname}?${params.toString()}`);
+      router.replace(navigate(month, selectedCard));
+    });
+  }
+
+  function selectCard(id: string) {
+    if (id === selectedCard) {
+      return;
+    }
+
+    startTransition(() => {
+      setSelectedCard(id);
+      router.replace(navigate(overview.month, id));
     });
   }
 
   return (
-    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} isPending={isPending} purchaseCommandId={purchaseCommandId} setupCommandId={setupCommandId} categoryCommandId={categoryCommandId} />
+    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} cards={cards} selectedCardId={selectedCard} selectCard={selectCard} isPending={isPending} purchaseCommandId={purchaseCommandId} setupCommandId={setupCommandId} categoryCommandId={categoryCommandId} />
   );
 }

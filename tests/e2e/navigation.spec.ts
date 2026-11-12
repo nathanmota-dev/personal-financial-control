@@ -103,7 +103,7 @@ test("mobile command button searches accents and aliases", async ({ page }) => {
   });
   await reopenedSearch.fill("CARTAO");
   await expect(
-    reopenedPalette.getByRole("option", { name: /^Cartão/ }),
+    reopenedPalette.getByRole("option", { name: /^Cartões/ }),
   ).toBeVisible();
 });
 

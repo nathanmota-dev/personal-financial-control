@@ -147,7 +147,10 @@ Alturas fixas em `xl` para alinhar linhas: `xl:h-[340px]` (categorias) e `xl:h-[
 
 ### 5.1 Ilustração 3D (assinatura)
 
-- Arquivos em `public/images/*.webp`: `balance-wallet`, `bills-calendar`, `category-tag`, `evolution-chart`, `expenses-pie`, `housing-house`, `investments-chart`. **Cada página nova precisa de uma ilustração no mesmo estilo** (3D, fundo transparente, ~450px).
+- Arquivos em `public/images/*.webp`, nomeados `area-objeto.webp`, 450×450, fundo transparente. Em uso no dashboard: `balance-wallet`, `bills-calendar`, `category-tag`, `evolution-chart`, `expenses-pie`, `housing-house`, `investments-chart`.
+- Disponíveis para as demais páginas: `housing-receipt` (Casa), `transactions-card-cash` (Lançamentos), `budgets-clipboard` e `budgets-calculation` (Orçamentos), `recurring-repeat` (Recorrentes), `projected-balance-trend` (Saldo projetado), `goals-target` (Metas), `reports-clipboard` e `reports-growth-bars` (Relatórios), `calculators-calculator` (Calculadoras), `credit-card-cards` (Cartão), `settings-gear` (Configurações).
+- Já aplicadas: Casa usa `housing-receipt`, `recurring-repeat` e `reports-growth-bars`; Cartões usa `credit-card-cards`, `reports-clipboard`, `projected-balance-trend`, `transactions-card-cash` e `budgets-calculation`.
+- **Cada página nova precisa de uma ilustração própria no mesmo estilo** (3D, fundo transparente, ~450px); não reaproveite a de outra página.
 - Card tipo B: componente `DashboardCardIllustration` — `absolute top-2 right-5 size-[58px]`, `pointer-events-none`, `aria-hidden`.
 - Card tipo A: ilustração inline à direita do valor (≈ 72–96px), `relative -my-5/-my-6 -mr-2`, `shrink-0`.
 - Sempre: `<Image … alt="" unoptimized>` + sombra elíptica sob ela:

@@ -1,4 +1,5 @@
 import { test as base, expect, type BrowserContext, type Page } from "@playwright/test";
+import { choose } from "./helpers/forms";
 import { startFinanceServer } from "./helpers/server";
 import { loginWithPin } from "./helpers/local-auth";
 import type { FinanceServer } from "./helpers/contracts";
@@ -24,7 +25,7 @@ async function connectAndSync(page: Page, context: BrowserContext, finance: Fina
   await page.getByLabel("Item ID").fill("11111111-2222-3333-4444-555555555555");
   await page.getByRole("button", { name: "Adicionar conexão", exact: true }).click();
   await expect(page.getByText("Conta remota", { exact: true })).toBeVisible();
-  await page.getByLabel("Conta local de Conta remota").selectOption({ label: "Conta local E2E" });
+  await choose(page.locator("body"), "Conta local de Conta remota", "Conta local E2E");
   await page.getByRole("button", { name: "Vincular conta", exact: true }).click();
   await expect(page.getByText("Vinculada", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Sincronizar bancos", exact: true }).click();
@@ -45,7 +46,7 @@ test("adds a connection, links an account and records a sync with Pluggy stubbed
   await page.reload();
   await page.getByRole("tab", { name: "Open Finance", exact: true }).click();
   await expect(page.getByRole("status", { name: "Última sincronização" })).toContainText("Concluída");
-  await expect(page.getByLabel("Conta local de Conta remota")).toHaveValue(/.+/);
+  await expect(page.getByLabel("Conta local de Conta remota")).not.toContainText("Selecione uma conta");
   const month = new Date().toISOString().slice(0, 7);
   await page.goto(`${finance.url}/transactions?month=${month}`);
   await expect(page.getByText("Mercado E2E").first()).toBeVisible();
@@ -67,7 +68,7 @@ test("categorizes a pending description and updates the matching rows and report
   await openFinanceTab(page, finance);
   const select = page.getByLabel("Categoria de MERCADO E2E", { exact: true });
   await expect(page.getByText(/Despesa · 2 lançamentos/)).toContainText("R$ 100,00");
-  await select.selectOption({ label: "Alimentação" });
+  await choose(page.locator("body"), "Categoria de MERCADO E2E", "Alimentação");
   await expect(select).toHaveCount(0);
   await expect(page.getByLabel("Categoria de SALARIO E2E", { exact: true })).toBeVisible();
 

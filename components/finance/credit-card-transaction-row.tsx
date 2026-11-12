@@ -5,7 +5,6 @@ import { IconTile } from "@/components/finance/ds/icon-tile";
 import { ToneChip } from "@/components/finance/ds/tone-chip";
 import { toneForKey } from "@/lib/finance-tone";
 import { CreditCardChargeActions } from "@/components/finance/credit-card-charge-actions";
-import { formatCreditCardMonth } from "@/lib/credit-card-view";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { CreditCardTransactionRowProps } from "@/lib/interfaces/credit-card-view";
 import { cn } from "@/lib/utils";
@@ -34,21 +33,13 @@ export function CreditCardTransactionRow({
     : null;
 
   return (
-    <article className="group grid grid-cols-[2rem_2.25rem_minmax(0,1fr)] gap-3 px-5 py-4 transition-colors hover:bg-muted/40 sm:flex sm:px-6">
-      <div className="w-8 shrink-0 pt-0.5 text-center">
-        <p className="text-[0.68rem] font-semibold text-content-subtle">
-          {formatCreditCardMonth(entry.purchaseDate.slice(0, 7)).split(" ")[0]}
-        </p>
-        <p className="mt-0.5 text-xl font-semibold leading-none text-content">
-          {entry.purchaseDate.slice(8, 10)}
-        </p>
-      </div>
-      <IconTile tone={isAdjustment ? "warning" : toneForKey(entry.category?.name)} size="sm" className="mt-0.5 size-9">
+    <article className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-muted/40 sm:px-6">
+      <IconTile tone={isAdjustment ? "warning" : toneForKey(entry.category?.name)} size="sm" className="size-9 shrink-0">
         {isAdjustment ? <ArrowDownUp /> : <Tag />}
       </IconTile>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p data-user-content className="break-words text-sm font-semibold text-content-strong">{entry.description}</p>
+          <p data-user-content className="break-words text-[13px] font-semibold text-content-strong">{entry.description}</p>
           {entry.installmentNumber && entry.installmentCount ? (
             <ToneChip tone="brand" className="h-5 px-1.5 text-[0.68rem]">
               {entry.installmentNumber}/{entry.installmentCount}
@@ -58,10 +49,11 @@ export function CreditCardTransactionRow({
             <ToneChip tone="warning" className="h-5 px-1.5 text-[0.68rem]">Ajuste</ToneChip>
           ) : null}
         </div>
-        <div className="mt-1.5"><CategoryChip name={entry.category?.name} /></div>
+        <div className="mt-1.5 sm:hidden"><CategoryChip name={entry.category?.name} /></div>
       </div>
-      <div className="col-start-3 flex flex-wrap items-center gap-2 sm:ml-auto sm:shrink-0 sm:flex-nowrap">
-        <p className={cn("pt-1 text-right text-sm font-semibold", isAdjustment ? "text-warning" : "text-content-strong")}>
+      <div className="hidden w-[200px] shrink-0 sm:block"><CategoryChip name={entry.category?.name} /></div>
+      <div className="flex shrink-0 items-center gap-2">
+        <p className={cn("text-right text-[13px] font-semibold", isAdjustment ? "text-warning" : "text-content-strong")}>
           {formatCurrency(entry.amountCents)}
         </p>
         {actionCharge ? (
@@ -72,7 +64,7 @@ export function CreditCardTransactionRow({
             charge={actionCharge}
           />
         ) : (
-          <MoreHorizontal className="mt-1 hidden size-4 text-content-subtle sm:block" />
+          <MoreHorizontal className="hidden size-4 text-content-subtle sm:block" />
         )}
       </div>
     </article>

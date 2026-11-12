@@ -11,6 +11,6 @@ export function ReportEntries({ report }: ReportEntriesProps) {
     <CardContent>{report.entries.length ? <>
       <ReportEntriesTable report={report} />
       <div className="grid gap-3 md:hidden">{report.entries.map((entry) => <ReportEntryMobile key={`${entry.source}-${entry.id}`} entry={entry} />)}</div>
-    </> : <FinanceEmptyState title="Sem lançamentos ou parcelas" description="Confira a competência selecionada e os registros em Lançamentos e Cartão." />}</CardContent>
+    </> : <FinanceEmptyState title="Sem lançamentos ou parcelas" description="Confira a competência selecionada e os registros em Lançamentos e Cartões." />}</CardContent>
   </Card>;
 }

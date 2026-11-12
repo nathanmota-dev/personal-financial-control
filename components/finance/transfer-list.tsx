@@ -2,7 +2,6 @@
 
 import { DateGroupLabel } from "@/components/finance/ds/date-group-label";
 import { IconTile } from "@/components/finance/ds/icon-tile";
-import { SectionCard } from "@/components/finance/ds/section-card";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { SetupCallout } from "@/components/finance/setup-dialogs";
@@ -14,17 +13,18 @@ import { ArrowLeftRight, ArrowRight } from "lucide-react";
 export function TransferList({ transfers, accounts, filters }: TransferListProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <SectionCard title="Transferências do mês" count={transfers.length} icon={<ArrowLeftRight />} description="Movimentações entre as suas contas, sem impacto no resultado.">
+    <div className="px-[22px] pt-5 pb-4">
+      <p className="text-xs text-content-muted">{`${transfers.length} transferência(s) · movimentações entre as suas contas, sem impacto no resultado.`}</p>
       {transfers.length ? (
-        <div className="space-y-5">
+        <div className="mt-1">
           {groupByDate(transfers, (item) => item.transferDate).map((group) => (
-            <div key={group.date} className="space-y-1">
-              <div className="border-b border-border px-2 pb-2 md:px-3"><DateGroupLabel date={group.date} /></div>
+            <div key={group.date}>
+              <div className="pt-4 pb-1"><DateGroupLabel date={group.date} /></div>
               {group.rows.map((transfer) => (
-                <div key={transfer.id} className="flex items-center gap-3 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/50 md:px-3">
+                <div key={transfer.id} className="flex items-center gap-3 border-t border-border/80 py-3.5 transition-colors">
                   <IconTile tone="brand"><ArrowLeftRight /></IconTile>
                   <div className="min-w-0 flex-1">
-                    <p data-user-content className="truncate text-sm font-medium text-content-strong">{transfer.description}</p>
+                    <p data-user-content className="truncate text-[13px] font-semibold text-content-strong">{transfer.description}</p>
                     <p className="flex flex-wrap items-center gap-1.5 text-xs text-content-muted">
                       {transfer.fromAccount ? <span data-user-content>{transfer.fromAccount.name}</span> : "-"}
                       <ArrowRight aria-hidden="true" className="size-3" />
@@ -51,6 +51,6 @@ export function TransferList({ transfers, accounts, filters }: TransferListProps
           }
         />
       )}
-    </SectionCard>
+    </div>
   );
 }

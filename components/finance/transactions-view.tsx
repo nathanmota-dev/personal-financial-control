@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo,useState } from "react";
-import { SectionCard } from "@/components/finance/ds/section-card";
+import { DashboardCategoryBars } from "@/components/finance/dashboard-category-bars";
 import { TransactionList } from "@/components/finance/transaction-list";
-import { TransactionsHero } from "@/components/finance/transactions-hero";
+import { TransactionsSummary } from "@/components/finance/transactions-summary";
 import { TransferList } from "@/components/finance/transfer-list";
-import { ArrowLeftRight, ListFilter, Receipt } from "lucide-react";
+import { ArrowLeftRight, Receipt } from "lucide-react";
 
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { PageHeader } from "@/components/finance/page-header";
@@ -16,7 +16,10 @@ SetupCallout,
 import { TransferDialog } from "@/components/finance/transaction-actions";
 import { TransactionDialog } from "@/components/finance/transaction-dialog";
 import { TransactionFilters } from "@/components/finance/transaction-filters";
+import { Badge } from "@/components/ui/badge";
 import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
+import { buildDashboardCategoryDistribution } from "@/lib/dashboard-categories";
+import { buildTransactionsSpending } from "@/lib/transactions-summary";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import type { TransactionsViewProps } from "@/lib/interfaces/transactions";
 import type { FinanceCommandIntent } from "@/lib/interfaces/finance-command";
@@ -65,7 +68,7 @@ export function TransactionsView({
       : undefined;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
         eyebrow="Lançamentos"
         title="Lançamentos"
@@ -90,42 +93,60 @@ export function TransactionsView({
         }
       />
 
-      <TransactionsHero month={filters.month} totals={totals} transactions={transactions} />
+      <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+        <TransactionsSummary month={filters.month} totals={totals} />
+        <DashboardCategoryBars
+          distribution={buildDashboardCategoryDistribution(buildTransactionsSpending(transactions))}
+          title="Para onde foi o dinheiro"
+          description="Maiores categorias de despesa do período"
+          emptyMessage="Nenhuma despesa neste período."
+        />
+      </div>
 
-      <Tabs defaultValue={filters.section === "transfers" ? "transfers" : "transactions"}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <TabsList variant="line">
-            <TabsTrigger value="transactions"><Receipt />Lançamentos</TabsTrigger>
-            <TabsTrigger value="transfers"><ArrowLeftRight />Transferências</TabsTrigger>
-          </TabsList>
-          <p className="flex items-center gap-1.5 text-xs text-content-muted"><ListFilter aria-hidden="true" className="size-3.5" />{transactions.length} lançamento(s) no filtro atual</p>
-        </div>
+      <Tabs defaultValue={filters.section === "transfers" ? "transfers" : "transactions"} className="gap-0">
+        <section className="min-w-0 overflow-hidden rounded-[20px] border border-border bg-card">
+          <div className="flex flex-wrap items-start justify-between gap-3 px-[22px] pt-5">
+            <div>
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-semibold leading-[25px]">Extrato do período</h2>
+                <Badge variant="outline" className="border-input text-content">{transactions.length}</Badge>
+              </div>
+              <p className="mt-1 text-xs text-content-muted">{`Agrupados por data em ${formatMonthLabel(filters.month)}, conforme os filtros.`}</p>
+            </div>
+            <TabsList variant="line">
+              <TabsTrigger value="transactions"><Receipt />Lançamentos</TabsTrigger>
+              <TabsTrigger value="transfers"><ArrowLeftRight />Transferências</TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TransactionFilters accounts={accounts} categories={categories} filters={filters} />
+          <div className="mt-5">
+            <TransactionFilters accounts={accounts} categories={categories} filters={filters} />
+          </div>
 
-        <TabsContent value="transactions">
-          <SectionCard title="Extrato do período" count={transactions.length} icon={<Receipt />} description={`Agrupados por data em ${formatMonthLabel(filters.month)}.`}>
+          <TabsContent value="transactions">
             {transactions.length ? (
               <TransactionList transactions={transactions} accounts={accounts} categories={categories} filters={filters} afterLastCategorization={afterLastCategorization} />
             ) : (
-              <FinanceEmptyState
-                title="Nenhum lançamento encontrado"
-                description="Registre uma receita ou despesa; a categoria pode ser escolhida agora ou adicionada depois."
-                action={
-                  hasSetup ? (
-                    <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
-                  ) : (
-                    <SetupCallout title="Cadastre uma conta" description="Você precisa de ao menos uma conta antes do primeiro lançamento." />
-                  )
-                }
-              />
+              <div className="px-[22px] py-6">
+                <FinanceEmptyState
+                  title="Nenhum lançamento encontrado"
+                  description="Registre uma receita ou despesa; a categoria pode ser escolhida agora ou adicionada depois."
+                  action={
+                    hasSetup ? (
+                      <TransactionDialog accounts={accounts} categories={categories} month={filters.month} />
+                    ) : (
+                      <SetupCallout title="Cadastre uma conta" description="Você precisa de ao menos uma conta antes do primeiro lançamento." />
+                    )
+                  }
+                />
+              </div>
             )}
-          </SectionCard>
-        </TabsContent>
+          </TabsContent>
 
-        <TabsContent value="transfers">
-          <TransferList transfers={transfers} accounts={accounts} filters={filters} />
-        </TabsContent>
+          <TabsContent value="transfers">
+            <TransferList transfers={transfers} accounts={accounts} filters={filters} />
+          </TabsContent>
+        </section>
       </Tabs>
     </div>
   );

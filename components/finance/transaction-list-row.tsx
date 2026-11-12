@@ -29,11 +29,11 @@ export function TransactionListRow({ transaction, accounts, categories, filters,
   return (
     <div
       role="row"
-      className="group/row grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/50 md:grid-cols-[auto_minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(7.5rem,auto)_auto] md:gap-x-4 md:px-3"
+      className="group/row grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-[22px] py-3.5 transition-colors hover:bg-muted/40 md:grid-cols-[auto_minmax(0,2.4fr)_minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(7.5rem,auto)_auto] md:gap-x-4"
     >
       <span role="cell"><IconTile tone={tone}><Icon /></IconTile></span>
       <div role="cell" className="min-w-0">
-        <p data-user-content className={cn("truncate text-sm font-medium text-content-strong", cancelled && "line-through opacity-60")}>{transaction.description}</p>
+        <p data-user-content className={cn("truncate text-[13px] font-semibold text-content-strong", cancelled && "line-through opacity-60")}>{transaction.description}</p>
         <p className="truncate text-xs text-content-muted">
           {transactionTypeLabels[transaction.type]} · {transaction.account ? <span data-user-content>{transaction.account.name}</span> : "-"}
           {transaction.notes ? <> · <span data-user-content>{transaction.notes}</span></> : null}
@@ -44,7 +44,7 @@ export function TransactionListRow({ transaction, accounts, categories, filters,
           <p className="mt-0.5 text-xs font-medium text-brand">Pago com investimentos</p>
         ) : null}
       </div>
-      <p role="cell" className={cn("text-right text-sm font-semibold whitespace-nowrap tabular-nums md:order-5", toneClass(tone), transaction.type === "income" ? "tone-text" : "text-content-strong", cancelled && "opacity-60")}>
+      <p role="cell" className={cn("text-right text-[13px] font-semibold whitespace-nowrap tabular-nums md:order-5", toneClass(tone), transaction.type === "income" ? "tone-text" : "text-content-strong", cancelled && "opacity-60")}>
         {typeSigns[transaction.type]}{formatCurrency(transaction.amountCents)}
       </p>
       <div role="cell" className="col-span-2 col-start-2 flex min-w-0 flex-wrap items-center gap-1.5 md:col-span-1 md:col-start-auto">

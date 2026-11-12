@@ -1,7 +1,7 @@
 import { test as base } from "@playwright/test";
 import { test, expect } from "./helpers/fixture";
 import { archiveExtraCreditCards } from "./helpers/credit-cards";
-import { saveDialog } from "./helpers/forms";
+import { choose, saveDialog } from "./helpers/forms";
 import { loginWithPin } from "./helpers/local-auth";
 import { startFinanceServer } from "./helpers/server";
 import type { FinanceServer } from "./helpers/contracts";
@@ -31,7 +31,7 @@ authenticatedTest("shows a stubbed Open Finance purchase in the correct invoices
   await page.getByLabel("Nome do banco").fill("Banco Cartão E2E");
   await page.getByLabel("Item ID").fill("99999999-2222-3333-4444-555555555555");
   await page.getByRole("button", { name: "Adicionar conexão", exact: true }).click();
-  await page.getByLabel("Conta local de Cartão remoto").selectOption({ label: "Cartão local E2E" });
+  await choose(page.locator("body"), "Conta local de Cartão remoto", "Cartão local E2E");
   await page.getByRole("button", { name: "Vincular conta", exact: true }).click();
   await expect(page.getByText("Vinculada", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Sincronizar bancos", exact: true }).click();
@@ -60,9 +60,9 @@ authenticatedTest("marks an invoice paid from a stubbed checking payment shown o
     await page.getByLabel("Nome do banco").fill(label);
     await page.getByLabel("Item ID").fill(itemId);
     await page.getByRole("button", { name: "Adicionar conexão", exact: true }).click();
-    await page.getByLabel(`Conta local de ${remote}`).selectOption({ label: local });
+    await choose(page.locator("body"), `Conta local de ${remote}`, local);
     await page.getByRole("button", { name: "Vincular conta", exact: true }).click();
-    await expect(page.getByLabel(`Conta local de ${remote}`)).toHaveValue(/.+/);
+    await expect(page.getByLabel(`Conta local de ${remote}`)).not.toContainText("Selecione uma conta");
     await expect(page.getByRole("button", { name: "Vincular conta", exact: true })).toHaveCount(0);
   }
   await page.getByRole("button", { name: "Sincronizar bancos", exact: true }).click();
@@ -94,11 +94,9 @@ test("creates and edits installment purchases and verifies future invoices", asy
   await saveDialog(dialog, "Criar compra");
   await expect(page.getByRole("region", { name: "Resumo da fatura" }))
     .toContainText("Estimativa para 08/2026");
-  const commitments = page.getByRole("complementary").filter({ has: page.getByRole("heading", { name: "Próximas faturas" }) });
-  await expect(commitments.getByText("Ago. de 26", { exact: true })).toBeVisible();
-  await expect(commitments.getByText("Set. de 26", { exact: true })).toBeVisible();
-  await expect(commitments.getByText("Out. de 26", { exact: true })).toBeVisible();
-  await expect(commitments.getByText("Mai. de 25", { exact: true })).toHaveCount(0);
+  const invoiceChart = page.getByTestId("credit-card-invoice-chart");
+  await expect(invoiceChart).toContainText("Ago 26");
+  await expect(invoiceChart).toContainText("Set 26");
   await expect(
     page
       .getByText("Compra parcelada E2E", { exact: true })

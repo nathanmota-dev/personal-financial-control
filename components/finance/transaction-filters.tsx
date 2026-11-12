@@ -17,13 +17,6 @@ TransactionFiltersProps,
 
 const EMPTY_FILTER_VALUE = "__empty-filter__";
 export const UNCATEGORIZED_FILTER_VALUE = "__uncategorized-filter__";
-const FILTER_SELECT_TRIGGER_CLASSNAME =
-  "h-10 w-full rounded-xl border-transparent bg-muted/50 pr-11 pl-4 text-left text-sm text-content-strong shadow-none hover:bg-muted focus-visible:border-brand/70 focus-visible:ring-brand/20 data-[state=open]:border-content-subtle data-[state=open]:bg-surface-raised";
-const FILTER_SELECT_CONTENT_CLASSNAME =
-  "rounded-xl border-border bg-card p-1 text-content-strong shadow-none";
-const FILTER_SELECT_ITEM_CLASSNAME =
-  "min-h-10 rounded-lg px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90 data-[state=checked]:text-content-strong";
-
 export function FilterSelect({
   value,
   emptyLabel,
@@ -37,20 +30,15 @@ export function FilterSelect({
         onValueChange(nextValue === EMPTY_FILTER_VALUE ? undefined : nextValue)
       }
     >
-      <SelectTrigger className={FILTER_SELECT_TRIGGER_CLASSNAME}>
+      <SelectTrigger className="w-full sm:w-[200px]">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent
-        position="popper"
-        align="start"
-        sideOffset={8}
-        className={FILTER_SELECT_CONTENT_CLASSNAME}
-      >
-        <SelectItem value={EMPTY_FILTER_VALUE} className={FILTER_SELECT_ITEM_CLASSNAME}>
+      <SelectContent position="popper" align="start">
+        <SelectItem value={EMPTY_FILTER_VALUE}>
           {emptyLabel}
         </SelectItem>
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value} className={FILTER_SELECT_ITEM_CLASSNAME}>
+          <SelectItem key={option.value} value={option.value}>
             {option.label}
           </SelectItem>
         ))}
@@ -91,11 +79,11 @@ export function TransactionFilters({ accounts, categories, filters }: Transactio
     : filters.categoryId;
 
   return (
-        <div role="group" aria-label="Filtros" className="grid gap-2.5 rounded-[20px] border border-border bg-card p-2.5 sm:grid-cols-2 xl:grid-cols-5">
+        <div role="group" aria-label="Filtros" className="flex flex-wrap items-center gap-3 border-b border-border px-[22px] pt-5 pb-5">
           <MonthPickerField
             month={filters.month}
             onMonthChange={(month) => updateFilters({ month })}
-            className="w-full"
+            className="w-full sm:w-[188px]"
           />
           <FilterSelect
             value={filters.type}

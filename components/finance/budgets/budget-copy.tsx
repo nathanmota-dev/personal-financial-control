@@ -18,5 +18,5 @@ export function BudgetCopy({ month }: BudgetMonthProps) {
     });
   }
   function report(value: string) { setMessage(value); toast(value); }
-  return <div className="relative"><Button variant="outline" disabled={pending} onClick={copy}><Copy className="size-4" />{pending ? "Copiando…" : "Copiar mês anterior"}</Button><p role="status" className="sr-only">{message}</p></div>;
+  return <div className="relative"><Button variant="secondary" className="h-10 gap-[10px]" disabled={pending} onClick={copy}><Copy className="size-[17px]" />{pending ? "Copiando…" : "Copiar mês anterior"}</Button><p role="status" className="sr-only">{message}</p></div>;
 }

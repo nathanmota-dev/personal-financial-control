@@ -1,5 +1,7 @@
 "use client";
 
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
+import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { formatBillDay } from "@/lib/dashboard-bills";
@@ -9,12 +11,16 @@ export function HousingTemplates({ templates }: HousingTemplatesProps) {
   const { formatCurrency } = useFinancialFormatter();
   const totalCents = templates.reduce((sum, template) => sum + template.amountCents, 0);
   return (
-    <section className="min-w-0 rounded-[20px] border border-border bg-card p-[23px]">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold text-content-strong">Contas fixas da casa</h2>
-        {templates.length > 0 && <span className="text-xs text-content">{`${formatCurrency(totalCents)} por mês`}</span>}
-      </div>
-      <p className="mt-1 text-xs text-content">Recorrências ativas de moradia, por dia de vencimento</p>
+    <section className="relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+      <DashboardCardIllustration src="/images/recurring-repeat.webp" />
+      <h2 className="text-lg font-semibold leading-[25px]">Contas fixas da casa</h2>
+      <p className="mt-1 pr-16 text-xs text-content-muted">Recorrências ativas de moradia, por dia de vencimento</p>
+      {templates.length > 0 && (
+        <div className="mt-5">
+          <p className="text-xs text-content">Total por mês</p>
+          <DashboardCardsMoney cents={totalCents} className="mt-1 block text-[40px] leading-[44px] font-bold text-content-strong" />
+        </div>
+      )}
       {templates.length ? (
         <ul className="mt-3 divide-y divide-border">
           {templates.map((template) => (

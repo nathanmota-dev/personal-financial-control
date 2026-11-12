@@ -1,8 +1,9 @@
 "use client";
 
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
+import { FormSelect } from "@/components/finance/form-select";
 import { Label } from "@/components/ui/label";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { SelectItem } from "@/components/ui/select";
 import type { OpenFinanceCategoryReviewRowProps } from "@/lib/interfaces/components/open-finance";
 import { pluggyDirectionLabels, pluggyRuleCategoryOptions } from "@/lib/pluggy-ui";
 
@@ -19,10 +20,9 @@ export function OpenFinanceCategoryReviewRow({ group, categories, applying, disa
       </div>
       <div className="min-w-0 space-y-1.5">
         <Label htmlFor={fieldId}>Categoria de {group.normalizedDescription}</Label>
-        <NativeSelect id={fieldId} className="w-full" value="" disabled={disabled} onChange={(event) => { if (event.target.value) onApply(group, event.target.value); }}>
-          <NativeSelectOption value="">Selecione uma categoria</NativeSelectOption>
-          {pluggyRuleCategoryOptions(categories, group.direction).map((category) => <NativeSelectOption data-user-content key={category.id} value={category.id}>{category.name}</NativeSelectOption>)}
-        </NativeSelect>
+        <FormSelect id={fieldId} className="w-full" value="" disabled={disabled} placeholder="Selecione uma categoria" onValueChange={(value) => { if (value) onApply(group, value); }}>
+          {pluggyRuleCategoryOptions(categories, group.direction).map((category) => <SelectItem data-user-content key={category.id} value={category.id}>{category.name}</SelectItem>)}
+        </FormSelect>
         {applying ? <p role="status" className="text-xs text-content-muted">Aplicando categoria…</p> : null}
       </div>
     </li>

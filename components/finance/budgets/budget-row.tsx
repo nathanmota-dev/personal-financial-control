@@ -23,7 +23,7 @@ export function BudgetCategoryRow({ row, month }: BudgetRowProps) {
   else values.push(["Comprometido", formatCurrency(row.committedCents)]);
   const meterTone = row.state ? stateTones[row.state] : "brand";
   return (
-    <article className="flex min-w-0 flex-col gap-4 rounded-2xl border border-border bg-muted/30 p-4 transition-colors hover:border-content-subtle/40" aria-label={row.categoryName}>
+    <article className="flex min-w-0 flex-col gap-4 rounded-[14px] border border-border bg-card p-4 transition-colors hover:border-content-subtle/40" aria-label={row.categoryName}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <IconTile tone={toneForKey(row.categoryName)}><Layers /></IconTile>

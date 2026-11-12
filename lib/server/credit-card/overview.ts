@@ -15,29 +15,29 @@ import { eq } from "drizzle-orm";
 import { listCreditCardExpenseEntries } from "./expenses";
 import { resolveDb } from "./validation";
 
-export async function getCreditCardOverview(invoiceMonth: string, database?: AppDb) {
+type CreditAccounts = Awaited<ReturnType<typeof listAccounts>>;
+type PickedCreditAccount =
+  | { early: { state: "no_account"; month: string } | { state: "multiple_accounts"; month: string; accounts: CreditAccounts } }
+  | { account: CreditAccounts[number] };
+
+/** With several cards, the detailed view needs the one the caller picked. */
+function pickCreditAccount(accounts: CreditAccounts, month: string, accountId?: string): PickedCreditAccount {
+  if (!accounts.length) return { early: { state: "no_account", month } };
+  const selected = accounts.find((account) => account.id === accountId);
+  if (accounts.length > 1 && !selected) return { early: { state: "multiple_accounts", month, accounts } };
+  return { account: selected ?? accounts[0] };
+}
+
+export async function getCreditCardOverview(invoiceMonth: string, database?: AppDb, options: { accountId?: string } = {}) {
   const db = await resolveDb(database);
   const normalizedMonth = normalizeCompetenceMonth(invoiceMonth);
   const creditAccounts = (await listAccounts(undefined, db)).filter(
     (account) => account.type === "credit"
   );
 
-  if (!creditAccounts.length) {
-    return {
-      state: "no_account" as const,
-      month: normalizedMonth,
-    };
-  }
-
-  if (creditAccounts.length > 1) {
-    return {
-      state: "multiple_accounts" as const,
-      month: normalizedMonth,
-      accounts: creditAccounts,
-    };
-  }
-
-  const [account] = creditAccounts;
+  const picked = pickCreditAccount(creditAccounts, normalizedMonth, options.accountId);
+  if ("early" in picked) return picked.early;
+  const { account } = picked;
   const [invoiceEntries, monthTransactions, futureChargeRows, cardTransactions, billRows] = await Promise.all([
     listCreditCardExpenseEntries(normalizedMonth, db, { accountId: account.id }),
     listTransactions({ competenceMonth: normalizedMonth }, db),

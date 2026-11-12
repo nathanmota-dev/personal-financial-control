@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
-import { renderUI } from "../helpers";
+import { chooseOption, renderUI } from "../helpers";
 import { navigation } from "../setup";
 import { createAccountAction } from "@/app/actions/finance";
 import type { OnboardingState } from "@/lib/interfaces/onboarding";
@@ -52,7 +52,7 @@ it("navigates, selects theme, saves multiple accounts and completes", async () =
   expect(createAccountAction).toHaveBeenCalledWith({ name: "Banco", type: "checking", initialBalanceCents: 12345 });
   expect(await screen.findByText("Banco", { exact: true })).toBeVisible();
   await user.type(screen.getByLabelText("Nome da conta"), "Carteira");
-  await user.selectOptions(screen.getByLabelText("Tipo de conta"), "cash");
+  await chooseOption(user, screen.getByLabelText("Tipo de conta"), "Dinheiro");
   await user.click(screen.getByRole("button", { name: "Salvar conta" }));
   await user.click(screen.getByRole("button", { name: "Continuar" }));
   await user.type(screen.getByLabelText("Nome do cartão"), "Visa");

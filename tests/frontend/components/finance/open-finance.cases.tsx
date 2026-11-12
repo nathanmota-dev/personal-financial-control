@@ -8,7 +8,7 @@ import type { AccountRow, CategoryRow } from "@/lib/interfaces/components/settin
 import type { PluggyIdentityView, PluggyItemView, PluggyLinkView, PluggySyncRunView } from "@/lib/interfaces/pluggy";
 import type { PluggyPendingCategoryGroup } from "@/lib/interfaces/pluggy-category-rules";
 import type { PluggyInvestmentOverview, PluggyInvestmentView } from "@/lib/interfaces/pluggy-investments";
-import { renderUI } from "@/tests/frontend/helpers";
+import { chooseOption, renderUI } from "@/tests/frontend/helpers";
 
 const accounts: AccountRow[] = [
   { id: "local-1", name: "Conta local", type: "checking", initialBalanceCents: 0, currentBalanceCents: 0, creditClosingDay: null, creditDueDay: 10, isArchived: false },
@@ -83,7 +83,7 @@ describe("Open Finance settings", () => {
       const calls = stubApi({ items: [item], investments: { investments: [{ ...investment, suggestedHoldingId: "holding-1" }], holdings: holdingOptions, notices: [] } });
       const { user } = settings();
       const select = await screen.findByLabelText("Ativo local de CDB Banco");
-      expect(select).toHaveValue("holding-1");
+      expect(select).toHaveTextContent("CDB local");
       expect(screen.getByText("Sugestão")).toBeVisible();
       await user.click(screen.getByRole("button", { name: "Vincular ativo" }));
       await waitFor(() => expect(calls).toHaveLength(1));
@@ -93,7 +93,7 @@ describe("Open Finance settings", () => {
     it("drops the suggestion label when another holding is chosen", async () => {
       stubApi({ items: [item], investments: { investments: [{ ...investment, suggestedHoldingId: "holding-1" }], holdings: holdingOptions, notices: [] } });
       const { user } = settings();
-      await user.selectOptions(await screen.findByLabelText("Ativo local de CDB Banco"), "holding-2");
+      await chooseOption(user, await screen.findByLabelText("Ativo local de CDB Banco"), "Tesouro local");
       expect(screen.queryByText("Sugestão")).toBeNull();
       expect(screen.getByRole("button", { name: "Vincular ativo" })).toBeEnabled();
     });
@@ -194,10 +194,13 @@ describe("Open Finance settings", () => {
     const calls = stubApi({ items: [item] });
     const { user } = renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
     const select = await screen.findByLabelText("Conta local de Corrente");
-    expect(within(select).queryByRole("option", { name: "Cartão local" })).toBeNull();
+    await user.click(select);
+    expect(await screen.findByRole("option", { name: "Conta local" })).toBeVisible();
+    expect(screen.queryByRole("option", { name: "Cartão local" })).toBeNull();
+    await user.keyboard("{Escape}");
     expect(screen.getByText(/final 2345/)).toBeVisible();
     expect(screen.getByRole("button", { name: "Vincular conta" })).toBeDisabled();
-    await user.selectOptions(select, "local-1");
+    await chooseOption(user, select, "Conta local");
     await user.click(screen.getByRole("button", { name: "Vincular conta" }));
     await waitFor(() => expect(calls).toHaveLength(1));
     expect(calls[0]).toMatchObject({ url: "/api/pluggy/links", method: "POST", body: { itemId: "item-1", externalAccountId: "remote-1", accountId: "local-1" } });
@@ -218,7 +221,7 @@ describe("Open Finance settings", () => {
     stubApi({ items: [{ ...item, remoteAccounts: [], accountsError: "A Pluggy está indisponível no momento." }], links: [link] });
     renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
     expect(await screen.findByRole("alert")).toHaveTextContent("indisponível");
-    expect(screen.getByLabelText("Conta local de Corrente")).toHaveValue("local-1");
+    expect(screen.getByLabelText("Conta local de Corrente")).toHaveTextContent("Conta local");
   });
 
   it("disables the button while syncing and shows the success summary", async () => {
@@ -331,10 +334,13 @@ describe("Open Finance settings", () => {
     const calls = stubApi({ onPost: () => json({ ok: true, identity: saved }) });
     const { user } = renderUI(<OpenFinanceSettings configured accounts={accounts} categories={categories} />);
     const names = await screen.findByLabelText("Nomes completos do titular");
-    expect(within(screen.getByLabelText("Outras contas próprias")).queryByRole("option", { name: "Cartão local" })).toBeNull();
+    await user.click(screen.getByLabelText("Outras contas próprias"));
+    expect(await screen.findByRole("option", { name: "Conta local" })).toBeVisible();
+    expect(screen.queryByRole("option", { name: "Cartão local" })).toBeNull();
+    await user.keyboard("{Escape}");
     await user.type(names, "João da Silva{enter}{enter} Joao Silva ");
     await user.type(screen.getByLabelText("CPF do titular"), " 123.456.789-09 ");
-    await user.selectOptions(screen.getByLabelText("Outras contas próprias"), "local-1");
+    await chooseOption(user, screen.getByLabelText("Outras contas próprias"), "Conta local");
     await user.click(screen.getByRole("button", { name: "Salvar identidade" }));
     await waitFor(() => expect(calls).toHaveLength(1));
     expect(calls[0]).toEqual({ url: "/api/pluggy/identity", method: "PUT", body: { names: ["João da Silva", "Joao Silva"], otherOwnAccountId: "local-1", cpf: "123.456.789-09" } });
@@ -395,19 +401,23 @@ describe("Open Finance settings", () => {
 
     it("lists each description with its count, total and only compatible active categories", async () => {
       stubApi({ pending: [market, salary] });
-      open();
+      const { user } = open();
       const select = await screen.findByLabelText("Categoria de MERCADO BOM");
       expect(screen.getByText(/Despesa · 2 lançamentos/)).toHaveTextContent("R$ 150,50");
       expect(screen.getByText(/Receita · 1 lançamento/)).toHaveTextContent("R$ 5.000,00");
-      expect(within(select).getAllByRole("option").map((option) => option.textContent)).toEqual(["Selecione uma categoria", "Alimentação", "Moradia"]);
-      expect(within(screen.getByLabelText("Categoria de SALARIO EMPRESA")).getAllByRole("option").map((option) => option.textContent)).toEqual(["Selecione uma categoria", "Salário"]);
+      expect(select).toHaveTextContent("Selecione uma categoria");
+      await user.click(select);
+      expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Alimentação", "Moradia"]);
+      await user.keyboard("{Escape}");
+      await user.click(screen.getByLabelText("Categoria de SALARIO EMPRESA"));
+      expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Salário"]);
     });
 
     it("shows progress while applying and removes the resolved description", async () => {
       let finish: (response: Response) => void = () => undefined;
       const calls = stubApi({ pending: [market, salary], onPost: () => new Promise<Response>((resolve) => { finish = resolve; }) });
       const { user } = open();
-      await user.selectOptions(await screen.findByLabelText("Categoria de MERCADO BOM"), "cat-food");
+      await chooseOption(user, await screen.findByLabelText("Categoria de MERCADO BOM"), "Alimentação");
       expect(await screen.findByText("Aplicando categoria…")).toBeVisible();
       expect(screen.getByLabelText("Categoria de SALARIO EMPRESA")).toBeDisabled();
       expect(calls).toEqual([{ url: "/api/pluggy/category-rules", method: "POST", body: { normalizedDescription: "MERCADO BOM", direction: "expense", categoryId: "cat-food" } }]);
@@ -420,7 +430,7 @@ describe("Open Finance settings", () => {
     it("keeps the row and reports a failure", async () => {
       stubApi({ pending: [market], onPost: () => json({ ok: false, error: { code: "PLUGGY_CATEGORY_RULE_INVALID", message: "Categoria recusada." } }, 400) });
       const { user } = open();
-      await user.selectOptions(await screen.findByLabelText("Categoria de MERCADO BOM"), "cat-food");
+      await chooseOption(user, await screen.findByLabelText("Categoria de MERCADO BOM"), "Alimentação");
       expect(await screen.findByText("Categoria recusada.")).toBeVisible();
       expect(screen.getByLabelText("Categoria de MERCADO BOM")).toBeEnabled();
     });

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname,useRouter } from "next/navigation";
+import { usePathname,useRouter,useSearchParams } from "next/navigation";
 
 import { CreditCardPurchaseDialog } from "@/components/finance/credit-card-purchase-dialog";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
@@ -32,10 +32,12 @@ export function CreditCardPageActions({
 export function CreditCardMonthPicker({ month }: { month: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const card = useSearchParams().get("card");
 
   function updateMonth(nextMonth: string) {
     const params = new URLSearchParams();
     params.set("month", nextMonth);
+    if (card) params.set("card", card);
     router.replace(`${pathname}?${params.toString()}`);
   }
 
@@ -45,6 +47,7 @@ export function CreditCardMonthPicker({ month }: { month: string }) {
       onMonthChange={(nextMonth) => {
         if (nextMonth) updateMonth(nextMonth);
       }}
+      align="end"
       className="w-full sm:w-[188px]"
     />
   );

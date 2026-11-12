@@ -126,10 +126,9 @@ export type TransactionTotals = {
   withdrawal: number;
 };
 
-export type TransactionsHeroProps = {
+export type TransactionsSummaryProps = {
   month: string;
   totals: TransactionTotals;
-  transactions: TransactionRow[];
 };
 
 export type TransactionListProps = {
@@ -165,3 +164,14 @@ export type TransferDialogProps = {
 export type DeleteTransactionDialogProps = {
   id: string;
 };
+
+export type TransactionsFlowSegment = {
+  key: keyof TransactionTotals;
+  label: string;
+  amountCents: number;
+  /** Share of the period's movement, in percent. */
+  width: number;
+  colorClassName: string;
+};
+
+export type TransactionsFlowBarProps = { segments: TransactionsFlowSegment[] };

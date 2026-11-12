@@ -64,9 +64,9 @@ export const helpGuides: HelpGuide[] = [
     icon: ListPlus,
   },
   {
-    title: "Cartão",
+    title: "Cartões",
     description:
-      "Organize compras, parcelas e faturas. Configure o fechamento e o vencimento do cartão para acompanhar os compromissos de cada período.",
+      "Organize compras, parcelas e faturas de cada cartão. Configure o fechamento e o vencimento do cartão para acompanhar os compromissos de cada período.",
     href: "/credit-card",
     icon: CreditCard,
   },
@@ -118,7 +118,7 @@ export const helpQuestions: HelpQuestion[] = [
   {
     question: "Como consulto outro mês?",
     answer:
-      "Use o seletor de mês nas telas que exibem dados mensais, como Dashboard, Lançamentos, Cartão e Recorrentes. Confira o período selecionado antes de comparar valores ou procurar um lançamento.",
+      "Use o seletor de mês nas telas que exibem dados mensais, como Dashboard, Lançamentos, Cartões e Recorrentes. Confira o período selecionado antes de comparar valores ou procurar um lançamento.",
   },
   {
     question: "Qual é a diferença entre pendente e confirmado?",

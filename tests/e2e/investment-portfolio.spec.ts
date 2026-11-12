@@ -34,7 +34,7 @@ authenticatedTest("a stubbed Pluggy sync updates a linked holding's value", asyn
   await page.getByLabel("Item ID").fill("77777777-2222-3333-4444-555555555555");
   await page.getByRole("button", { name: "Adicionar conexão", exact: true }).click();
   const select = page.getByLabel("Ativo local de CDB E2E", { exact: true });
-  await expect(select).toHaveValue(/.+/);
+  await expect(select).not.toContainText("Selecione um ativo");
   await expect(page.getByText("Sugestão", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Vincular ativo", exact: true }).click();
   await expect(page.getByText("Vinculado", { exact: true })).toBeVisible();

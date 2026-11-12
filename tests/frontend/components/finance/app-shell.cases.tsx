@@ -61,7 +61,7 @@ it("opens the same command menu with the shortcut and restores focus on Escape",
     screen.getByRole("combobox", { name: "Buscar página ou ação" }),
     "cartao",
   );
-  expect(screen.getByRole("option", { name: /^Cartão/ })).toBeVisible();
+  expect(screen.getByRole("option", { name: /^Cartões/ })).toBeVisible();
 
   await user.keyboard("{Escape}");
   await waitFor(() => expect(commandDialog).not.toBeInTheDocument());

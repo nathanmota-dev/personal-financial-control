@@ -6,6 +6,9 @@ export interface CreditCardViewDiv1Props {
   monthPoints: import("@/lib/interfaces/credit-card-view").CreditCardMonthPoint[];
   selectedMonth: string;
   selectMonth: (month: string) => void;
+  cards: import("@/lib/interfaces/dashboard-cards").DashboardCardsData;
+  selectedCardId: string;
+  selectCard: (id: string) => void;
   isPending: boolean;
   purchaseCommandId?: string | null;
   setupCommandId?: string | null;

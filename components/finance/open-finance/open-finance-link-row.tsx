@@ -5,8 +5,9 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DatePickerField } from "@/components/ui/date-picker-field";
+import { FormSelect } from "@/components/finance/form-select";
 import { Label } from "@/components/ui/label";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { SelectItem } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import type { OpenFinanceLinkRowProps } from "@/lib/interfaces/components/open-finance";
 import type { PluggyLinkDraft } from "@/lib/interfaces/pluggy";
@@ -36,10 +37,9 @@ export function OpenFinanceLinkRow({ row, accounts, busy, onSave }: OpenFinanceL
       </div>
       <div className="min-w-0 space-y-1.5">
         <Label htmlFor={`${fieldId}-account`}>Conta local de {row.name}</Label>
-        <NativeSelect id={`${fieldId}-account`} className="w-full" value={draft.accountId} onChange={(event) => update({ accountId: event.target.value })}>
-          <NativeSelectOption value="">Selecione uma conta</NativeSelectOption>
-          {options.map((account) => <NativeSelectOption data-user-content key={account.id} value={account.id}>{account.name}</NativeSelectOption>)}
-        </NativeSelect>
+        <FormSelect id={`${fieldId}-account`} className="w-full" value={draft.accountId} placeholder="Selecione uma conta" onValueChange={(accountId) => update({ accountId })}>
+          {options.map((account) => <SelectItem data-user-content key={account.id} value={account.id}>{account.name}</SelectItem>)}
+        </FormSelect>
       </div>
       <div className="min-w-0 space-y-1.5">
         <Label htmlFor={`${fieldId}-cutoff`}>Data de corte de {row.name}</Label>

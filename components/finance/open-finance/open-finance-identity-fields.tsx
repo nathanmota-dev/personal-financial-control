@@ -4,8 +4,9 @@ import { useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FormSelect } from "@/components/finance/form-select";
 import { Label } from "@/components/ui/label";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { OpenFinanceIdentityFieldsProps } from "@/lib/interfaces/components/open-finance";
 import { isOtherOwnAccountType } from "@/lib/pluggy-account-rules";
@@ -37,10 +38,10 @@ export function OpenFinanceIdentityFields({ identity, accounts, saving, onSave }
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="open-finance-other-account">Outras contas próprias</Label>
-        <NativeSelect id="open-finance-other-account" className="w-full" value={otherOwnAccountId} onChange={(event) => setOtherOwnAccountId(event.target.value)}>
-          <NativeSelectOption value="">Nenhuma</NativeSelectOption>
-          {options.map((account) => <NativeSelectOption data-user-content key={account.id} value={account.id}>{account.name}</NativeSelectOption>)}
-        </NativeSelect>
+        <FormSelect id="open-finance-other-account" className="w-full" value={otherOwnAccountId || "none"} onValueChange={(value) => setOtherOwnAccountId(value === "none" ? "" : value)}>
+          <SelectItem value="none">Nenhuma</SelectItem>
+          {options.map((account) => <SelectItem data-user-content key={account.id} value={account.id}>{account.name}</SelectItem>)}
+        </FormSelect>
         <p className="text-xs text-content-muted">Recebe transferências para contas suas que não estão vinculadas.</p>
       </div>
       <div className="md:col-span-3">

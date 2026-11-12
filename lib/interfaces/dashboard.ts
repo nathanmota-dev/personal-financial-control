@@ -106,6 +106,8 @@ export type DashboardCategorySectionProps = {
   title?: string;
   description?: string;
   emptyMessage?: string;
+  /** Overrides the card illustration; the expanded size only shows one when this is set. */
+  illustrationSrc?: string;
 };
 
 export type DashboardCardIllustrationProps = {

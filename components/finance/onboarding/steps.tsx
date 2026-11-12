@@ -51,7 +51,7 @@ export function OnboardingSteps({ name, accounts, disabled, onSaved, onBusyChang
       <p className="rounded-lg bg-brand-soft p-4 text-sm text-brand-strong">{bankAccounts.length} conta(s) e {cards.length} cartão(ões) disponíveis no Finance.</p>
       <TipsList title="Próximos passos" className="[&_ol]:space-y-4">
         <TipsList.Item>Registre receitas e despesas em Lançamentos.</TipsList.Item>
-        <TipsList.Item>Acompanhe as compras e o vencimento das faturas em Cartão.</TipsList.Item>
+        <TipsList.Item>Acompanhe as compras e o vencimento das faturas em Cartões.</TipsList.Item>
         <TipsList.Item>Consulte o Dashboard para ver saldos, gastos e evolução mensal.</TipsList.Item>
       </TipsList>
     </Onboarding.Step>

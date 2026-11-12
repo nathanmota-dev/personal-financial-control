@@ -5,8 +5,9 @@ import { useState } from "react";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { FormSelect } from "@/components/finance/form-select";
 import { Label } from "@/components/ui/label";
-import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { SelectItem } from "@/components/ui/select";
 import type { OpenFinanceInvestmentRowProps } from "@/lib/interfaces/components/open-finance";
 
 export function OpenFinanceInvestmentRow({ row, holdings, busy, onLink, onUnlink }: OpenFinanceInvestmentRowProps) {
@@ -35,10 +36,9 @@ export function OpenFinanceInvestmentRow({ row, holdings, busy, onLink, onUnlink
       ) : (
         <div className="min-w-0 space-y-1.5">
           <Label htmlFor={fieldId}>Ativo local de {row.name}</Label>
-          <NativeSelect id={fieldId} className="w-full" value={holdingId} onChange={(event) => setChoice(event.target.value)}>
-            <NativeSelectOption value="">Selecione um ativo</NativeSelectOption>
-            {holdings.map((holding) => <NativeSelectOption data-user-content key={holding.id} value={holding.id}>{holding.name}</NativeSelectOption>)}
-          </NativeSelect>
+          <FormSelect id={fieldId} className="w-full" value={holdingId} placeholder="Selecione um ativo" onValueChange={setChoice}>
+            {holdings.map((holding) => <SelectItem data-user-content key={holding.id} value={holding.id}>{holding.name}</SelectItem>)}
+          </FormSelect>
         </div>
       )}
       <div className="flex flex-wrap items-center gap-2">

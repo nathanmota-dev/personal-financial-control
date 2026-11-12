@@ -12,7 +12,7 @@ describe("app/(finance)/credit-card/page", () => {
     );
     expect(requirePageSession).toHaveBeenCalledOnce();
     expect(
-      screen.getByRole("heading", { name: "Visa Platinum", level: 1 }),
+      screen.getByRole("heading", { name: "Cartões", level: 1 }),
     ).toBeVisible();
   });
   it("renders a usable fallback after data loading fails", async () => {
@@ -23,7 +23,7 @@ describe("app/(finance)/credit-card/page", () => {
       await Page({ searchParams: Promise.resolve({ month: "invalid" }) }),
     );
     expect(
-      screen.getByRole("heading", { name: /^Sua fatura em/ }),
+      screen.getByRole("heading", { name: "Cartões", level: 1 }),
     ).toBeVisible();
   });
   it("rejects an unauthenticated page load before retrieving data", async () => {

@@ -1,5 +1,6 @@
 import { getDefaultMonth } from "@/lib/finance-ui";
 import type {
+CreditCardEntry,
 CreditCardMonthPoint,
 ReadyCreditCardOverview,
 } from "@/lib/interfaces/credit-card-view";
@@ -67,4 +68,31 @@ export function formatCreditCardMonth(month: string) {
   }).format(new Date(`${month}-01T00:00:00Z`));
 
   return label.replace(/^./, (character) => character.toUpperCase());
+}
+
+export function formatCreditCardMonthShort(month: string) {
+  const label = new Intl.DateTimeFormat("pt-BR", {
+    month: "short",
+    year: "2-digit",
+    timeZone: "UTC",
+  }).format(new Date(`${month}-01T00:00:00Z`));
+
+  return label.replace(".", "").replace(" de ", " ").replace(/^./, (character) => character.toUpperCase());
+}
+
+const dayLabelFormat = new Intl.DateTimeFormat("pt-BR", { weekday: "short", day: "numeric", month: "long", timeZone: "UTC" });
+
+/** "seg., 17 de agosto" becomes "SEG, 17 DE AGOSTO". */
+export function formatCreditCardDayLabel(date: string) {
+  return dayLabelFormat.format(new Date(`${date}T00:00:00Z`)).replace(".", "").toUpperCase();
+}
+
+/** Groups statement entries by purchase day, newest day first. */
+export function groupCreditCardEntriesByDay(entries: CreditCardEntry[]) {
+  const groups = new Map<string, CreditCardEntry[]>();
+  for (const entry of entries) {
+    groups.set(entry.purchaseDate, [...(groups.get(entry.purchaseDate) ?? []), entry]);
+  }
+  return Array.from(groups, ([date, items]) => ({ date, label: formatCreditCardDayLabel(date), entries: items }))
+    .sort((left, right) => right.date.localeCompare(left.date));
 }

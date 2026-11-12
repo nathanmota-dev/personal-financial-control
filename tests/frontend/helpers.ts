@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
+import userEvent, { type UserEvent } from "@testing-library/user-event";
 import { vi } from "vitest";
 import type { ReactElement } from "react";
 import { Providers } from "@/components/providers";
@@ -14,4 +14,10 @@ export function renderUI(element: ReactElement) {
 export function freezeFinanceDate() {
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-07-16T12:00:00Z"));
+}
+
+/** Opens a Radix select and picks an option by its visible name. */
+export async function chooseOption(user: UserEvent, trigger: HTMLElement, name: string) {
+  await user.click(trigger);
+  await user.click(await screen.findByRole("option", { name }));
 }
