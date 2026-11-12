@@ -38,7 +38,7 @@ export function DashboardCards({ cards, month }: DashboardCardsProps) {
         onPrevious={() => setIndex((value) => Math.max(0, value - 1))}
         onNext={() => setIndex((value) => Math.min(cards.length - 1, value + 1))}
       />
-      <div className="mt-5 overflow-hidden" style={{ ["--card-w" as string]: "min(300px, 84cqw)" }}>
+      <div className="mt-5 overflow-hidden pb-3" style={{ ["--card-w" as string]: "min(300px, 84cqw)" }}>
         <div
           data-testid="credit-card-track"
           className="flex gap-3 transition-transform duration-300"

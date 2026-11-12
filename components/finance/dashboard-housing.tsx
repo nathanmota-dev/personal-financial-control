@@ -33,7 +33,10 @@ export function DashboardHousing({ data, href }: DashboardHousingProps) {
           <p className="text-xs text-content">Quanto você gasta pra morar</p>
           <DashboardCardsMoney cents={data.totalCents} className="mt-1 block text-[40px] leading-[44px] font-bold text-content-strong" />
         </div>
-        <Image src="/images/housing-house.webp" width={525} height={350} alt="" unoptimized className="-my-5 -mr-2 h-24 w-auto shrink-0 object-contain" />
+        <div aria-hidden className="relative -my-5 -mr-2 shrink-0">
+          <div className="absolute inset-x-3 -bottom-1 h-4 rounded-[50%] bg-black/50 blur-[7px]" />
+          <Image src="/images/housing-house.webp" width={525} height={350} alt="" unoptimized className="relative h-24 w-auto object-contain" />
+        </div>
       </div>
       {data.sharePercent !== null && (
         <p className={cn("mt-2 flex items-center gap-1.5 text-xs", over ? "text-destructive" : "text-success")}>

@@ -6,7 +6,6 @@ import { isValidMonth } from "@/lib/finance-ui";
 import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
 import { getDashboardData } from "@/lib/server/dashboard";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
-import { DashboardMetrics } from "@/components/finance/dashboard-metrics";
 import { DashboardDetails } from "@/components/finance/dashboard-details";
 
 export default async function DashboardPage({
@@ -37,8 +36,6 @@ export default async function DashboardPage({
           <DashboardActions month={month} />
         </div>
       </header>
-
-      <DashboardMetrics totals={resolved.dashboard.totals} comparisons={resolved.comparisons} />
 
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({

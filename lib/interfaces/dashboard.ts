@@ -99,7 +99,6 @@ export type DashboardActionsProps = { month: string };
 export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "cards" | "bills" | "housing" | "investmentOverview"> & { month: string };
 export type DashboardBalancesProps = { accounts: DashboardAccountBalance[] };
 export type DashboardPortfolioProps = Pick<DashboardData, "investmentOverview">;
-export type DashboardMetricListProps = Pick<DashboardData, "comparisons"> & { totals: DashboardTotals };
 export type DashboardCategoryDistribution = ReturnType<typeof import("@/lib/dashboard-categories").buildDashboardCategoryDistribution>;
 export type DashboardCategorySectionProps = {
   distribution: DashboardCategoryDistribution;

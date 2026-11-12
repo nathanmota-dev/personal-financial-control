@@ -56,7 +56,10 @@ export function DashboardBills({ data }: DashboardBillsProps) {
       </h2>
       <div className="mt-4 flex items-center justify-between gap-4">
         <DashboardCardsMoney cents={totalCents} className="block text-[40px] leading-[44px] font-bold text-content-strong" />
-        <Image src="/images/bills-calendar.webp" width={96} height={96} alt="" unoptimized className="-my-6 -mr-2 size-24 shrink-0 object-contain" />
+        <div aria-hidden className="relative -my-6 -mr-2 size-24 shrink-0">
+          <div className="absolute inset-x-2 -bottom-1 h-4 rounded-[50%] bg-black/50 blur-[7px]" />
+          <Image src="/images/bills-calendar.webp" width={96} height={96} alt="" unoptimized className="relative size-full object-contain" />
+        </div>
       </div>
       <p className="mt-2 text-xs text-content">{`${describeBillsDistance(data.daysLeft)} · ${paidCount} de ${data.totalCount} pagas`}</p>
       <DashboardBillsDayTabs days={days} selected={active.dueDate} onSelect={setSelectedDate} />

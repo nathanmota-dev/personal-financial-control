@@ -14,6 +14,8 @@ export function CreditCardVisual({ card, className }: CreditCardVisualProps) {
   const [current] = card.invoices;
   const statusLabel = current?.status === "paid" ? "Paga" : "Aberta";
   return (
+    <div className="relative">
+    <div aria-hidden className="absolute inset-x-3 -bottom-1 h-4 rounded-[50%] bg-black/50 blur-[7px]" />
     <div
       data-testid="credit-card-visual"
       data-brand={card.brand}
@@ -49,6 +51,7 @@ export function CreditCardVisual({ card, className }: CreditCardVisualProps) {
           <p className="mt-0.5 text-[11px]">{formatCurrency(current?.totalCents ?? 0)}</p>
         </div>
       </div>
+    </div>
     </div>
   );
 }
