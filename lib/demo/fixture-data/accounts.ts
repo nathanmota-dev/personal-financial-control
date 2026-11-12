@@ -29,6 +29,22 @@ export const accounts: DemoFixture["accounts"] = [
       creditDueDay: 18,
     },
     {
+      id: accountIds.santanderCredit,
+      name: "Santander Unique",
+      type: "credit",
+      initialBalanceCents: 0,
+      creditClosingDay: 5,
+      creditDueDay: 12,
+    },
+    {
+      id: accountIds.itauCredit,
+      name: "Itaú Click",
+      type: "credit",
+      initialBalanceCents: 0,
+      creditClosingDay: 20,
+      creditDueDay: 27,
+    },
+    {
       id: accountIds.investment,
       name: "XP Investimentos",
       type: "investment",

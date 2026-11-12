@@ -6,8 +6,6 @@ import { isValidMonth } from "@/lib/finance-ui";
 import type { DashboardPageProps } from "@/lib/interfaces/dashboard";
 import { getDashboardData } from "@/lib/server/dashboard";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
-import { DashboardMetrics } from "@/components/finance/dashboard-metrics";
-import { DashboardUncategorizedNotice } from "@/components/finance/dashboard-uncategorized-notice";
 import { DashboardDetails } from "@/components/finance/dashboard-details";
 
 export default async function DashboardPage({
@@ -39,9 +37,14 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      <DashboardMetrics totals={resolved.dashboard.totals} comparisons={resolved.comparisons} />
-
-      <DashboardUncategorizedNotice amountCents={resolved.dashboard.totals.uncategorizedExpenseCents} month={month} />
+      <DashboardDetails
+        dashboard={resolved.dashboard}
+        cards={resolved.cards}
+        bills={resolved.bills}
+        housing={resolved.housing}
+        month={month}
+        investmentOverview={resolved.investmentOverview}
+      />
 
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({
@@ -59,12 +62,6 @@ export default async function DashboardPage({
         }))}
         summary={resolved.chartSummary}
         categorySpending={resolved.categorySpending}
-      />
-
-      <DashboardDetails
-        dashboard={resolved.dashboard}
-        expenses={resolved.expenses}
-        investmentOverview={resolved.investmentOverview}
       />
     </div>
   );

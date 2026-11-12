@@ -1281,6 +1281,19 @@
         "Overall goal progress",
         "Allocated over the total needed to complete current goals.",
         "Your personal space. Protected by your PIN."
+      ],
+      "dashboardCards": [
+        "Cards",
+        "Invoice for {month}",
+        "View invoice",
+        "Previous card",
+        "Next card",
+        "Open",
+        "Paid",
+        "Due",
+        "Invoice",
+        "No cards registered",
+        "Register a card account to track invoices here."
       ]
     }
   },

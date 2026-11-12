@@ -1,17 +1,16 @@
 import { test, expect } from "./helpers/fixture";
 import { accountIds, categoryIds } from "../../lib/demo/fixture";
 
-test("dashboard shows balances and updates confirmed income and uncategorized expenses", async ({
+test("dashboard shows the forecast and updates confirmed income", async ({
   page,
   request,
 }) => {
   await page.goto("/dashboard?month=2026-07");
   await expect(
-    page.getByRole("heading", { name: "Saldos por conta" }),
+    page.getByRole("heading", { name: "Saldo previsto" }),
   ).toBeVisible();
-  await expect(
-    page.locator("article").filter({ has: page.getByText("Receitas", { exact: true }) }),
-  ).toContainText(/6\.500,00/);
+  const income = page.locator("dl > div").filter({ has: page.getByText("Receitas", { exact: true }) });
+  await expect(income).toContainText("15.000,00");
   const response = await request.post("/api/transactions", {
     data: {
       accountId: accountIds.checking,
@@ -25,73 +24,22 @@ test("dashboard shows balances and updates confirmed income and uncategorized ex
   });
   expect(response.status()).toBe(201);
   await page.reload();
-  await expect(
-    page.locator("article").filter({ has: page.getByText("Receitas", { exact: true }) }),
-  ).toContainText(/6\.623,45/);
-  const expense = await request.post("/api/transactions", {
-    data: {
-      accountId: accountIds.checking,
-      type: "expense",
-      amountCents: 100,
-      transactionDate: "2026-07-16",
-      competenceMonth: "2026-07",
-      description: "Organizar E2E",
-    },
-  });
-  expect(expense.status()).toBe(201);
-  await page.reload();
-  await page.getByRole("link", { name: "Categorizar agora" }).click();
-  await expect(page).toHaveURL(/uncategorized=true/);
-  await expect(
-    page.getByRole("row").filter({ hasText: "Organizar E2E" }),
-  ).toContainText("Sem categoria");
+  await expect(income).toContainText("15.123,45");
 });
 
 test("dashboard changes competence while keeping the current consolidated portfolio", async ({ page }) => {
   await page.goto("/dashboard?month=2026-07");
-  const portfolio = page.locator("section").filter({ has: page.getByRole("heading", { name: "Carteira consolidada" }) });
+  const portfolio = page.locator("section").filter({ has: page.getByRole("heading", { name: "Investimentos", exact: true }) });
   await expect(portfolio).toContainText(/R\$\s*\d/);
   const currentPortfolio = await portfolio.innerText();
-  await expect(page.getByText("Fatura de julho de 2026", { exact: false })).toBeVisible();
-  await expect(page.getByRole("article", { name: "Receitas" })).toContainText("em relação ao mês anterior");
+  await expect(page.getByText("Fatura de julho", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "julho de 2026" }).click();
   await page.getByRole("button", { name: "Jun", exact: true }).click();
   await expect(page).toHaveURL(/month=2026-06/);
   await expect(page.getByRole("button", { name: "junho de 2026" })).toBeVisible();
-  await expect(page.getByText("Fatura de junho de 2026", { exact: false })).toBeVisible();
+  await expect(page.getByText("Fatura de junho", { exact: false })).toBeVisible();
   await expect(portfolio).toHaveText(currentPortfolio, { useInnerText: true });
   await expect(page.getByText("Variação do saldo no mês")).toBeVisible();
-});
-
-test("account balances hide the scrollbar, support mouse dragging and omit the redundant subtitle", async ({ page }) => {
-  await page.goto("/dashboard?month=2026-07");
-  const card = page.locator("section").filter({
-    has: page.getByRole("heading", { name: "Saldos por conta" }),
-  });
-  const list = card.getByTestId("dashboard-balances-list");
-
-  await list.scrollIntoViewIfNeeded();
-  await expect(card.getByText("Posição atual das contas")).toHaveCount(0);
-  const listStyles = await list.evaluate((element) => ({
-    scrollHeight: element.scrollHeight,
-    clientHeight: element.clientHeight,
-    scrollbarWidth: getComputedStyle(element).scrollbarWidth,
-    webkitScrollbarDisplay: getComputedStyle(element, "::-webkit-scrollbar").display,
-  }));
-  expect(listStyles.scrollHeight).toBeGreaterThan(listStyles.clientHeight);
-  expect(listStyles.scrollbarWidth).toBe("none");
-  expect(listStyles.webkitScrollbarDisplay).toBe("none");
-
-  const bounds = await list.boundingBox();
-  expect(bounds).not.toBeNull();
-  if (!bounds) return;
-  const x = bounds.x + bounds.width / 2;
-  const y = bounds.y + bounds.height / 2;
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  await page.mouse.move(x, y + 50, { steps: 5 });
-  await page.mouse.up();
-  await expect.poll(() => list.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
 });
 
 test("category distribution tooltip follows the hovered segment outside the donut center", async ({ page }) => {
@@ -144,12 +92,12 @@ test("category distribution tooltip follows the hovered segment outside the donu
   ).toBe(true);
 });
 
-test("wide dashboard fits the metrics and first chart row without scrolling", async ({ page }) => {
+test("wide dashboard fits the forecast and bills row without scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1000 });
   await page.goto("/dashboard?month=2026-06");
   await expect(page.getByRole("button", { name: "Ocultar valores", exact: true })).toBeVisible();
-  for (const name of ["Evolução mensal", "Gastos por categoria", "Distribuição das despesas"]) {
-    const card = page.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
+  for (const name of ["Saldo previsto", "Contas a pagar"]) {
+    const card = page.locator("section").filter({ has: page.getByRole("heading", { name }) }).first();
     await expect(card).toBeVisible();
     await expect.poll(async () => {
       const bounds = await card.boundingBox();

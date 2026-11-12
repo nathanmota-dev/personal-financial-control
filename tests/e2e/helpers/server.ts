@@ -107,7 +107,7 @@ export async function startFinanceServer(authenticated = false): Promise<Finance
           const response = await fetch(`${url}${authenticated ? "/login" : "/api/accounts"}`, {
             signal: AbortSignal.timeout(1500),
           });
-          if (response.ok && (authenticated || (await response.json()).accounts.length === 5))
+          if (response.ok && (authenticated || (await response.json()).accounts.length === 7))
             return {
               url,
               directory,

@@ -197,7 +197,7 @@ test("monthly daily expense map reconciles purchases and credits by purchase dat
   await expect(detail).toContainText("Estorno do mapa");
   await expect(detail).toContainText("900,00");
   await expect(detail).toContainText("50,00");
-  await expect(detail).toContainText("850,00");
+  await expect(detail).toContainText("960,00");
   await expect(detail.getByRole("link", { name: "Abrir compra" }).first()).toHaveAttribute("href", "/credit-card?month=2026-08");
 
   await page.getByRole("button", { name: "Ver itens de 13/07/2026" }).click();

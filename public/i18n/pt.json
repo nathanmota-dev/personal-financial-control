@@ -1281,6 +1281,19 @@
         "Progresso geral das metas",
         "Alocado sobre o total necessário para concluir as metas atuais.",
         "Seu espaço pessoal. Protegido pelo seu PIN."
+      ],
+      "dashboardCards": [
+        "Cartões",
+        "Fatura de {month}",
+        "Ver fatura",
+        "Cartão anterior",
+        "Próximo cartão",
+        "Aberta",
+        "Paga",
+        "Vence",
+        "Fatura",
+        "Nenhum cartão cadastrado",
+        "Cadastre uma conta do tipo cartão para acompanhar faturas aqui."
       ]
     }
   },

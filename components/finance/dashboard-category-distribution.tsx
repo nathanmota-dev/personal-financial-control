@@ -1,5 +1,6 @@
 "use client";
 import { ExpandedCategoryDistribution } from "./expanded-category-distribution";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { Cell, Pie, PieChart } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
@@ -20,7 +21,8 @@ export function DashboardCategoryDistribution({ distribution, size = "default" }
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   if (size === "expanded") return <ExpandedCategoryDistribution distribution={distribution} />;
   return (
-    <section className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[340px] min-[100.0625rem]:h-[290px]">
+    <section className="relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 xl:h-[340px] min-[100.0625rem]:h-[290px]">
+      <DashboardCardIllustration src="/images/expenses-pie.webp" />
       <h2 className="text-lg font-semibold leading-[25px]">Distribuição das despesas</h2>
       <p className="mt-1 text-xs text-content-muted">Percentuais sobre categorias com gasto líquido positivo</p>
       <div className="mt-[22px] min-[100.0625rem]:mt-3 flex flex-wrap items-center gap-5 sm:flex-nowrap">
@@ -64,7 +66,7 @@ export function DashboardCategoryDistribution({ distribution, size = "default" }
           )}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2">
             <span className="text-[11px] text-content-muted">Total líquido</span>
-            <span className="text-[16px] font-[650]">{formatCurrency(netTotalCents)}</span>
+            <span className="text-[13px] font-[650]">{formatCurrency(netTotalCents)}</span>
           </div>
           {hoveredIndex !== null && chart[hoveredIndex] && (
             <div

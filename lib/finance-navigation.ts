@@ -5,6 +5,7 @@ import {
   ChartNoAxesCombined,
   CircleHelp,
   CreditCard,
+  House,
   Landmark,
   LayoutDashboard,
   ListPlus,
@@ -25,6 +26,12 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
     label: "Lançamentos",
     icon: ListPlus,
     aliases: ["lançamento", "transação", "receita", "despesa", "entrada", "saída"],
+  },
+  {
+    href: "/housing",
+    label: "Casa",
+    icon: House,
+    aliases: ["moradia", "aluguel", "condomínio", "contas da casa", "nossa casa"],
   },
   {
     href: "/credit-card",

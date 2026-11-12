@@ -39,10 +39,6 @@ export function DashboardEvolutionChart({ evolution }: DashboardEvolutionChartPr
             data={evolution}
             margin={{ top: 30, right: 29, bottom: 8, left: -18 }}
           >
-            <defs><linearGradient id="dashboard-income-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
-            </linearGradient></defs>
             <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
             <XAxis dataKey="month" axisLine={false} tickLine={false} tickMargin={16} fontSize={10} stroke="var(--content-subtle)" />
             <YAxis
@@ -77,9 +73,7 @@ export function DashboardEvolutionChart({ evolution }: DashboardEvolutionChartPr
                 dataKey={item.key}
                 stroke={item.color}
                 strokeWidth={item.key === "income" ? 3 : 2}
-                fill={
-                  item.key === "income" ? "url(#dashboard-income-fill)" : "none"
-                }
+                fill="none"
                 isAnimationActive={false}
               />
             ))}

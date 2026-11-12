@@ -326,9 +326,6 @@
   "components/finance/dashboard-details.tsx": [
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx"
   ],
-  "components/finance/dashboard-metric.tsx": [
-    "tests/frontend/app/(finance)/dashboard/page.cases.tsx"
-  ],
   "components/finance/emergency-reserve-composition.tsx": [
     "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
   ],
