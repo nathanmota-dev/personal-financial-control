@@ -1,4 +1,5 @@
 import { test, expect } from "./helpers/fixture";
+import { archiveExtraCreditCards } from "./helpers/credit-cards";
 import { financialPrivacyKey } from "../../lib/financial-privacy";
 
 const routes = [
@@ -9,15 +10,16 @@ const routes = [
 
 test("global privacy covers every financial domain, details, charts and reload without transient exposure", async ({ page, request }) => {
   test.setTimeout(120_000);
+  await archiveExtraCreditCards(page);
   const mutations: string[] = [];
   page.on("request", request => {
     if (["POST", "PATCH", "DELETE"].includes(request.method()) && request.url().includes("/api/")) mutations.push(request.url());
   });
   await page.goto(routes[0]);
-  const income = page.getByRole("article", { name: "Receitas" });
+  const income = page.locator("dl > div").filter({ has: page.getByText("Receitas", { exact: true }) });
   await expect(income).toContainText("15.000,00");
   const before = (await (await request.get("/api/transactions?competenceMonth=2026-07")).json()).transactions;
-  const original = await income.locator("p").nth(1).innerText();
+  const original = await income.locator("dd").innerText();
   await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();
   await expect(income.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
   await page.getByRole("button", { name: "Recolher sidebar" }).click();
@@ -87,11 +89,11 @@ test("global privacy covers every financial domain, details, charts and reload w
   await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]').getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await page.goto(routes[0]);
   await page.reload();
-  await expect(page.getByRole("article", { name: "Receitas" }).getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
+  await expect(income.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { privacyLeaks: string[] }).privacyLeaks)).toEqual([]);
   await page.screenshot({ path: "reports/privacy-desktop.png" });
   await page.getByRole("button", { name: "Mostrar valores", exact: true }).click();
-  await expect(page.getByRole("article", { name: "Receitas" }).locator("p").nth(1)).toHaveText(original, { useInnerText: true });
+  await expect(income.locator("dd")).toHaveText(original, { useInnerText: true });
   expect(mutations).toEqual([]);
   expect((await (await request.get("/api/transactions?competenceMonth=2026-07")).json()).transactions).toEqual(before);
   expect(await page.evaluate(key => localStorage.getItem(key), financialPrivacyKey(true))).toBe("visible");

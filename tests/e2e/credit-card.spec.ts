@@ -1,5 +1,6 @@
 import { test as base } from "@playwright/test";
 import { test, expect } from "./helpers/fixture";
+import { archiveExtraCreditCards } from "./helpers/credit-cards";
 import { saveDialog } from "./helpers/forms";
 import { loginWithPin } from "./helpers/local-auth";
 import { startFinanceServer } from "./helpers/server";
@@ -81,6 +82,7 @@ test("creates and edits installment purchases and verifies future invoices", asy
   page,
   request,
 }) => {
+  await archiveExtraCreditCards(page);
   await page.goto("/credit-card?month=2026-07");
   await page.getByRole("button", { name: "Nova compra", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Nova compra no cartão" });

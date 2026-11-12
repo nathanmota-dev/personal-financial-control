@@ -11,7 +11,7 @@ describe("app/(finance)/dashboard/page", () => {
     expect(requirePageSession).toHaveBeenCalledOnce();
     expect(getDashboardData).toHaveBeenCalledExactlyOnceWith("2026-07");
     expect(screen.getByRole("heading", { name: "Visão mensal" })).toBeVisible();
-    expect(screen.getByText("Longo prazo")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Investimentos" })).toBeVisible();
   });
   it("propagates query failures to the retry boundary", async () => {
     vi.mocked(getDashboardData).mockRejectedValueOnce(new Error("offline"));
