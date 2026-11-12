@@ -37,6 +37,15 @@ export default async function DashboardPage({
         </div>
       </header>
 
+      <DashboardDetails
+        dashboard={resolved.dashboard}
+        cards={resolved.cards}
+        bills={resolved.bills}
+        housing={resolved.housing}
+        month={month}
+        investmentOverview={resolved.investmentOverview}
+      />
+
       <DashboardCharts
         evolution={resolved.evolution.map((item) => ({
           month: new Date(`${item.competenceMonth}-01T12:00:00`)
@@ -53,15 +62,6 @@ export default async function DashboardPage({
         }))}
         summary={resolved.chartSummary}
         categorySpending={resolved.categorySpending}
-      />
-
-      <DashboardDetails
-        dashboard={resolved.dashboard}
-        cards={resolved.cards}
-        bills={resolved.bills}
-        housing={resolved.housing}
-        month={month}
-        investmentOverview={resolved.investmentOverview}
       />
     </div>
   );

@@ -107,3 +107,8 @@ export type DashboardCategorySectionProps = {
   description?: string;
   emptyMessage?: string;
 };
+
+export type DashboardCardIllustrationProps = {
+  src: string;
+  className?: string;
+};

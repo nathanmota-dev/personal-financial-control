@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
 export function DashboardCategoryBars({ distribution, size = "default", title = "Gastos por categoria", description = "Peso relativo das despesas no mês", emptyMessage = "Nenhuma despesa líquida positiva neste mês." }: DashboardCategorySectionProps) {
@@ -10,7 +11,8 @@ export function DashboardCategoryBars({ distribution, size = "default", title = 
   const { positive, credits } = distribution;
   const max = positive[0]?.amountCents ?? 1;
   return (
-    <section className={cn("min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6", size === "expanded" ? "min-h-[420px]" : "xl:h-[340px] min-[100.0625rem]:h-[290px]")}>
+    <section className={cn("relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6", size === "expanded" ? "min-h-[420px]" : "xl:h-[340px] min-[100.0625rem]:h-[290px]")}>
+      {size !== "expanded" && <DashboardCardIllustration src="/images/category-tag.webp" />}
       <h2 className="text-lg font-semibold leading-[25px]">{title}</h2>
       <p className="mt-1 text-xs text-content-muted">{description}</p>
       <div className={size === "expanded" ? "mt-8" : "mt-[27px] max-h-[235px] min-[100.0625rem]:mt-5 min-[100.0625rem]:max-h-[190px] overflow-y-auto"}>
