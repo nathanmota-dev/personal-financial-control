@@ -1,11 +1,10 @@
 "use client";
-import { DashboardBalanceForecast } from "@/components/finance/dashboard-balance-forecast";
 import { DashboardCategoryCharts } from "@/components/finance/dashboard-category-charts";
 import { DashboardEvolutionChart } from "@/components/finance/dashboard-evolution-chart";
 import { DashboardChartSummary } from "@/components/finance/dashboard-chart-summary";
 import type { DashboardChartsProps } from "@/lib/interfaces/dashboard";
 
-export function DashboardCharts({ evolution, categorySpending, summary, totals }: DashboardChartsProps) {
+export function DashboardCharts({ evolution, categorySpending, summary }: DashboardChartsProps) {
   return (
     <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,658fr)_minmax(0,436fr)]">
       <section className="min-w-0 rounded-[20px] border border-border bg-card p-[23px] xl:h-[704px] min-[100.0625rem]:h-[600px] min-[100.0625rem]:p-5">
@@ -15,9 +14,6 @@ export function DashboardCharts({ evolution, categorySpending, summary, totals }
         <DashboardChartSummary summary={summary} />
       </section>
       <DashboardCategoryCharts categorySpending={categorySpending} />
-      <div className="min-w-0 xl:col-start-1">
-        <DashboardBalanceForecast totals={totals} />
-      </div>
     </div>
   );
 }
