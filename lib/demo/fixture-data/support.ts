@@ -105,7 +105,7 @@ export const rentTransactions = monthlyTransactions({
   templateId: recurringIds.rent,
   categoryId: categoryIds.rent,
   type: "expense",
-  amounts: months.map(() => 180000),
+  amounts: months.map(() => 80000),
   day: 8,
   description: "Aluguel",
 });
@@ -122,15 +122,15 @@ export const utilityTransactions = monthlyTransactions({
 
 /** Bills due after the demo reference date: pending, except the health plan paid ahead of its due date. */
 const upcomingBills = [
-  { n: 1, templateId: recurringIds.internet, amountCents: 11990, day: 20, description: "Internet", status: "pending" as const },
-  { n: 2, templateId: recurringIds.health, amountCents: 38900, day: 25, description: "Plano de saúde", status: "posted" as const },
-  { n: 3, templateId: recurringIds.streaming, amountCents: 5590, day: 28, description: "Streaming", status: "pending" as const },
+  { n: 1, templateId: recurringIds.internet, amountCents: 11990, day: 20, description: "Internet", status: "pending" as const, category: "utilities" as const },
+  { n: 2, templateId: recurringIds.health, amountCents: 38900, day: 25, description: "Plano de saúde", status: "posted" as const, category: "health" as const },
+  { n: 3, templateId: recurringIds.streaming, amountCents: 5590, day: 28, description: "Streaming", status: "pending" as const, category: "leisure" as const },
 ];
 
 export const upcomingBillTransactions: DemoFixture["transactions"] = upcomingBills.map((bill) => ({
   id: id("c0000000-0000-4000-8010", bill.n),
   accountId: accountIds.checking,
-  categoryId: categoryIds.utilities,
+  categoryId: categoryIds[bill.category],
   recurringTemplateId: bill.templateId,
   type: "expense" as const,
   status: bill.status,
@@ -138,6 +138,23 @@ export const upcomingBillTransactions: DemoFixture["transactions"] = upcomingBil
   transactionDate: dateFor("2026-07", bill.day),
   competenceMonth: "2026-07",
   description: bill.description,
+  isIncludedInInvestmentCheckpoint: true,
+}));
+
+/** Extra housing costs of the reference month, shown by the dashboard housing panel. */
+export const housingExtraTransactions: DemoFixture["transactions"] = [
+  { n: 1, description: "Condomínio", amountCents: 20000, day: 10 },
+  { n: 2, description: "Luz", amountCents: 11000, day: 12 },
+].map((item) => ({
+  id: id("c0000000-0000-4000-8011", item.n),
+  accountId: accountIds.checking,
+  categoryId: categoryIds.rent,
+  type: "expense" as const,
+  status: "posted" as const,
+  amountCents: item.amountCents,
+  transactionDate: dateFor("2026-07", item.day),
+  competenceMonth: "2026-07",
+  description: item.description,
   isIncludedInInvestmentCheckpoint: true,
 }));
 

@@ -1,5 +1,38 @@
 import type { DemoFixture } from "@/lib/demo/contracts";
-import { accountIds,categoryIds,recurringIds } from "./support";
+import { accountIds,categoryIds,id,recurringIds } from "./support";
+
+/** Unpaid bills after the demo reference date (07-16), so the dashboard bills panel spans many days. */
+const extraBills = ([
+  { day: 17, description: "Academia", amountCents: 12900, category: "health" },
+  { day: 17, description: "Seguro do carro", amountCents: 28500, category: "transport" },
+  { day: 17, description: "Mensalidade do clube", amountCents: 15000, category: "leisure" },
+  { day: 18, description: "Celular", amountCents: 8990, category: "other" },
+  { day: 18, description: "Assinatura de jornal", amountCents: 3490, category: "leisure" },
+  { day: 19, description: "Água", amountCents: 9400, category: "utilities" },
+  { day: 19, description: "Gás", amountCents: 7800, category: "utilities" },
+  { day: 20, description: "Escola de inglês", amountCents: 42000, category: "education" },
+  { day: 20, description: "Armazenamento na nuvem", amountCents: 1990, category: "other" },
+  { day: 22, description: "IPTU", amountCents: 21500, category: "other" },
+  { day: 22, description: "Seguro residencial", amountCents: 6700, category: "other" },
+  { day: 24, description: "Pet shop", amountCents: 17500, category: "other" },
+  { day: 25, description: "Psicólogo", amountCents: 32000, category: "health" },
+  { day: 25, description: "Aplicativo de treino", amountCents: 3990, category: "health" },
+  { day: 26, description: "Faxina", amountCents: 18000, category: "other" },
+  { day: 28, description: "Música", amountCents: 2190, category: "leisure" },
+  { day: 30, description: "Curso online", amountCents: 19900, category: "education" },
+  { day: 30, description: "Doação mensal", amountCents: 5000, category: "other" },
+] as const).map((bill, index) => ({
+  id: id("c0000000-0000-4000-8020", index + 1),
+  accountId: accountIds.checking,
+  categoryId: categoryIds[bill.category],
+  type: "expense" as const,
+  status: "active" as const,
+  amountCents: bill.amountCents,
+  dayOfMonth: bill.day,
+  startMonth: "2026-07",
+  description: bill.description,
+  lastGeneratedMonth: "2026-07",
+}));
 
 export const recurringTemplates: DemoFixture["recurringTemplates"] = [
     {
@@ -20,7 +53,7 @@ export const recurringTemplates: DemoFixture["recurringTemplates"] = [
       categoryId: categoryIds.rent,
       type: "expense",
       status: "active",
-      amountCents: 180000,
+      amountCents: 80000,
       dayOfMonth: 8,
       startMonth: "2026-01",
       description: "Aluguel",
@@ -65,7 +98,7 @@ export const recurringTemplates: DemoFixture["recurringTemplates"] = [
     {
       id: recurringIds.health,
       accountId: accountIds.checking,
-      categoryId: categoryIds.utilities,
+      categoryId: categoryIds.health,
       type: "expense",
       status: "active",
       amountCents: 38900,
@@ -77,7 +110,7 @@ export const recurringTemplates: DemoFixture["recurringTemplates"] = [
     {
       id: recurringIds.streaming,
       accountId: accountIds.checking,
-      categoryId: categoryIds.utilities,
+      categoryId: categoryIds.leisure,
       type: "expense",
       status: "active",
       amountCents: 5590,
@@ -86,4 +119,5 @@ export const recurringTemplates: DemoFixture["recurringTemplates"] = [
       description: "Streaming",
       lastGeneratedMonth: "2026-07",
     },
+    ...extraBills,
   ];

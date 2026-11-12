@@ -4,6 +4,7 @@ import type { InvestmentOverview } from "@/lib/interfaces/investment-operations"
 import type { serializeTimestamps } from "@/lib/server/finance";
 import type { DashboardCardsData } from "@/lib/interfaces/dashboard-cards";
 import type { DashboardBillsData } from "@/lib/interfaces/dashboard-bills";
+import type { DashboardHousingData } from "@/lib/interfaces/dashboard-housing";
 import type { ReactNode } from "react";
 
 export type DashboardPageProps = {
@@ -68,6 +69,7 @@ export type DashboardData = {
   investmentOverview: InvestmentOverview;
   cards: DashboardCardsData;
   bills: DashboardBillsData;
+  housing: DashboardHousingData;
 };
 export type MetricCardProps = {
   label: string;
@@ -94,7 +96,7 @@ export type CategorySpendingChartsProps = {
   size?: "default" | "expanded";
 };
 export type DashboardActionsProps = { month: string };
-export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "cards" | "bills" | "investmentOverview"> & { month: string };
+export type DashboardDetailsProps = Pick<DashboardData, "dashboard" | "cards" | "bills" | "housing" | "investmentOverview"> & { month: string };
 export type DashboardBalancesProps = { accounts: DashboardAccountBalance[] };
 export type DashboardPortfolioProps = Pick<DashboardData, "investmentOverview">;
 export type DashboardMetricListProps = Pick<DashboardData, "comparisons"> & { totals: DashboardTotals };

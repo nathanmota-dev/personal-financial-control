@@ -5,6 +5,7 @@ import { shiftMonth } from "@/lib/dashboard-cards";
 import { aggregateDashboardCategories, aggregateDashboardMonth, selectDashboardTopExpenses, sortDashboardExpenses } from "@/lib/dashboard-aggregation";
 import { buildDashboardChartSummary, buildDashboardComparisons } from "@/lib/dashboard-comparisons";
 import type { DashboardData } from "@/lib/interfaces/dashboard";
+import { buildDashboardHousing } from "@/lib/dashboard-housing";
 import { readDashboardBills } from "@/lib/server/dashboard-bills";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { getInvestmentOverview } from "@/lib/server/investment-operations";
@@ -30,6 +31,7 @@ export async function getDashboardData(month: string, database?: AppDb): Promise
     dashboard: { ...current, accountBalances: await readDashboardBalances(competenceMonth, expenses, db, accountRows) },
     previous, comparisons, evolution, investmentOverview, cards: await readDashboardCards(competenceMonth, records.expenses, accountRows, db),
     bills: await readDashboardBills(getFinanceToday(), db),
+    housing: buildDashboardHousing({ expenses, incomeCents: current.totals.incomeCents }),
     chartSummary: buildDashboardChartSummary(evolution, comparisons.netResultCents),
     categorySpending: aggregateDashboardCategories(expenses),
     expenses: selectDashboardTopExpenses(expenses),

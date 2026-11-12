@@ -51,16 +51,14 @@ export function DashboardBills({ data }: DashboardBillsProps) {
   const paidCount = data.paidCount + data.bills.length - bills.length;
   return (
     <section className="@container min-w-0 rounded-[20px] border border-border bg-card p-[23px]">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-sm font-semibold text-content-strong">
-            Contas a pagar <span className="font-normal text-content">{`• dia ${formatBillDay(active.day)}`}</span>
-          </h2>
-          <DashboardCardsMoney cents={totalCents} className="mt-4 block text-[40px] leading-[44px] font-bold text-content-strong" />
-          <p className="mt-2 text-xs text-content">{`${describeBillsDistance(data.daysLeft)} · ${paidCount} de ${data.totalCount} pagas`}</p>
-        </div>
-        <Image src="/images/bills-calendar.webp" width={96} height={96} alt="" unoptimized className="-mt-3 -mr-2 size-24 shrink-0 object-contain" />
+      <h2 className="text-sm font-semibold text-content-strong">
+        Contas a pagar <span className="font-normal text-content">{`• dia ${formatBillDay(active.day)}`}</span>
+      </h2>
+      <div className="mt-4 flex items-center justify-between gap-4">
+        <DashboardCardsMoney cents={totalCents} className="block text-[40px] leading-[44px] font-bold text-content-strong" />
+        <Image src="/images/bills-calendar.webp" width={96} height={96} alt="" unoptimized className="-my-6 -mr-2 size-24 shrink-0 object-contain" />
       </div>
+      <p className="mt-2 text-xs text-content">{`${describeBillsDistance(data.daysLeft)} · ${paidCount} de ${data.totalCount} pagas`}</p>
       <DashboardBillsDayTabs days={days} selected={active.dueDate} onSelect={setSelectedDate} />
       <DashboardBillsList bills={active.bills} disabled={isPending} onPay={payBill} />
     </section>

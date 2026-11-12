@@ -64,7 +64,7 @@ describe("demo mode", () => {
     expect(categories.length).toBeGreaterThan(5);
     expect(transactions.length).toBeGreaterThanOrEqual(10);
     expect(transfers).toHaveLength(2);
-    expect(recurring).toHaveLength(7);
+    expect(recurring).toHaveLength(25);
     expect(dashboard.totals.incomeCents).toBeGreaterThan(0);
     expect(spending.length).toBeGreaterThan(0);
     expect(creditCard.state).toBe("multiple_accounts");
