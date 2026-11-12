@@ -15,7 +15,7 @@ test("global privacy covers every financial domain, details, charts and reload w
   });
   await page.goto(routes[0]);
   const income = page.getByRole("article", { name: "Receitas" });
-  await expect(income).toContainText("6.500,00");
+  await expect(income).toContainText("15.000,00");
   const before = (await (await request.get("/api/transactions?competenceMonth=2026-07")).json()).transactions;
   const original = await income.locator("p").nth(1).innerText();
   await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();

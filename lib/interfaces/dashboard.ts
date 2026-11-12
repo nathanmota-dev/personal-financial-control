@@ -87,6 +87,7 @@ export type DashboardChartsProps = {
   evolution: DashboardEvolutionItem[];
   categorySpending: CategorySpendingItem[];
   summary: DashboardChartSummary;
+  totals: DashboardTotals;
 };
 export type DashboardEvolutionChartProps = Pick<DashboardChartsProps, "evolution">;
 export type DashboardChartSummaryProps = { summary: DashboardChartSummary };

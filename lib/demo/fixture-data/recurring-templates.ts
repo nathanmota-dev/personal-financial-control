@@ -41,7 +41,7 @@ export const recurringTemplates: DemoFixture["recurringTemplates"] = [
       categoryId: categoryIds.salary,
       type: "income",
       status: "active",
-      amountCents: 650000,
+      amountCents: 1500000,
       dayOfMonth: 5,
       startMonth: "2026-01",
       description: "Salário mensal",

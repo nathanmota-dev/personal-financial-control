@@ -55,6 +55,7 @@ export default async function DashboardPage({
           net: item.totals.netResultCents / 100,
         }))}
         summary={resolved.chartSummary}
+        totals={resolved.dashboard.totals}
         categorySpending={resolved.categorySpending}
       />
 

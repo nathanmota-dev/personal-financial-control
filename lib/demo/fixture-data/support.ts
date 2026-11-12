@@ -95,7 +95,7 @@ export const salaryTransactions = monthlyTransactions({
   templateId: recurringIds.salary,
   categoryId: categoryIds.salary,
   type: "income",
-  amounts: months.map(() => 650000),
+  amounts: months.map(() => 1500000),
   day: 5,
   description: "Salário mensal",
 });

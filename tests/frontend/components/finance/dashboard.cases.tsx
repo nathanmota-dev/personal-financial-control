@@ -35,7 +35,7 @@ describe("dashboard sections", () => {
   });
   it("shows successful empty data without a misleading positive accumulated result", () => {
     renderUI(<><DashboardCategoryCharts categorySpending={[]} />
-      <DashboardDetails dashboard={{ ...dashboardFixture.dashboard, accountBalances: [] }} cards={[]} bills={{ today: "2026-07-11", daysLeft: 20, paidCount: 0, totalCount: 0, bills: [] }} month="2026-07" investmentOverview={{ ...dashboardFixture.investmentOverview, totalCents: 0, reserve: { configured: false, purposeId: null, amountCents: 0 }, portfolioCents: 0 }} />
+      <DashboardDetails dashboard={{ ...dashboardFixture.dashboard, accountBalances: [] }} cards={[]} bills={{ today: "2026-07-11", daysLeft: 20, paidCount: 0, totalCount: 0, bills: [] }} housing={{ totalCents: 0, incomeCents: 0, sharePercent: null, items: [] }} month="2026-07" investmentOverview={{ ...dashboardFixture.investmentOverview, totalCents: 0, reserve: { configured: false, purposeId: null, amountCents: 0 }, portfolioCents: 0 }} />
       <DashboardChartSummary summary={{ averageIncomeCents: 0, accumulatedCents: 0, resultLabel: "neutro", balanceComparison: compareDashboardMetric(0, 0, false) }} />
     </>);
     expect(screen.getByText("Nenhuma conta cadastrada.")).toBeVisible();
