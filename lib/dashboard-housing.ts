@@ -1,7 +1,9 @@
 import { Building2, CreditCard, House, KeyRound, Wifi, Zap, type LucideIcon } from "lucide-react";
 
 import { defaultCategoryIds } from "@/lib/category-defaults";
-import type { BuildDashboardHousingInput, DashboardHousingData, DashboardHousingIconRule } from "@/lib/interfaces/dashboard-housing";
+import type { DashboardExpense } from "@/lib/interfaces/dashboard";
+import type { BuildDashboardHousingInput, DashboardHousingData, DashboardHousingIconRule, DashboardHousingItem } from "@/lib/interfaces/dashboard-housing";
+import type { HousingEntry } from "@/lib/interfaces/housing";
 
 /** Share of the income considered healthy for housing. */
 export const DASHBOARD_HOUSING_REFERENCE_PERCENT = 30;
@@ -9,7 +11,8 @@ export const DASHBOARD_HOUSING_REFERENCE_PERCENT = 30;
 export const DASHBOARD_HOUSING_METER_MAX_PERCENT = DASHBOARD_HOUSING_REFERENCE_PERCENT * 2;
 export const DASHBOARD_HOUSING_VISIBLE_ITEMS = 6;
 
-const HOUSING_CATEGORY_IDS: string[] = [defaultCategoryIds.housing, defaultCategoryIds.householdBills];
+/** Categories that count as housing; the housing view registers new items under them. */
+export const HOUSING_CATEGORY_IDS: string[] = [defaultCategoryIds.housing, defaultCategoryIds.householdBills];
 
 const ICON_RULES: DashboardHousingIconRule[] = [
   { pattern: /alug|rent/i, icon: KeyRound },
@@ -26,8 +29,7 @@ export function housingItemIcon(description: string): LucideIcon {
 /** Housing spending of the month (Moradia and Contas da casa), grouped by description, biggest first. */
 export function buildDashboardHousing({ expenses, incomeCents }: BuildDashboardHousingInput): DashboardHousingData {
   const grouped = new Map<string, number>();
-  for (const expense of expenses) {
-    if (!expense.category || !HOUSING_CATEGORY_IDS.includes(expense.category.id)) continue;
+  for (const expense of selectHousingExpenses(expenses)) {
     grouped.set(expense.description, (grouped.get(expense.description) ?? 0) + expense.amountCents);
   }
   const items = [...grouped]
@@ -45,4 +47,21 @@ export function buildDashboardHousing({ expenses, incomeCents }: BuildDashboardH
 /** Position (0–100) of a percentage on the meter. */
 export function housingMeterPosition(percent: number) {
   return Math.min(100, Math.max(0, (percent / DASHBOARD_HOUSING_METER_MAX_PERCENT) * 100));
+}
+
+export function selectHousingExpenses(expenses: DashboardExpense[]) {
+  return expenses.filter((expense) => expense.category && HOUSING_CATEGORY_IDS.includes(expense.category.id));
+}
+
+export function buildHousingEntries(expenses: DashboardExpense[]): HousingEntry[] {
+  return selectHousingExpenses(expenses)
+    .map((expense) => ({ id: expense.id, description: expense.description, date: expense.expenseDate, amountCents: expense.amountCents, accountName: expense.account?.name ?? null }))
+    .sort((left, right) => right.date.localeCompare(left.date) || right.amountCents - left.amountCents);
+}
+
+/** Shape the category bars chart expects, so the housing items reuse it. */
+export function buildHousingDistribution(items: DashboardHousingItem[]) {
+  const positive = items.map((item) => ({ categoryId: item.id, categoryName: item.description, amountCents: item.amountCents }));
+  const totalCents = positive.reduce((sum, item) => sum + item.amountCents, 0);
+  return { positive, credits: [], positiveTotalCents: totalCents, netTotalCents: totalCents, chart: positive };
 }

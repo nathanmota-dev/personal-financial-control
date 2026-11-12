@@ -14,7 +14,7 @@ export function DashboardDetails({ dashboard, cards, bills, housing, month, inve
           <DashboardCards cards={cards} month={month} />
         </div>
         <DashboardBills data={bills} />
-        <DashboardHousing data={housing} />
+        <DashboardHousing data={housing} href="/housing" />
       </div>
       <div className="grid content-start gap-6">
         <DashboardBalances accounts={dashboard.accountBalances} />

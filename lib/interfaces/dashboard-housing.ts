@@ -22,7 +22,11 @@ export type BuildDashboardHousingInput = {
   incomeCents: number;
 };
 
-export type DashboardHousingProps = { data: DashboardHousingData };
+export type DashboardHousingProps = {
+  data: DashboardHousingData;
+  /** Makes the whole card a link (the dashboard points it to the housing view). */
+  href?: string;
+};
 
 export type DashboardHousingMeterProps = { sharePercent: number | null };
 

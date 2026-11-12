@@ -2,6 +2,7 @@
 
 import { Check, TriangleAlert } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { DashboardHousingItems } from "@/components/finance/dashboard-housing-items";
@@ -11,7 +12,7 @@ import { DASHBOARD_HOUSING_REFERENCE_PERCENT } from "@/lib/dashboard-housing";
 import type { DashboardHousingProps } from "@/lib/interfaces/dashboard-housing";
 import { cn } from "@/lib/utils";
 
-export function DashboardHousing({ data }: DashboardHousingProps) {
+export function DashboardHousing({ data, href }: DashboardHousingProps) {
   if (!data.items.length) {
     return (
       <section className="min-w-0 rounded-[20px] border border-border bg-card p-[23px]">
@@ -24,7 +25,7 @@ export function DashboardHousing({ data }: DashboardHousingProps) {
   }
   const over = data.sharePercent !== null && data.sharePercent > DASHBOARD_HOUSING_REFERENCE_PERCENT;
   const StatusIcon = over ? TriangleAlert : Check;
-  return (
+  const card = (
     <section className="@container min-w-0 rounded-[20px] border border-border bg-card p-[23px]">
       <h2 className="text-sm font-semibold text-content-strong">Moradia</h2>
       <div className="mt-4 flex items-center justify-between gap-4">
@@ -46,4 +47,5 @@ export function DashboardHousing({ data }: DashboardHousingProps) {
       <DashboardHousingItems items={data.items} />
     </section>
   );
+  return href ? <Link href={href} className="block rounded-[20px] transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-primary">{card}</Link> : card;
 }

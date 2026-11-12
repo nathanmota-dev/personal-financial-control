@@ -5,14 +5,14 @@ import type { DashboardCategorySectionProps } from "@/lib/interfaces/dashboard";
 import { dashboardCategoryColors as colors } from "@/lib/dashboard-categories";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 
-export function DashboardCategoryBars({ distribution, size = "default" }: DashboardCategorySectionProps) {
+export function DashboardCategoryBars({ distribution, size = "default", title = "Gastos por categoria", description = "Peso relativo das despesas no mês", emptyMessage = "Nenhuma despesa líquida positiva neste mês." }: DashboardCategorySectionProps) {
   const { formatCurrency, formatCurrencyText } = useFinancialFormatter();
   const { positive, credits } = distribution;
   const max = positive[0]?.amountCents ?? 1;
   return (
     <section className={cn("min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6", size === "expanded" ? "min-h-[420px]" : "xl:h-[340px] min-[100.0625rem]:h-[290px]")}>
-      <h2 className="text-lg font-semibold leading-[25px]">Gastos por categoria</h2>
-      <p className="mt-1 text-xs text-content-muted">Peso relativo das despesas no mês</p>
+      <h2 className="text-lg font-semibold leading-[25px]">{title}</h2>
+      <p className="mt-1 text-xs text-content-muted">{description}</p>
       <div className={size === "expanded" ? "mt-8" : "mt-[27px] max-h-[235px] min-[100.0625rem]:mt-5 min-[100.0625rem]:max-h-[190px] overflow-y-auto"}>
         <div className="grid gap-[28px] min-[100.0625rem]:gap-5">
           {(size === "expanded" ? positive : positive.slice(0, 5)).map((item, index) => (
@@ -26,7 +26,7 @@ export function DashboardCategoryBars({ distribution, size = "default" }: Dashbo
             </div>
           ))}
         </div>
-        {!positive.length && <p className="mt-8 text-center text-sm text-content-muted">Nenhuma despesa líquida positiva neste mês.</p>}
+        {!positive.length && <p className="mt-8 text-center text-sm text-content-muted">{emptyMessage}</p>}
         {credits.length > 0 && <div className="mt-5 space-y-2 border-t border-border pt-3">
           <p className="text-xs font-semibold">Categorias com créditos líquidos</p>
           {credits.map((item) => <p key={item.categoryId} className="flex justify-between gap-3 text-xs text-content"><span data-user-content>{item.categoryName}</span><span>{formatCurrency(item.amountCents)}</span></p>)}
