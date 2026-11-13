@@ -13,7 +13,7 @@ it("collapses and expands navigation without losing page content", async () => {
   expect(screen.getByText("Demo pública")).toBeVisible();
   await user.click(screen.getByRole("button", { name: "Recolher sidebar" }));
   expect(screen.getByRole("navigation")).toBeVisible();
-  for (const name of ["Dashboard", "Lançamentos", "Investimentos", "Configurações", "Ajuda"]) {
+  for (const name of ["Dashboard", "Lançamentos", "Investimentos", "Reserva", "Configurações"]) {
     const link = screen.getByRole("link", { name });
     expect(link).toHaveAttribute("title", name);
     expect(link.querySelector("svg")).not.toBeNull();
@@ -116,8 +116,8 @@ it("opens create actions and navigates to pages without carrying incompatible fi
   await user.click(trigger);
   await user.type(
     screen.getByRole("combobox", { name: "Buscar página ou ação" }),
-    "ajuda",
+    "configurações",
   );
   await user.keyboard("{Enter}");
-  expect(navigation.push).toHaveBeenLastCalledWith("/help", { scroll: false });
+  expect(navigation.push).toHaveBeenLastCalledWith("/settings", { scroll: false });
 });

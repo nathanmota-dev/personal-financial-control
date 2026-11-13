@@ -3,15 +3,15 @@ import { expect, it } from "vitest";
 import { renderUI } from "../../helpers";
 import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { navigation } from "../../setup";
-it.each(["/settings", "/help", "/dashboard"])(
+it.each(["/settings", "/dashboard"])(
   "marks the current footer destination %s",
   (pathname) => {
     navigation.pathname = pathname;
     renderUI(
       <SidebarFooter user={{ name: "Visitante", photoURL: null }} demoMode />,
     );
+    expect(screen.queryByRole("link", { name: "Ajuda" })).not.toBeInTheDocument();
     for (const [label, href] of [
-      ["Ajuda", "/help"],
       ["Configurações", "/settings"],
     ]) {
       const link = screen.getByRole("link", { name: label });

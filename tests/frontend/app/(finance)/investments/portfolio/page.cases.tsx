@@ -7,6 +7,6 @@ it("app/(finance)/investments/portfolio/page presents its authorized content", a
   renderUI(await Page());
   expect(requirePageSession).toHaveBeenCalled();
   expect(
-    screen.getByRole("heading", { name: "Carteira de longo prazo" }),
+    screen.getByRole("heading", { name: "Carteira" }),
   ).toBeVisible();
 });

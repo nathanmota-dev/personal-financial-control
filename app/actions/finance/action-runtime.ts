@@ -16,7 +16,7 @@ export function revalidateFinanceViews() {
     "/projected-balance",
     "/investments",
     "/investments/portfolio",
-    "/investments/emergency-reserve",
+    "/reserve",
     "/goals",
     "/credit-card",
   ].forEach((path) => {

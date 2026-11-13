@@ -14,7 +14,7 @@ it.each([true, false])(
       "/dashboard?month=2026-08",
     );
     expect(
-      screen.getByRole("link", { name: "Carteira de longo prazo" }),
+      screen.getByRole("link", { name: "Carteira" }),
     ).toHaveAttribute("aria-current", "page");
     await user.type(
       screen.getByRole("textbox", { name: "Buscar páginas" }),
@@ -22,7 +22,7 @@ it.each([true, false])(
     );
     expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(
-      screen.getByRole("link", { name: "Reserva de emergência" }),
+      screen.getByRole("link", { name: "Reserva" }),
     ).toBeVisible();
     await user.clear(screen.getByRole("textbox"));
     await user.type(screen.getByRole("textbox"), "zzzzz");

@@ -17,14 +17,11 @@
   "app/(finance)/goals/page.tsx": [
     "tests/frontend/app/(finance)/goals/page.cases.tsx"
   ],
-  "app/(finance)/help/page.tsx": [
-    "tests/frontend/app/(finance)/help/page.cases.tsx"
-  ],
   "app/(finance)/investments/assets/[id]/page.tsx": [
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx"
   ],
-  "app/(finance)/investments/emergency-reserve/page.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+  "app/(finance)/reserve/page.tsx": [
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "app/(finance)/investments/page.tsx": [
     "tests/frontend/app/(finance)/investments/page.cases.tsx"
@@ -56,7 +53,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -327,7 +324,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx"
   ],
   "components/finance/emergency-reserve-composition.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/empty-state.tsx": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
@@ -356,7 +353,7 @@
   "components/finance/finance-metric.tsx": [
     "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/transactions/page.cases.tsx",
@@ -366,7 +363,7 @@
   "components/finance/finance-styles.ts": [
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -440,10 +437,6 @@
   "components/finance/goals/goals-utils.ts": [
     "tests/frontend/app/(finance)/goals/page.cases.tsx"
   ],
-  "components/finance/help/help-view.tsx": [
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx"
-  ],
   "components/finance/inline-warning.tsx": [
     "tests/frontend/app/(finance)/goals/page.cases.tsx"
   ],
@@ -452,23 +445,23 @@
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx"
   ],
   "components/finance/investment-contribution-chart.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-detail-metric.tsx": [
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx"
   ],
   "components/finance/investment-field.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-growth-chart.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-growth-summary-metric.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-history-metric.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-overview-metric.tsx": [
     "tests/frontend/app/(finance)/investments/page.cases.tsx"
@@ -477,7 +470,7 @@
     "tests/frontend/app/(finance)/investments/page.cases.tsx"
   ],
   "components/finance/investment-portfolio-settings.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investment-portfolio-view.tsx": [
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx"
@@ -522,16 +515,16 @@
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx"
   ],
   "components/finance/investment-reduction-dialog.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/transactions/page.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
     "tests/frontend/components/finance/transaction-dialog.cases.tsx"
   ],
   "components/finance/investment-summary-card.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/investments-view.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/mobile-navigation.tsx": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -543,7 +536,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
@@ -616,9 +609,8 @@
     "tests/frontend/app/(finance)/calculators/page.cases.tsx",
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -627,7 +619,6 @@
     "tests/frontend/app/(finance)/transactions/page.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx"
   ],
@@ -707,7 +698,7 @@
     "tests/frontend/app/(finance)/recurring/page.cases.tsx"
   ],
   "components/finance/reserve-figure.tsx": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "components/finance/settings-view.tsx": [
     "tests/frontend/app/(finance)/settings/page.cases.tsx"
@@ -767,9 +758,8 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -786,7 +776,6 @@
     "tests/frontend/components/finance/app-shell.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
     "tests/frontend/components/finance/money-input.cases.tsx",
@@ -897,7 +886,7 @@
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -948,7 +937,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/loading.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -967,7 +956,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
@@ -1002,7 +991,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -1061,7 +1050,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -1094,7 +1083,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -1127,7 +1116,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/app/(finance)/transactions/page.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
@@ -1182,7 +1171,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -1216,7 +1205,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -1260,9 +1249,8 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1279,7 +1267,6 @@
     "tests/frontend/components/finance/app-shell.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
     "tests/frontend/components/finance/money-input.cases.tsx",
@@ -1430,7 +1417,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1480,9 +1467,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1533,9 +1519,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1606,9 +1591,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1659,7 +1643,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1708,7 +1692,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1780,7 +1764,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1847,7 +1831,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1912,7 +1896,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -1970,7 +1954,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2028,7 +2012,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2088,7 +2072,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2156,7 +2140,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2221,7 +2205,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2282,7 +2266,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2342,7 +2326,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2416,9 +2400,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2517,7 +2500,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2579,7 +2562,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2638,7 +2621,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2696,7 +2679,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2748,7 +2731,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2799,7 +2782,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2852,7 +2835,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2878,10 +2861,6 @@
     "tests/unit/app/actions/finance.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
-  "lib/help-content.ts": [
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx"
-  ],
   "lib/i18n/messages.ts": [
     "tests/frontend/app/(finance)/account/page.cases.tsx",
     "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
@@ -2890,9 +2869,8 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -2915,7 +2893,6 @@
     "tests/frontend/components/finance/calculators/income-deductions.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
     "tests/frontend/components/finance/dashboard.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
     "tests/frontend/components/finance/money-input.cases.tsx",
@@ -3022,7 +2999,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
@@ -3054,7 +3031,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3113,7 +3090,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -3136,7 +3113,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
@@ -3155,9 +3132,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -3166,13 +3142,8 @@
     "tests/frontend/app/(finance)/transactions/page.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx"
-  ],
-  "lib/interfaces/help.ts": [
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx"
   ],
   "lib/interfaces/investment-operations.ts": [
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
@@ -3195,7 +3166,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3241,10 +3212,10 @@
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
   "lib/interfaces/investment-reserve.ts": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "lib/interfaces/investments.ts": [
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx"
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx"
   ],
   "lib/interfaces/local-auth.ts": [
     "tests/auth-demo-isolation.test.ts",
@@ -3256,9 +3227,8 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3312,7 +3282,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3391,7 +3361,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3454,7 +3424,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3510,7 +3480,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
@@ -3578,7 +3548,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3627,7 +3597,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3660,7 +3630,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3718,7 +3688,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/projected-balance/page.cases.tsx",
@@ -3763,7 +3733,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3822,7 +3792,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3883,7 +3853,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3910,7 +3880,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -3942,7 +3912,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -3994,7 +3964,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -4125,7 +4095,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -4157,7 +4127,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -4213,7 +4183,7 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -4264,7 +4234,7 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/app/(finance)/recurring/page.cases.tsx",
@@ -4303,9 +4273,8 @@
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx",
     "tests/frontend/app/(finance)/error.cases.tsx",
     "tests/frontend/app/(finance)/goals/page.cases.tsx",
-    "tests/frontend/app/(finance)/help/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/assets/[id]/page.cases.tsx",
-    "tests/frontend/app/(finance)/investments/emergency-reserve/page.cases.tsx",
+    "tests/frontend/app/(finance)/reserve/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/page.cases.tsx",
     "tests/frontend/app/(finance)/investments/portfolio/page.cases.tsx",
     "tests/frontend/app/(finance)/layout.cases.tsx",
@@ -4320,7 +4289,6 @@
     "tests/frontend/components/finance/app-shell.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx",
-    "tests/frontend/components/finance/help/help-view.cases.tsx",
     "tests/frontend/components/finance/investment-asset-detail-view.cases.tsx",
     "tests/frontend/components/finance/investment-portfolio-view.cases.tsx",
     "tests/frontend/components/finance/money-input.cases.tsx",

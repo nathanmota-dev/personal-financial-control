@@ -4,9 +4,9 @@ import { saveDialog } from "./helpers/forms";
 test("reserve shows composition, changes its expected rate and confirms balance", async ({
   page,
 }) => {
-  await page.goto("/investments/emergency-reserve");
+  await page.goto("/reserve");
   await expect(
-    page.getByRole("heading", { name: "Reserva de emergência", exact: true }),
+    page.getByRole("heading", { name: "Reserva", exact: true }),
   ).toBeVisible();
   await page.getByLabel("Taxa mensal esperada (%)").fill("1,00");
   await page.getByRole("button", { name: "Salvar taxa", exact: true }).click();

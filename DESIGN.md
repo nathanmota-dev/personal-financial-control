@@ -1,6 +1,6 @@
 # Design System — baseado em `/dashboard`
 
-Este documento extrai o visual da rota `/dashboard` (a "Visão mensal"), que já está com a UI reformulada. Ele serve de **referência para reformular as outras páginas** (`transactions`, `credit-card`, `budgets`, `recurring`, `projected-balance`, `investments`, `housing`, `goals`, `reports`, `calculators`, `settings`, `help`).
+Este documento extrai o visual da rota `/dashboard` (a "Visão mensal"), que já está com a UI reformulada. Ele serve de **referência para reformular as outras páginas** (`transactions`, `credit-card`, `budgets`, `recurring`, `projected-balance`, `investments`, `housing`, `goals`, `reports`, `calculators`, `settings`).
 
 Fontes: `app/(finance)/dashboard/page.tsx`, `components/finance/dashboard-*.tsx`, `app/globals.css`, `components/ui/button.tsx`, `components/finance/app-shell.tsx`, `components/finance/finance-sidebar.tsx`.
 

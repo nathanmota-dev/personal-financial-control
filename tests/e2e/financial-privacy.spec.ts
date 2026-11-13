@@ -5,7 +5,7 @@ import { financialPrivacyKey } from "../../lib/financial-privacy";
 const routes = [
   "/dashboard?month=2026-07", "/transactions?month=2026-07", "/credit-card?month=2026-07",
   "/recurring?month=2026-07", "/projected-balance", "/investments", "/investments/portfolio",
-  "/investments/emergency-reserve", "/goals", "/settings", "/budgets?month=2026-07", "/reports?month=2026-07",
+  "/reserve", "/goals", "/settings", "/budgets?month=2026-07", "/reports?month=2026-07",
 ];
 
 test("global privacy covers every financial domain, details, charts and reload without transient exposure", async ({ page, request }) => {

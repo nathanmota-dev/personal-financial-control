@@ -62,10 +62,10 @@ test("mobile menu opens and reaches a financial view", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
   await page.getByRole("button", { name: "Abrir menu" }).click();
   await page.getByRole("dialog", { name: "Menu" })
-    .getByRole("link", { name: "Carteira de longo prazo", exact: true }).click();
+    .getByRole("link", { name: "Carteira", exact: true }).click();
   await expect(page).toHaveURL(/\/investments\/portfolio$/);
   await expect(page.getByRole("dialog", { name: "Menu" })).toBeHidden();
-  for (const [name, path] of [["Configurações", "/settings"], ["Ajuda", "/help"]]) {
+  for (const [name, path] of [["Configurações", "/settings"]]) {
     await page.getByRole("button", { name: "Abrir menu" }).click();
     await page.getByRole("dialog", { name: "Menu" })
       .getByRole("link", { name, exact: true }).click();
@@ -87,12 +87,12 @@ test("mobile command button searches accents and aliases", async ({ page }) => {
   });
   await search.fill("reserva");
   await expect(
-    palette.getByRole("option", { name: /Reserva de emergência/ }),
+    palette.getByRole("option", { name: /^Reserva\s*\/reserve$/ }),
   ).toBeVisible();
   await palette
-    .getByRole("option", { name: /Reserva de emergência/ })
+    .getByRole("option", { name: /^Reserva\s*\/reserve$/ })
     .click();
-  await expect(page).toHaveURL(/\/investments\/emergency-reserve$/);
+  await expect(page).toHaveURL(/\/reserve$/);
 
   await trigger.click();
   const reopenedPalette = page.getByRole("dialog", {

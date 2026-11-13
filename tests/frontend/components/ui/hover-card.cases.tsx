@@ -10,7 +10,7 @@ it("reveals linked information on hover", async () => {
   const { user } = renderUI(
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>
-        <a href="/help">Ajuda contextual</a>
+        <a href="/settings">Configurações</a>
       </HoverCardTrigger>
       <HoverCardContent>Detalhes adicionais</HoverCardContent>
     </HoverCard>,

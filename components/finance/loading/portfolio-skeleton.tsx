@@ -1,7 +1,7 @@
 import { LoadingHero, LoadingFields, LoadingPage, LoadingRows, LoadingBar } from "./primitives";
 
 export function PortfolioSkeleton() {
-  return <LoadingPage label="carteira de longo prazo" actions={2}>
+  return <LoadingPage label="carteira" actions={2}>
     <LoadingHero />
     <div className="overflow-hidden rounded-[20px] border border-border bg-card">
       <div className="grid items-center gap-4 border-b border-border p-5 md:grid-cols-[1fr_220px_auto]">

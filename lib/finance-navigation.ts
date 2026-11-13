@@ -3,12 +3,12 @@ import type { SidebarNavigationItem } from "@/lib/interfaces/sidebar-navigation"
 import {
   Calculator,
   ChartNoAxesCombined,
-  CircleHelp,
   CreditCard,
   House,
   Landmark,
   LayoutDashboard,
   ListPlus,
+  PiggyBank,
   Repeat2,
   Settings,
   Target,
@@ -66,15 +66,16 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
       { href: "/investments", label: "Visão geral", aliases: ["investimentos geral"] },
       {
         href: "/investments/portfolio",
-        label: "Carteira de longo prazo",
-        aliases: ["carteira", "ativos", "investimentos carteira"],
-      },
-      {
-        href: "/investments/emergency-reserve",
-        label: "Reserva de emergência",
-        aliases: ["reserva", "emergência", "reserva financeira"],
+        label: "Carteira",
+        aliases: ["carteira de longo prazo", "ativos", "investimentos carteira"],
       },
     ],
+  },
+  {
+    href: "/reserve",
+    label: "Reserva",
+    icon: PiggyBank,
+    aliases: ["reserva de emergência", "emergência", "reserva financeira"],
   },
   {
     href: "/reports",
@@ -111,12 +112,6 @@ export const FINANCE_UTILITY_NAVIGATION: SidebarNavigationItem[] = [
     label: "Configurações",
     icon: Settings,
     aliases: ["configuração", "contas", "categorias", "preferências"],
-  },
-  {
-    href: "/help",
-    label: "Ajuda",
-    icon: CircleHelp,
-    aliases: ["suporte", "como usar"],
   },
 ];
 

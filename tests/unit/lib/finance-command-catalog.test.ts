@@ -25,7 +25,6 @@ describe("finance command catalog", () => {
         "/reports",
         "/calculators/compound-interest",
         "/settings",
-        "/help",
       ]),
     );
     expect(

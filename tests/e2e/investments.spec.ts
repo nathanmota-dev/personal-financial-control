@@ -15,12 +15,13 @@ test("consolidated investment overview links to portfolio and reserve", async ({
   ).toBeVisible();
   await page.getByRole("link", { name: "Abrir carteira" }).click();
   await expect(
-    page.getByRole("heading", { name: "Carteira de longo prazo", exact: true }),
+    page.getByRole("heading", { name: "Carteira", exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("link", { name: "Reserva de emergência", exact: true })
+    .getByRole("link", { name: "Reserva", exact: true })
     .click();
+  await expect(page).toHaveURL(/\/reserve$/);
   await expect(
-    page.getByRole("heading", { name: "Reserva de emergência", exact: true }),
+    page.getByRole("heading", { name: "Reserva", exact: true }),
   ).toBeVisible();
 });

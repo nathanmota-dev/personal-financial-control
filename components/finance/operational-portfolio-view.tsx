@@ -64,7 +64,7 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
 
   return (
     <div className="space-y-6">
-      <PageHeader eyebrow="Carteira de longo prazo" title="Carteira de longo prazo" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex flex-wrap gap-2"><Button variant="outline" disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-4 ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
+      <PageHeader eyebrow="Carteira" title="Carteira" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex flex-wrap gap-2"><Button variant="outline" disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-4 ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild><Button><Plus className="size-4" /> Cadastrar ativo</Button></DialogTrigger>
           <DialogContent>

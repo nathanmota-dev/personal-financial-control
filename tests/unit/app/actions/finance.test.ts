@@ -517,7 +517,7 @@ describe("finance action boundary", () => {
           "/projected-balance",
           "/investments",
           "/investments/portfolio",
-          "/investments/emergency-reserve",
+          "/reserve",
           "/goals",
           "/credit-card",
         ]);

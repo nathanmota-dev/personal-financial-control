@@ -47,8 +47,8 @@ export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps
       <HeroStat label="Resultado conhecido" value={formatCurrency(overview.resultCents)} hint="Somente posições com custo informado" icon={<ResultIcon />} />
     </HeroPanel>
     <section aria-label="Atalhos de investimentos" className="grid gap-4 md:grid-cols-2">
-      <InvestmentOverviewLink href="/investments/emergency-reserve" icon={<PiggyBank />} tone="success" title="Reserva de emergência" detail={overview.reserve.configured ? "Saldo estimado, aportes e projeção" : "Configure o primeiro saldo de referência"} value={formatCurrency(overview.reserve.amountCents)} action="Acompanhar reserva" />
-      <InvestmentOverviewLink href="/investments/portfolio" icon={<Landmark />} tone="violet" title="Carteira de longo prazo" detail="Posições, cotações e resultado por ativo" value={formatCurrency(overview.portfolioCents)} action="Ver posições" />
+      <InvestmentOverviewLink href="/reserve" icon={<PiggyBank />} tone="success" title="Reserva" detail={overview.reserve.configured ? "Saldo estimado, aportes e projeção" : "Configure o primeiro saldo de referência"} value={formatCurrency(overview.reserve.amountCents)} action="Acompanhar reserva" />
+      <InvestmentOverviewLink href="/investments/portfolio" icon={<Landmark />} tone="violet" title="Carteira" detail="Posições, cotações e resultado por ativo" value={formatCurrency(overview.portfolioCents)} action="Ver posições" />
     </section>
     <SectionCard title="Distribuição por classe" description="Alocação de longo prazo · reserva excluída desta distribuição" icon={<ChartPie />} tone="violet">
       {overview.distribution.length ? (

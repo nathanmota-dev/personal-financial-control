@@ -16,14 +16,14 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
   return (
 <div className="space-y-6">
       <PageHeader
-        eyebrow="Investimentos"
-        title="Reserva de emergência"
+        eyebrow="Reserva"
+        title="Reserva"
         description="Acompanhe o saldo estimado, confira o valor real quando necessário e projete o crescimento com base nos lançamentos da sua vida financeira."
         actions={
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="outline">
               <Link href="/investments/portfolio">
-                Carteira de longo prazo
+                Carteira
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
