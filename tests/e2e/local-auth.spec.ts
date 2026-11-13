@@ -15,7 +15,7 @@ test("Google login, PIN setup, idle locking, unlock and PIN recovery", async ({ 
   await page.goto(`${finance.url}/settings`);
   await expect(page).toHaveURL(/\/lock\?next=/);
   await page.getByLabel("PIN", { exact: true }).fill("123456");
-  await page.getByLabel("Confirmar PIN").fill("123456");
+  await page.getByLabel("Confirmar PIN", { exact: true }).fill("123456");
   await page.getByRole("button", { name: "Definir PIN" }).click();
   await expect(page).toHaveURL(`${finance.url}/settings`);
   await page.getByRole("dialog").getByRole("button", { name: "Pular configuração", exact: true }).click();
@@ -45,7 +45,7 @@ test("Google login, PIN setup, idle locking, unlock and PIN recovery", async ({ 
   expect((await login()).status()).toBe(200);
   await page.goto(`${finance.url}/lock`);
   await page.getByLabel("PIN", { exact: true }).fill("654321");
-  await page.getByLabel("Confirmar PIN").fill("654321");
+  await page.getByLabel("Confirmar PIN", { exact: true }).fill("654321");
   await page.screenshot({ path: "reports/local-pin-setup.png", fullPage: true });
   await page.getByRole("button", { name: "Definir PIN" }).click();
   await expect(page).toHaveURL(`${finance.url}/dashboard`);
