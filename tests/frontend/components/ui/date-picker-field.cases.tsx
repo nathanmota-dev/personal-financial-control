@@ -52,3 +52,25 @@ it("presents the placeholder when there is no date", async () => {
   await user.click(screen.getByRole("button", { name: "Escolher vencimento" }));
   expect(screen.getByRole("grid")).toBeVisible();
 });
+it("blocks dates outside the min and max range", async () => {
+  freezeFinanceDate();
+  const change = vi.fn();
+  const { user } = renderUI(
+    <DatePickerField
+      value="2026-07-16"
+      min="2026-07-10"
+      max="2026-07-20"
+      onDateChange={change}
+    />,
+  );
+  await user.click(screen.getByRole("button", { name: /16 de julho de 2026/ }));
+  expect(
+    screen.getByRole("button", { name: "quinta-feira, 9 de julho de 2026" }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "terça-feira, 21 de julho de 2026" }),
+  ).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: /sexta-feira, 17 de julho de 2026/i }),
+  ).toBeEnabled();
+});

@@ -125,7 +125,7 @@ export function CreditCardView({ overview, categories, loadError = false, cards 
 
     startTransition(() => {
       setSelectedMonth(month);
-      router.replace(navigate(month, selectedCard));
+      router.replace(navigate(month, selectedCard), { scroll: false });
     });
   }
 
@@ -136,7 +136,7 @@ export function CreditCardView({ overview, categories, loadError = false, cards 
 
     startTransition(() => {
       setSelectedCard(id);
-      router.replace(navigate(overview.month, id));
+      router.replace(navigate(overview.month, id), { scroll: false });
     });
   }
 

@@ -79,6 +79,7 @@ describe("credit card view states", () => {
     await user.click(month!);
     expect(navigation.replace).toHaveBeenCalledWith(
       "/credit-card?month=2026-08",
+      { scroll: false },
     );
   });
 });

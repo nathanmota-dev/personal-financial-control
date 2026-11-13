@@ -55,9 +55,8 @@ test("report URL preserves mode, navigation and explicit invalid periods", async
   await page.getByRole("tab", { name: "Anual", exact: true }).click();
   await expect(page).toHaveURL(/mode=annual&period=2026/);
   await page.getByRole("button", { name: "Selecionar ano: 2026" }).click();
-  await page.getByRole("spinbutton", { name: "Ano do relatório" }).fill("2025");
-  await page.getByRole("button", { name: "Consultar ano" }).click();
-  await expect(page).toHaveURL(/mode=annual&period=2025/);
+  await page.getByRole("button", { name: "2027", exact: true }).click();
+  await expect(page).toHaveURL(/mode=annual&period=2027/);
   await page.getByRole("tab", { name: "Mensal", exact: true }).click();
   await expect(page).toHaveURL(/mode=monthly&period=2026-06/);
   await expect(page.getByRole("button", { name: "junho de 2026", exact: true })).toBeVisible();

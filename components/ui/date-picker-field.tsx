@@ -40,6 +40,8 @@ export function DatePickerField({
   placeholder = "Selecione a data",
   clearable = false,
   required = false,
+  min,
+  max,
   onDateChange,
   className,
   align = "start",
@@ -48,6 +50,12 @@ export function DatePickerField({
   const [open, setOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(value);
   const selectedValue = isControlled ? value : internalValue;
+  const minDate = parseDateValue(min);
+  const maxDate = parseDateValue(max);
+  const disabledDays = [
+    ...(minDate ? [{ before: minDate }] : []),
+    ...(maxDate ? [{ after: maxDate }] : []),
+  ];
 
   function handleDateSelect(date: Date | undefined) {
     const nextValue = date ? buildDateValue(date) : undefined;
@@ -98,6 +106,10 @@ export function DatePickerField({
           <Calendar
             mode="single"
             selected={parseDateValue(selectedValue)}
+            defaultMonth={parseDateValue(selectedValue) ?? minDate}
+            startMonth={minDate}
+            endMonth={maxDate}
+            disabled={disabledDays.length > 0 ? disabledDays : undefined}
             onSelect={handleDateSelect}
             locale={ptBR}
             initialFocus

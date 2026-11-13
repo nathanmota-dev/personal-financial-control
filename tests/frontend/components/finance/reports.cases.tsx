@@ -12,7 +12,7 @@ import { DailyExpensesView } from "@/components/finance/reports/daily-expenses-v
 import { FinancialPrivacyContext } from "@/components/finance/privacy/privacy-context";
 import { buildDailyExpenseMap } from "@/lib/daily-expenses";
 import type { DailyExpenseEntry } from "@/lib/interfaces/daily-expenses";
-import { renderUI } from "@/tests/frontend/helpers";
+import { freezeFinanceDate, renderUI } from "@/tests/frontend/helpers";
 
 vi.mock("@/lib/server/reports", () => ({ getReportInitial: vi.fn() }));
 const empty = { activeTransactions: [], expenses: [], installments: [] };
@@ -88,13 +88,12 @@ describe("reports interface", () => {
     expect(navigation.push).toHaveBeenCalledWith("/reports?mode=annual&period=2026&month=2026-07");
   });
   it("uses the shared period controls and preserves browser history through URL navigation", async () => {
+    freezeFinanceDate();
     const { user } = renderUI(<ReportControls mode="annual" period="2027" defaultMonth="2026-10" />);
     await user.click(screen.getByRole("button", { name: "Selecionar ano: 2027" }));
-    const input = screen.getByRole("spinbutton", { name: "Ano do relatório" });
-    await user.clear(input);
-    await user.type(input, "2025");
-    await user.click(screen.getByRole("button", { name: "Consultar ano" }));
-    expect(navigation.push).toHaveBeenCalledWith("/reports?mode=annual&period=2025&month=2026-10");
+    expect(screen.getByRole("button", { name: "2027" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(screen.getByRole("button", { name: "2029" }));
+    expect(navigation.push).toHaveBeenCalledWith("/reports?mode=annual&period=2029&month=2026-10");
     await user.click(screen.getByRole("tab", { name: "Mensal" }));
     expect(navigation.push).toHaveBeenCalledWith("/reports?mode=monthly&period=2026-10");
     expect(screen.queryByRole("link", { name: "Período anterior" })).not.toBeInTheDocument();

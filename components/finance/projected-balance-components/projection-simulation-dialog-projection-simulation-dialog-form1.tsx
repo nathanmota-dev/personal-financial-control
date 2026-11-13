@@ -2,6 +2,7 @@
 
 import { MoneyInput } from "@/components/finance/money-input";
 import { Button } from "@/components/ui/button";
+import { DatePickerField } from "@/components/ui/date-picker-field";
 import {
 DialogFooter
 } from "@/components/ui/dialog";
@@ -57,13 +58,15 @@ export function ProjectionSimulationDialogForm1({ handleSubmit, formId, descript
               <Label htmlFor={`${formId}-date`} className={fieldLabelClassName}>
                 Data da compra
               </Label>
-              <Input
+              <DatePickerField
                 id={`${formId}-date`}
-                type="date"
                 value={date}
                 min={filters.startDate}
                 max={filters.endDate}
-                onChange={(event) => setDate(event.target.value)}
+                required
+                onDateChange={(nextDate) => {
+                  if (nextDate) setDate(nextDate);
+                }}
                 className={fieldClassName}
               />
             </div>

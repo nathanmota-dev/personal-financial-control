@@ -40,7 +40,6 @@ export type ReportDeferredState = {
   entriesError: boolean;
 };
 
-export type ReportYearPickerProps = { year: string; onYearChange: (year: string) => void };
 export type ReportEntryProps = { entry: ReportEntry };
 export type ReportEntrySourceProps = { entry: Pick<ReportEntry, "source" | "month">; badgeOnly?: boolean };
 

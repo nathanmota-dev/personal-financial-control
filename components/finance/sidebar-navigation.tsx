@@ -22,7 +22,7 @@ export function SidebarNavigation({
     <nav
       aria-label="Navegação principal"
       className={cn(
-        "min-h-0 flex-1 overflow-y-auto pl-4 pr-[14px]",
+        "no-scrollbar min-h-0 flex-1 overflow-y-auto pl-4 pr-[14px]",
         mobile && "py-4",
         collapsed && "px-2",
       )}
