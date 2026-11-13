@@ -3,12 +3,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 APPLICATIONS_DIR="$DATA_HOME/applications"
 DESKTOP_SOURCE="$SCRIPT_DIR/personal-financial-control.desktop"
 DESKTOP_TARGET="$APPLICATIONS_DIR/personal-financial-control.desktop"
 APP_EXEC="$SCRIPT_DIR/open-app.sh"
-APP_ICON="$SCRIPT_DIR/app/icon.png"
+APP_ICON="$ROOT_DIR/app/icon.png"
 
 log() {
   printf '[install-app] %s\n' "$1"
@@ -52,7 +53,7 @@ desktop-file-install \
   --set-key=Exec \
   --set-value="$(quote_exec_path "$APP_EXEC")" \
   --set-key=Path \
-  --set-value="$SCRIPT_DIR" \
+  --set-value="$ROOT_DIR" \
   --set-icon="$APP_ICON" \
   "$DESKTOP_SOURCE"
 

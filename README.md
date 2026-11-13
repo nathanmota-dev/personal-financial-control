@@ -67,13 +67,13 @@ Requer Node.js 24, npm, um navegador baseado em Chromium e XWayland em sessões
 Wayland.
 
 ```bash
-chmod +x ./*.sh
-./install-app.sh
+chmod +x ./bin/*.sh
+./bin/install-app.sh
 ```
 
-Abra **Finance** no menu de aplicativos, ou rode `./open-app.sh`. O primeiro
+Abra **Finance** no menu de aplicativos, ou rode `./bin/open-app.sh`. O primeiro
 início prepara o build e aplica as migrações, e o servidor é encerrado ao fechar
-a janela. Se mover o projeto de pasta, rode `./install-app.sh` de novo.
+a janela. Se mover o projeto de pasta, rode `./bin/install-app.sh` de novo.
 
 Se não abrir, veja os logs em `.local/runtime/`: `launcher.log` (build e
 migrações), `server.log` (Next.js) e `browser.log` (navegador).

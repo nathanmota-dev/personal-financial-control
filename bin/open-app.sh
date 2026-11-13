@@ -6,9 +6,10 @@ set -euo pipefail
 export NODE_ENV=production
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-cd "$SCRIPT_DIR"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+cd "$ROOT_DIR"
 
-STATE_DIR="$SCRIPT_DIR/.local/runtime"
+STATE_DIR="$ROOT_DIR/.local/runtime"
 LAUNCHER_LOG_FILE="$STATE_DIR/launcher.log"
 BROWSER_LOG_FILE="$STATE_DIR/browser.log"
 mkdir -p "$STATE_DIR"
@@ -230,7 +231,7 @@ is_active_session() {
 
 start_server() {
   log "Subindo app local em background na porta $APP_PORT."
-  START_APP_BACKGROUND=1 START_APP_SESSION_ID="$SESSION_ID" HOST="$APP_HOST" PORT="$APP_PORT" ./start-app.sh
+  START_APP_BACKGROUND=1 START_APP_SESSION_ID="$SESSION_ID" HOST="$APP_HOST" PORT="$APP_PORT" "$SCRIPT_DIR/start-app.sh"
   OWNS_SERVER=1
   SERVER_STARTED=1
 }

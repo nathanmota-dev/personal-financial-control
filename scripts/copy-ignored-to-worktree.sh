@@ -23,7 +23,7 @@ fail() {
 
 usage() {
   cat <<'EOF'
-Uso: ./copy-ignored-to-worktree.sh [caminho-da-worktree]
+Uso: ./scripts/copy-ignored-to-worktree.sh [caminho-da-worktree]
 
 Copia para a worktree tudo que o git ignora na worktree principal.
 Sem argumento, usa a worktree do diretorio atual como destino.

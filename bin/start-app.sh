@@ -6,16 +6,17 @@ set -euo pipefail
 export NODE_ENV=production
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-cd "$SCRIPT_DIR"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+cd "$ROOT_DIR"
 
 APP_HOST="${HOST:-127.0.0.1}"
 APP_PORT="${PORT:-3007}"
-STATE_DIR="$SCRIPT_DIR/.local/runtime"
+STATE_DIR="$ROOT_DIR/.local/runtime"
 BUILD_FINGERPRINT_FILE="$STATE_DIR/build-fingerprint.txt"
 SERVER_PID_FILE="$STATE_DIR/server.pid"
 SERVER_SESSION_FILE="$STATE_DIR/server-session.txt"
 SERVER_LOG_FILE="$STATE_DIR/server.log"
-NEXT_BIN="$SCRIPT_DIR/node_modules/.bin/next"
+NEXT_BIN="$ROOT_DIR/node_modules/.bin/next"
 
 mkdir -p "$STATE_DIR"
 
