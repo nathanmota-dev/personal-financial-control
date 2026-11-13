@@ -23,6 +23,6 @@ export default async function EmergencyReservePage() {
       key={`${projection?.updatedAt ?? "empty"}-${projection?.currentBalanceCents ?? 0}-${projection?.asOfDate ?? "none"}`}
       projection={projection}
       contributionHistory={contributionHistory}
-    /><EmergencyReserveComposition composition={composition} /></div>
+    />{projection?.source === "bank" ? null : <EmergencyReserveComposition composition={composition} />}</div>
   );
 }

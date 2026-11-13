@@ -31410,7 +31410,15 @@
         "createdAt": "2026-10-03T18:31:45.258Z"
       }
     ],
-    "nextContributionDate": "2026-07-20"
+    "nextContributionDate": "2026-07-20",
+    "source": "manual",
+    "bank": null,
+    "contribution": {
+      "source": "recurring",
+      "monthlyCents": 120000,
+      "recurringMonthlyCents": 120000,
+      "hasReserveCategory": true
+    }
   },
   "overview": {
     "totalCents": 3293633,
