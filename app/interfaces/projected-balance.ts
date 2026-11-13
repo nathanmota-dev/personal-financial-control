@@ -69,8 +69,17 @@ export type ProjectionSummaryCardsProps = {
   selectedAccountName?: string;
 };
 
+export type ProjectionMarginCardProps = {
+  summary: ProjectionSummary;
+};
+
 export type ProjectionAlertsProps = {
   alerts: ProjectionSummaryAlert[];
+};
+
+export type ProjectedBalanceChartPlotProps = {
+  data: ProjectedBalanceChartPoint[];
+  minimumReserveCents: number;
 };
 
 export type ProjectedBalanceChartProps = {

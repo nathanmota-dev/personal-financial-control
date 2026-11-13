@@ -1,44 +1,21 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-CartesianGrid,
-Line,
-LineChart,
-ReferenceLine,
-XAxis,
-YAxis,
-} from "recharts";
 
 import type {
 ProjectedBalanceChartPoint,
 ProjectedBalanceChartProps,
 } from "@/app/interfaces/projected-balance";
-import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import {
-ChartContainer,
-ChartTooltip,
-ChartTooltipContent,
-} from "@/components/ui/chart";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { formatDateLabel } from "@/lib/finance-ui";
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
-import { cn } from "@/lib/utils";
 
+import { ProjectedBalanceChartPlot } from "./chart-plot";
 import { statusLabels } from "./labels";
-
-const compactCurrencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
 
 export function ProjectedBalanceChart({
   daily,
   minimumReserveCents,
 }: ProjectedBalanceChartProps) {
-  const { formatCurrency } = useFinancialFormatter();
   const data = useMemo<ProjectedBalanceChartPoint[]>(
     () =>
       daily.map((day) => ({
@@ -54,79 +31,28 @@ export function ProjectedBalanceChart({
     [daily, minimumReserveCents]
   );
 
-  return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle>Evolução diária</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          className={cn(financeChartSurfaceClassName, "h-[360px] w-full")}
-          config={{
-            balance: { label: "Saldo projetado", color: "var(--chart-brand)" },
-            zero: { label: "Zero", color: "var(--chart-danger)" },
-            minimumReserve: { label: "Reserva mínima", color: "var(--chart-warning)" },
-          }}
-        >
-          <LineChart data={data} margin={{ top: 12, right: 18, bottom: 0, left: 0 }}>
-            <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-            <XAxis
-              dataKey="date"
-              axisLine={false}
-              tickLine={false}
-              minTickGap={30}
-              tickFormatter={(value) => formatDateLabel(String(value))}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              width={78}
-              tickFormatter={(value) => formatAxisCurrency(Number(value))}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(_value, payload) => {
-                    const point = payload?.[0]?.payload as
-                      | ProjectedBalanceChartPoint
-                      | undefined;
-                    return point
-                      ? `${formatDateLabel(point.date)} · ${point.statusLabel}`
-                      : "Saldo projetado";
-                  }}
-                  formatter={(value, name) => (
-                    <>
-                      <span className="text-muted-foreground">{String(name)}</span>
-                      <span>{formatCurrency(Number(value) * 100)}</span>
-                    </>
-                  )}
-                />
-              }
-            />
-            <ReferenceLine y={0} stroke="var(--color-zero)" strokeDasharray="4 4" />
-            {minimumReserveCents > 0 ? (
-              <ReferenceLine
-                y={minimumReserveCents / 100}
-                stroke="var(--color-minimumReserve)"
-                strokeDasharray="5 5"
-              />
-            ) : null}
-            <Line
-              type="monotone"
-              dataKey="balance"
-              name="Saldo projetado"
-              stroke="var(--color-balance)"
-              strokeWidth={3}
-              dot={false}
-              activeDot={{ r: 5 }}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
+  const legend = [
+    { key: "balance", label: "Saldo projetado", color: "var(--chart-1)", dashed: false },
+    ...(minimumReserveCents > 0 ? [{ key: "minimumReserve", label: "Reserva mínima", color: "var(--warning)", dashed: true }] : []),
+    { key: "zero", label: "Zero", color: "var(--destructive)", dashed: true },
+  ];
 
-function formatAxisCurrency(value: number) {
-  return compactCurrencyFormatter.format(value);
+  return (
+    <section className="relative flex min-w-0 flex-col rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+      <DashboardCardIllustration src="/images/evolution-chart.webp" />
+      <h2 className="text-lg font-semibold leading-[25px]">Evolução diária</h2>
+      <p className="mt-1 pr-16 text-xs text-content-muted">Saldo previsto em cada dia do período, com a reserva mínima como referência</p>
+      <div className="mt-[18px] flex flex-wrap gap-x-5 gap-y-2">
+        {legend.map((item) => (
+          <span key={item.key} className="flex items-center gap-[7px] text-[11px] text-content">
+            <svg width="14" height="9" aria-hidden="true">
+              {item.dashed ? <line x1="0" y1="4.5" x2="14" y2="4.5" stroke={item.color} strokeWidth="2" strokeDasharray="3 2" /> : <circle cx="4.5" cy="4.5" r="4.5" fill={item.color} />}
+            </svg>
+            {item.label}
+          </span>
+        ))}
+      </div>
+      <ProjectedBalanceChartPlot data={data} minimumReserveCents={minimumReserveCents} />
+    </section>
+  );
 }

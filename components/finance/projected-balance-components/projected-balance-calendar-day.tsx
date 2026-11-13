@@ -9,15 +9,15 @@ import { statusLabels } from "./labels";
 
 const statusTone = {
   safe: {
-    cell: "border-warning/35 bg-warning/[0.10]",
-    value: "text-warning",
+    cell: "border-success/30 bg-success/[0.08] hover:bg-success/[0.12]",
+    value: "text-success",
   },
   warning: {
-    cell: "border-warning/40 bg-warning/[0.12]",
+    cell: "border-warning/40 bg-warning/[0.12] hover:bg-warning/[0.16]",
     value: "text-warning",
   },
   negative: {
-    cell: "border-danger/45 bg-danger/[0.14]",
+    cell: "border-danger/45 bg-danger/[0.14] hover:bg-danger/[0.18]",
     value: "text-danger",
   },
 } as const;

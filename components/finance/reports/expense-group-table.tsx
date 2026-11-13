@@ -1,7 +1,7 @@
 "use client";
 import { CategoryChip } from "@/components/finance/ds/category-chip";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ReportCard } from "@/components/finance/reports/report-card";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { ExpenseGroupCategories } from "@/components/finance/reports/expense-group-categories";
@@ -13,9 +13,8 @@ import type { ExpenseGroupTableProps } from "@/lib/interfaces/expense-groups";
 
 export function ExpenseGroupTable({ title, items, totalCents, groupByCategory }: ExpenseGroupTableProps) {
   const { formatCurrency } = useFinancialFormatter();
-  return <section aria-label={title}><Card className="min-w-0 shadow-none">
-    <CardHeader><CardTitle><h2>{title}</h2></CardTitle><CardDescription>Total do grupo: {formatCurrency(totalCents)}</CardDescription></CardHeader>
-    <CardContent className="space-y-4">{items.length ? <>
+  return <ReportCard ariaLabel={title} title={title} description={<>Total do grupo: {formatCurrency(totalCents)}</>}>
+    <div className="space-y-4">{items.length ? <>
       {groupByCategory ? <ExpenseGroupCategories items={items} totalCents={totalCents} /> : <>
         <div className="hidden md:block"><Table>
           <TableHeader><TableRow><TableHead>Descrição</TableHead><TableHead>Categoria</TableHead><TableHead>Conta/Cartão</TableHead><TableHead>Data</TableHead><TableHead className="text-right">Valor</TableHead></TableRow></TableHeader>
@@ -29,6 +28,6 @@ export function ExpenseGroupTable({ title, items, totalCents, groupByCategory }:
         <ul className="grid gap-3 md:hidden">{items.map((item) => <ExpenseGroupMobile key={`${item.source}-${item.id}`} item={item} />)}</ul>
       </>}
       <p className="text-right text-sm font-semibold tabular-nums md:hidden">Total: {formatCurrency(totalCents)}</p>
-    </> : <FinanceEmptyState title="Sem despesas neste grupo" description="Nenhum gasto classificado neste grupo no período selecionado." />}</CardContent>
-  </Card></section>;
+    </> : <FinanceEmptyState title="Sem despesas neste grupo" description="Nenhum gasto classificado neste grupo no período selecionado." />}</div>
+  </ReportCard>;
 }

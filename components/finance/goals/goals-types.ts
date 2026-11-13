@@ -111,6 +111,10 @@ export type MonthlyEvolutionCardProps = {
   dashboard: GoalsDashboard;
 };
 
+export type MonthlyEvolutionChartProps = {
+  data: { month: string; allocated: number; released: number; cumulative: number }[];
+};
+
 export type RecentAllocationsCardProps = {
   dashboard: GoalsDashboard;
 };

@@ -6,7 +6,6 @@ MobileDayMetricProps,
 } from "@/app/interfaces/projected-balance";
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { formatDateLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
@@ -15,11 +14,9 @@ import { DailyProjectionTableDiv1 } from "./daily-projection-table-daily-project
 export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTableProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle>Projeção por dia</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="border-t border-border px-[22px] pt-2 pb-6">
+        <h3 className="sr-only">Projeção por dia</h3>
+        <div>
           <DailyProjectionTableDiv1 daily={daily} onSelectDay={onSelectDay} />
 
           <div className="grid gap-3 md:hidden">
@@ -28,7 +25,7 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
                 key={day.date}
                 type="button"
                 onClick={() => onSelectDay(day)}
-                className="rounded-2xl border border-border p-4 text-left transition hover:bg-card"
+                className="rounded-[14px] border border-border p-4 text-left transition-colors hover:bg-muted"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -43,7 +40,7 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
                   <MobileDayMetric
                     label="Entradas"
                     value={formatCurrency(day.incomeCents + day.transferInCents)}
-                    className="text-warning"
+                    className="text-success"
                   />
                   <MobileDayMetric
                     label="Saídas"
@@ -66,8 +63,8 @@ export function DailyProjectionTable({ daily, onSelectDay }: DailyProjectionTabl
               </button>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
   );
 }
 

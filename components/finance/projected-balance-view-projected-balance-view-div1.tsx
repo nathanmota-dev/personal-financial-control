@@ -8,7 +8,7 @@ import { DailyProjectionExplorer } from "@/components/finance/projected-balance-
 import { ProjectionFilters } from "@/components/finance/projected-balance-components/filters";
 import { ProjectionSimulationDialog } from "@/components/finance/projected-balance-components/projection-simulation-dialog";
 import {
-ProjectionAlerts,
+ProjectionMarginCard,
 ProjectionSummaryCards,
 } from "@/components/finance/projected-balance-components/summary";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, creditAccounts, filters, loadError, visibleProjection, selectedAccount, addSimulation, removeSimulation }: ProjectedBalanceViewDiv1Props) {
   return (
-<div className="space-y-6">
+<div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
         eyebrow="Saldo projetado"
         title="Saldo projetado"
@@ -41,10 +41,13 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
       ) : (
         <>
           {!loadError && visibleProjection?.daily.length ? (
-            <ProjectionSummaryCards
-              summary={visibleProjection.summary}
-              selectedAccountName={selectedAccount?.name}
-            />
+            <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+              <ProjectionSummaryCards
+                summary={visibleProjection.summary}
+                selectedAccountName={selectedAccount?.name}
+              />
+              <ProjectionMarginCard summary={visibleProjection.summary} />
+            </div>
           ) : null}
 
           {loadError ? (
@@ -55,12 +58,13 @@ export function ProjectedBalanceViewDiv1({ hasProjectableAccounts, accounts, cre
           ) : visibleProjection ? (
             visibleProjection.daily.length ? (
               <>
-                <ProjectedBalanceChart
-                  daily={visibleProjection.daily}
-                  minimumReserveCents={visibleProjection.summary.minimumReserveCents}
-                />
-                <ProjectionAlerts alerts={visibleProjection.summary.alerts} />
-                <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
+                <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+                  <ProjectedBalanceChart
+                    daily={visibleProjection.daily}
+                    minimumReserveCents={visibleProjection.summary.minimumReserveCents}
+                  />
+                  <ProjectionFilters accounts={accounts} creditAccounts={creditAccounts} filters={filters} />
+                </div>
                 <DailyProjectionExplorer
                   daily={visibleProjection.daily}
                   onRemoveSimulation={removeSimulation}

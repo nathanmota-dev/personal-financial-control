@@ -1,29 +1,31 @@
 "use client";
 
-import { SectionCard } from "@/components/finance/ds/section-card";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { RecurringCard } from "@/components/finance/recurring-card";
-import { toneForTransactionType } from "@/lib/finance-tone";
+import { Badge } from "@/components/ui/badge";
 import type { RecurringGroupProps } from "@/lib/interfaces/recurring";
-import { ArrowUpRight, TrendingDown, TrendingUp } from "lucide-react";
 
-const icons = { expense: TrendingDown, income: TrendingUp, investment_contribution: ArrowUpRight, investment_withdrawal: ArrowUpRight };
-
-export function RecurringGroup({ title, description, type, templates, ...cardProps }: RecurringGroupProps) {
+export function RecurringGroup({ title, description, templates, ...cardProps }: RecurringGroupProps) {
   const { formatCurrency } = useFinancialFormatter();
-  const Icon = icons[type];
   const total = templates.filter((item) => item.status === "active").reduce((sum, item) => sum + item.amountCents, 0);
   return (
-    <SectionCard
-      title={title}
-      description={description}
-      count={templates.length}
-      icon={<Icon />}
-      tone={toneForTransactionType(type)}
-      action={<p className="text-sm font-semibold tabular-nums">{formatCurrency(total)}<span className="ml-1 text-xs font-normal text-content-muted">/mês</span></p>}
-      contentClassName="grid gap-3"
-    >
-      {templates.map((template) => <RecurringCard key={template.id} template={template} {...cardProps} />)}
-    </SectionCard>
+    <section aria-label={title} className="min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold leading-[25px]">{title}</h2>
+            <Badge variant="outline" className="border-input text-content">{templates.length}</Badge>
+          </div>
+          <p className="mt-1 text-xs text-content-muted">{description}</p>
+        </div>
+        <p className="text-right">
+          <span className="block text-xl font-semibold tabular-nums text-content-strong">{formatCurrency(total)}</span>
+          <span className="block text-[11px] text-content-subtle">ativas por mês</span>
+        </p>
+      </div>
+      <ul className="mt-3 divide-y divide-border">
+        {templates.map((template) => <RecurringCard key={template.id} template={template} {...cardProps} />)}
+      </ul>
+    </section>
   );
 }

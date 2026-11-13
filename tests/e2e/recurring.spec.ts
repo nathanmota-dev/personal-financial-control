@@ -19,9 +19,10 @@ test("creates, pauses and removes a recurrence and avoids duplicate generation",
   await choose(dialog, "Tipo de recorrência", "Despesa");
   await dialog.getByRole("textbox", { name: /Valor/ }).fill("10,00");
   await saveDialog(dialog, "Criar recorrência");
-  const card = page
-    .getByRole("heading", { name: "Assinatura E2E", exact: true })
-    .locator('xpath=ancestor::*[@data-slot="card"][1]');
+  const card = page.getByRole("listitem", {
+    name: "Assinatura E2E",
+    exact: true,
+  });
   await expect(card).toBeVisible();
   await card.getByRole("button", { name: "Pausar", exact: true }).click();
   await expect(card).toContainText("Pausada");

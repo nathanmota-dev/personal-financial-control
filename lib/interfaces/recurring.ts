@@ -101,11 +101,26 @@ export type RecurringCardProps = Pick<RecurringViewProps, "accounts" | "categori
   template: RecurringTemplateRow;
 };
 
-export type RecurringHeroProps = Pick<RecurringViewProps, "month" | "templates">;
+export type RecurringSummaryProps = Pick<RecurringViewProps, "month" | "templates">;
+
+export type RecurringAgendaProps = Pick<RecurringViewProps, "month" | "templates">;
+
+export type RecurringHeaderMonthPickerProps = Pick<RecurringViewProps, "month">;
+
+export type RecurringMonthSummary = {
+  expenseCents: number;
+  incomeCents: number;
+  investmentCents: number;
+  generatedExpenseCents: number;
+  pendingExpenseCents: number;
+  freeCents: number;
+  scheduledCount: number;
+  generatedCount: number;
+  pausedCount: number;
+};
 
 export type RecurringGroupProps = Pick<RecurringViewProps, "accounts" | "categories" | "month"> & {
   title: string;
   description: string;
-  type: RecurringTransactionType;
   templates: RecurringTemplateRow[];
 };

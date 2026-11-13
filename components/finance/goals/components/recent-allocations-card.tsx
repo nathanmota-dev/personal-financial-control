@@ -1,17 +1,9 @@
 "use client";
 
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { FinanceEmptyState } from "@/components/finance/empty-state";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import {
-Table,
-TableBody,
-TableCell,
-TableHead,
-TableHeader,
-TableRow,
-} from "@/components/ui/table";
-import { formatDateLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
+import { formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
 
 import { ALLOCATION_TYPE_LABELS } from "../goals-constants";
@@ -20,64 +12,33 @@ import type { RecentAllocationsCardProps } from "../goals-types";
 export function RecentAllocationsCard({ dashboard }: RecentAllocationsCardProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle>Histórico recente</CardTitle>
-        <p className="text-sm text-content">
-          Últimos movimentos vinculados às metas atuais.
-        </p>
-      </CardHeader>
-      <CardContent>
-        {dashboard.recentAllocations.length ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-content">Meta</TableHead>
-                <TableHead className="text-content">Tipo</TableHead>
-                <TableHead className="text-content">Data</TableHead>
-                <TableHead className="text-right text-content">Valor</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {dashboard.recentAllocations.map((allocation) => (
-                <TableRow
-                  key={allocation.id}
-                  className="border-border hover:bg-card"
-                >
-                  <TableCell className="text-content-strong">
-                    <span className="inline-flex items-center gap-2">
-                      <span
-                        className="size-2.5 rounded-full"
-                        style={{ backgroundColor: allocation.goalColor }}
-                      />
-                      {allocation.goalName}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-content">
-                    {ALLOCATION_TYPE_LABELS[allocation.type]}
-                  </TableCell>
-                  <TableCell className="text-content">
-                    {formatDateLabel(allocation.occurredOn)}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      "text-right font-medium",
-                      allocation.amountCents >= 0 ? "text-brand" : "text-danger"
-                    )}
-                  >
-                    {formatCurrency(allocation.amountCents)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
+    <section className="relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+      <DashboardCardIllustration src="/images/reports-clipboard.webp" />
+      <h2 className="text-lg font-semibold leading-[25px]">Histórico recente</h2>
+      <p className="mt-1 pr-16 text-xs text-content-muted">Últimos movimentos vinculados às metas atuais</p>
+      {dashboard.recentAllocations.length ? (
+        <ul className="mt-4 max-h-[420px] divide-y divide-border overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {dashboard.recentAllocations.map((allocation) => (
+            <li key={allocation.id} className="flex items-center gap-3 py-3.5 text-[13px]">
+              <span aria-hidden className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: allocation.goalColor }} />
+              <span className="min-w-0 flex-1">
+                <span data-user-content className="block truncate font-semibold text-content-strong">{allocation.goalName}</span>
+                <span className="block text-xs text-content-muted">{`${ALLOCATION_TYPE_LABELS[allocation.type]} · ${formatDateLabel(allocation.occurredOn)}`}</span>
+              </span>
+              <span className={cn("shrink-0 font-semibold tabular-nums", allocation.amountCents >= 0 ? "text-content-strong" : "text-destructive")}>
+                {formatCurrency(allocation.amountCents)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="mt-4">
           <FinanceEmptyState
             title="Sem movimentações"
-            description="Alocações, liberações e aportes vinculados às metas aparecerão nesta tabela."
+            description="Alocações, liberações e aportes vinculados às metas aparecerão nesta lista."
           />
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </section>
   );
 }

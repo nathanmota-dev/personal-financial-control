@@ -156,7 +156,7 @@ test("partial summary avoids conclusive changes and request failures never rende
   await page.goto("/reports?mode=monthly&period=2026-07");
   await page.getByRole("tab", { name: "Resumo do mês", exact: true }).click();
   await expect(page.getByRole("tabpanel", { name: "Resumo do mês" }).getByRole("alert")).toContainText("Não foi possível carregar");
-  await expect(page.getByText("Resultado antes dos investimentos", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("tabpanel", { name: "Resumo do mês" }).getByText("Resultado antes dos investimentos", { exact: true })).toHaveCount(0);
   fail = false;
   await page.getByRole("button", { name: "Tentar novamente" }).click();
   await expect(page.getByText(/Resumo parcial: mês em andamento/)).toBeVisible();

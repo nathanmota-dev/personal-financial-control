@@ -23,7 +23,7 @@ import { Check } from "lucide-react";
 
 export function ProjectionFiltersDiv3({ filters, updateFilters, isStartDatePickerOpen, setIsStartDatePickerOpen, accounts, reserveInput, setReserveInput, applyReserve, isPending }: ProjectionFiltersDiv3Props) {
   return (
-<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+<div className="grid gap-3 @md:grid-cols-2">
           <FilterField label="Período">
             <Select
               value={filters.period}

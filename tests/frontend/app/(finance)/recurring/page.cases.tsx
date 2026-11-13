@@ -12,7 +12,9 @@ describe("app/(finance)/recurring/page", () => {
     );
     expect(requirePageSession).toHaveBeenCalledOnce();
     expect(screen.getByRole("heading", { name: "Recorrentes" })).toBeVisible();
-    expect(screen.getByText("Salário mensal")).toBeVisible();
+    expect(screen.getAllByText("Salário mensal")[0]).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Compromissos fixos do mês" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Agenda do mês" })).toBeVisible();
   });
   it("renders a usable fallback after data loading fails", async () => {
     vi.mocked(listAccounts).mockRejectedValueOnce(new Error("offline"));

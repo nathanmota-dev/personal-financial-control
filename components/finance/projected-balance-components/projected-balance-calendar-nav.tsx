@@ -19,16 +19,16 @@ export function ProjectedBalanceCalendarNav({
   const canGoNext = month < lastMonth;
 
   return (
-    <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+    <div className="flex flex-col gap-4 border-b border-border px-[22px] py-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
-          <CalendarDays className="size-5" aria-hidden="true" />
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <CalendarDays className="size-[18px]" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-lg font-semibold text-content-strong">
+          <p className="text-[15px] font-semibold text-content-strong">
             {formatMonthLabel(month)}
           </p>
-          <p className="text-xs text-content-muted">Mapa diário do caixa disponível</p>
+          <p className="text-xs text-content-muted">{`Período de ${formatMonthLabel(firstMonth)} até ${formatMonthLabel(lastMonth)}`}</p>
         </div>
       </div>
 
@@ -37,6 +37,7 @@ export function ProjectedBalanceCalendarNav({
           type="button"
           variant="outline"
           size="icon-sm"
+          className="rounded-full"
           aria-label="Mês anterior"
           disabled={!canGoPrevious}
           onClick={() => onCurrentMonthChange(subMonths(currentMonth, 1))}
@@ -47,6 +48,7 @@ export function ProjectedBalanceCalendarNav({
           type="button"
           variant="outline"
           size="icon-sm"
+          className="rounded-full"
           aria-label="Próximo mês"
           disabled={!canGoNext}
           onClick={() => onCurrentMonthChange(addMonths(currentMonth, 1))}

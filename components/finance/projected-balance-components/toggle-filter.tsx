@@ -15,12 +15,12 @@ export function ToggleFilter({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-2xl border border-transparent bg-muted/50 px-4 py-3 transition-colors has-[[data-state=checked]]:border-brand/30 has-[[data-state=checked]]:bg-brand/[0.07]",
+        "flex items-center justify-between gap-4 py-3",
         disabled && "opacity-60"
       )}
     >
       <div>
-        <p className="text-sm font-medium text-content-strong">{label}</p>
+        <p className="text-[13px] font-semibold text-content-strong">{label}</p>
         <p className="text-xs text-content-muted">{description}</p>
       </div>
       <Switch

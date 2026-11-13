@@ -29,12 +29,9 @@ export function GoalCardItemDiv1({ goal, onEdit, onRelease, onArchive }: GoalCar
   return (
 <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span
-                className="size-2.5 rounded-full"
-                style={{ backgroundColor: goal.color }}
-              />
-              <span className="inline-flex h-6 items-center rounded-lg bg-[color-mix(in_srgb,var(--goal-color)_16%,transparent)] px-2 text-xs font-medium text-[var(--goal-color)]">
+            <div className="mb-2.5 flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex h-6 items-center gap-1.5 rounded-lg bg-[color-mix(in_srgb,var(--goal-color)_14%,transparent)] px-2 text-xs font-medium text-content-strong">
+                <span aria-hidden className="size-1.5 rounded-full bg-[var(--goal-color)]" />
                 {GOAL_CATEGORY_LABELS[goal.category]}
               </span>
               <Badge
@@ -47,10 +44,10 @@ export function GoalCardItemDiv1({ goal, onEdit, onRelease, onArchive }: GoalCar
                 {GOAL_STATUS_LABELS[goal.status]}
               </Badge>
             </div>
-            <h3 data-user-content className="break-words text-base font-semibold text-content-strong">
+            <h3 data-user-content className="break-words text-sm font-semibold text-content-strong">
               {goal.name}
             </h3>
-            <p className="mt-2 flex items-center gap-2 text-xs text-content">
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-content-muted">
               <CalendarDays className="size-3.5 shrink-0" aria-hidden="true" />
               {formatGoalTargetMonth(goal.targetDate)}
             </p>
@@ -60,11 +57,11 @@ export function GoalCardItemDiv1({ goal, onEdit, onRelease, onArchive }: GoalCar
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="shrink-0"
+                size="icon-sm"
+                className="-mt-1 -mr-1 shrink-0"
                 aria-label={`Mais ações para ${goal.name}`}
               >
-                <MoreHorizontal className="size-5" />
+                <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">

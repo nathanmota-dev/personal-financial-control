@@ -406,19 +406,12 @@
 
 .recurring-calendar .rc-overflow-y-auto,
 .finance-monthly-calendar .rc-overflow-y-auto {
-  scrollbar-color: rgb(var(--content-subtle-rgb) / 0.7) transparent;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 
 .recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar,
 .finance-monthly-calendar .rc-overflow-y-auto::-webkit-scrollbar {
-  width: 5px;
-}
-
-.recurring-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb,
-.finance-monthly-calendar .rc-overflow-y-auto::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgb(var(--content-subtle-rgb) / 0.7);
+  display: none;
 }
 
 @keyframes login-preview-float {

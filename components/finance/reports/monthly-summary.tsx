@@ -7,7 +7,7 @@ import type { MonthlySummaryViewProps } from "@/lib/interfaces/monthly-retrospec
 
 export function MonthlySummary({ period, summary, error, retry }: MonthlySummaryViewProps) {
   return <section aria-label="Resumo do mês" className="min-w-0 space-y-4">
-    <header><h2 className="text-xl font-semibold">Resumo do mês</h2><p className="mt-1 text-sm text-content">{formatMonthLabel(period)}</p></header>
+    <header><h2 className="text-lg font-semibold leading-[25px]">Resumo do mês</h2><p className="mt-1 text-xs text-content-muted">{formatMonthLabel(period)}</p></header>
     {summary ? <MonthlySummaryContent summary={summary} /> : <ReportViewLoading error={error} retry={retry} />}
   </section>;
 }

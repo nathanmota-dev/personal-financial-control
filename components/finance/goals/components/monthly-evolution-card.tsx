@@ -1,33 +1,12 @@
 "use client";
 
-import {
-Area,
-Bar,
-CartesianGrid,
-ComposedChart,
-XAxis,
-YAxis,
-} from "recharts";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 
-import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import {
-ChartContainer,
-ChartTooltip,
-ChartTooltipContent,
-} from "@/components/ui/chart";
-import { formatMonthLabel } from "@/lib/finance-ui";
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
-import { cn } from "@/lib/utils";
-
-import {
-COMPACT_CURRENCY_FORMATTER,
-MONTHLY_EVOLUTION_CHART_CONFIG,
-} from "../goals-constants";
+import { MONTHLY_EVOLUTION_CHART_CONFIG } from "../goals-constants";
 import type { MonthlyEvolutionCardProps } from "../goals-types";
+import { MonthlyEvolutionChart } from "./monthly-evolution-chart";
 
 export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
-  const { formatCurrency } = useFinancialFormatter();
   const data = dashboard.charts.monthlyEvolution.map((point) => ({
     month: point.month,
     allocated: point.monthlyAllocatedCents / 100,
@@ -36,78 +15,27 @@ export function MonthlyEvolutionCard({ dashboard }: MonthlyEvolutionCardProps) {
   }));
 
   return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle>Evolução mensal</CardTitle>
-        <p className="text-sm text-content">Alocações, liberações e acumulado.</p>
-      </CardHeader>
-      <CardContent>
+    <section className="relative flex min-w-0 flex-col rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+      <DashboardCardIllustration src="/images/evolution-chart.webp" />
+      <h2 className="text-lg font-semibold leading-[25px]">Evolução mensal</h2>
+      <p className="mt-1 pr-16 text-xs text-content-muted">Alocações, liberações e acumulado</p>
         {data.length ? (
-          <ChartContainer
-            className={cn(financeChartSurfaceClassName, "h-[280px] w-full")}
-            config={MONTHLY_EVOLUTION_CHART_CONFIG}
-          >
-            <ComposedChart
-              data={data}
-              margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
-            >
-              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
-              <XAxis
-                dataKey="month"
-                tickFormatter={(value) => formatMonthLabel(String(value))}
-                minTickGap={22}
-              />
-              <YAxis
-                width={72}
-                tickFormatter={(value) =>
-                  COMPACT_CURRENCY_FORMATTER.format(Number(value))
-                }
-              />
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => formatMonthLabel(String(value))}
-                    formatter={(value, name) => (
-                      <>
-                        <span className="text-muted-foreground">{String(name)}</span>
-                        <span>{formatCurrency(Number(value) * 100)}</span>
-                      </>
-                    )}
-                  />
-                }
-              />
-              <Bar
-                dataKey="allocated"
-                name="Alocado"
-                fill="var(--color-allocated)"
-                radius={[6, 6, 2, 2]}
-                maxBarSize={28}
-              />
-              <Bar
-                dataKey="released"
-                name="Liberado"
-                fill="var(--color-released)"
-                fillOpacity={0.7}
-                radius={[6, 6, 2, 2]}
-                maxBarSize={28}
-              />
-              <Area
-                type="monotone"
-                dataKey="cumulative"
-                name="Acumulado"
-                fill="var(--color-cumulative)"
-                fillOpacity={0.14}
-                stroke="var(--color-cumulative)"
-                strokeWidth={2.5}
-              />
-            </ComposedChart>
-          </ChartContainer>
-        ) : (
-          <div className="flex min-h-[280px] items-center justify-center rounded-xl border border-dashed border-border bg-card px-6 text-center text-sm text-content">
-            Alocações e aportes aparecerão aqui ao longo dos meses.
+          <>
+          <div className="mt-[18px] flex flex-wrap gap-x-5 gap-y-2">
+            {Object.entries(MONTHLY_EVOLUTION_CHART_CONFIG).map(([key, item]) => (
+              <span key={key} className="flex items-center gap-[7px] text-[11px] text-content">
+                <svg width="9" height="9" aria-hidden="true"><circle cx="4.5" cy="4.5" r="4.5" fill={item.color} /></svg>
+                {item.label}
+              </span>
+            ))}
           </div>
+          <MonthlyEvolutionChart data={data} />
+          </>
+        ) : (
+          <p className="mt-8 text-center text-sm text-content-muted">
+            Alocações e aportes aparecerão aqui ao longo dos meses.
+          </p>
         )}
-      </CardContent>
-    </Card>
+    </section>
   );
 }

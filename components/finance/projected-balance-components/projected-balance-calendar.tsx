@@ -10,9 +10,6 @@ import { ptBR } from "date-fns/locale";
 import { useMemo,useState } from "react";
 
 import type { ProjectedBalanceCalendarProps } from "@/app/interfaces/projected-balance";
-import { financeMonthlyCalendarClassName } from "@/components/finance/finance-styles";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { formatMonthLabel } from "@/lib/finance-ui";
 import type { ProjectionCalendarDay } from "@/lib/interfaces/projected-balance";
 import {
 buildProjectionCalendarDays,
@@ -54,22 +51,7 @@ export function ProjectedBalanceCalendar({
   }
 
   return (
-    <Card className={financeMonthlyCalendarClassName}>
-      <CardHeader className="border-b border-border px-4 py-4 sm:px-5">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <CardTitle>Calendário do caixa</CardTitle>
-            <p className="mt-1 text-sm leading-6 text-content">
-              Cada dia mostra o saldo projetado e quanto permanece sustentável para gastar.
-            </p>
-          </div>
-          <p className="text-xs text-content-muted">
-            {formatMonthLabel(firstMonth)} até {formatMonthLabel(lastMonth)}
-          </p>
-        </div>
-      </CardHeader>
-
-      <CardContent className="p-0">
+    <div className="finance-monthly-calendar min-w-0 border-t border-border">
         <MonthlyCalendar
           currentMonth={currentMonth}
           onCurrentMonthChange={handleMonthChange}
@@ -91,11 +73,10 @@ export function ProjectedBalanceCalendar({
             />
           </MonthlyBody>
         </MonthlyCalendar>
-      </CardContent>
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-5 py-3 text-xs text-content-muted">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-[22px] py-3 text-xs text-content-muted">
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-warning" aria-hidden="true" />
+          <span className="size-1.5 rounded-full bg-success" aria-hidden="true" />
           Seguro
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -108,6 +89,6 @@ export function ProjectedBalanceCalendar({
         </span>
         <span className="ml-auto text-content-subtle">Selecione um dia para ver os eventos</span>
       </div>
-    </Card>
+    </div>
   );
 }

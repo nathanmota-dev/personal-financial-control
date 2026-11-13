@@ -27,35 +27,24 @@ export function DailyProjectionExplorer({
           setView(value);
         }
       }}
-      className="gap-4"
+      className="gap-4 overflow-hidden rounded-[20px] border border-border bg-card"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 px-[22px] pt-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xl font-semibold text-content-strong">
-            Leitura diária
-          </p>
-          <p className="mt-1 text-sm text-content">
-            Navegue pelo mês ou alterne para a conferência em formato de tabela.
+          <h2 className="text-lg font-semibold leading-[25px]">Leitura diária</h2>
+          <p className="mt-1 text-xs text-content-muted">
+            Navegue pelo mês ou alterne para a conferência em formato de tabela
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {actions}
-          <TabsList
-            variant="line"
-            className="h-10 w-full rounded-xl border border-border bg-muted/30 p-1 sm:w-auto"
-          >
-            <TabsTrigger
-              value="calendar"
-              className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
-            >
-              <CalendarDays className="size-4" aria-hidden="true" />
+          <TabsList variant="line">
+            <TabsTrigger value="calendar">
+              <CalendarDays aria-hidden="true" />
               Calendário
             </TabsTrigger>
-            <TabsTrigger
-              value="table"
-              className="gap-2 rounded-lg px-3 text-content data-active:text-brand"
-            >
-              <Table2 className="size-4" aria-hidden="true" />
+            <TabsTrigger value="table">
+              <Table2 aria-hidden="true" />
               Tabela
             </TabsTrigger>
           </TabsList>

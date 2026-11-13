@@ -8,6 +8,8 @@ export const frontendTests = [
   "tests/money-input.test.ts",
   "tests/projected-balance-calendar.test.ts",
   "tests/recurring-calendar.test.ts",
+  "tests/recurring-summary.test.ts",
+  "tests/report-overview.test.ts",
   "tests/theme-script.test.ts",
   "tests/transaction-navigation.test.ts",
   "tests/transaction-reduction.test.ts",

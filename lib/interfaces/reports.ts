@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { DashboardTotals } from "@/lib/interfaces/dashboard";
 import type { ExpenseGroupsReport } from "@/lib/interfaces/expense-groups";
 import type { readDashboardRecords } from "@/lib/server/dashboard-records";
@@ -44,3 +45,14 @@ export type ReportEntryProps = { entry: ReportEntry };
 export type ReportEntrySourceProps = { entry: Pick<ReportEntry, "source" | "month">; badgeOnly?: boolean };
 
 export type ReportViewLoadingProps = { error: boolean; retry: () => void };
+
+export type ReportCardProps = {
+  title: string;
+  description?: ReactNode;
+  badge?: ReactNode;
+  action?: ReactNode;
+  ariaLabel?: string;
+  illustrationSrc?: string;
+  className?: string;
+  children: ReactNode;
+};

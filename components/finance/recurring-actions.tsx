@@ -45,9 +45,8 @@ export function PauseRecurringButton({ id }: RecurringActionButtonProps) {
   }
 
   return (
-    <Button variant="ghost" size="sm" disabled={isPending} onClick={pause}>
+    <Button variant="ghost" size="icon-sm" aria-label="Pausar" title="Pausar" disabled={isPending} onClick={pause}>
       <Pause className="size-4" />
-      {isPending ? "Pausando..." : "Pausar"}
     </Button>
   );
 }
@@ -71,9 +70,8 @@ export function ResumeRecurringButton({ id }: RecurringActionButtonProps) {
   }
 
   return (
-    <Button variant="ghost" size="sm" className="text-success" disabled={isPending} onClick={resume}>
+    <Button variant="ghost" size="icon-sm" aria-label="Retomar" title="Retomar" className="text-success" disabled={isPending} onClick={resume}>
       <Play className="size-4" />
-      {isPending ? "Retomando..." : "Retomar"}
     </Button>
   );
 }
@@ -104,9 +102,8 @@ export function RecurringDeleteDialog({ id }: RecurringDeleteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-content hover:bg-danger-soft hover:text-danger" disabled={isPending}>
+        <Button variant="ghost" size="icon-sm" aria-label="Excluir" title="Excluir" className="text-content hover:bg-danger-soft hover:text-danger" disabled={isPending}>
           <Trash2 className="size-4" />
-          Excluir
         </Button>
       </DialogTrigger>
       <DialogContent className="border-border bg-card sm:max-w-lg">

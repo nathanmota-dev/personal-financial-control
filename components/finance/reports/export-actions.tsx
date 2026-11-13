@@ -29,8 +29,8 @@ export function ReportExportActions({ mode, period }: ReportPeriod) {
   if (hidden) return <div className="flex flex-wrap items-center gap-3"><p className="text-sm text-content">Exportação indisponível com valores ocultos.</p><Button variant="outline" size="sm" onClick={() => setHidden(false)}>Mostrar valores para exportar</Button></div>;
 
   return <div className="flex max-w-full flex-wrap items-center gap-3" aria-busy={pending !== null}>
-    <Button variant="outline" size="sm" disabled={pending !== null} onClick={() => exportCsv("summary")}><Download />{pending === "summary" ? "Gerando resumo…" : "Exportar resumo"}</Button>
-    <Button variant="outline" size="sm" disabled={pending !== null} onClick={() => exportCsv("categories")}><Download />{pending === "categories" ? "Gerando categorias…" : "Exportar categorias"}</Button>
+    <Button variant="secondary" className="h-10 gap-[10px] rounded-[10px] text-[13px] font-medium" disabled={pending !== null} onClick={() => exportCsv("summary")}><Download className="size-[17px]" />{pending === "summary" ? "Gerando resumo…" : "Exportar resumo"}</Button>
+    <Button variant="secondary" className="h-10 gap-[10px] rounded-[10px] text-[13px] font-medium" disabled={pending !== null} onClick={() => exportCsv("categories")}><Download className="size-[17px]" />{pending === "categories" ? "Gerando categorias…" : "Exportar categorias"}</Button>
     {error && <p role="alert" className="w-full text-sm text-destructive">Não foi possível exportar o relatório. Tente novamente.</p>}
   </div>;
 }

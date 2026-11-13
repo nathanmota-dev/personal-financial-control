@@ -66,13 +66,13 @@ export const SELECT_ITEM_CLASSNAME =
   "min-h-10 rounded-lg px-3 py-2 text-sm text-content-strong focus:bg-surface-elevated focus:text-content-strong data-[state=checked]:bg-surface-elevated/90";
 
 export const ALLOCATION_BREAKDOWN_CHART_CONFIG = {
-  amount: { label: "Valor", color: "var(--chart-brand)" },
+  amount: { label: "Valor", color: "var(--chart-1)" },
 };
 
 export const MONTHLY_EVOLUTION_CHART_CONFIG = {
-  allocated: { label: "Alocado", color: "var(--chart-brand)" },
-  released: { label: "Liberado", color: "var(--chart-danger)" },
-  cumulative: { label: "Acumulado", color: "var(--chart-3)" },
+  allocated: { label: "Alocado", color: "var(--chart-1)" },
+  released: { label: "Liberado", color: "var(--chart-2)" },
+  cumulative: { label: "Acumulado", color: "var(--chart-5)" },
 };
 
 export const COMPACT_CURRENCY_FORMATTER = new Intl.NumberFormat("pt-BR", {

@@ -10,10 +10,12 @@ import { GoalsViewDiv2 } from "./goals-view-goals-view-div2";
 import { GoalsViewSection1 } from "./goals-view-goals-view-section1";
 
 import {
+AllocationBreakdownCard,
 AllocationDialog,
 ArchiveDialog,
 ContributionDialog,
 GoalFormDialog,
+MonthlyEvolutionCard,
 RecentAllocationsCard
 } from "@/components/finance/goals/components";
 import type {
@@ -32,21 +34,21 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
+      <div className="space-y-6 min-[100.0625rem]:space-y-5">
         <PageHeader
           eyebrow="Metas"
           title="Metas e planos futuros"
           description="Planeje objetivos futuros, prazos e aportes. A classificação do patrimônio que já existe fica na Carteira atual."
           actions={
-            <div className="flex flex-wrap gap-2">
-              <Button asChild type="button" variant="outline">
+            <div className="flex flex-wrap gap-3">
+              <Button asChild type="button" variant="secondary" className="h-10 gap-[10px] rounded-[10px] text-[13px] font-medium">
                 <Link href="/investments/portfolio">
                   Carteira atual
-                  <ArrowRight className="size-4" />
+                  <ArrowRight className="size-[17px]" />
                 </Link>
               </Button>
-              <Button type="button" disabled={isMutating} onClick={openCreateGoal}>
-                <Plus className="size-4" />
+              <Button type="button" disabled={isMutating} onClick={openCreateGoal} className="h-10 gap-[10px] rounded-[10px] text-[13px] font-medium">
+                <Plus className="size-[17px]" />
                 Nova meta
               </Button>
             </div>
@@ -59,11 +61,17 @@ export function GoalsView({ dashboard }: { dashboard: GoalsDashboard }) {
           <InlineWarning message="As metas estão alocando mais do que o saldo investido consolidado. Libere saldo ou atualize a carteira para reequilibrar a reserva livre." />
         ) : null}
 
-        <GoalsViewSection1 dashboard={dashboard} />
+        <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+          <GoalsViewSection1 dashboard={dashboard} />
+          <AllocationBreakdownCard dashboard={dashboard} />
+        </div>
 
         <GoalsViewDiv2 dashboard={dashboard} openAllocationDialog={openAllocationDialog} openContributionDialog={openContributionDialog} openEditGoal={openEditGoal} setArchiveGoal={setArchiveGoal} canCreateContribution={canCreateContribution} isMutating={isMutating} openCreateGoal={openCreateGoal} />
 
-        <RecentAllocationsCard dashboard={dashboard} />
+        <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+          <MonthlyEvolutionCard dashboard={dashboard} />
+          <RecentAllocationsCard dashboard={dashboard} />
+        </div>
 
         <GoalFormDialog
           open={Boolean(goalDialog)}
