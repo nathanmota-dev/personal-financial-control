@@ -26,7 +26,7 @@ AccountRow
 } from "@/lib/interfaces/finance-fields";
 import type { AccountSetupDialogDialogContent1Props } from "@/lib/interfaces/render/setup-dialogs-account-setup-dialog-dialog-content1";
 
-export function AccountSetupDialogDialogContent1({ account, startTransition, onSubmit, selectedAccountType, setSelectedAccountType, isPending }: AccountSetupDialogDialogContent1Props) {
+export function AccountSetupDialogDialogContent1({ allowedTypes, account, startTransition, onSubmit, selectedAccountType, setSelectedAccountType, isPending }: AccountSetupDialogDialogContent1Props) {
   return (
 <DialogContent>
         <DialogHeader icon={<Wallet />} tone="brand">
@@ -54,7 +54,7 @@ export function AccountSetupDialogDialogContent1({ account, startTransition, onS
                 setSelectedAccountType(value as AccountRow["type"])
               }
             >
-              {Object.entries(accountTypeLabels).map(([value, label]) => (
+              {Object.entries(accountTypeLabels).filter(([value]) => !allowedTypes || allowedTypes.includes(value as AccountRow["type"]) || value === account?.type).map(([value, label]) => (
                 <SelectItem key={value} value={value}>
                   {label}
                 </SelectItem>

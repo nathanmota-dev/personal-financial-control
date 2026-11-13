@@ -37,6 +37,8 @@ export type AccountSetupDialogProps = {
   trigger?: ReactNode;
   commandId?: string | null;
   defaultType?: AccountRow["type"];
+  /** Restricts the account type select; the first type is the default for a new account. */
+  allowedTypes?: AccountRow["type"][];
 };
 export type CategorySetupDialogProps = {
   category?: CategoryRow;

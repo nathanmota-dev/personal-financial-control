@@ -8,11 +8,15 @@ import { cardProductName, formatCardDueDate } from "@/lib/dashboard-cards";
 import type { CreditCardVisualProps } from "@/lib/interfaces/dashboard-cards";
 import { cn } from "@/lib/utils";
 
-export function CreditCardVisual({ card, className }: CreditCardVisualProps) {
+export function CreditCardVisual({ card, className, details, statusLabel: statusOverride }: CreditCardVisualProps) {
   const { formatCurrency } = useFinancialFormatter();
   const theme = CARD_BRAND_THEMES[card.brand];
   const [current] = card.invoices;
-  const statusLabel = current?.status === "paid" ? "Paga" : "Aberta";
+  const statusLabel = statusOverride === undefined ? (current?.status === "paid" ? "Paga" : "Aberta") : statusOverride;
+  const [left, right] = details ?? [
+    { label: "Vence", value: formatCardDueDate(card.dueDate) },
+    { label: "Fatura", value: formatCurrency(current?.totalCents ?? 0) },
+  ];
   return (
     <div className="relative">
     <div aria-hidden className="absolute inset-x-3 -bottom-1 h-4 rounded-[50%] bg-black/50 blur-[7px]" />
@@ -28,9 +32,11 @@ export function CreditCardVisual({ card, className }: CreditCardVisualProps) {
     >
       <div className="flex items-start justify-between">
         <CreditCardBrandLogo brand={card.brand} name={card.name} />
-        <span className={cn("rounded-full px-2.5 py-[3px] text-[10px] font-semibold", theme.badgeClassName)}>
-          {statusLabel}
-        </span>
+        {statusLabel ? (
+          <span className={cn("rounded-full px-2.5 py-[3px] text-[10px] font-semibold", theme.badgeClassName)}>
+            {statusLabel}
+          </span>
+        ) : null}
       </div>
       <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-center justify-between px-4">
         <CreditCardChip className="text-white/70" />
@@ -43,12 +49,12 @@ export function CreditCardVisual({ card, className }: CreditCardVisualProps) {
       </div>
       <div className="flex items-end justify-between text-[9px] font-semibold tracking-wider uppercase">
         <div>
-          <p className="opacity-70">Vence</p>
-          <p className="mt-0.5 text-[11px]">{formatCardDueDate(card.dueDate)}</p>
+          <p className="opacity-70">{left.label}</p>
+          <p className="mt-0.5 text-[11px]">{left.value}</p>
         </div>
         <div className="text-right">
-          <p className="opacity-70">Fatura</p>
-          <p className="mt-0.5 text-[11px]">{formatCurrency(current?.totalCents ?? 0)}</p>
+          <p className="opacity-70">{right.label}</p>
+          <p className="mt-0.5 text-[11px]">{right.value}</p>
         </div>
       </div>
     </div>

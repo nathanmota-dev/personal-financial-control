@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
 extractErrorMessage
 } from "@/lib/finance-ui";
+import { Archive } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -16,7 +17,10 @@ export function ArchiveCategoryButton({ id }: { id: string }) {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
+      size="icon-sm"
+      aria-label="Arquivar"
+      title="Arquivar"
       disabled={isPending}
       onClick={() =>
         startTransition(async () => {
@@ -30,7 +34,7 @@ export function ArchiveCategoryButton({ id }: { id: string }) {
         })
       }
     >
-      {isPending ? "Arquivando..." : "Arquivar"}
+      <Archive className="size-4" />
     </Button>
   );
 }

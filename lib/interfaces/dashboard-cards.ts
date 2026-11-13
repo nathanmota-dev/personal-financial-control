@@ -46,9 +46,15 @@ export type DashboardCardsProps = {
   month: string;
 };
 
+export type CreditCardVisualDetail = { label: string; value: string };
+
 export type CreditCardVisualProps = {
   card: DashboardCard;
   className?: string;
+  /** Replaces the due date and invoice shown in the bottom corners. */
+  details?: [CreditCardVisualDetail, CreditCardVisualDetail];
+  /** Replaces the invoice status badge; `null` hides it. */
+  statusLabel?: string | null;
 };
 
 export type CreditCardBrandLogoProps = {

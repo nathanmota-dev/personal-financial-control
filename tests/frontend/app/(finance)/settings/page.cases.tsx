@@ -7,20 +7,24 @@ import { renderUI } from "@/tests/frontend/helpers";
 
 describe("app/(finance)/settings/page", () => {
   it("loads the requested month and presents real fixture data", async () => {
-    renderUI(await Page());
+    const { user } = renderUI(await Page());
     expect(requirePageSession).toHaveBeenCalledOnce();
     expect(
       screen.getByRole("heading", { name: "Configurações" }),
     ).toBeVisible();
-    expect(screen.getByText("Visa Platinum")).toBeVisible();
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Categorias"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Cartões", "Investimentos", "Categorias"]);
+    expect(screen.queryByText("Visa Platinum")).toBeNull();
+    await user.click(screen.getByRole("tab", { name: "Cartões" }));
+    expect(screen.getAllByText("Visa Platinum")[0]).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: "Investimentos" }));
+    expect(screen.getByText("XP Investimentos")).toBeVisible();
   });
   it("separates security and MCP settings into their own tabs without a sign-out shortcut", async () => {
     vi.mocked(requirePageSession).mockResolvedValueOnce({
       user: { lockTimeoutMinutes: 15, lockOnClose: true, mcpTokenHash: null },
     } as never);
     const { user } = renderUI(await Page());
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Categorias", "Segurança", "MCP"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Cartões", "Investimentos", "Categorias", "Segurança", "MCP"]);
     expect(screen.queryByRole("button", { name: "Sair" })).toBeNull();
     await user.click(screen.getByRole("tab", { name: "Segurança" }));
     expect(screen.getByRole("slider", { name: "Tempo de inatividade" }).getAttribute("aria-valuetext")).toBe("15 min");
@@ -46,7 +50,7 @@ describe("app/(finance)/settings/page", () => {
       user: { lockTimeoutMinutes: 15, lockOnClose: true, mcpTokenHash: null },
     } as never);
     const { user } = renderUI(await Page());
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Categorias", "Open Finance", "Segurança", "MCP"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Cartões", "Investimentos", "Categorias", "Open Finance", "Segurança", "MCP"]);
     await user.click(screen.getByRole("tab", { name: "Open Finance" }));
     expect(screen.getByText("Open Finance não configurado")).toBeVisible();
     vi.unstubAllEnvs();

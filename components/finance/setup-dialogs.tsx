@@ -1,10 +1,11 @@
 "use client";
 
-import { Landmark, Layers3, Plus, Tags } from "lucide-react";
+import { Landmark, Layers3, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState,useTransition } from "react";
 import { toast } from "sonner";
 import { AccountSetupDialogDialogContent1 } from "./setup-dialogs-account-setup-dialog-dialog-content1";
+import { CategorySetupDialogContent } from "./setup-dialogs-category-setup-dialog-content";
 
 import {
 createAccountAction,
@@ -12,22 +13,13 @@ createCategoryAction,
 updateAccountAction,
 updateCategoryAction,
 } from "@/app/actions/finance";
-import { FinanceField } from "@/components/finance/finance-field";
-import { FormSelect } from "@/components/finance/form-select";
+import { findCatalogCategory } from "@/lib/category-markers";
 import { Button } from "@/components/ui/button";
 import {
 Dialog,
-DialogContent,
-DialogDescription,
-DialogFooter,
-DialogHeader,
-DialogTitle,
 DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { SelectItem } from "@/components/ui/select";
 import {
-categoryGroupLabels,
 extractErrorMessage,
 moneyInputToCents
 } from "@/lib/finance-ui";
@@ -45,12 +37,13 @@ export function AccountSetupDialog({
   trigger,
   commandId,
   defaultType,
+  allowedTypes,
 }: AccountSetupDialogProps) {
   const router = useRouter();
   const [manualOpen, setManualOpen] = useState(false);
   const [dismissedCommandId, setDismissedCommandId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const initialType = account?.type ?? defaultType ?? "checking";
+  const initialType = account?.type ?? defaultType ?? allowedTypes?.[0] ?? "checking";
   const open = manualOpen || Boolean(commandId && dismissedCommandId !== commandId);
   const [selectedAccountType, setSelectedAccountType] = useState<
     AccountRow["type"]
@@ -111,7 +104,7 @@ export function AccountSetupDialog({
           </Button>
         )}
       </DialogTrigger>
-      <AccountSetupDialogDialogContent1 account={account} startTransition={startTransition} onSubmit={onSubmit} selectedAccountType={selectedAccountType} setSelectedAccountType={setSelectedAccountType} isPending={isPending} />
+      <AccountSetupDialogDialogContent1 allowedTypes={allowedTypes} account={account} startTransition={startTransition} onSubmit={onSubmit} selectedAccountType={selectedAccountType} setSelectedAccountType={setSelectedAccountType} isPending={isPending} />
     </Dialog>
   );
 }
@@ -125,11 +118,18 @@ export function CategorySetupDialog({
   const [manualOpen, setManualOpen] = useState(false);
   const [dismissedCommandId, setDismissedCommandId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [selectedGroup, setSelectedGroup] = useState<CategoryRow["group"]>(category?.group ?? "variable_expense");
   const open = manualOpen || Boolean(commandId && dismissedCommandId !== commandId);
 
   function handleOpenChange(nextOpen: boolean) {
     setManualOpen(nextOpen);
+    if (nextOpen) setSelectedGroup(category?.group ?? "variable_expense");
     if (!nextOpen && commandId) setDismissedCommandId(commandId);
+  }
+
+  function handleNameChange(name: string) {
+    const entry = findCatalogCategory(name);
+    if (entry && !category) setSelectedGroup(entry.group);
   }
 
   async function onSubmit(formData: FormData) {
@@ -164,49 +164,14 @@ export function CategorySetupDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader icon={<Tags />} tone="brand">
-          <DialogTitle>
-            {category ? "Editar categoria" : "Nova categoria"}
-          </DialogTitle>
-          <DialogDescription>
-            Escolha o grupo correto para combinar com os tipos de lançamento.
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          action={(formData) => startTransition(() => void onSubmit(formData))}
-          className="grid gap-4"
-        >
-          <FinanceField label="Nome">
-            <Input
-              name="name"
-              defaultValue={category?.name ?? ""}
-              placeholder="Nome da categoria"
-            />
-          </FinanceField>
-          <FinanceField label="Grupo">
-            <FormSelect
-              name="group"
-              defaultValue={category?.group ?? "variable_expense"}
-            >
-              {Object.entries(categoryGroupLabels).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </FormSelect>
-          </FinanceField>
-          <DialogFooter>
-            <Button type="submit" disabled={isPending}>
-              {isPending
-                ? "Salvando..."
-                : category
-                  ? "Salvar alterações"
-                  : "Criar categoria"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
+      <CategorySetupDialogContent
+        category={category}
+        isPending={isPending}
+        selectedGroup={selectedGroup}
+        onGroupChange={setSelectedGroup}
+        onNameChange={handleNameChange}
+        onSubmit={(formData) => startTransition(() => void onSubmit(formData))}
+      />
     </Dialog>
   );
 }

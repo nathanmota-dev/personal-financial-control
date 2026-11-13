@@ -17,16 +17,14 @@ test("account creation, editing and archiving persist across pages", async ({
     .fill("100,00");
   await saveDialog(dialog, "Criar conta");
   await page.getByRole("link", { name: "Configurações", exact: true }).click();
-  let card = page.locator("[data-slot=card]").filter({ hasText: "Conta E2E" });
+  let card = page.getByRole("listitem", { name: "Conta E2E", exact: true });
   await card.getByRole("button", { name: "Editar", exact: true }).click();
   dialog = page.getByRole("dialog", { name: "Editar conta" });
   await dialog
     .getByRole("textbox", { name: "Nome", exact: true })
     .fill("Conta editada E2E");
   await saveDialog(dialog, "Salvar alterações");
-  card = page
-    .locator("[data-slot=card]")
-    .filter({ hasText: "Conta editada E2E" });
+  card = page.getByRole("listitem", { name: "Conta editada E2E", exact: true });
   await card.getByRole("button", { name: "Arquivar", exact: true }).click();
   await expect(card).toContainText("Arquivada");
   await page.reload();

@@ -17,8 +17,11 @@ export function DeleteCategoryButton({ id }: { id: string }) {
 
   return (
     <Button
-      variant="destructive"
+      variant="ghost"
       size="icon-sm"
+      aria-label="Excluir"
+      title="Excluir"
+      className="text-content hover:bg-danger-soft hover:text-danger"
       disabled={isPending}
       onClick={() =>
         startTransition(async () => {
