@@ -8,7 +8,10 @@ automática dos dados do banco via Open Finance.
 - [Configuração](#configuração)
 - [Como executar](#como-executar)
 - [Conectar seus bancos (Open Finance)](#conectar-seus-bancos-open-finance)
-- [Documentação](#documentação)
+
+## Demo
+
+https://github.com/user-attachments/assets/7231669f-d421-4bcf-8d39-4849515ff015
 
 ## Experimentar sem configurar nada
 
@@ -131,16 +134,3 @@ O botão lê o que a Pluggy já coletou, e o MeuPluggy atualiza os dados uma vez
 dia. Se você já tem lançamentos manuais no período, faça a
 [migração do histórico](docs/open-finance.md#migração-do-histórico-cutover) antes
 de sincronizar, para não duplicar dados.
-
-## Documentação
-
-| Assunto | Documento |
-|---|---|
-| Funcionalidades | [docs/features.md](docs/features.md) |
-| Regras do Open Finance | [docs/open-finance.md](docs/open-finance.md) |
-| Sessão local e PIN | [docs/sessao-e-pin.md](docs/sessao-e-pin.md) |
-| Privacidade dos dados | [docs/FINANCIAL-PRIVACY.md](docs/FINANCIAL-PRIVACY.md) |
-| Réplica local do Turso | [docs/turso-replica.md](docs/turso-replica.md) |
-| Integração MCP | [docs/mcp.md](docs/mcp.md) |
-| Exportação de relatórios | [docs/reports-csv.md](docs/reports-csv.md) |
-| Quality gate e baselines | [docs/workflow-baselines.md](docs/workflow-baselines.md) |

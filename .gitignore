@@ -41,6 +41,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .codex/
+.claude/
 .local/
 /reports/
 /scripts/node_modules/
@@ -48,3 +49,6 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 /.tmp/
+
+# README demo video: uploaded to a GitHub issue, not committed
+/docs/demo.mp4
