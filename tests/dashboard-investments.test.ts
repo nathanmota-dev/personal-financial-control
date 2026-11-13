@@ -4,7 +4,7 @@ import { buildDashboardInvestments } from "@/lib/dashboard-investments";
 import type { InvestmentOverview } from "@/lib/interfaces/investment-operations";
 
 const overview = (reserve: number, portfolio: number, distribution: InvestmentOverview["distribution"] = []) =>
-  ({ totalCents: reserve + portfolio, reserve: { amountCents: reserve, purposeId: null, configured: true }, portfolioCents: portfolio, knownCostCents: 0, resultCents: 500, distribution, history: [], lastUpdatedAt: null }) as InvestmentOverview;
+  ({ totalCents: reserve + portfolio, reserve: { amountCents: reserve, purposeId: null, configured: true }, bank: null, portfolioCents: portfolio, knownCostCents: 0, resultCents: 500, distribution, history: [], lastUpdatedAt: null }) as InvestmentOverview;
 
 describe("buildDashboardInvestments", () => {
   it("splits reserve and portfolio and lists the biggest asset classes first", () => {

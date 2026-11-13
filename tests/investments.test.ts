@@ -10,6 +10,7 @@ import {
   getInvestmentContributionHistory,
   getInvestmentProjection,
   reconcileInvestmentBalance,
+  setReserveMonthlyContribution,
 } from "@/lib/server/investments";
 import {
   createRecurringTemplate,
@@ -132,7 +133,7 @@ describe("investments", () => {
       { name: "Conta principal", type: "cash", initialBalanceCents: 1000000 },
       db
     );
-    const category = await createCategory({ name: "Renda variável", group: "investment" }, db);
+    const category = await createCategory({ name: "Reserva de emergência", group: "investment" }, db);
 
     await configureInvestmentPortfolio(
       {
@@ -216,7 +217,7 @@ describe("investments", () => {
       { name: "Conta recorrente", type: "checking", initialBalanceCents: 1000000 },
       db
     );
-    const category = await createCategory({ name: "Aporte mensal", group: "investment" }, db);
+    const category = await createCategory({ name: "Reserva", group: "investment" }, db);
 
     await configureInvestmentPortfolio(
       {
@@ -252,6 +253,52 @@ describe("investments", () => {
 
     expect(augustMovements).toHaveLength(1);
     expect(augustMovements?.[0]?.id).not.toBe(`${template.id}:2026-08`);
+  });
+
+  it("projects the reserve only with the reserve category, or with the monthly amount saved", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+    const account = await createAccount({ name: "Conta", type: "checking", initialBalanceCents: 1000000 }, db);
+    const portfolio = await createCategory({ name: "Ações", group: "investment" }, db);
+    await configureInvestmentPortfolio({ checkpointBalanceCents: 100000, expectedMonthlyRateBps: 100, checkpointDate: "2026-07-01" }, db);
+    const recurring = (categoryId: string, amountCents: number) => createRecurringTemplate({ accountId: account.id, categoryId, type: "investment_contribution", amountCents, dayOfMonth: 5, startMonth: "2026-07", description: "Aporte" }, db);
+    await recurring(portfolio.id, 90000);
+    const project = () => getInvestmentProjection(db, { asOfDate: "2026-07-16" });
+
+    const withoutCategory = await project();
+    expect(withoutCategory?.plannedMovements).toEqual([]);
+    expect(withoutCategory?.contribution).toEqual({ source: "recurring", monthlyCents: 0, recurringMonthlyCents: 0, hasReserveCategory: false });
+
+    const reserve = await createCategory({ name: "Reserva de emergência", group: "investment" }, db);
+    await recurring(reserve.id, 30000);
+    const byCategory = await project();
+    expect(byCategory?.contribution).toEqual({ source: "recurring", monthlyCents: 30000, recurringMonthlyCents: 30000, hasReserveCategory: true });
+    expect(byCategory?.plannedMovements.slice(0, 2).map((movement) => [movement.date, movement.amountCents])).toEqual([["2026-08-05", 30000], ["2026-09-05", 30000]]);
+    expect(byCategory?.nextContributionDate).toBe("2026-08-05");
+
+    await setReserveMonthlyContribution({ monthlyContributionCents: 120000 }, db);
+    const saved = await project();
+    expect(saved?.contribution).toEqual({ source: "custom", monthlyCents: 120000, recurringMonthlyCents: 30000, hasReserveCategory: true });
+    expect(saved?.plannedMovements.slice(0, 2).map((movement) => [movement.date, movement.amountCents])).toEqual([["2026-08-16", 120000], ["2026-09-16", 120000]]);
+    expect(saved!.projection[12]).toBeGreaterThan(byCategory!.projection[12]);
+
+    await setReserveMonthlyContribution({ monthlyContributionCents: 0 }, db);
+    expect((await project())?.plannedMovements).toEqual([]);
+    await setReserveMonthlyContribution({ monthlyContributionCents: null }, db);
+    expect((await project())?.contribution.source).toBe("recurring");
+  });
+
+  it("keeps planned reserve withdrawals with a saved amount and refuses a plan without a reserve", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+    await expect(setReserveMonthlyContribution({ monthlyContributionCents: 1000 }, db)).rejects.toMatchObject({ code: "INVESTMENT_PORTFOLIO_NOT_FOUND" });
+    const account = await createAccount({ name: "Conta", type: "checking", initialBalanceCents: 1000000 }, db);
+    const reserve = await createCategory({ name: "Reserva financeira", group: "investment" }, db);
+    await configureInvestmentPortfolio({ checkpointBalanceCents: 100000, expectedMonthlyRateBps: 100, checkpointDate: "2026-07-01" }, db);
+    await createTransaction({ accountId: account.id, categoryId: reserve.id, type: "investment_withdrawal", status: "pending", amountCents: 5000, transactionDate: "2026-07-20", competenceMonth: "2026-07", description: "Resgate" }, db);
+    await setReserveMonthlyContribution({ monthlyContributionCents: 1000 }, db);
+    const movements = (await getInvestmentProjection(db, { asOfDate: "2026-07-16" }))?.plannedMovements ?? [];
+    expect(movements.slice(0, 2).map((movement) => [movement.date, movement.direction])).toEqual([["2026-07-20", "withdrawal"], ["2026-08-16", "contribution"]]);
   });
 
   it("builds monthly history for contributions and withdrawals", async () => {
