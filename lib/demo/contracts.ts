@@ -9,6 +9,7 @@ investmentHoldings,
 investmentPortfolio,
 investmentPurposeAllocations,
 investmentPurposes,
+monthlyBudgets,
 recurringTemplates,
 transactions,
 transfers,
@@ -28,4 +29,5 @@ export type DemoFixture = {
   investmentPurposeAllocations: Array<typeof investmentPurposeAllocations.$inferInsert>;
   financialGoals: Array<typeof financialGoals.$inferInsert>;
   financialGoalAllocations: Array<typeof financialGoalAllocations.$inferInsert>;
+  monthlyBudgets: Array<typeof monthlyBudgets.$inferInsert>;
 };

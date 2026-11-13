@@ -22,6 +22,7 @@ investmentHoldings,
 investmentPortfolio,
 investmentPurposeAllocations,
 investmentPurposes,
+monthlyBudgets,
 recurringTemplates,
 transactions,
 transfers,
@@ -114,6 +115,7 @@ async function initializeDemoDatabase() {
       await transaction
         .insert(financialGoalAllocations)
         .values(demoFixture.financialGoalAllocations);
+      await transaction.insert(monthlyBudgets).values(demoFixture.monthlyBudgets);
     });
 
     process.once("exit", () => {

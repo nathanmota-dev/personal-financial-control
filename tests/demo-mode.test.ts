@@ -35,7 +35,8 @@ describe("demo mode", () => {
 
   it("keeps budget reads and mutations isolated in demo storage", async () => {
     const overview = await getBudgetOverview("2026-07");
-    const input = { categoryId: overview.categories[0].id, competenceMonth: "2026-07", amountCents: 80000 };
+    expect(overview.rows.filter((row) => row.limit)).toHaveLength(8);
+    const input = { categoryId: categoryIds.leisure, competenceMonth: "2026-07", amountCents: 80000 };
     await saveBudget(input);
     expect((await getBudgetOverview("2026-07")).rows.find((row) => row.categoryId === input.categoryId)?.limit?.amountCents).toBe(80000);
     expect(await copyPreviousBudgets("2026-08")).toBe(1);
