@@ -115,15 +115,16 @@ Suporta:
 
 ### `/investments`
 
-Visão consolidada da reserva de emergência e da carteira de longo prazo, sem dupla contagem. O saldo projetado por checkpoint, aportes, retiradas e rendimento estimado é a fonte oficial da reserva.
+Visão consolidada da reserva de emergência e da carteira de longo prazo, sem dupla contagem. Sem Open Finance, o saldo projetado por checkpoint, aportes, retiradas e rendimento estimado é a fonte oficial da reserva, configurada em **Configurações > Investimentos**. Com posições vinculadas, a reserva é o valor definido nesta tela sobre o total do banco, e a carteira é o restante.
 
 Suporta:
 
+- divisão do total do banco entre reserva e carteira, com um único valor;
 - configuração inicial da carteira;
 - patrimônio total, reserva oficial e longo prazo;
 - data de referência do saldo;
 - taxa mensal esperada;
-- aportes futuros previstos a partir das recorrências;
+- projeção da reserva só com a categoria **Reserva de emergência** (ou um apelido como "Reserva"): sem ela, nada é previsto; um aporte mensal salvo no card de projeção substitui as recorrências, e **Usar recorrências** volta ao automático;
 - registro de aportes e resgates;
 - conciliação do saldo da carteira;
 - histórico de contribuições;
@@ -131,7 +132,7 @@ Suporta:
 
 ### `/investments/portfolio`
 
-Carteira exclusivamente de longo prazo. Ativos integralmente dedicados à reserva não aparecem aqui.
+Carteira exclusivamente de longo prazo. Sem Open Finance, ativos integralmente dedicados à reserva não aparecem aqui; com posições vinculadas, todas aparecem e a reserva é descontada do total.
 
 Suporta:
 
