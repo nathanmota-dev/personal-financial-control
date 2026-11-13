@@ -1,3 +1,5 @@
+import type { BankReserveSplit } from "@/lib/interfaces/bank-reserve";
+import type { ReserveContributionPlan } from "@/lib/interfaces/reserve-contribution";
 import type { InvestmentMovementDirection } from "@/lib/investment-projection";
 import type { ReactNode } from "react";
 
@@ -16,6 +18,11 @@ export type InvestmentProjection = {
   checkpointBalanceCents: number;
   expectedMonthlyRateBps: number;
   checkpointDate: string;
+  /** `manual` estimates from a checkpoint and a rate; `bank` reads the amount set over the linked positions. */
+  source: "manual" | "bank";
+  bank: BankReserveSplit | null;
+  reserveAmountCents?: number | null;
+  contribution: ReserveContributionPlan;
   currentBalanceCents: number;
   asOfDate: string;
   estimatedInterestCents: number;
@@ -99,3 +106,12 @@ export type InvestmentHistoryMetricProps = {
   detail?: ReactNode;
   tone: "cyan" | "sky" | "amber";
 };
+
+/** The projection exactly as the server returns it, in either reserve mode. */
+export type ReserveProjection = NonNullable<Awaited<ReturnType<typeof import("@/lib/server/investments/projection").getInvestmentProjection>>>;
+
+export type InvestmentMovementMonth = InvestmentContributionHistory["points"][number];
+
+export type InvestmentMovementListProps = { history: InvestmentContributionHistory };
+
+export type InvestmentMovementListRowProps = { point: InvestmentMovementMonth };

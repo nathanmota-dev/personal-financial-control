@@ -119,9 +119,19 @@ A sincronização atualiza apenas valor e data. Nome, tipo e instituição vêm 
 - Cada atualização grava o snapshot da posição no dia da sincronização. Repetir no mesmo dia substitui o snapshot.
 - Esta etapa é a única que altera valores de posição. Aportes e resgates importados da conta corrente não reduzem ativos, então um resgate nunca é descontado duas vezes.
 - A atualização mantém a alocação da reserva de emergência acompanhando o valor do ativo.
-- Quando uma posição vinculada compõe a reserva, cada sincronização grava o total da reserva como saldo de referência do dia, e a tela **Reserva de emergência** parte do valor do banco.
 - Conectores expõem produtos diferentes. Uma conexão sem investimentos, ou com o recurso indisponível, aparece na aba e no resumo, sem contar como falha.
 
+### Reserva com posições vinculadas
+
+Com pelo menos uma posição vinculada, a reserva deixa de ser estimada e passa a ser uma parte das posições:
+
+- Em **Investimentos**, **Definir reserva** grava um único valor. A reserva é esse valor e a carteira é o total das posições ativas menos ele, então as duas sempre somam o total e nunca há como definir mais do que existe.
+- Nada é regravado na sincronização. Rendimentos, aportes e resgates mudam o total, e a diferença fica na carteira até você ajustar a reserva.
+- Se o total cair abaixo do valor definido, a reserva mostra o total, a carteira fica zerada e a tela pede um ajuste.
+- A tela **Reserva** mostra o valor definido, a data informada pelo banco, a rentabilidade real e o rendimento do mês. Não há saldo de referência nem data de conferência.
+- A rentabilidade real vem dos snapshots das posições nos últimos 30 dias, do mais antigo ao mais recente, normalizada para 30 dias. Uma posição nova entra pelo primeiro valor, e uma posição que perdeu valor foi resgatada e fica fora do cálculo. Ativos cotados também ficam fora. Até existirem duas sincronizações em dias diferentes, a projeção usa a taxa configurada.
+- Na distribuição por classe, a reserva é descontada primeiro da renda fixa, depois de caixa, fundos, outros, imobiliário, ações e cripto.
+- Sem posições vinculadas, a reserva continua manual: saldo de referência e taxa ficam em **Configurações > Investimentos**.
 ## Migração do histórico (cutover)
 
 O cutover troca os dados lançados à mão pelos dados do banco dentro da janela de cada conta. Depois dele, não use `scripts/import-itau-card.ts` nem lançamentos manuais nos períodos sincronizados, porque eles duplicariam o que vem do banco.

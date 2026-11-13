@@ -53,3 +53,5 @@ export type SettingsCategorySuggestionsProps = { categories: CategoryRow[] };
 export type SettingsCategorySuggestionProps = { entry: CategoryCatalogEntry };
 
 export type SettingsArchiveButtonProps = { id: string; label?: ReactNode };
+
+export type SettingsReservePanelProps = { projection: import("@/lib/interfaces/investments").InvestmentProjection | null };

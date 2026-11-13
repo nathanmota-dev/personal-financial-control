@@ -1,5 +1,6 @@
 import type { AppDb } from "@/lib/db";
-import { transactions } from "@/lib/db/schema";
+import { investmentHoldings, investmentPortfolio, transactions } from "@/lib/db/schema";
+import type { BankReserveSplit } from "@/lib/interfaces/bank-reserve";
 import {
 buildInvestmentGrowthSeries,
 calculateInvestmentBalance
@@ -10,7 +11,8 @@ import { invariant } from "@/lib/server/errors";
 import { normalizeDate,serializeTimestamps } from "@/lib/server/finance";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { and,eq,gte,inArray,lte } from "drizzle-orm";
-import { addDaysToDate,addMonthsToDate,listPlannedInvestmentMovements } from "./planned-movements";
+import { buildBankReserveSplit } from "./bank-reserve";
+import { planReserveMovements } from "./reserve-contribution";
 import { InvestmentDb,resolveReadDb } from "./validation";
 
 export async function getInvestmentProjection(
@@ -19,7 +21,15 @@ export async function getInvestmentProjection(
 ) {
   const db = await resolveReadDb(database);
   const asOfDate = normalizeDate(options?.asOfDate ?? getFinanceToday());
-  const portfolio = await db.query.investmentPortfolio.findFirst();
+  const [portfolio, holdings] = await Promise.all([
+    db.query.investmentPortfolio.findFirst(),
+    db.query.investmentHoldings.findMany({ where: eq(investmentHoldings.isArchived, false) }),
+  ]);
+  const bank = await buildBankReserveSplit(db, holdings, portfolio, asOfDate);
+
+  if (bank) {
+    return getBankReserveProjection(db, bank, portfolio, asOfDate);
+  }
 
   if (!portfolio) {
     return null;
@@ -43,26 +53,13 @@ export async function getInvestmentProjection(
     asOfDate,
     movements,
   });
-  const plannedMovements = await listPlannedInvestmentMovements(
-    db,
-    addDaysToDate(asOfDate, 1),
-    addMonthsToDate(asOfDate, 600)
-  );
-  const projection = Object.fromEntries(
-    [1, 6, 12, 24].map((months) => [
-      months,
-      buildInvestmentGrowthSeries({
-        currentBalanceCents: balance.balanceCents,
-        expectedMonthlyRateBps: portfolio.expectedMonthlyRateBps,
-        referenceDate: asOfDate,
-        movements: plannedMovements,
-        months,
-      }).at(-1)?.balanceCents ?? balance.balanceCents,
-    ])
-  );
+  const { plannedMovements, projection, contribution } = await projectReserve(db, balance.balanceCents, portfolio.expectedMonthlyRateBps, asOfDate, portfolio.reserveMonthlyContributionCents);
 
   return {
     ...serializeTimestamps(portfolio),
+    source: "manual" as const,
+    bank: null,
+    contribution,
     currentBalanceCents: balance.balanceCents,
     asOfDate,
     estimatedInterestCents: balance.estimatedInterestCents,
@@ -74,6 +71,56 @@ export async function getInvestmentProjection(
     nextContributionDate: plannedMovements.find(
       (movement) => movement.direction === "contribution"
     )?.date,
+  };
+}
+
+async function projectReserve(db: InvestmentDb, balanceCents: number, expectedMonthlyRateBps: number, asOfDate: string, savedMonthlyCents: number | null | undefined) {
+  const { plannedMovements, contribution } = await planReserveMovements(db, asOfDate, savedMonthlyCents);
+  const projection = Object.fromEntries(
+    [1, 6, 12, 24].map((months) => [
+      months,
+      buildInvestmentGrowthSeries({
+        currentBalanceCents: balanceCents,
+        expectedMonthlyRateBps,
+        referenceDate: asOfDate,
+        movements: plannedMovements,
+        months,
+      }).at(-1)?.balanceCents ?? balanceCents,
+    ])
+  );
+  return { plannedMovements, projection, contribution };
+}
+
+/**
+ * With linked positions, the reserve is the amount the user set over the bank's values: no checkpoint and no estimate.
+ * The projection uses the realized rate, and the configured rate only until enough snapshots exist.
+ */
+async function getBankReserveProjection(db: InvestmentDb, bank: BankReserveSplit, portfolio: typeof investmentPortfolio.$inferSelect | undefined, asOfDate: string) {
+  const expectedMonthlyRateBps = bank.realizedYield?.monthlyRateBps ?? portfolio?.expectedMonthlyRateBps ?? 0;
+  const { plannedMovements, projection, contribution } = await projectReserve(db, bank.reserveCents, expectedMonthlyRateBps, asOfDate, portfolio?.reserveMonthlyContributionCents);
+  const timestamps = portfolio ? serializeTimestamps(portfolio) : null;
+  // Without a stored row the bank's date stands in, typed like the serialized timestamps the views expect.
+  const fallbackTimestamp = `${bank.valueAsOf}T00:00:00.000Z` as Date & string;
+  return {
+    id: portfolio?.id ?? "bank-reserve",
+    checkpointBalanceCents: bank.reserveCents,
+    expectedMonthlyRateBps,
+    checkpointDate: bank.valueAsOf <= asOfDate ? bank.valueAsOf : asOfDate,
+    reserveAmountCents: bank.configuredReserveCents,
+    createdAt: timestamps?.createdAt ?? fallbackTimestamp,
+    updatedAt: timestamps?.updatedAt ?? fallbackTimestamp,
+    source: "bank" as const,
+    bank,
+    contribution,
+    currentBalanceCents: bank.reserveCents,
+    asOfDate,
+    estimatedInterestCents: 0,
+    contributionCents: 0,
+    withdrawalCents: 0,
+    netMovementCents: 0,
+    projection,
+    plannedMovements,
+    nextContributionDate: plannedMovements.find((movement) => movement.direction === "contribution")?.date,
   };
 }
 

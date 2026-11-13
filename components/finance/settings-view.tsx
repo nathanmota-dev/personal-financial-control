@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/finance/page-header";
 import { SettingsAccountsPanel } from "@/components/finance/settings/settings-accounts-panel";
 import { SettingsCardsPanel } from "@/components/finance/settings/settings-cards-panel";
 import { SettingsCategoriesPanel } from "@/components/finance/settings/settings-categories-panel";
+import { SettingsReservePanel } from "@/components/finance/settings/settings-reserve-panel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { SettingsViewProps } from "@/lib/interfaces/components/settings-view";
 
@@ -17,6 +18,8 @@ export function SettingsView({
   categories,
   security,
   openFinance,
+  reserveProjection = null,
+  initialTab = "accounts",
 }: SettingsViewProps) {
   const moneyAccounts = accounts.filter((account) => account.type === "checking" || account.type === "savings" || account.type === "cash");
   const cards = accounts.filter((account) => account.type === "credit");
@@ -29,7 +32,7 @@ export function SettingsView({
         description="Gerencie suas contas, cartões, investimentos, categorias, segurança e integrações do app."
       />
 
-      <Tabs defaultValue="accounts" className="gap-5">
+      <Tabs defaultValue={initialTab} className="gap-5">
         <TabsList aria-label="Seções das configurações" variant="line" className="max-w-full justify-start overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsTrigger value="accounts" className="shrink-0 px-3"><Wallet />Contas</TabsTrigger>
           <TabsTrigger value="cards" className="shrink-0 px-3"><CreditCard />Cartões</TabsTrigger>
@@ -57,7 +60,7 @@ export function SettingsView({
           <SettingsCardsPanel cards={cards} />
         </TabsContent>
 
-        <TabsContent value="investments" className="mt-0">
+        <TabsContent value="investments" className="mt-0 grid items-start gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
           <SettingsAccountsPanel
             title="Contas de investimento"
             description="Saldo atual somado das contas usadas para aportes e resgates."
@@ -68,6 +71,7 @@ export function SettingsView({
             accounts={investmentAccounts}
             allowedTypes={["investment"]}
           />
+          <SettingsReservePanel projection={reserveProjection} />
         </TabsContent>
 
         <TabsContent value="categories" className="mt-0">

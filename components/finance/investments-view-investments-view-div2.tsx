@@ -2,7 +2,7 @@
 
 import { InvestmentContributionChart } from "@/components/finance/investment-contribution-chart";
 import { InvestmentGrowthChart } from "@/components/finance/investment-growth-chart";
-import { InvestmentPortfolioSettings } from "@/components/finance/investment-portfolio-settings";
+import { InvestmentMovementList } from "@/components/finance/investment-movement-list";
 import { InvestmentsViewCard1 } from "@/components/finance/investments-view-investments-view-card1";
 import { InvestmentsViewSection1 } from "@/components/finance/investments-view-investments-view-section1";
 import { PageHeader } from "@/components/finance/page-header";
@@ -21,7 +21,7 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
       <PageHeader
         eyebrow="Reserva"
         title="Reserva"
-        description="Acompanhe o saldo estimado, confira o valor real quando necessário e projete o crescimento com base nos lançamentos da sua vida financeira."
+        description={projection?.source === "bank" ? "Acompanhe a parte das suas posições definida como reserva, com o valor e a rentabilidade reais do banco, e projete o crescimento." : "Acompanhe o saldo estimado e projete o crescimento com base nos lançamentos da sua vida financeira. O saldo e a taxa ficam em Configurações."}
         actions={
           <div className="flex flex-wrap gap-3">
             <Button asChild variant="secondary" className={headerButtonClassName}>
@@ -64,7 +64,7 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
 
       <div className={gridClassName}>
         <InvestmentContributionChart history={contributionHistory} />
-        <InvestmentPortfolioSettings projection={projection} />
+        <InvestmentMovementList history={contributionHistory} />
       </div>
     </div>
   );

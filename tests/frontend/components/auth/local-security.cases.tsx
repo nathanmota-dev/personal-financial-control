@@ -6,7 +6,7 @@ import { McpTokenSettings } from "@/components/auth/mcp-token-settings";
 import { renderUI } from "../../helpers";
 function locationMock() {
   const assign = vi.fn();
-  vi.stubGlobal("window", new Proxy(window, { get: (target, key) => key === "location" ? { assign } : Reflect.get(target, key, target) }));
+  vi.stubGlobal("window", new Proxy(window, { get: (target, key) => key === "location" ? { href: target.location.href, assign } : Reflect.get(target, key, target) }));
   return assign;
 }
 const lockUser = { name: "Ana Souza", email: "ana@example.com" };

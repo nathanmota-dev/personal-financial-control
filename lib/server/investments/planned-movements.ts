@@ -10,11 +10,14 @@ import { and,eq,gte,inArray,isNull,lte,or } from "drizzle-orm";
 import { toInvestmentMovement } from "./projection";
 import { InvestmentDb } from "./validation";
 
+/** Pass `categoryIds` to keep only the entries of those categories, as the reserve projection does. */
 export async function listPlannedInvestmentMovements(
   database: InvestmentDb,
   startDate: string,
-  endDate: string
+  endDate: string,
+  categoryIds?: ReadonlySet<string>
 ) {
+  const inCategory = (categoryId: string | null) => !categoryIds || (categoryId !== null && categoryIds.has(categoryId));
   const rows = await database.query.transactions.findMany({
     where: and(
       inArray(transactions.type, ["investment_contribution", "investment_withdrawal"]),
@@ -23,8 +26,8 @@ export async function listPlannedInvestmentMovements(
       lte(transactions.transactionDate, endDate)
     ),
   });
-  const transactionMovements = rows.map((row) => toInvestmentMovement(row));
-  const contributionTemplates = await database.query.recurringTemplates.findMany({
+  const transactionMovements = rows.filter((row) => inCategory(row.categoryId)).map((row) => toInvestmentMovement(row));
+  const allContributionTemplates = await database.query.recurringTemplates.findMany({
     where: and(
       eq(recurringTemplates.type, "investment_contribution"),
       eq(recurringTemplates.status, "active"),
@@ -35,6 +38,7 @@ export async function listPlannedInvestmentMovements(
       )
     ),
   });
+  const contributionTemplates = allContributionTemplates.filter((template) => inCategory(template.categoryId));
   const existingOccurrences = await getExistingRecurringOccurrences(
     database,
     startDate.slice(0, 7),

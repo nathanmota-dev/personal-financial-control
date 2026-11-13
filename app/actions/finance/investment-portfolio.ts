@@ -20,6 +20,8 @@ configureInvestmentPortfolio,
 createInvestmentContribution,
 createInvestmentWithdrawal,
 reconcileInvestmentBalance,
+setBankReserveAmount,
+setReserveMonthlyContribution,
 updateInvestmentSettings,
 } from "@/lib/server/investments";
 import { revalidateFinanceViews } from "./action-runtime";
@@ -29,6 +31,24 @@ export async function configureInvestmentPortfolioAction(
 ) {
   await requireActionSession();
   const result = await configureInvestmentPortfolio(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function setBankReserveAmountAction(
+  input: Parameters<typeof setBankReserveAmount>[0]
+) {
+  await requireActionSession();
+  const result = await setBankReserveAmount(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function setReserveMonthlyContributionAction(
+  input: Parameters<typeof setReserveMonthlyContribution>[0]
+) {
+  await requireActionSession();
+  const result = await setReserveMonthlyContribution(input);
   revalidateFinanceViews();
   return result;
 }

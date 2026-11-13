@@ -23,4 +23,6 @@ export type SettingsViewProps = {
   categories: CategoryRow[];
   security?: SecuritySettingsProps;
   openFinance?: { configured: boolean };
+  reserveProjection?: import("@/lib/interfaces/investments").InvestmentProjection | null;
+  initialTab?: string;
 };

@@ -21,7 +21,6 @@ import type {
 import { DomainError } from "@/lib/server/errors";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
-import { alignReserveCheckpointStep } from "./steps/align-reserve-checkpoint";
 import { importBankTransactionsStep } from "./steps/import-bank-transactions";
 import { importCardBillsStep, matchBillPaymentsStep, reportCardBillsStep } from "./steps/import-card-bills";
 import { importCardPurchasesStep } from "./steps/import-card-purchases";
@@ -30,7 +29,7 @@ import { syncInvestmentPositionsStep } from "./steps/sync-investment-positions";
 import { closePluggyRun, openPluggyRun } from "./sync-runs";
 
 /** Steps run in this order. Import steps from later issues are appended here, each in its own file. */
-export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep, importCardPurchasesStep, importCardBillsStep, matchBillPaymentsStep, reportCardBillsStep, syncInvestmentPositionsStep, alignReserveCheckpointStep];
+export const pluggySyncSteps: readonly PluggySyncStep[] = [itemStatusStep, accountCheckStep, importBankTransactionsStep, importCardPurchasesStep, importCardBillsStep, matchBillPaymentsStep, reportCardBillsStep, syncInvestmentPositionsStep];
 
 const MAX_ATTENTION_ITEMS = 50;
 const MAX_INVOICE_ROWS = 50;

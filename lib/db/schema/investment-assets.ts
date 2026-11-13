@@ -16,6 +16,10 @@ export const investmentPortfolio = sqliteTable(
     checkpointBalanceCents: encryptedInteger("checkpoint_balance_cents", "investment_portfolio.checkpoint_balance_cents").notNull(),
     expectedMonthlyRateBps: encryptedInteger("expected_monthly_rate_bps", "investment_portfolio.expected_monthly_rate_bps").notNull(),
     checkpointDate: encryptedText("checkpoint_date", "investment_portfolio.checkpoint_date").notNull(),
+    /** Part of the bank-synced positions set aside as the reserve. The rest is the portfolio. */
+    reserveAmountCents: encryptedInteger("reserve_amount_cents", "investment_portfolio.reserve_amount_cents"),
+    /** Monthly contribution the user plans for the reserve. `null` follows the reserve category's recurring entries. */
+    reserveMonthlyContributionCents: encryptedInteger("reserve_monthly_contribution_cents", "investment_portfolio.reserve_monthly_contribution_cents"),
     ...timestampColumns("investment_portfolio"),
   },
   (table) => [

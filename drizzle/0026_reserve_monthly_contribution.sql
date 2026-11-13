@@ -1,0 +1,1 @@
+ALTER TABLE investment_portfolio ADD reserve_monthly_contribution_cents TEXT CONSTRAINT investment_portfolio_reserve_monthly_contribution_cents_encrypted CHECK (reserve_monthly_contribution_cents IS NULL OR (typeof(reserve_monthly_contribution_cents) = 'text' AND reserve_monthly_contribution_cents LIKE 'pfc:v2:%'));

@@ -8,6 +8,7 @@ import { useFinancialFormatter } from "@/components/finance/privacy/privacy-cont
 import { Button } from "@/components/ui/button";
 import { MonthPicker } from "@/components/ui/monthpicker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ReserveContributionForm } from "@/components/finance/reserve-contribution-form";
 import type { InvestmentsViewCard1Props } from "@/lib/interfaces/render/investments-view-investments-view-card1";
 import { SIMULATION_MONTH_LABELS, formatSimulationMonth } from "@/lib/utils/components/investments-view";
 
@@ -17,7 +18,7 @@ export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPi
     <section className="relative flex min-w-0 flex-col rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
       <DashboardCardIllustration src="/images/projected-balance-trend.webp" />
       <h2 className="text-lg font-semibold leading-[25px]">Projeções da reserva</h2>
-      <p className="mt-1 pr-16 text-xs text-content-muted">Saldo esperado com a taxa e os lançamentos previstos</p>
+      <p className="mt-1 pr-16 text-xs text-content-muted">{projection?.source === "bank" ? "Saldo esperado com a rentabilidade real e o aporte mensal da reserva" : "Saldo esperado com a taxa e o aporte mensal da reserva"}</p>
       {projection ? (
         <ul className="mt-4 divide-y divide-border">
           {cards.map((card) => (
@@ -30,6 +31,7 @@ export function InvestmentsViewCard1({ isSimulationPickerOpen, setIsSimulationPi
       ) : (
         <p className="mt-4 text-[13px] leading-5 text-content">Configure a reserva para visualizar as projeções.</p>
       )}
+      {projection ? <ReserveContributionForm key={`${projection.contribution.source}-${projection.contribution.monthlyCents}`} contribution={projection.contribution} /> : null}
 
       <h3 className="mt-6 text-[10px] font-bold tracking-wider text-content uppercase">Simular período</h3>
       <div className="mt-2 space-y-3">

@@ -1,0 +1,1 @@
+ALTER TABLE investment_portfolio ADD reserve_amount_cents TEXT CONSTRAINT investment_portfolio_reserve_amount_cents_encrypted CHECK (reserve_amount_cents IS NULL OR (typeof(reserve_amount_cents) = 'text' AND reserve_amount_cents LIKE 'pfc:v2:%'));
