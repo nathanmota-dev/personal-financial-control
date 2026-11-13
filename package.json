@@ -33,7 +33,8 @@
     "pluggy:cutover": "tsx --conditions=react-server scripts/pluggy-cutover.ts",
     "db:bundle-migrator": "esbuild scripts/migrate.ts --bundle --platform=node --format=esm --packages=external --outfile=scripts/migrate.mjs",
     "test:coverage:target": "npm run test:coverage:ci && tsx tests/coverage/check-target.ts",
-    "test:e2e:inspect": "tsx tests/e2e/helpers/inspect.ts"
+    "test:e2e:inspect": "tsx tests/e2e/helpers/inspect.ts",
+    "demo:record": "npm run build && playwright test --config playwright.demo.config.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
