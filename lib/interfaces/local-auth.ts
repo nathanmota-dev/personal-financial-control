@@ -19,10 +19,21 @@ export interface LockSettings {
   lockTimeoutMinutes: number;
   lockOnClose: boolean;
 }
+export interface LockUser {
+  name?: string;
+  email: string;
+  picture?: string;
+}
 export interface LockFormProps {
   setup: boolean;
   destination: string;
   attempts: number;
+  user: LockUser;
+}
+export interface LockUserCardProps { user: LockUser; }
+export interface LockAttemptsProps {
+  remaining: number;
+  total: number;
 }
 export interface SecuritySettingsProps extends LockSettings {
   hasMcpToken: boolean;
@@ -32,6 +43,8 @@ export interface PinInputProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  /** `lg` renders the dashboard-style tiles used on the lock screen. */
+  size?: "default" | "lg";
 }
 
 export interface SessionActivityProps { timeoutMinutes: number; }

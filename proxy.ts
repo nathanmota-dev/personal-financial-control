@@ -18,7 +18,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next({ headers: privateHeaders });
   }
   if (process.env.NODE_ENV === "development" && path === "/_next/webpack-hmr" && request.method === "GET") return NextResponse.next();
-  if ((path.startsWith("/_next/static/") || path === "/favicon.ico" || path === "/icon.png") && ["GET", "HEAD"].includes(request.method)) return NextResponse.next();
+  // Public illustrations (no user data) must load on the login and lock screens.
+  if ((path.startsWith("/_next/static/") || path.startsWith("/images/") || path === "/favicon.ico" || path === "/icon.png") &&["GET", "HEAD"].includes(request.method)) return NextResponse.next();
   let origin: string;
   try { origin = authConfig().origin; } catch {
     return path === "/login" && ["GET", "HEAD"].includes(request.method) ? NextResponse.next({ headers: privateHeaders }) : deny(503);

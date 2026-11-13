@@ -1328,6 +1328,20 @@
     "never": "Nunca",
     "minutes": "{count} min",
     "lockOnCloseDescription": "Pede o PIN sempre que o app for aberto novamente.",
-    "pinDescription": "Confirme o PIN atual e escolha 6 novos dígitos."
+    "pinDescription": "Confirme o PIN atual e escolha 6 novos dígitos.",
+    "signedInAs": "Conectado como",
+    "footer": "Seu espaço pessoal. Protegido pelo seu PIN.",
+    "showPin": "Mostrar PIN",
+    "hidePin": "Ocultar PIN",
+    "showcase": {
+      "title": "Seus dados, só com você.",
+      "description": "O app trava sozinho e só abre de novo com o seu PIN. Nada das suas finanças aparece na tela enquanto ele estiver travado.",
+      "idleTitle": "Bloqueio automático",
+      "idleDescription": "Trava depois do tempo sem uso definido em Segurança.",
+      "hashTitle": "PIN protegido",
+      "hashDescription": "Guardado com hash, nunca em texto puro.",
+      "recoveryTitle": "Esqueceu o PIN?",
+      "recoveryDescription": "Entre de novo com o Google e crie outro."
+    }
   }
 }

@@ -9,13 +9,14 @@ function locationMock() {
   vi.stubGlobal("window", new Proxy(window, { get: (target, key) => key === "location" ? { assign } : Reflect.get(target, key, target) }));
   return assign;
 }
+const lockUser = { name: "Ana Souza", email: "ana@example.com" };
 function fillPin(label: string, value: string) { fireEvent.change(screen.getByLabelText(label, { exact: true }), { target: { value } }); }
 describe("local security UI", () => {
   it("confirms a new PIN before setup and navigates to the original destination", async () => {
     const assign = locationMock();
     const fetcher = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({ ok: true }) });
     vi.stubGlobal("fetch", fetcher);
-    const { user } = renderUI(<LockForm setup destination="/goals" attempts={0} />);
+    const { user } = renderUI(<LockForm setup destination="/goals" attempts={0} user={lockUser} />);
     fillPin("PIN", "123456"); fillPin("Confirmar PIN", "111111");
     await user.click(screen.getByRole("button", { name: "Definir PIN" }));
     expect(screen.getAllByRole("status")[0].textContent).toContain("Os PINs não coincidem.");
@@ -27,7 +28,7 @@ describe("local security UI", () => {
   it("shows wrong attempts then redirects on lockout", async () => {
     const assign = locationMock();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce({ ok: false, status: 400, json: async () => ({ remaining: 1 }) }).mockResolvedValueOnce({ status: 401 }));
-    const { user } = renderUI(<LockForm setup={false} destination="/dashboard" attempts={3} />);
+    const { user } = renderUI(<LockForm setup={false} destination="/dashboard" attempts={3} user={lockUser} />);
     fillPin("PIN", "000000"); await user.click(screen.getByRole("button", { name: "Destravar" }));
     expect(await screen.findByText("1 tentativas restantes.")).toBeVisible();
     fillPin("PIN", "000000"); await user.click(screen.getByRole("button", { name: "Destravar" }));
@@ -35,7 +36,7 @@ describe("local security UI", () => {
   });
   it("requests a Google reauthentication for forgotten PINs", async () => {
     const assign = locationMock(); const fetcher = vi.fn().mockResolvedValue({ ok: true }); vi.stubGlobal("fetch", fetcher);
-    const { user } = renderUI(<LockForm setup={false} destination="/goals" attempts={0} />);
+    const { user } = renderUI(<LockForm setup={false} destination="/goals" attempts={0} user={lockUser} />);
     await user.click(screen.getByRole("button", { name: "Esqueci o PIN" }));
     expect(fetcher).toHaveBeenCalledWith("/api/session", { method: "DELETE", headers: { "x-session-intent": "pin-reset" } });
     await waitFor(() => expect(assign).toHaveBeenCalledWith("/login?next=%2Fgoals"));
