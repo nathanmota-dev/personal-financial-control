@@ -3,6 +3,7 @@ export interface InvestmentsViewCard1Props {
   isSimulationPickerOpen: boolean;
   setIsSimulationPickerOpen: import("react").Dispatch<import("react").SetStateAction<boolean>>;
   projection: import("@/lib/interfaces/investments").InvestmentProjection | null;
+  cards: { months: number; value: number | null }[];
   selectedSimulationDate: Date | undefined;
   applySimulation: (date?: Date) => void;
   minSimulationMonth: Date;

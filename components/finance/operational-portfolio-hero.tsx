@@ -1,41 +1,41 @@
 "use client";
 
-import { HeroPanel } from "@/components/finance/ds/hero-panel";
-import { HeroStat } from "@/components/finance/ds/hero-stat";
+import { Coins, Layers, TrendingDown, TrendingUp, Trophy } from "lucide-react";
+
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
+import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
-import { rankShares } from "@/lib/finance-tone";
-import { investmentAssetClassLabels } from "@/lib/finance-ui";
 import type { OperationalPortfolioHeroProps } from "@/lib/interfaces/investment-operations";
-import { Coins, Layers, Trophy, TrendingUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function OperationalPortfolioHero({ positions }: OperationalPortfolioHeroProps) {
-  const { formatCurrency, hidden } = useFinancialFormatter();
+  const { formatCurrency, protectText } = useFinancialFormatter();
   const total = positions.reduce((sum, item) => sum + item.currentValueCents, 0);
   const known = positions.filter((item) => item.resultCents !== null);
   const result = known.reduce((sum, item) => sum + (item.resultCents ?? 0), 0);
   const largest = positions.reduce<(typeof positions)[number] | null>((top, item) => !top || item.currentValueCents > top.currentValueCents ? item : top, null);
-  const shares = rankShares(positions, (item) => investmentAssetClassLabels[item.assetClass], (item) => item.currentValueCents);
+  const ResultIcon = result >= 0 ? TrendingUp : TrendingDown;
+  const stats = [
+    { label: "Posições", value: String(positions.length), hint: "Ativos na carteira", icon: Layers },
+    { label: "Resultado conhecido", value: formatCurrency(result), hint: `${known.length} posição(ões) com custo`, icon: ResultIcon, className: known.length ? (result < 0 ? "text-destructive" : "text-success") : undefined },
+    { label: "Maior posição", value: largest ? <span data-user-content>{largest.ticker ?? largest.name}</span> : "—", hint: largest ? `${protectText(largest.participationPercentage.toFixed(1).replace(".", ","))}% da carteira` : "Sem ativos", icon: Trophy },
+    { label: "Classes", value: String(new Set(positions.map((item) => item.assetClass)).size), hint: "Diversificação atual", icon: Coins },
+  ];
   return (
-    <HeroPanel
-      eyebrow="Total em longo prazo"
-      value={formatCurrency(total)}
-      caption="Valor atual das posições acompanhadas por operações."
-      aside={
-        <div className="flex w-full flex-col gap-3 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-          <p className="text-xs font-semibold text-white/80">Alocação por classe</p>
-          {shares.length ? shares.map((share) => (
-            <div key={share.name} className="space-y-1.5">
-              <div className="flex items-center justify-between gap-3 text-xs"><span className="truncate font-medium">{share.name}</span><span className="shrink-0 text-white/75 tabular-nums">{hidden ? "" : `${share.percent.toFixed(0)}%`}</span></div>
-              <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-white/15"><div className="h-full rounded-full bg-white/85" style={{ width: hidden ? 0 : `${share.percent}%` }} /></div>
-            </div>
-          )) : <p className="text-xs leading-5 text-white/70">Cadastre um ativo para ver a alocação por classe.</p>}
-        </div>
-      }
-    >
-      <HeroStat label="Posições" value={String(positions.length)} hint="Ativos na carteira" icon={<Layers />} />
-      <HeroStat label="Resultado conhecido" value={formatCurrency(result)} hint={`${known.length} posição(ões) com custo`} icon={<TrendingUp />} />
-      <HeroStat label="Maior posição" value={largest ? <span data-user-content>{largest.ticker ?? largest.name}</span> : "—"} hint={largest ? `${largest.participationPercentage.toFixed(1)}% da carteira` : "Sem ativos"} icon={<Trophy />} />
-      <HeroStat label="Classes" value={String(new Set(positions.map((item) => item.assetClass)).size)} hint="Diversificação atual" icon={<Coins />} />
-    </HeroPanel>
+    <section aria-label="Total na carteira" className="@container relative min-w-0 rounded-[20px] border border-border bg-card p-[23px] min-[100.0625rem]:p-5">
+      <DashboardCardIllustration src="/images/investments-chart.webp" className="top-4 right-6 size-[96px]" />
+      <h2 className="text-sm font-semibold text-content-strong">Total na carteira</h2>
+      <DashboardCardsMoney cents={total} className="mt-4 block text-[48px] leading-[52px] font-bold text-content-strong" />
+      <p className="mt-2 pr-24 text-xs text-content">Valor atual das posições acompanhadas por operações. A reserva fica fora desta visão.</p>
+      <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-5 sm:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="min-w-0">
+            <dt className="flex items-center gap-1.5 text-xs text-content"><stat.icon aria-hidden className="size-3.5 shrink-0" />{stat.label}</dt>
+            <dd className={cn("mt-1 truncate text-[15px] font-semibold text-content-strong", stat.className)}>{stat.value}</dd>
+            <p className="mt-0.5 text-[11px] text-content-subtle">{stat.hint}</p>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }

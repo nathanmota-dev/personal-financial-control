@@ -176,7 +176,7 @@
     },
     "investments": {
       "title": "Investments",
-      "description": "See your emergency reserve and long-term portfolio together, with known costs and operating results.",
+      "description": "Your reserve and portfolio together, with known costs and operating results.",
       "openPortfolio": "Open portfolio",
       "configurePortfolio": "Set up portfolio",
       "portfolioNotConfigured": "Your portfolio is not set up yet.",

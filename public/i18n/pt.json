@@ -176,7 +176,7 @@
     },
     "investments": {
       "title": "Investimentos",
-      "description": "Reserva de emergência e carteira de longo prazo em uma leitura consolidada, com custo conhecido e resultado operacional.",
+      "description": "Reserva e carteira em uma leitura consolidada, com custo conhecido e resultado operacional.",
       "openPortfolio": "Abrir carteira",
       "configurePortfolio": "Configurar carteira",
       "portfolioNotConfigured": "A carteira ainda não foi configurada.",

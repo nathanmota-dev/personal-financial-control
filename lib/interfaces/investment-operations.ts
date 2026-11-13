@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 
 import type {
 getInvestmentAssetDetails,
@@ -66,12 +65,21 @@ export type OperationFormState = { type: InvestmentOperationInput["type"]; opera
 
 export type InvestmentOverviewLinkProps = {
   href: string;
-  icon: ReactNode;
-  tone: import("@/lib/interfaces/design-system").Tone;
+  illustrationSrc: string;
   title: string;
-  value: ReactNode;
+  valueCents: number;
   detail: string;
   action: string;
+};
+
+export type InvestmentClassShare = { assetClass: InvestmentPosition["assetClass"]; amountCents: number };
+
+export type InvestmentClassDistributionProps = {
+  title: string;
+  description: string;
+  items: InvestmentClassShare[];
+  emptyMessage: string;
+  illustrationSrc: string;
 };
 
 export type InvestmentPositionRowProps = { item: InvestmentPosition };

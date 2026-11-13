@@ -1,30 +1,20 @@
 "use client";
 
-import { IconTile } from "@/components/finance/ds/icon-tile";
-
 import { InvestmentField } from "@/components/finance/investment-field";
 import { Button } from "@/components/ui/button";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
 import { centsToMoneyInput, formatRateFromBps } from "@/lib/finance-ui";
 import type { InvestmentPortfolioSettingsCard2Props } from "@/lib/interfaces/render/investment-portfolio-settings-investment-portfolio-settings-card2";
-import { RefreshCcw,Save,SlidersHorizontal } from "lucide-react";
+import { RefreshCcw,Save } from "lucide-react";
 
 export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, isPending, startTransition, onUpdateRate, setReconciledBalance, setReconciledDate, setIsReconcileOpen }: InvestmentPortfolioSettingsCard2Props) {
   return (
-<Card className="gap-0 py-0">
-        <CardHeader className="border-b border-border px-5 py-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <IconTile tone="brand" size="sm"><SlidersHorizontal /></IconTile>
-            <div>
-              <CardTitle className="text-base">Premissas e conferência</CardTitle>
-              <p className="text-xs leading-5 text-content-muted">
-                O saldo é estimado diariamente. Use a conferência quando o valor real da corretora
-                divergir da taxa modelada.
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="grid items-end gap-4 px-5 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto]">
+<section className="flex min-w-0 flex-col rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+        <h2 className="text-lg font-semibold leading-[25px]">Premissas e conferência</h2>
+        <p className="mt-1 text-xs text-content-muted">
+          O saldo é estimado diariamente. Use a conferência quando o valor real da corretora
+          divergir da taxa modelada.
+        </p>
+        <div className="mt-5 grid gap-5">
           <div className="space-y-2">
           <InvestmentField
             id="investment-expected-rate"
@@ -33,12 +23,12 @@ export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, is
             placeholder="1,00"
             onChange={setRate}
           />
-          <p className="text-xs leading-5 text-content">
+          <p className="text-[11px] leading-4 text-content-subtle">
             A taxa atual é {formatRateFromBps(projection.expectedMonthlyRateBps)} e serve para
             estimar o rendimento entre movimentações.
           </p>
           </div>
-          <div className="flex flex-wrap gap-2.5">
+          <div className="flex flex-wrap gap-2.5 border-t border-border pt-4">
             <Button
               variant="outline"
               disabled={isPending}
@@ -59,7 +49,7 @@ export function InvestmentPortfolioSettingsCard2({ projection, rate, setRate, is
               Conferir saldo real
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
   );
 }

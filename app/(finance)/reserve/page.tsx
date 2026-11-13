@@ -19,7 +19,7 @@ export default async function EmergencyReservePage() {
   ]);
 
   return (
-    <div className="space-y-6"><InvestmentsView
+    <div className="space-y-6 min-[100.0625rem]:space-y-5"><InvestmentsView
       key={`${projection?.updatedAt ?? "empty"}-${projection?.currentBalanceCents ?? 0}-${projection?.asOfDate ?? "none"}`}
       projection={projection}
       contributionHistory={contributionHistory}

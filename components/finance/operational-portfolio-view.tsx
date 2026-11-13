@@ -1,7 +1,9 @@
 "use client";
 
 import { InvestmentPositionRow } from "@/components/finance/investment-position-row";
+import { InvestmentClassDistribution } from "@/components/finance/investment-class-distribution";
 import { OperationalPortfolioHero } from "@/components/finance/operational-portfolio-hero";
+import { buildAssetClassDistribution } from "@/lib/investment-class-distribution";
 
 import { Plus, RefreshCw, Search, Landmark } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9,7 +11,7 @@ import { useMemo,useState,useTransition } from "react";
 import { toast } from "sonner";
 
 import { createOperationalInvestmentAssetAction,refreshInvestmentQuotesAction } from "@/app/actions/finance";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/finance/page-header";
 import { Button } from "@/components/ui/button";
 import { Dialog,DialogContent,DialogDescription,DialogHeader,DialogTitle,DialogTrigger } from "@/components/ui/dialog";
@@ -22,6 +24,7 @@ import { useDatabaseSync } from "@/lib/database-sync-context";
 import type { AssetFormState,OperationalPortfolioViewProps } from "@/lib/interfaces/investment-operations";
 
 const initialForm: AssetFormState = { name: "", ticker: "", institutionName: "", assetClass: "equities", instrumentType: "stock", valuationMode: "market_quote", quoteSymbol: "" };
+const headerButtonClassName = "h-10 gap-[10px] rounded-[10px] text-[13px] font-medium";
 const supportedTypes = [
   { value: "stock", label: "Ação" }, { value: "real_estate_fund", label: "FII" }, { value: "etf", label: "ETF" },
   { value: "treasury", label: "Tesouro" }, { value: "cdb", label: "CDB" }, { value: "lci", label: "LCI" }, { value: "lca", label: "LCA" },
@@ -41,7 +44,7 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
     const text = `${item.name} ${item.ticker ?? ""} ${item.institutionName ?? ""}`.toLowerCase();
     return text.includes(query.toLowerCase()) && (assetClass === "all" || item.assetClass === assetClass);
   }), [positions, query, assetClass]);
-  const total = positions.reduce((sum, item) => sum + item.currentValueCents, 0);
+  const filteredTotal = filtered.reduce((sum, item) => sum + item.currentValueCents, 0);
 
   function submit() {
     startTransition(async () => {
@@ -63,10 +66,10 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
   }
 
   return (
-    <div className="space-y-6">
-      <PageHeader eyebrow="Carteira" title="Carteira" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex flex-wrap gap-2"><Button variant="outline" disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-4 ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
+    <div className="space-y-6 min-[100.0625rem]:space-y-5">
+      <PageHeader eyebrow="Carteira" title="Carteira" description="Ações, FIIs, ETFs e renda fixa acompanhados por operações. A reserva fica fora desta visão." actions={<div className="flex flex-wrap gap-3"><Button variant="secondary" className={headerButtonClassName} disabled={pending} onClick={refreshQuotes}><RefreshCw className={`size-[17px] ${pending ? "animate-spin" : ""}`} /> Atualizar cotações</Button>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button><Plus className="size-4" /> Cadastrar ativo</Button></DialogTrigger>
+          <DialogTrigger asChild><Button className={headerButtonClassName}><Plus className="size-[17px]" /> Cadastrar ativo</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader icon={<Landmark />} tone="violet"><DialogTitle>Novo ativo</DialogTitle><DialogDescription>A posição nasce das operações registradas.</DialogDescription></DialogHeader>
             <div className="grid gap-4">
@@ -78,17 +81,40 @@ export function OperationalPortfolioView({ positions }: OperationalPortfolioView
           </DialogContent>
         </Dialog></div>
       } />
-      <OperationalPortfolioHero positions={positions} />
-      <Card className="gap-0 py-0">
-        <CardHeader className="gap-4 border-b border-border p-5 md:grid-cols-[1fr_220px_auto] md:items-center">
-          <div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content-muted" /><Input className="h-11 rounded-xl bg-muted/40 pl-9" placeholder="Buscar ativo, código ou instituição" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
-          <Select value={assetClass} onValueChange={setAssetClass}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas as classes</SelectItem>{Object.entries(investmentAssetClassLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-          <div className="border-l border-border pl-4 text-right"><p className="text-[10px] text-content-muted">Total filtrado</p><p className="font-semibold text-content-strong">{formatCurrency(total)}</p></div>
-        </CardHeader>
-        <CardContent className="divide-y divide-border px-0">{filtered.length ? filtered.map((item) => (
-          <InvestmentPositionRow key={item.id} item={item} />
-        )) : <div className="p-12 text-center text-sm text-content-muted">Nenhuma posição encontrada.</div>}</CardContent>
-      </Card>
+      <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+        <OperationalPortfolioHero positions={positions} />
+        <InvestmentClassDistribution
+          title="Alocação por classe"
+          description="Participação de cada classe no valor atual"
+          items={buildAssetClassDistribution(positions)}
+          emptyMessage="Cadastre um ativo para ver a alocação por classe."
+          illustrationSrc="/images/expenses-pie.webp"
+        />
+      </div>
+      <section aria-label="Posições" className="min-w-0 overflow-hidden rounded-[20px] border border-border bg-card">
+        <div className="flex flex-wrap items-start justify-between gap-3 px-[22px] pt-5">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold leading-[25px]">Posições</h2>
+              <Badge variant="outline" className="border-input text-content">{filtered.length}</Badge>
+            </div>
+            <p className="mt-1 text-xs text-content-muted">Selecione um ativo para ver operações, custo e resultado</p>
+          </div>
+          <div className="text-right">
+            <p className="text-[11px] text-content-subtle">Total filtrado</p>
+            <p className="text-xl font-semibold tabular-nums text-content-strong">{formatCurrency(filteredTotal)}</p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-3 border-b border-border px-[22px] pb-5 md:grid-cols-[minmax(0,1fr)_220px]">
+          <div className="relative"><Search aria-hidden className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-content-muted" /><Input className="h-10 rounded-[10px] pl-9" placeholder="Buscar ativo, código ou instituição" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
+          <Select value={assetClass} onValueChange={setAssetClass}><SelectTrigger className="h-10 w-full rounded-[10px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Todas as classes</SelectItem>{Object.entries(investmentAssetClassLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
+        </div>
+        {filtered.length ? (
+          <ul className="divide-y divide-border">{filtered.map((item) => <InvestmentPositionRow key={item.id} item={item} />)}</ul>
+        ) : (
+          <p className="px-[22px] py-12 text-center text-sm text-content-muted">Nenhuma posição encontrada.</p>
+        )}
+      </section>
     </div>
   );
 }

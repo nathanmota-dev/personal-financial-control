@@ -2,6 +2,7 @@
 
 import { InvestmentGrowthChartChartContainer1 } from "./investment-growth-chart-investment-growth-chart-chart-container1";
 
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { InvestmentGrowthSummaryMetric } from "@/components/finance/investment-growth-summary-metric";
 import { formatRateFromBps } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
@@ -43,17 +44,16 @@ export function InvestmentGrowthChart({
   }
 
   return (
-    <div className="rounded-[20px] border border-border bg-card p-5 shadow-none">
-      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-content-strong">
-            Saldo estimado e movimentações
-          </h3>
-          <p className="mt-1 text-sm text-content">
+    <section className="relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+      <DashboardCardIllustration src="/images/reports-growth-bars.webp" />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="pr-16 lg:pr-0">
+          <h2 className="text-lg font-semibold leading-[25px]">Saldo estimado e movimentações</h2>
+          <p className="mt-1 text-xs text-content-muted">
             Composição até {periodLabel} com taxa de {formatRateFromBps(expectedMonthlyRateBps)} e os lançamentos previstos.
           </p>
         </div>
-        <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[420px]">
+        <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-3 lg:mr-20 lg:min-w-[420px]">
           <InvestmentGrowthSummaryMetric
             label="Saldo + movimentos"
             value={formatCurrency(finalPrincipalCents)}
@@ -69,10 +69,10 @@ export function InvestmentGrowthChart({
             value={interestShare}
             tone="emerald"
           />
-        </div>
+        </dl>
       </div>
 
       <InvestmentGrowthChartChartContainer1 data={data} />
-    </div>
+    </section>
   );
 }

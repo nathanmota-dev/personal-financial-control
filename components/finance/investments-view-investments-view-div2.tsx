@@ -12,42 +12,43 @@ import { formatSimulationMonth } from "@/lib/utils/components/investments-view";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+const headerButtonClassName = "h-10 gap-[10px] rounded-[10px] text-[13px] font-medium";
+const gridClassName = "grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]";
+
 export function InvestmentsViewDiv2({ projection, contributionHistory, cards, isSimulationPickerOpen, setIsSimulationPickerOpen, selectedSimulationDate, applySimulation, minSimulationMonth, maxSimulationMonth, simulatedMonths, simulatedValue }: InvestmentsViewDiv2Props) {
   return (
-<div className="space-y-6">
+    <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
         eyebrow="Reserva"
         title="Reserva"
         description="Acompanhe o saldo estimado, confira o valor real quando necessário e projete o crescimento com base nos lançamentos da sua vida financeira."
         actions={
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline">
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="secondary" className={headerButtonClassName}>
               <Link href="/investments/portfolio">
                 Carteira
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-[17px]" />
               </Link>
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="secondary" className={headerButtonClassName}>
               <Link href="/transactions?type=investment_contribution">
                 Ver aportes
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-[17px]" />
               </Link>
             </Button>
-            <Button asChild>
+            <Button asChild className={headerButtonClassName}>
               <Link href="/recurring">
                 Configurar recorrência
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-[17px]" />
               </Link>
             </Button>
           </div>
         }
       />
 
-      <InvestmentsViewSection1 projection={projection} cards={cards} />
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-        <InvestmentContributionChart history={contributionHistory} />
-        <InvestmentsViewCard1 isSimulationPickerOpen={isSimulationPickerOpen} setIsSimulationPickerOpen={setIsSimulationPickerOpen} projection={projection} selectedSimulationDate={selectedSimulationDate} applySimulation={applySimulation} minSimulationMonth={minSimulationMonth} maxSimulationMonth={maxSimulationMonth} simulatedMonths={simulatedMonths} simulatedValue={simulatedValue} />
+      <div className={gridClassName}>
+        <InvestmentsViewSection1 projection={projection} />
+        <InvestmentsViewCard1 isSimulationPickerOpen={isSimulationPickerOpen} setIsSimulationPickerOpen={setIsSimulationPickerOpen} projection={projection} cards={cards} selectedSimulationDate={selectedSimulationDate} applySimulation={applySimulation} minSimulationMonth={minSimulationMonth} maxSimulationMonth={maxSimulationMonth} simulatedMonths={simulatedMonths} simulatedValue={simulatedValue} />
       </div>
 
       {projection && simulatedMonths && selectedSimulationDate ? (
@@ -60,7 +61,11 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
           periodLabel={formatSimulationMonth(selectedSimulationDate)}
         />
       ) : null}
-      <InvestmentPortfolioSettings projection={projection} />
+
+      <div className={gridClassName}>
+        <InvestmentContributionChart history={contributionHistory} />
+        <InvestmentPortfolioSettings projection={projection} />
+      </div>
     </div>
   );
 }

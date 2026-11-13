@@ -24,7 +24,6 @@ test("reserve shows composition, changes its expected rate and confirms balance"
   await saveDialog(dialog, "Salvar checkpoint");
   await expect(
     page
-      .getByText("Saldo estimado hoje", { exact: true })
-      .locator('xpath=ancestor::*[@data-slot="card"]'),
+      .getByRole("region", { name: "Saldo estimado hoje", exact: true }),
   ).toContainText(/30\.000,00/);
 });

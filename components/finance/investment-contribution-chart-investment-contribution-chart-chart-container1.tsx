@@ -1,6 +1,5 @@
 "use client";
 
-import { financeChartSurfaceClassName } from "@/components/finance/finance-styles";
 import {
 ChartContainer,
 ChartLegend,
@@ -11,7 +10,6 @@ ChartTooltipContent,
 import { formatMonthLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentContributionChartChartContainer1Props } from "@/lib/interfaces/render/investment-contribution-chart-investment-contribution-chart-chart-container1";
-import { cn } from "@/lib/utils";
 import { compactCurrencyFormatter } from "@/lib/utils/components/investment-contribution-chart";
 import { Area,Bar,CartesianGrid,ComposedChart,XAxis,YAxis } from "recharts";
 
@@ -19,31 +17,31 @@ export function InvestmentContributionChartChartContainer1({ data }: InvestmentC
   const { formatCurrency } = useFinancialFormatter();
   return (
 <ChartContainer
-            className={cn(financeChartSurfaceClassName, "h-[330px] w-full")}
+            className="mt-5 min-h-[280px] w-full flex-1 rounded-xl bg-[var(--chart-surface)]"
             config={{
-              monthlyContribution: { label: "Aportes", color: "var(--chart-brand)" },
-              monthlyWithdrawal: { label: "Resgates", color: "var(--chart-warning)" },
-              cumulativeNetMovement: { label: "Movimentação líquida", color: "var(--chart-brand)" },
+              monthlyContribution: { label: "Aportes", color: "var(--chart-1)" },
+              monthlyWithdrawal: { label: "Resgates", color: "var(--chart-2)" },
+              cumulativeNetMovement: { label: "Movimentação líquida", color: "var(--chart-5)" },
             }}
           >
-            <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
-              <defs>
-                <linearGradient id="investmentMovementGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="var(--color-cumulativeNetMovement)" stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
+            <ComposedChart data={data} margin={{ top: 30, right: 29, bottom: 8, left: 0 }}>
               <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
+                tickMargin={16}
+                fontSize={10}
+                stroke="var(--content-subtle)"
                 minTickGap={26}
                 tickFormatter={(value) => formatMonthLabel(String(value))}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
+                tickCount={5}
+                fontSize={10}
+                stroke="var(--content-subtle)"
                 width={68}
                 tickFormatter={(value) => compactCurrencyFormatter.format(Number(value))}
               />
@@ -53,37 +51,38 @@ export function InvestmentContributionChartChartContainer1({ data }: InvestmentC
                     labelFormatter={(value) => formatMonthLabel(String(value))}
                     formatter={(value, name) => (
                       <>
-                        <span className="text-muted-foreground">{String(name)}</span>
-                        <span>{formatCurrency(Number(value) * 100)}</span>
+                        <span className="text-content">{String(name)}</span>
+                        <strong>{formatCurrency(Number(value) * 100)}</strong>
                       </>
                     )}
                   />
                 }
               />
-              <ChartLegend content={<ChartLegendContent className="text-content" />} />
+              <ChartLegend content={<ChartLegendContent className="text-[11px] text-content" />} />
               <Bar
                 dataKey="monthlyContribution"
                 name="Aportes"
                 fill="var(--color-monthlyContribution)"
-                fillOpacity={0.72}
                 radius={[6, 6, 2, 2]}
                 maxBarSize={28}
+                isAnimationActive={false}
               />
               <Bar
                 dataKey="monthlyWithdrawal"
                 name="Resgates"
                 fill="var(--color-monthlyWithdrawal)"
-                fillOpacity={0.72}
                 radius={[6, 6, 2, 2]}
                 maxBarSize={28}
+                isAnimationActive={false}
               />
               <Area
-                type="monotone"
+                type="linear"
                 dataKey="cumulativeNetMovement"
                 name="Movimentação líquida"
-                fill="url(#investmentMovementGradient)"
+                fill="none"
                 stroke="var(--color-cumulativeNetMovement)"
-                strokeWidth={2.5}
+                strokeWidth={2}
+                isAnimationActive={false}
               />
             </ComposedChart>
           </ChartContainer>

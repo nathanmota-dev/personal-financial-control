@@ -10,6 +10,7 @@ export const frontendTests = [
   "tests/recurring-calendar.test.ts",
   "tests/recurring-summary.test.ts",
   "tests/report-overview.test.ts",
+  "tests/investment-class-distribution.test.ts",
   "tests/theme-script.test.ts",
   "tests/transaction-navigation.test.ts",
   "tests/transaction-reduction.test.ts",
