@@ -35,7 +35,7 @@ export type DashboardCard = {
   name: string;
   brand: CardBrandId;
   dueDate: string;
-  /** Selected month followed by the next invoices. */
+  /** First invoice shown (the selected month, or the next one once the current month is past due) followed by the next ones. */
   invoices: DashboardCardInvoice[];
 };
 
@@ -69,7 +69,9 @@ export type CreditCardInvoiceChartProps = {
 export type DashboardCardsHeaderProps = {
   monthLabel: string;
   totalCents: number;
+  /** Invoice month opened by "Ver fatura". */
   month: string;
+  cardId: string;
   canPrevious: boolean;
   canNext: boolean;
   onPrevious: () => void;

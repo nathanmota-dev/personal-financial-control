@@ -40,7 +40,7 @@ vi.mock("@/lib/server/dashboard", () => ({
   getMonthlyExpenseFeed: vi.fn(),
   getCategorySpendingReport: vi.fn(),
 }));
-vi.mock("@/lib/server/credit-card", () => ({ getCreditCardOverview: vi.fn(), getCreditCardShowcase: vi.fn() }));
+vi.mock("@/lib/server/credit-card", () => ({ getCreditCardDefaultMonth: vi.fn(), getCreditCardOverview: vi.fn(), getCreditCardShowcase: vi.fn() }));
 vi.mock("@/lib/server/investments", () => ({
   getInvestmentProjection: vi.fn(),
   getInvestmentContributionHistory: vi.fn(),
@@ -152,6 +152,9 @@ beforeEach(() => {
   vi.mocked(creditCard.getCreditCardShowcase)
     .mockReset()
     .mockResolvedValue([]);
+  vi.mocked(creditCard.getCreditCardDefaultMonth)
+    .mockReset()
+    .mockResolvedValue("2026-07");
   vi.mocked(investments.getInvestmentProjection)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.projection) as never);

@@ -2,8 +2,8 @@ import { CreditCardView } from "@/components/finance/credit-card-view";
 import { requirePageSession } from "@/lib/auth/server";
 import { isValidMonth } from "@/lib/finance-ui";
 import { listCategories } from "@/lib/server/categories";
-import { getCreditCardOverview, getCreditCardShowcase } from "@/lib/server/credit-card";
-import { getFinanceDefaultMonth } from "@/lib/server/runtime";
+import { getCreditCardDefaultMonth, getCreditCardOverview, getCreditCardShowcase } from "@/lib/server/credit-card";
+import { getFinanceDefaultMonth, getFinanceToday } from "@/lib/server/runtime";
 
 export default async function CreditCardPage({
   searchParams,
@@ -13,9 +13,8 @@ export default async function CreditCardPage({
   await requirePageSession();
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
-  const month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();
-
   const cardParam = typeof params.card === "string" ? params.card : undefined;
+  let month = isValidMonth(monthParam) ? monthParam : getFinanceDefaultMonth();
 
   let data:
     | {
@@ -27,6 +26,8 @@ export default async function CreditCardPage({
     | undefined;
 
   try {
+    // Without a requested month, open the invoice still to be paid: past its due date it is the next one.
+    if (!isValidMonth(monthParam)) month = await getCreditCardDefaultMonth(getFinanceToday(), cardParam);
     const cards = await getCreditCardShowcase(month);
     // An unknown or missing card falls back to the first one.
     const selectedCardId = cards.find((card) => card.id === cardParam)?.id ?? cards[0]?.id;

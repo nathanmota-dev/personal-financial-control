@@ -1,7 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
 import type { AppDb } from "@/lib/db";
 import { accounts, creditCardBills, creditCardInstallments, transactions } from "@/lib/db/schema";
-import { buildDashboardCard, DASHBOARD_CARD_INVOICE_COUNT, shiftMonth } from "@/lib/dashboard-cards";
+import { buildDashboardCard, DASHBOARD_CARD_INVOICE_COUNT, resolveOpenInvoiceMonth, shiftMonth } from "@/lib/dashboard-cards";
 import { formatMonthLabel } from "@/lib/finance-ui";
 import type { DashboardAccountBalance, DashboardExpense } from "@/lib/interfaces/dashboard";
 import type { DashboardCardsData } from "@/lib/interfaces/dashboard-cards";
@@ -70,9 +70,13 @@ export async function readDashboardBalances(month: string, expenses: DashboardEx
   }));
 }
 
-/** Cards reuse the batched records; only the bills of the visible invoices are read. */
-export async function readDashboardCards(month: string, expenses: DashboardExpense[], accountRows: Awaited<ReturnType<typeof readDashboardAccounts>>, db: AppDb): Promise<DashboardCardsData> {
-  const months = Array.from({ length: DASHBOARD_CARD_INVOICE_COUNT }, (_, index) => shiftMonth(month, index));
+/**
+ * Cards reuse the batched records; only the bills of the visible invoices are read.
+ * With `today` in `month`, a card whose invoice is already past due starts at the next one,
+ * so `expenses` must cover one month beyond the visible invoices.
+ */
+export async function readDashboardCards(month: string, expenses: DashboardExpense[], accountRows: Awaited<ReturnType<typeof readDashboardAccounts>>, db: AppDb, today?: string): Promise<DashboardCardsData> {
+  const months = Array.from({ length: DASHBOARD_CARD_INVOICE_COUNT + 1 }, (_, index) => shiftMonth(month, index));
   const bills = await db.query.creditCardBills.findMany({ where: inArray(creditCardBills.invoiceMonth, months) });
   const totals = new Map<string, Map<string, number>>();
   for (const expense of expenses) {
@@ -81,9 +85,10 @@ export async function readDashboardCards(month: string, expenses: DashboardExpen
     byMonth.set(expense.competenceMonth, (byMonth.get(expense.competenceMonth) ?? 0) + expense.amountCents);
     totals.set(expense.account.id, byMonth);
   }
-  return accountRows.filter((account) => account.type === "credit").map((account) => buildDashboardCard({
-    account, month,
-    totalsByMonth: totals.get(account.id) ?? new Map(),
-    billRows: bills.filter((bill) => bill.accountId === account.id),
-  }));
+  return accountRows.filter((account) => account.type === "credit").map((account) => {
+    const billRows = bills.filter((bill) => bill.accountId === account.id);
+    const currentDueDate = billRows.find((bill) => bill.invoiceMonth === month)?.dueDate;
+    const startMonth = today?.slice(0, 7) === month ? resolveOpenInvoiceMonth(today, account.creditDueDay, currentDueDate) : month;
+    return buildDashboardCard({ account, month: startMonth, totalsByMonth: totals.get(account.id) ?? new Map(), billRows });
+  });
 }

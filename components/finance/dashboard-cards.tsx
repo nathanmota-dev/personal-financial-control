@@ -12,6 +12,8 @@ import type { DashboardCardsProps } from "@/lib/interfaces/dashboard-cards";
 export function DashboardCards({ cards, month }: DashboardCardsProps) {
   const [index, setIndex] = useState(0);
   const active = cards[Math.min(index, cards.length - 1)];
+  // Each card may start at a later invoice than the dashboard month once its due date has passed.
+  const invoiceMonth = active?.invoices[0]?.month ?? month;
 
   if (!active) {
     return (
@@ -30,9 +32,10 @@ export function DashboardCards({ cards, month }: DashboardCardsProps) {
   return (
     <section className="@container min-w-0 rounded-[20px] border border-border bg-card p-[23px] xl:min-h-[560px]">
       <DashboardCardsHeader
-        monthLabel={longMonthName(month)}
+        monthLabel={longMonthName(invoiceMonth)}
         totalCents={active.invoices[0]?.totalCents ?? 0}
-        month={month}
+        month={invoiceMonth}
+        cardId={active.id}
         canPrevious={index > 0}
         canNext={index < cards.length - 1}
         onPrevious={() => setIndex((value) => Math.max(0, value - 1))}

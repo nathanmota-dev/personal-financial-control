@@ -114,6 +114,24 @@ describe("consolidated dashboard data", () => {
     expect(cards[0].dueDate).toBe("2026-01-10");
     expect(cards[1]).toMatchObject({ dueDate: "2026-01-15", invoices: [{ totalCents: 0 }, { totalCents: 0 }, { totalCents: 0 }] });
   });
+  it("starts each card at the next invoice once the current month's due date has passed", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-01-12T12:00:00.000Z"));
+    try {
+      const { db, card, variable } = await setup();
+      await createAccount({ name: "Nubank Roxinho", type: "credit", initialBalanceCents: 0, creditClosingDay: 4, creditDueDay: 15 }, db);
+      await createCreditCardCharge({ accountId: card.id, categoryId: variable.id, description: "Installment", totalAmountCents: 80000, installmentCount: 4, purchaseDate: "2025-12-01", firstInvoiceMonth: "2026-01" }, db);
+      const { cards } = await getDashboardData("2026-01", db);
+      // Card is due on the 10th, so January is already paid; Nubank is due on the 15th and keeps January.
+      expect(cards[0].invoices.map((item) => [item.month, item.totalCents])).toEqual([["2026-02", 20000], ["2026-03", 20000], ["2026-04", 20000]]);
+      expect(cards[0].dueDate).toBe("2026-02-10");
+      expect(cards[1].invoices.map((item) => item.month)).toEqual(["2026-01", "2026-02", "2026-03"]);
+      // Other dashboard months show their own invoice regardless of today.
+      expect((await getDashboardData("2025-12", db)).cards[0].invoices[0].month).toBe("2025-12");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it("lists only unpaid recurring expenses due from today until the end of the month", async () => {
     const { db, account, fixed } = await setup();
     const salary = await createCategory({ name: "Pay", group: "income" }, db);

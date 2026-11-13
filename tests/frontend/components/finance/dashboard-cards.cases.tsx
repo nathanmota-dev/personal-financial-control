@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { DashboardCards } from "@/components/finance/dashboard-cards";
 import { detectCardBrand } from "@/lib/credit-card-brands";
-import { buildDashboardCard, cardProductName } from "@/lib/dashboard-cards";
+import { buildDashboardCard, cardProductName, resolveOpenInvoiceMonth } from "@/lib/dashboard-cards";
 import type { DashboardCard } from "@/lib/interfaces/dashboard-cards";
 import { renderUI } from "@/tests/frontend/helpers";
 
@@ -48,6 +48,22 @@ describe("dashboard cards", () => {
     expect(screen.getByTestId("credit-card-invoice-chart")).toHaveTextContent("Aberta");
     await user.click(screen.getByRole("button", { name: "Próximo cartão" }));
     expect(screen.getByRole("button", { name: "Próximo cartão" })).toBeDisabled();
-    expect(screen.getByRole("link", { name: "Ver fatura" })).toHaveAttribute("href", "/credit-card?month=2026-12");
+    expect(screen.getByRole("link", { name: "Ver fatura" })).toHaveAttribute("href", "/credit-card?month=2026-12&card=2");
+  });
+
+  it("titles the header with the active card's first invoice, which can follow the dashboard month", () => {
+    renderUI(<DashboardCards month="2026-11" cards={[card("1", "Nubank", [5000, 0, 0])]} />);
+    expect(screen.getByText("Fatura de dezembro")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Ver fatura" })).toHaveAttribute("href", "/credit-card?month=2026-12&card=1");
+  });
+
+  it.each([
+    ["2026-11-10", 10, undefined, "2026-11"],
+    ["2026-11-13", 10, undefined, "2026-12"],
+    ["2026-12-13", 10, undefined, "2027-01"],
+    ["2026-02-28", 31, undefined, "2026-02"],
+    ["2026-11-13", 10, "2026-11-20", "2026-11"],
+  ] as const)("on %s with due day %i (bill due %s) the open invoice is %s", (today, dueDay, billDueDate, expected) => {
+    expect(resolveOpenInvoiceMonth(today, dueDay, billDueDate)).toBe(expected);
   });
 });

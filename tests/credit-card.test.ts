@@ -6,6 +6,7 @@ import {
   createCreditCardCharge,
   deleteCreditCardCharge,
   getCreditCardCharge,
+  getCreditCardDefaultMonth,
   getCreditCardOverview,
   updateCreditCardCharge,
 } from "@/lib/server/credit-card";
@@ -318,5 +319,23 @@ describe("credit card", () => {
     await expect(deleteCreditCardCharge(charge.id, db)).rejects.toMatchObject({
       code: "CREDIT_CARD_CHARGE_BILL_PAID",
     });
+  });
+
+  it("opens on the invoice still to be paid, using the selected card's due date", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+    expect(await getCreditCardDefaultMonth("2026-11-13", undefined, db)).toBe("2026-11");
+
+    const early = await createAccount({ name: "A Early", type: "credit", initialBalanceCents: 0, creditClosingDay: 3, creditDueDay: 10 }, db);
+    const late = await createAccount({ name: "B Late", type: "credit", initialBalanceCents: 0, creditClosingDay: 20, creditDueDay: 27 }, db);
+
+    expect(await getCreditCardDefaultMonth("2026-11-10", undefined, db)).toBe("2026-11");
+    expect(await getCreditCardDefaultMonth("2026-11-13", undefined, db)).toBe("2026-12");
+    expect(await getCreditCardDefaultMonth("2026-11-13", late.id, db)).toBe("2026-11");
+    expect(await getCreditCardDefaultMonth("2026-11-13", "unknown", db)).toBe("2026-12");
+
+    // A stored bill due later than the configured day keeps the current invoice open.
+    await upsertCreditCardBill({ accountId: early.id, invoiceMonth: "2026-11", dueDate: "2026-11-20", statementTotalCents: 1000, currentChargesTotalCents: 1000 }, db);
+    expect(await getCreditCardDefaultMonth("2026-11-13", early.id, db)).toBe("2026-11");
   });
 });

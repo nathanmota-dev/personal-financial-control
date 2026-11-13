@@ -18,6 +18,12 @@ export function resolveDueDate(month: string, dueDay: number, billDueDate?: stri
   return `${month}-${String(Math.min(dueDay, lastDay)).padStart(2, "0")}`;
 }
 
+/** Invoice still to be paid on `today`: the current month's until its due date, then the next one. */
+export function resolveOpenInvoiceMonth(today: string, dueDay: number, billDueDate?: string) {
+  const month = today.slice(0, 7);
+  return today > resolveDueDate(month, dueDay, billDueDate) ? shiftMonth(month, 1) : month;
+}
+
 export function buildDashboardCard({ account, month, totalsByMonth, billRows }: BuildDashboardCardInput): DashboardCard {
   const bills = new Map(billRows.map((row) => [row.invoiceMonth, row]));
   const invoices: DashboardCardInvoice[] = Array.from(

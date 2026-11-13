@@ -1,7 +1,7 @@
 import type { AppDb } from "@/lib/db";
 import { getFinanceDatabase } from "@/lib/db";
 import { buildRecentMonths } from "@/lib/finance-ui";
-import { shiftMonth } from "@/lib/dashboard-cards";
+import { DASHBOARD_CARD_INVOICE_COUNT, shiftMonth } from "@/lib/dashboard-cards";
 import { aggregateDashboardCategories, aggregateDashboardMonth, selectDashboardTopExpenses, sortDashboardExpenses } from "@/lib/dashboard-aggregation";
 import { buildDashboardChartSummary, buildDashboardComparisons } from "@/lib/dashboard-comparisons";
 import type { DashboardData } from "@/lib/interfaces/dashboard";
@@ -17,8 +17,10 @@ export async function getDashboardData(month: string, database?: AppDb): Promise
   const competenceMonth = normalizeCompetenceMonth(month);
   const db = database ?? await getFinanceDatabase();
   const months = buildRecentMonths(6, competenceMonth).reverse();
-  // Two extra months are read in the same batch so cards can show upcoming invoices.
-  const upcomingMonths = [shiftMonth(competenceMonth, 1), shiftMonth(competenceMonth, 2)];
+  // Upcoming months are read in the same batch so cards can show the next invoices, one more
+  // than they display because a card already past due this month starts at the next invoice.
+  const upcomingMonths = Array.from({ length: DASHBOARD_CARD_INVOICE_COUNT }, (_, index) => shiftMonth(competenceMonth, index + 1));
+  const today = getFinanceToday();
   const [records, investmentOverview, accountRows] = await Promise.all([
     readDashboardRecords([...months, ...upcomingMonths], db), getInvestmentOverview(db), readDashboardAccounts(db),
   ]);
@@ -29,8 +31,8 @@ export async function getDashboardData(month: string, database?: AppDb): Promise
   const comparisons = buildDashboardComparisons(current, previous);
   return {
     dashboard: { ...current, accountBalances: await readDashboardBalances(competenceMonth, expenses, db, accountRows) },
-    previous, comparisons, evolution, investmentOverview, cards: await readDashboardCards(competenceMonth, records.expenses, accountRows, db),
-    bills: await readDashboardBills(getFinanceToday(), db),
+    previous, comparisons, evolution, investmentOverview, cards: await readDashboardCards(competenceMonth, records.expenses, accountRows, db, today),
+    bills: await readDashboardBills(today, db),
     housing: buildDashboardHousing({ expenses, incomeCents: current.totals.incomeCents }),
     chartSummary: buildDashboardChartSummary(evolution, comparisons.netResultCents),
     categorySpending: aggregateDashboardCategories(expenses),

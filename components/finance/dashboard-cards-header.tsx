@@ -8,7 +8,7 @@ import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money"
 import { Button } from "@/components/ui/button";
 import type { DashboardCardsHeaderProps } from "@/lib/interfaces/dashboard-cards";
 
-export function DashboardCardsHeader({ monthLabel, totalCents, month, canPrevious, canNext, onPrevious, onNext }: DashboardCardsHeaderProps) {
+export function DashboardCardsHeader({ monthLabel, totalCents, month, cardId, canPrevious, canNext, onPrevious, onNext }: DashboardCardsHeaderProps) {
   return (
     <div>
       <div className="flex items-start justify-between gap-4">
@@ -26,7 +26,7 @@ export function DashboardCardsHeader({ monthLabel, totalCents, month, canPreviou
       </div>
       <div className="mt-4 flex items-center justify-between">
         <Button asChild variant="outline">
-          <Link href={`/credit-card?month=${month}`}>Ver fatura</Link>
+          <Link href={`/credit-card?month=${month}&card=${encodeURIComponent(cardId)}`}>Ver fatura</Link>
         </Button>
         <div className="flex gap-2">
           <Button type="button" variant="outline" size="icon-sm" className="rounded-full" aria-label="Cartão anterior" disabled={!canPrevious} onClick={onPrevious}>
