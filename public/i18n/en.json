@@ -1328,6 +1328,20 @@
     "never": "Never",
     "minutes": "{count} min",
     "lockOnCloseDescription": "Asks for the PIN whenever the app is opened again.",
-    "pinDescription": "Confirm your current PIN and choose 6 new digits."
+    "pinDescription": "Confirm your current PIN and choose 6 new digits.",
+    "signedInAs": "Signed in as",
+    "footer": "Your personal space. Protected by your PIN.",
+    "showPin": "Show PIN",
+    "hidePin": "Hide PIN",
+    "showcase": {
+      "title": "Your data stays with you.",
+      "description": "The app locks itself and only opens again with your PIN. None of your finances show on screen while it is locked.",
+      "idleTitle": "Auto lock",
+      "idleDescription": "Locks after the idle time set in Security.",
+      "hashTitle": "Protected PIN",
+      "hashDescription": "Stored as a hash, never in plain text.",
+      "recoveryTitle": "Forgot your PIN?",
+      "recoveryDescription": "Sign in again with Google and create a new one."
+    }
   }
 }
