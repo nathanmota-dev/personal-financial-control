@@ -20,6 +20,8 @@ export const investmentPortfolio = sqliteTable(
     reserveAmountCents: encryptedInteger("reserve_amount_cents", "investment_portfolio.reserve_amount_cents"),
     /** Monthly contribution the user plans for the reserve. `null` follows the reserve category's recurring entries. */
     reserveMonthlyContributionCents: encryptedInteger("reserve_monthly_contribution_cents", "investment_portfolio.reserve_monthly_contribution_cents"),
+    /** Date the user last set the reserve. Withdrawals dated before it are already part of that amount. */
+    reserveConfiguredOn: encryptedText("reserve_configured_on", "investment_portfolio.reserve_configured_on"),
     ...timestampColumns("investment_portfolio"),
   },
   (table) => [

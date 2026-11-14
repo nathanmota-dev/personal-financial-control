@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { pluggyImportLedger, transactions } from "@/lib/db/schema";
 import type { BankImportLedgerEntry, BankImportLocalRow, BankImportScope, PluggyBankRow } from "@/lib/interfaces/pluggy-bank-import";
+import { attributeImportedWithdrawal, needsReserveOrigin, tracksLinkedPositions } from "./reserve-withdrawal";
 import { bump, closestByDate, dayDistance } from "./scope";
 
 const PENDING_MATCH_WINDOW_DAYS = 3;
@@ -24,9 +25,13 @@ function bankStateChanged(local: BankImportLocalRow, row: PluggyBankRow) {
 
 async function writeRowChange(scope: BankImportScope, local: BankImportLocalRow, patch: Partial<BankImportLocalRow>, ledgerFingerprint: string, ledger: Partial<BankImportLedgerEntry>) {
   const { context } = scope;
+  const next = { ...local, ...patch };
+  // A withdrawal the bank just posted is attributed now, with the change that posted it.
+  const tracksReserve = needsReserveOrigin(next) && await tracksLinkedPositions(scope);
   await context.write((db) => db.transaction(async (tx) => {
     await tx.update(transactions).set(patch).where(eq(transactions.id, local.id));
     await tx.update(pluggyImportLedger).set({ ...ledger, lastSeenAt: context.now, updatedAt: context.now }).where(eq(pluggyImportLedger.fingerprint, ledgerFingerprint));
+    if (tracksReserve) patch.investmentOrigin = await attributeImportedWithdrawal(tx, next);
   }));
   Object.assign(local, patch);
 }

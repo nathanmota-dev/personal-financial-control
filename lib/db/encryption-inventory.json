@@ -47,6 +47,7 @@
     "notes": "text",
     "import_fingerprint": "text",
     "is_included_in_investment_checkpoint": "boolean",
+    "investment_origin": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },
@@ -126,6 +127,7 @@
     "checkpoint_date": "text",
     "reserve_amount_cents": "integer",
     "reserve_monthly_contribution_cents": "integer",
+    "reserve_configured_on": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },

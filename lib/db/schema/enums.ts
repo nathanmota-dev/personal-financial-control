@@ -74,6 +74,9 @@ export const investmentReductionSourceTypes = [
 
 export const investmentReductionStatuses = ["active", "reversed"] as const;
 
+/** Where a bank-tracked withdrawal left from: the reserve, the portfolio, or still waiting for the user. */
+export const investmentWithdrawalOrigins = ["reserve", "portfolio", "pending"] as const;
+
 export const transactionFundingLinkTypes = ["investment_funded_expense"] as const;
 
 export const investmentAssetClasses = [

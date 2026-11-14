@@ -1,4 +1,4 @@
-import { accountTypes,allocationTypes,categoryGroups,creditCardBillPaymentKinds,creditCardBillStatuses,creditCardChargeKinds,goalCategories,goalStatuses,investmentAssetClasses,investmentInstrumentTypes,investmentReductionEventTypes,investmentReductionSourceTypes,investmentReductionStatuses,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
+import { accountTypes,allocationTypes,categoryGroups,creditCardBillPaymentKinds,creditCardBillStatuses,creditCardChargeKinds,goalCategories,goalStatuses,investmentAssetClasses,investmentInstrumentTypes,investmentReductionEventTypes,investmentReductionSourceTypes,investmentReductionStatuses,investmentWithdrawalOrigins,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
 
 export type AccountType = (typeof accountTypes)[number];
 
@@ -13,6 +13,8 @@ export type InvestmentReductionEventType = (typeof investmentReductionEventTypes
 export type InvestmentReductionSourceType = (typeof investmentReductionSourceTypes)[number];
 
 export type InvestmentReductionStatus = (typeof investmentReductionStatuses)[number];
+
+export type InvestmentWithdrawalOrigin = (typeof investmentWithdrawalOrigins)[number];
 
 export type TransactionFundingLinkType = (typeof transactionFundingLinkTypes)[number];
 

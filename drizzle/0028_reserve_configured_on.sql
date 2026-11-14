@@ -1,0 +1,1 @@
+ALTER TABLE investment_portfolio ADD reserve_configured_on TEXT CONSTRAINT investment_portfolio_reserve_configured_on_encrypted CHECK (reserve_configured_on IS NULL OR (typeof(reserve_configured_on) = 'text' AND reserve_configured_on LIKE 'pfc:v2:%'));

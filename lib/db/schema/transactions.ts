@@ -8,7 +8,7 @@ uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 import { accounts,categories,timestampColumns } from "./accounts";
 import { recordId,referenceColumn } from "./columns";
-import { recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
+import { investmentWithdrawalOrigins,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
 
 export const recurringTemplates = sqliteTable(
   "recurring_templates",
@@ -51,6 +51,8 @@ export const transactions = sqliteTable(
     isIncludedInInvestmentCheckpoint: encryptedBoolean("is_included_in_investment_checkpoint", "transactions.is_included_in_investment_checkpoint")
       .notNull()
       .$defaultFn(() => true),
+    /** Only on bank-tracked withdrawals; it never changes the account side of the movement. */
+    investmentOrigin: encryptedText("investment_origin", "transactions.investment_origin", { enum: investmentWithdrawalOrigins }),
     importFingerprintHash: text("import_fingerprint_hash"),
     competenceMonthHash: text("competence_month_hash"),
     ...timestampColumns("transactions"),

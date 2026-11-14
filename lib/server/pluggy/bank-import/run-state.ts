@@ -37,6 +37,7 @@ async function loadRunState({ db }: PluggySyncStepContext): Promise<BankImportRu
     ledger: new Map(ledgerRows.map((row) => [row.fingerprint, row])),
     parkedTransfers: await parkedTransfers(db, transferIds, own.otherOwnAccountId),
     ownLegs: new Map(),
+    trackedItems: new Map(),
   };
 }
 

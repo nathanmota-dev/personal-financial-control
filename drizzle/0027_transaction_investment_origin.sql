@@ -1,0 +1,1 @@
+ALTER TABLE transactions ADD investment_origin TEXT CONSTRAINT transactions_investment_origin_encrypted CHECK (investment_origin IS NULL OR (typeof(investment_origin) = 'text' AND investment_origin LIKE 'pfc:v2:%'));

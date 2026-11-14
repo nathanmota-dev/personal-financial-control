@@ -63,10 +63,12 @@ export async function setBankReserveAmount(input: SetBankReserveInput, database?
     invariant(reserveAmountCents <= split.totalCents, "BANK_RESERVE_ABOVE_TOTAL", "A reserva não pode passar do total investido.");
     const existing = await transaction.query.investmentPortfolio.findFirst();
     const updatedAt = currentTimestamp();
+    // Withdrawals dated before today are already part of the amount the user just set.
+    const reserveConfiguredOn = getFinanceToday();
     if (existing) {
-      await transaction.update(investmentPortfolio).set({ reserveAmountCents, updatedAt }).where(eq(investmentPortfolio.id, existing.id));
+      await transaction.update(investmentPortfolio).set({ reserveAmountCents, reserveConfiguredOn, updatedAt }).where(eq(investmentPortfolio.id, existing.id));
     } else {
-      await transaction.insert(investmentPortfolio).values({ checkpointBalanceCents: 0, expectedMonthlyRateBps: 0, checkpointDate: getFinanceToday(), reserveAmountCents, updatedAt });
+      await transaction.insert(investmentPortfolio).values({ checkpointBalanceCents: 0, expectedMonthlyRateBps: 0, checkpointDate: reserveConfiguredOn, reserveAmountCents, reserveConfiguredOn, updatedAt });
     }
     return { ...split, configuredReserveCents: reserveAmountCents, ...splitBankReserve(split.totalCents, reserveAmountCents) };
   });
