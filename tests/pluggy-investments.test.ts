@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { eq } from "drizzle-orm";
 
-import { investmentHoldings, investmentOperations, pluggyItems } from "@/lib/db/schema";
+import { investmentHoldings, investmentOperations, investmentPortfolio, pluggyItems } from "@/lib/db/schema";
 import type { PluggyApi, PluggyRemoteInvestment } from "@/lib/interfaces/pluggy";
 import { createInvestmentHolding, createInvestmentPurpose, getInvestmentPortfolioDashboard, upsertInvestmentPurposeAllocation } from "@/lib/server/investment-portfolio";
 import { createInvestmentOperation, createOperationalInvestmentAsset, getEmergencyReserveComposition, getInvestmentAssetDetails, getInvestmentOverview, listLongTermInvestmentPositions } from "@/lib/server/investment-operations";
@@ -337,9 +337,10 @@ describe("bank reserve split", () => {
     expect(await projection()).toMatchObject({ currentBalanceCents: 100000, bank: { reserveCents: 100000, portfolioCents: 23456, exceedsTotal: false } });
     expect(await getInvestmentOverview(database.db)).toMatchObject({ totalCents: 123456, reserve: { amountCents: 100000, configured: true }, portfolioCents: 23456 });
 
+    // The reserve takes its share of the yield: 76544 × 100000 / 123456.
     positions[0] = position("a", 2000);
     await sync();
-    expect((await projection()).bank).toMatchObject({ totalCents: 200000, reserveCents: 100000, portfolioCents: 100000 });
+    expect((await projection()).bank).toMatchObject({ totalCents: 200000, reserveCents: 162001, portfolioCents: 37999 });
     expect((await database.db.query.investmentPortfolio.findFirst())).toMatchObject({ checkpointBalanceCents: 5000, checkpointDate: "2026-01-01" });
   });
 
@@ -385,3 +386,44 @@ describe("bank reserve split", () => {
   });
 });
 
+
+describe("reserve yield", () => {
+  const reserve = async () => (await database.db.query.investmentPortfolio.findFirst())?.reserveAmountCents;
+
+  it("keeps all the yield in a reserve that holds everything, once per day", async () => {
+    await linkedManual("a", 1000, 100000);
+    await setBankReserveAmount({ reserveAmountCents: 100000 }, database.db);
+    positions[0] = position("a", 1012.34);
+    await sync();
+    expect(await reserve()).toBe(101234);
+    await sync();
+    expect(await reserve()).toBe(101234);
+    expect((await getInvestmentProjection(database.db))!.bank).toMatchObject({ reserveCents: 101234, portfolioCents: 0 });
+  });
+
+  it("shares the yield by what each side holds and ignores drops and positions without a value", async () => {
+    await linkedManual("a", 3000, 300000);
+    await linkedManual("b", 1000, 100000);
+    await linkedManual("c", 0, 0);
+    await setBankReserveAmount({ reserveAmountCents: 300000 }, database.db);
+    positions[0] = position("a", 3030);
+    positions[1] = position("b", 1010);
+    positions[2] = position("c", 50);
+    await sync();
+    expect(await reserve()).toBe(303000);
+    positions[1] = position("b", 500);
+    await sync();
+    expect(await reserve()).toBe(303000);
+  });
+
+  it("writes nothing on a dry run and leaves an unset reserve alone", async () => {
+    await linkedManual("a", 1000, 100000);
+    await setBankReserveAmount({ reserveAmountCents: 100000 }, database.db);
+    positions[0] = position("a", 1100);
+    await sync(true);
+    expect(await reserve()).toBe(100000);
+    await database.db.update(investmentPortfolio).set({ reserveAmountCents: null });
+    await sync();
+    expect(await reserve()).toBeNull();
+  });
+});
