@@ -1,13 +1,14 @@
 import { eq } from "drizzle-orm";
 
 import type { AppDb } from "@/lib/db";
-import { investmentOperations, investmentPurposeAllocations } from "@/lib/db/schema";
+import { investmentOperations } from "@/lib/db/schema";
 import type { PluggyAttentionItem, PluggyAttentionReason, PluggyItemRecord, PluggyItemSyncStep, PluggySyncStepContext, PluggySyncStepResult } from "@/lib/interfaces/pluggy";
 import type { PluggyLocalHolding, PluggyMappedInvestment } from "@/lib/interfaces/pluggy-investments";
 import { DomainError, invariant } from "@/lib/server/errors";
 import { calculateInvestmentPosition } from "@/lib/server/investment-operations/position";
 import { writeInvestmentSnapshots } from "@/lib/server/investment-operations/snapshots";
 import { updateInvestmentHolding } from "@/lib/server/investment-portfolio";
+import { sumBlockingAllocations } from "@/lib/server/investment-portfolio/validation";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { bump } from "../bank-import/scope";
 import { linkedHoldingsByAsset } from "../investments/match-holdings";
@@ -36,8 +37,7 @@ async function writeBankValue(db: AppDb, holdingId: string, currentValueCents: n
 
 /** A dry run skips the write that would raise this, so it checks the same rule by reading. */
 async function assertCoversAllocations(db: AppDb, holdingId: string, currentValueCents: number) {
-  const allocations = await db.query.investmentPurposeAllocations.findMany({ where: eq(investmentPurposeAllocations.holdingId, holdingId) });
-  invariant(currentValueCents >= allocations.reduce((total, row) => total + row.amountCents, 0), BELOW_ALLOCATIONS, "The current value cannot be lower than the holding allocations.");
+  invariant(currentValueCents >= await sumBlockingAllocations(db, holdingId), BELOW_ALLOCATIONS, "The current value cannot be lower than the holding allocations.");
 }
 
 async function applyBankValue(scope: PositionScope, holding: PluggyLocalHolding, position: PluggyMappedInvestment, valueCents: number) {

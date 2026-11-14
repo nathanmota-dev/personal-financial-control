@@ -9,7 +9,7 @@ import { currentTimestamp } from "@/lib/server/finance";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { and,eq } from "drizzle-orm";
 import { z } from "zod";
-import { assertNoActiveReductionSource,investmentHoldingSchema,normalizeNullableText,normalizePortfolioDate,resolveDb,serializeHolding,sumAllocationAmounts,updateInvestmentHoldingSchema } from "./validation";
+import { assertNoActiveReductionSource,investmentHoldingSchema,normalizeNullableText,normalizePortfolioDate,resolveDb,serializeHolding,sumBlockingAllocations,updateInvestmentHoldingSchema } from "./validation";
 
 export async function createInvestmentHolding(
   input: z.input<typeof investmentHoldingSchema>,
@@ -50,10 +50,7 @@ export async function updateInvestmentHolding(
 
     invariant(existing, "INVESTMENT_HOLDING_NOT_FOUND", "Investment holding does not exist.", 404);
 
-    const allocations = await transaction.query.investmentPurposeAllocations.findMany({
-      where: eq(investmentPurposeAllocations.holdingId, existing.id),
-    });
-    const allocatedCents = sumAllocationAmounts(allocations);
+    const allocatedCents = await sumBlockingAllocations(transaction, existing.id);
     const currentValueCents = values.currentValueCents ?? existing.currentValueCents;
 
     invariant(

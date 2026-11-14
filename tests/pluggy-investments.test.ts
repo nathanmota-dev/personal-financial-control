@@ -162,11 +162,30 @@ describe("Pluggy investment positions sync", () => {
   it("flags a withdrawal even when the holding is below its allocations, without aborting", async () => {
     const id = await linkedManual("gone", 0);
     positions[0] = position("gone", 0, { status: "TOTAL_WITHDRAWAL" });
-    await reserveAllocation(id, 100000);
+    const purpose = await createInvestmentPurpose({ name: "Viagem" }, database.db);
+    await upsertInvestmentPurposeAllocation({ holdingId: id, purposeId: purpose.id, amountCents: 100000, allocatedOn: "2026-01-01" }, database.db);
     const run = await sync();
     expect(run.status).toBe("success");
     expect(run.summary?.attention?.map((item) => item.reason)).toEqual(["investment_total_withdrawal", "investment_below_allocations"]);
     expect(await row(id)).toMatchObject({ currentValueCents: 100000, isArchived: false });
+  });
+
+  it("lets a redemption lower a holding fully allocated to the reserve, and the allocation follows", async () => {
+    const partial = await linkedManual("partial", 689.04, 171273);
+    const gone = await linkedManual("gone", 0, 8211);
+    positions[1] = position("gone", 0, { status: "TOTAL_WITHDRAWAL" });
+    const purpose = await createInvestmentPurpose({ name: "Reserva", kind: "emergency_reserve" }, database.db);
+    for (const [holdingId, amountCents] of [[partial, 171273], [gone, 8211]] as const) {
+      await upsertInvestmentPurposeAllocation({ holdingId, purposeId: purpose.id, amountCents, allocatedOn: "2026-01-01" }, database.db);
+    }
+    const run = await sync();
+    expect(run.summary).toMatchObject({ counts: { investmentsUpdated: 2, investmentsWithdrawn: 1 } });
+    expect(run.summary?.attention?.map((item) => item.reason)).toEqual(["investment_total_withdrawal"]);
+    expect((await row(partial)).currentValueCents).toBe(68904);
+    expect((await row(gone)).currentValueCents).toBe(0);
+    const allocations = await database.db.query.investmentPurposeAllocations.findMany();
+    expect(Object.fromEntries(allocations.map((allocation) => [allocation.holdingId, allocation.amountCents]))).toEqual({ [partial]: 68904, [gone]: 0 });
+    expect((await sync(true)).summary).toMatchObject({ dryRun: true, counts: { investmentsUpdated: 2 } });
   });
 
   it("never overwrites a holding when the bank sends no usable value", async () => {
