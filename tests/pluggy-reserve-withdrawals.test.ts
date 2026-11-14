@@ -5,6 +5,7 @@ import { investmentHoldings, investmentPortfolio, investmentPositionSnapshots, p
 import type { PluggyApi, PluggyRemoteInvestment, PluggyRemoteTransaction } from "@/lib/interfaces/pluggy";
 import { classifyReserveWithdrawal, reserveAfterWithdrawal, reserveYieldShare } from "@/lib/reserve-withdrawal";
 import { createAccount, getAccountDetails } from "@/lib/server/accounts";
+import { getInvestmentOverview } from "@/lib/server/investment-operations";
 import { createInvestmentHolding } from "@/lib/server/investment-portfolio";
 import { classifyPendingReserveWithdrawal, listPendingReserveWithdrawals, setBankReserveAmount } from "@/lib/server/investments";
 import { pluggyRuntime } from "@/lib/server/pluggy/config";
@@ -131,6 +132,7 @@ describe("imported reserve withdrawals", () => {
     expect((await portfolio()).reserveAmountCents).toBe(300000);
     const pending = await listPendingReserveWithdrawals(database.db);
     expect(pending).toMatchObject([{ transactionDate: "2026-07-10", amountCents: 100000, accountName: "Corrente" }, { transactionDate: "2026-07-11", amountCents: 50000 }]);
+    expect((await getInvestmentOverview(database.db)).pendingWithdrawals).toEqual(pending);
     await classifyPendingReserveWithdrawal({ transactionId: pending[0].id, origin: "reserve" }, database.db);
     await classifyPendingReserveWithdrawal({ transactionId: pending[1].id, origin: "portfolio" }, database.db);
     expect((await portfolio()).reserveAmountCents).toBe(200000);

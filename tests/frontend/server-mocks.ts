@@ -83,6 +83,7 @@ vi.mock("@/app/actions/finance", () => ({
   configureInvestmentPortfolioAction: vi.fn(),
   updateInvestmentSettingsAction: vi.fn(),
   setBankReserveAmountAction: vi.fn(),
+  classifyReserveWithdrawalAction: vi.fn(),
   setReserveMonthlyContributionAction: vi.fn(),
   reconcileInvestmentBalanceAction: vi.fn(),
   getInvestmentReductionSourcesAction: vi.fn(),
