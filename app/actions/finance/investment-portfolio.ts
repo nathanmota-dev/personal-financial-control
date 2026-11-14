@@ -16,6 +16,7 @@ applyInvestmentReduction,
 getInvestmentReductionSources,
 } from "@/lib/server/investment-reconciliation";
 import {
+classifyPendingReserveWithdrawal,
 configureInvestmentPortfolio,
 createInvestmentContribution,
 createInvestmentWithdrawal,
@@ -40,6 +41,15 @@ export async function setBankReserveAmountAction(
 ) {
   await requireActionSession();
   const result = await setBankReserveAmount(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function classifyReserveWithdrawalAction(
+  input: Parameters<typeof classifyPendingReserveWithdrawal>[0]
+) {
+  await requireActionSession();
+  const result = await classifyPendingReserveWithdrawal(input);
   revalidateFinanceViews();
   return result;
 }

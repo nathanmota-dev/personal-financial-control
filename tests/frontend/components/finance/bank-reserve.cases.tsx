@@ -7,6 +7,7 @@ import { InvestmentsViewSection1 } from "@/components/finance/investments-view-i
 import { SettingsReservePanel } from "@/components/finance/settings/settings-reserve-panel";
 import Page from "@/app/(finance)/settings/page";
 import type { BankReserveSplit } from "@/lib/interfaces/bank-reserve";
+import type { PendingReserveWithdrawal } from "@/lib/interfaces/reserve-withdrawal";
 import fixtures from "../../fixtures/finance.json";
 import { renderUI } from "../../helpers";
 import { navigation } from "../../setup";
@@ -22,7 +23,7 @@ const split = (overrides: Partial<BankReserveSplit> = {}): BankReserveSplit => (
   ...overrides,
 });
 
-const overview = (bank: BankReserveSplit) => ({ ...fixtures.overview, totalCents: bank.totalCents, reserve: { ...fixtures.overview.reserve, amountCents: bank.reserveCents, configured: bank.configuredReserveCents !== null }, portfolioCents: bank.portfolioCents, bank });
+const overview = (bank: BankReserveSplit) => ({ ...fixtures.overview, totalCents: bank.totalCents, reserve: { ...fixtures.overview.reserve, amountCents: bank.reserveCents, configured: bank.configuredReserveCents !== null }, portfolioCents: bank.portfolioCents, bank, pendingWithdrawals: [] as PendingReserveWithdrawal[] });
 const projection = (bank: BankReserveSplit) => ({ ...fixtures.projection, source: "bank" as const, bank, currentBalanceCents: bank.reserveCents });
 
 it("sets the reserve over the bank's total from the investments overview", async () => {

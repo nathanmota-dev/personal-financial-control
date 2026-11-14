@@ -9,6 +9,7 @@ import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money"
 import { InvestmentClassDistribution } from "@/components/finance/investment-class-distribution";
 import { InvestmentOverviewLink } from "@/components/finance/investment-overview-link";
 import { PageHeader } from "@/components/finance/page-header";
+import { ReserveWithdrawalNotice } from "@/components/finance/reserve-withdrawal-notice";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { Button } from "@/components/ui/button";
 import { toPercent } from "@/lib/finance-tone";
@@ -66,6 +67,7 @@ export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps
             <span className="flex items-center gap-1.5"><span aria-hidden className="size-2 rounded-full bg-chart-2" />Carteira</span>
           </p>
           {bank?.exceedsTotal ? <p role="status" className="mt-2 text-xs text-destructive">O total investido ficou abaixo da reserva definida, então a reserva mostra o total. Ajuste o valor.</p> : null}
+          {bank ? <ReserveWithdrawalNotice withdrawals={overview.pendingWithdrawals} /> : null}
           <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-5 sm:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="min-w-0">

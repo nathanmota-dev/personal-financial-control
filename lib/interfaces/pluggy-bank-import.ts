@@ -49,6 +49,8 @@ export type BankImportRunState = {
   ledger: Map<string, BankImportLedgerEntry>;
   parkedTransfers: BankImportParkedTransfer[];
   ownLegs: Map<string, Promise<BankImportOwnLeg[]>>;
+  /** Per connection: whether it reports investment positions linked to holdings. */
+  trackedItems: Map<string, Promise<boolean>>;
 };
 
 export type BankImportScope = {

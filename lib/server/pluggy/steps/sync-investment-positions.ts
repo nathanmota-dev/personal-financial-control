@@ -1,13 +1,15 @@
 import { eq } from "drizzle-orm";
 
 import type { AppDb } from "@/lib/db";
-import { investmentOperations, investmentPurposeAllocations } from "@/lib/db/schema";
+import { investmentOperations } from "@/lib/db/schema";
 import type { PluggyAttentionItem, PluggyAttentionReason, PluggyItemRecord, PluggyItemSyncStep, PluggySyncStepContext, PluggySyncStepResult } from "@/lib/interfaces/pluggy";
 import type { PluggyLocalHolding, PluggyMappedInvestment } from "@/lib/interfaces/pluggy-investments";
 import { DomainError, invariant } from "@/lib/server/errors";
 import { calculateInvestmentPosition } from "@/lib/server/investment-operations/position";
 import { writeInvestmentSnapshots } from "@/lib/server/investment-operations/snapshots";
 import { updateInvestmentHolding } from "@/lib/server/investment-portfolio";
+import { sumBlockingAllocations } from "@/lib/server/investment-portfolio/validation";
+import { applyReserveYield } from "@/lib/server/investments/reserve-yield";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { bump } from "../bank-import/scope";
 import { linkedHoldingsByAsset } from "../investments/match-holdings";
@@ -21,6 +23,8 @@ type PositionScope = {
   item: PluggyItemRecord;
   counts: Record<string, number>;
   attention: PluggyAttentionItem[];
+  /** Growth of positions that already had a value; drops are withdrawals and are left out. */
+  yieldCents: number;
 };
 
 function flag(scope: PositionScope, reason: PluggyAttentionReason, position: PluggyMappedInvestment, amountCents: number) {
@@ -36,8 +40,7 @@ async function writeBankValue(db: AppDb, holdingId: string, currentValueCents: n
 
 /** A dry run skips the write that would raise this, so it checks the same rule by reading. */
 async function assertCoversAllocations(db: AppDb, holdingId: string, currentValueCents: number) {
-  const allocations = await db.query.investmentPurposeAllocations.findMany({ where: eq(investmentPurposeAllocations.holdingId, holdingId) });
-  invariant(currentValueCents >= allocations.reduce((total, row) => total + row.amountCents, 0), BELOW_ALLOCATIONS, "The current value cannot be lower than the holding allocations.");
+  invariant(currentValueCents >= await sumBlockingAllocations(db, holdingId), BELOW_ALLOCATIONS, "The current value cannot be lower than the holding allocations.");
 }
 
 async function applyBankValue(scope: PositionScope, holding: PluggyLocalHolding, position: PluggyMappedInvestment, valueCents: number) {
@@ -46,6 +49,7 @@ async function applyBankValue(scope: PositionScope, holding: PluggyLocalHolding,
     if (context.dryRun) await assertCoversAllocations(context.db, holding.id, valueCents);
     await context.write((db) => writeBankValue(db, holding.id, valueCents, position.valueAsOf));
     bump(scope, "investmentsUpdated");
+    if (holding.currentValueCents > 0 && valueCents > holding.currentValueCents) scope.yieldCents += valueCents - holding.currentValueCents;
   } catch (error) {
     if (!(error instanceof DomainError) || error.code !== BELOW_ALLOCATIONS) throw error;
     bump(scope, "investmentsBelowAllocations");
@@ -80,10 +84,14 @@ async function syncItemPositions(context: PluggySyncStepContext, item: PluggyIte
   const { positions, error } = await readRemoteInvestments(context.client, item);
   if (error) return { counts: { investmentItemsUnavailable: 1 } };
   if (!positions.length) return { counts: { investmentItemsEmpty: 1 } };
-  const scope: PositionScope = { context, item, counts: {}, attention: [] };
+  const scope: PositionScope = { context, item, counts: {}, attention: [], yieldCents: 0 };
   const today = getFinanceToday();
-  const linked = linkedHoldingsByAsset(await context.db.query.investmentHoldings.findMany());
+  const holdings = await context.db.query.investmentHoldings.findMany();
+  const totalBeforeCents = holdings.reduce((total, holding) => total + (holding.isArchived ? 0 : holding.currentValueCents), 0);
+  const linked = linkedHoldingsByAsset(holdings);
   for (const remote of positions) await syncPosition(scope, mapPluggyInvestment(remote, today), linked.get(remote.id));
+  // The difference is taken over the stored values, so a second sync on the same day adds nothing.
+  if (scope.yieldCents > 0) await context.write((db) => applyReserveYield(db, scope.yieldCents, totalBeforeCents));
   return { counts: scope.counts, attention: scope.attention };
 }
 

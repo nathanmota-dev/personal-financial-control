@@ -113,6 +113,18 @@ export function sumAllocationAmounts(rows: AllocationRow[]) {
   return rows.reduce((total, row) => total + row.amountCents, 0);
 }
 
+/**
+ * Allocations a holding's value cannot drop below. The reserve's allocation is left out:
+ * it is exclusive to its holding and follows the value, so a redemption may lower it.
+ */
+export async function sumBlockingAllocations(transaction: PortfolioDb, holdingId: string) {
+  const [allocations, reserve] = await Promise.all([
+    transaction.query.investmentPurposeAllocations.findMany({ where: eq(investmentPurposeAllocations.holdingId, holdingId) }),
+    transaction.query.investmentPurposes.findFirst({ where: and(eq(investmentPurposes.kind, "emergency_reserve"), eq(investmentPurposes.isArchived, false)) }),
+  ]);
+  return sumAllocationAmounts(allocations.filter((row) => row.purposeId !== reserve?.id));
+}
+
 export async function assertNoActiveReductionSource(
   transaction: PortfolioDb,
   filter: {
