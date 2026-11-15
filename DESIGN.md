@@ -1,6 +1,6 @@
 # Design System — baseado em `/dashboard`
 
-Este documento extrai o visual da rota `/dashboard` (a "Visão mensal"), que já está com a UI reformulada. Ele serve de **referência para reformular as outras páginas** (`transactions`, `credit-card`, `budgets`, `recurring`, `projected-balance`, `investments`, `housing`, `goals`, `reports`, `calculators`, `settings`).
+Este documento extrai o visual da rota `/dashboard` (a "Visão mensal"), referência visual que todas as páginas do app seguem. Use-o ao criar uma página nova ou ajustar uma existente.
 
 Fontes: `app/(finance)/dashboard/page.tsx`, `components/finance/dashboard-*.tsx`, `app/globals.css`, `components/ui/button.tsx`, `components/finance/app-shell.tsx`, `components/finance/finance-sidebar.tsx`.
 
@@ -148,8 +148,7 @@ Alturas fixas em `xl` para alinhar linhas: `xl:h-[340px]` (categorias) e `xl:h-[
 ### 5.1 Ilustração 3D (assinatura)
 
 - Arquivos em `public/images/*.webp`, nomeados `area-objeto.webp`, 450×450, fundo transparente. Em uso no dashboard: `balance-wallet`, `bills-calendar`, `category-tag`, `evolution-chart`, `expenses-pie`, `housing-house`, `investments-chart`.
-- Disponíveis para as demais páginas: `housing-receipt` (Casa), `transactions-card-cash` (Lançamentos), `budgets-clipboard` e `budgets-calculation` (Orçamentos), `recurring-repeat` (Recorrentes), `projected-balance-trend` (Saldo projetado), `goals-target` (Metas), `reports-clipboard` e `reports-growth-bars` (Relatórios), `calculators-calculator` (Calculadoras), `credit-card-cards` (Cartão), `settings-gear` (Configurações), `lock-padlock` (Bloqueio).
-- Já aplicadas: Casa usa `housing-receipt`, `recurring-repeat` e `reports-growth-bars`; Cartões usa `credit-card-cards`, `reports-clipboard`, `projected-balance-trend`, `transactions-card-cash` e `budgets-calculation`; Recorrentes usa `recurring-repeat` e `bills-calendar`; Saldo projetado usa `projected-balance-trend`, `balance-wallet` e `evolution-chart`; Metas usa `goals-target`, `expenses-pie`, `evolution-chart` e `reports-clipboard`; Relatórios usa `reports-growth-bars`, `reports-clipboard`, `bills-calendar`, `category-tag`, `transactions-card-cash` e `expenses-pie`; Investimentos usa `investments-chart`, `expenses-pie`, `balance-wallet` e `reports-growth-bars`; Carteira usa `investments-chart` e `expenses-pie`; Reserva usa `balance-wallet`, `projected-balance-trend`, `evolution-chart`, `reports-growth-bars` e `reports-clipboard`; Configurações usa `balance-wallet` (Contas), `credit-card-cards` (Cartões), `investments-chart` (Investimentos) e `category-tag` (Categorias); Bloqueio (`/lock`) usa `lock-padlock`. Os cards secundários dessas páginas reaproveitam ilustrações por falta de arte própria — substituir quando houver.
+- Arte nova é normalizada para 450×450 com o objeto recortado e centralizado ocupando ~92% do quadro, para todas aparecerem do mesmo tamanho nos cards.
 - **Cada página nova precisa de uma ilustração própria no mesmo estilo** (3D, fundo transparente, ~450px); não reaproveite a de outra página.
 - Card tipo B: componente `DashboardCardIllustration` — `absolute top-2 right-5 size-[58px]`, `pointer-events-none`, `aria-hidden`.
 - Card tipo A: ilustração inline à direita do valor (≈ 72–96px), `relative -my-5/-my-6 -mr-2`, `shrink-0`.
@@ -204,6 +203,20 @@ Trilho `h-3.5 rounded-full bg-surface`, preenchimento `success` (ou `destructive
 - **Barras horizontais (categorias)**: grid `[87px_minmax(0,1fr)_76px]`, nome truncado | barra SVG `h-[9px]` com trilho `--chart-rail` | valor `text-[11px]`. Mostra top 5; resto rola.
 - **Rosca (distribuição)**: `200px` (180px em telas grandes), `innerRadius 57%`, `outerRadius 89%`, `paddingAngle 3`, sem stroke, centro com "Total líquido" + valor, legenda ao lado com `%`. Agrupa em "Outras" acima de 5 fatias. Com privacidade ligada o gráfico some e deixa o espaço.
 - **Resumo abaixo do gráfico**: título `text-sm font-semibold`, texto `text-[13px] leading-[19px]`, divisor `border-t`, grid 2 colunas com rótulo `text-xs text-content-muted` + valor `text-xl font-semibold` (colorido por tom positivo/negativo).
+
+### Onboarding (modal)
+
+`components/finance/onboarding/*`: dialog `sm:max-w-[720px]` sem padding próprio, em três faixas. Cabeçalho com faixa `bg-hero` de 4px no topo, micro-rótulo "Etapa N de 5", pílulas de progresso em `primary` (`components/ui/onboarding/indicator.tsx`), título 28px com o ponto azul do `PageHeader` e ilustração 3D por etapa. Corpo em `@container`. Rodapé fixo com `border-t`: "Pular configuração"/"Pular etapa" como `ghost` à esquerda, "Voltar" `secondary` e "Continuar" `primary` à direita (no celular, os botões principais ficam em cima). Em demo mode, `?onboarding=preview` em qualquer rota abre o fluxo com o progresso em memória.
+
+Prévias de tema usam as classes `.light`/`.dark` para escopar os tokens. Dentro delas, use só tokens que o bloco `.dark` redefine (`bg-surface`, `bg-surface-raised`, `border-border`, `bg-primary`), não os derivados como `bg-card`, que são resolvidos no `<html>`.
+
+### Erro e 404
+
+Telas de status não usam card nem `PageHeader`: `RouteStatus` (`components/finance/route-status.tsx`) centraliza ilustração 3D grande (160–200px, com sombra elíptica), código grande (`404`, `Ops`) em 88–120px bold com o ponto azul, título 28px, texto `text-[13px]` e ações (`primary` + `secondary`). `app/(finance)/not-found.tsx` e `app/(finance)/error.tsx` usam dentro do app shell; `app/not-found.tsx` usa em tela cheia com a marca no canto. Erros inline usam `ErrorPanel` (card com ícone em `tone-danger`).
+
+### Botão de voltar
+
+Subpáginas (calculadoras, Minha conta) usam `BackButton` (`components/ui/back-button.tsx`), botão `outline` só com ícone, posto nas ações do `PageHeader` com `className="[&>div:last-child]:-order-1"` para ficar à esquerda do título.
 
 ### Estados vazios
 
