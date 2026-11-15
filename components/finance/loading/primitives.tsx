@@ -67,14 +67,3 @@ export function LoadingTabs({ count }: LoadingRepeatProps) {
 export function LoadingChart({ className }: LoadingBlockProps) {
   return <LoadingPanel><LoadingBar className={cn("h-[300px] w-full rounded-xl bg-surface-raised", className)} /></LoadingPanel>;
 }
-
-/** Placeholder for the gradient hero that opens each redesigned view. */
-export function LoadingHero({ className }: LoadingBlockProps) {
-  return <div className={cn("flex min-w-0 flex-col gap-5 rounded-[24px] border border-border bg-card p-6 sm:p-7 lg:flex-row lg:justify-between", className)}>
-    <div className="flex min-w-0 flex-1 flex-col gap-5">
-      <div className="space-y-3"><LoadingBar className="h-3 w-40" /><LoadingBar className="h-11 w-64" /><LoadingBar className="h-3 w-full max-w-md bg-surface-raised" /></div>
-      <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">{Array.from({ length: 4 }, (_, index) => <LoadingBar key={index} className="h-[68px] w-full rounded-2xl bg-surface-raised" />)}</div>
-    </div>
-    <LoadingBar className="h-36 w-full shrink-0 rounded-2xl bg-surface-raised lg:h-auto lg:w-[320px]" />
-  </div>;
-}

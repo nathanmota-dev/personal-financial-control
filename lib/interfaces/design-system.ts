@@ -36,23 +36,6 @@ export type CategoryChipProps = {
   className?: string;
 };
 
-export type HeroPanelProps = {
-  eyebrow: string;
-  value: ReactNode;
-  caption?: ReactNode;
-  badge?: ReactNode;
-  children?: ReactNode;
-  aside?: ReactNode;
-  className?: string;
-};
-
-export type HeroStatProps = {
-  label: string;
-  value: ReactNode;
-  icon?: ReactNode;
-  hint?: ReactNode;
-};
-
 export type MeterProps = {
   value: number;
   tone?: Tone;
@@ -68,18 +51,6 @@ export type RingProgressProps = {
   stroke?: number;
   children?: ReactNode;
   className?: string;
-};
-
-export type SectionCardProps = {
-  title: string;
-  description?: ReactNode;
-  count?: number;
-  icon?: ReactNode;
-  tone?: Tone;
-  action?: ReactNode;
-  children: ReactNode;
-  className?: string;
-  contentClassName?: string;
 };
 
 export type DateGroupLabelProps = {

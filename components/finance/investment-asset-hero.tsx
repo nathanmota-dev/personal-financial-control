@@ -1,36 +1,40 @@
 "use client";
 
-import { HeroPanel } from "@/components/finance/ds/hero-panel";
-import { HeroStat } from "@/components/finance/ds/hero-stat";
+import { Coins, History, ReceiptText, Tag } from "lucide-react";
+
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
+import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { formatDateLabel, investmentAssetClassLabels } from "@/lib/finance-ui";
+import { INVESTMENT_ASSET_ILLUSTRATIONS } from "@/lib/investment-asset-illustrations";
 import type { InvestmentAssetHeroProps } from "@/lib/interfaces/investment-operations";
-import { Coins, History, ReceiptText, Tag, TrendingDown, TrendingUp } from "lucide-react";
 
 export function InvestmentAssetHero({ asset }: InvestmentAssetHeroProps) {
-  const { formatCurrency, protect, hidden } = useFinancialFormatter();
-  const negative = asset.resultCents !== null && asset.resultCents < 0;
-  const ResultIcon = negative ? TrendingDown : TrendingUp;
-  const cost = asset.position?.costCents ?? 0;
-  const resultPercent = asset.resultCents !== null && cost > 0 ? (asset.resultCents / cost) * 100 : null;
+  const { formatCurrency, protect } = useFinancialFormatter();
+  const stats = [
+    { label: "Quantidade", value: protect(asset.position?.quantity ?? "Desconhecida"), hint: "Unidades em carteira", icon: Coins },
+    { label: "Custo", value: asset.position ? formatCurrency(asset.position.costCents) : "Desconhecido", hint: "Total aplicado", icon: ReceiptText },
+    { label: "Preço médio", value: asset.position?.averagePriceCents ? formatCurrency(asset.position.averagePriceCents) : "—", hint: "Por unidade", icon: Tag },
+    { label: "Operações", value: String(asset.operations.length), hint: "No histórico do ativo", icon: History },
+  ];
   return (
-    <HeroPanel
-      eyebrow="Valor atual"
-      value={formatCurrency(asset.currentValueCents)}
-      caption={`Posição atualizada em ${formatDateLabel(asset.valueAsOf)}.`}
-      badge={<span className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">{investmentAssetClassLabels[asset.assetClass]}</span>}
-      aside={
-        <div className="flex w-full flex-col justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-sm">
-          <p className="flex items-center gap-1.5 text-xs font-semibold text-white/80"><ResultIcon aria-hidden="true" className="size-3.5" />Resultado nominal</p>
-          <p className={`text-[28px] leading-8 font-semibold tracking-tight break-words tabular-nums ${negative ? "text-rose-100" : ""}`}>{asset.resultCents === null ? "Desconhecido" : formatCurrency(asset.resultCents)}</p>
-          <p className="text-[11px] leading-4 text-white/70">{resultPercent === null || hidden ? "Registre operações para conhecer custo e resultado." : `${resultPercent.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}% sobre o custo conhecido.`}</p>
-        </div>
-      }
-    >
-      <HeroStat label="Quantidade" value={protect(asset.position?.quantity ?? "Desconhecida")} icon={<Coins />} />
-      <HeroStat label="Custo" value={asset.position ? formatCurrency(asset.position.costCents) : "Desconhecido"} icon={<ReceiptText />} />
-      <HeroStat label="Preço médio" value={asset.position?.averagePriceCents ? formatCurrency(asset.position.averagePriceCents) : "—"} icon={<Tag />} />
-      <HeroStat label="Operações" value={String(asset.operations.length)} hint="No histórico do ativo" icon={<History />} />
-    </HeroPanel>
+    <section data-slot="card" aria-label="Valor atual" className="@container relative min-w-0 rounded-[20px] border border-border bg-card p-[23px] min-[100.0625rem]:p-5">
+      <DashboardCardIllustration src={INVESTMENT_ASSET_ILLUSTRATIONS.hero} className="top-4 right-6 size-[96px]" />
+      <div className="flex flex-wrap items-center gap-2 pr-28">
+        <h2 className="text-sm font-semibold text-content-strong">Valor atual</h2>
+        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">{investmentAssetClassLabels[asset.assetClass]}</span>
+      </div>
+      <DashboardCardsMoney cents={asset.currentValueCents} className="mt-4 block text-[48px] leading-[52px] font-bold text-content-strong" />
+      <p className="mt-2 pr-24 text-xs text-content">{`Posição atualizada em ${formatDateLabel(asset.valueAsOf)}.`}</p>
+      <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-5 sm:grid-cols-4">
+        {stats.map((stat) => (
+          <div key={stat.label} className="min-w-0">
+            <dt className="flex items-center gap-1.5 text-xs text-content"><stat.icon aria-hidden className="size-3.5 shrink-0" />{stat.label}</dt>
+            <dd className="mt-1 truncate text-[15px] font-semibold text-content-strong tabular-nums">{stat.value}</dd>
+            <p className="mt-0.5 text-[11px] text-content-subtle">{stat.hint}</p>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }

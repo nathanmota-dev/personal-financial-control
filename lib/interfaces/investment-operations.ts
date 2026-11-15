@@ -94,3 +94,5 @@ export type InvestmentOperationRowProps = {
   onEdit: () => void;
   onRemove: () => void;
 };
+
+export type InvestmentAssetResultProps = { asset: InvestmentAssetDetails };

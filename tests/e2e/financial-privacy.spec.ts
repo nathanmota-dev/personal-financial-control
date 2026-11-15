@@ -79,14 +79,14 @@ test("global privacy covers every financial domain, details, charts and reload w
   await page.goto("/investments/portfolio");
   const assetLink = page.locator('main a[href^="/investments/assets/"]').first();
   await assetLink.click();
-  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]').getByRole("img", { name: "Valor oculto" })).toBeVisible();
+  await expect(page.getByText("Quantidade", { exact: true }).locator("xpath=ancestor::div[1]").getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await page.getByRole("button", { name: "Operação", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("textbox")).toHaveCount(0);
   await dialog.getByRole("button", { name: "Mostrar valores para editar" }).click();
   expect(await page.evaluate(key => localStorage.getItem(key), financialPrivacyKey(true))).toBe("hidden");
   await dialog.getByRole("button", { name: "Fechar", exact: true }).click();
-  await expect(page.getByText("Quantidade", { exact: true }).locator('xpath=ancestor::*[@data-slot="card"][1]').getByRole("img", { name: "Valor oculto" })).toBeVisible();
+  await expect(page.getByText("Quantidade", { exact: true }).locator("xpath=ancestor::div[1]").getByRole("img", { name: "Valor oculto" })).toBeVisible();
   await page.goto(routes[0]);
   await page.reload();
   await expect(income.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
