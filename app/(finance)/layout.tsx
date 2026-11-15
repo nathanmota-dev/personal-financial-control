@@ -5,6 +5,7 @@ import { Suspense } from "react";
 
 import { FinancialPrivacyProvider } from "@/components/finance/privacy/privacy-provider";
 import { AppShell } from "@/components/finance/app-shell";
+import { FinanceShellSkeleton } from "@/components/finance/loading/shell-skeleton";
 import { getServerEnv } from "@/lib/env";
 import type { FinanceLayoutProps } from "@/lib/interfaces/app-shell";
 import { getOnboarding } from "@/lib/server/onboarding";
@@ -28,7 +29,7 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
 
   return (
     <Suspense
-      fallback={<div className="min-h-screen bg-surface text-content-strong" role="status">Carregando dados financeiros.</div>}
+      fallback={<FinanceShellSkeleton />}
     >
       <FinancialPrivacyProvider key={String(demoMode)} demoMode={demoMode}>
         {!demoMode && "user" in session && <SessionActivity timeoutMinutes={session.user.lockTimeoutMinutes} />}
