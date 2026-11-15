@@ -195,6 +195,19 @@ export type PluggyIdentityDraft = { names: string[]; cpf?: string; otherOwnAccou
 
 export type PluggyLatestRun = { run: PluggySyncRunView | null; running: boolean };
 
+export type PluggyDailySyncSkipReason = "not-configured" | "no-items" | "running" | "already-synced";
+
+export type PluggyDailySyncResult =
+  | { ran: false; reason: PluggyDailySyncSkipReason }
+  | { ran: true; run: PluggySyncRunView };
+
+export type PluggyDailySyncOptions = {
+  db: AppDb;
+  client: () => PluggyApi;
+  configured: boolean;
+  now?: Date;
+};
+
 export type PluggyAccountRow = {
   externalAccountId: string;
   name: string;

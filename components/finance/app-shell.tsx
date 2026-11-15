@@ -6,6 +6,7 @@ import { FinanceCommandPalette } from "@/components/finance/finance-command-pale
 import { FinanceCommandTrigger } from "@/components/finance/finance-command-trigger";
 import { FinanceSidebar } from "@/components/finance/finance-sidebar";
 import { MobileNavigation } from "@/components/finance/mobile-navigation";
+import { PluggyDailySync } from "@/components/finance/open-finance/pluggy-daily-sync";
 import { RecurringAutoGenerator } from "@/components/finance/recurring-auto-generator";
 import { FinancialPrivacyToggle } from "@/components/finance/privacy/privacy-toggle";
 import type { AppShellProps } from "@/lib/interfaces/app-shell";
@@ -24,6 +25,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
         onOpenChange={setCommandPaletteOpen}
       />
       <RecurringAutoGenerator demoMode={demoMode} />
+      <PluggyDailySync demoMode={demoMode} />
       <div className="flex min-h-screen">
         <FinanceSidebar
           collapsed={collapsed}

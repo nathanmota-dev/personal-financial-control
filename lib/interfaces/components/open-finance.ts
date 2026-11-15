@@ -46,3 +46,5 @@ export type OpenFinanceLinkRowProps = {
   busy: boolean;
   onSave: (row: PluggyAccountRow, draft: PluggyLinkDraft) => void;
 };
+
+export type PluggyDailySyncProps = { demoMode: boolean };

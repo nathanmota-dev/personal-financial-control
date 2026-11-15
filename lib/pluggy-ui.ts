@@ -106,8 +106,15 @@ export function formatPluggyDateTime(value: string | null) {
   return value ? new Date(value).toLocaleString("pt-BR", { timeZone: pluggyTimeZone }) : "Não informado";
 }
 
+const pluggyDayFormat = new Intl.DateTimeFormat("en-CA", { timeZone: pluggyTimeZone });
+
+/** Calendar day (YYYY-MM-DD) of an instant in Pluggy's time zone. */
+export function pluggyDayOf(date: Date) {
+  return pluggyDayFormat.format(date);
+}
+
 export function pluggyToday() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: pluggyTimeZone }).format(new Date());
+  return pluggyDayOf(new Date());
 }
 
 /** Keeps saved links visible when Pluggy cannot list the accounts of a connection. */

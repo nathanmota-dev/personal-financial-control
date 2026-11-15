@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import type { AppDb } from "@/lib/db";
 import { pluggySyncRuns } from "@/lib/db/schema";
 import type { PluggyLatestRun, PluggySyncRunStatus, PluggySyncRunView, PluggySyncSummary } from "@/lib/interfaces/pluggy";
+import { pluggyDayOf } from "@/lib/pluggy-ui";
 import { pluggyRuntime } from "./config";
 
 type RunRow = typeof pluggySyncRuns.$inferSelect;
@@ -36,7 +37,19 @@ export async function closePluggyRun(db: AppDb, id: string, status: PluggySyncRu
   return runView(row);
 }
 
+/** `started_at` is encrypted, so SQL cannot order it; the table holds about one row per day. */
+async function listPluggyRuns(db: AppDb) {
+  const rows = await db.query.pluggySyncRuns.findMany();
+  return rows.sort((left, right) => right.startedAt.getTime() - left.startedAt.getTime());
+}
+
 export async function getLatestPluggyRun(db: AppDb): Promise<PluggyLatestRun> {
-  const row = await db.query.pluggySyncRuns.findFirst({ orderBy: (table, { desc }) => [desc(table.startedAt)] });
+  const [row] = await listPluggyRuns(db);
   return { run: row ? runView(row) : null, running: pluggyRuntime().syncRunning };
+}
+
+/** A failed run imported nothing, so it does not count as the day's sync. */
+export async function hasCompletedPluggyRunOn(db: AppDb, day: string) {
+  const rows = await listPluggyRuns(db);
+  return rows.some((row) => (row.status === "success" || row.status === "partial") && pluggyDayOf(row.startedAt) === day);
 }
