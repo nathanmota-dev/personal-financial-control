@@ -15,7 +15,7 @@ export function IncomePjFields({ values, onChange }: IncomeFieldsProps) {
       <SelectItem value="services">Serviços</SelectItem>{values.regime === "mei" ? <><SelectItem value="commerce">Comércio / Indústria</SelectItem><SelectItem value="mixed">Comércio e serviços</SelectItem></> : <SelectItem value="other">Outras atividades</SelectItem>}
     </FormSelect></label>}
     <div className="space-y-2"><CurrencyInput id="proLabore" label="Pró-labore" value={values.proLabore} onValueChange={proLabore => onChange({ ...values, proLabore })} /><p className="text-xs text-content-muted">Quando vazio: {values.regime === "mei" ? "R$ 0,00" : "R$ 1.621,00"}.</p></div>
-    {values.regime === "simples" && <div className="space-y-3"><label className="flex items-center gap-2"><input type="checkbox" checked={values.manualEnabled} onChange={event => onChange({ ...values, manualEnabled: event.target.checked })} />Informar DAS manualmente</label>
+    {values.regime === "simples" && <div className="space-y-3"><label className="flex items-center gap-2 text-[13px] font-medium"><input type="checkbox" className="size-4 rounded accent-primary" checked={values.manualEnabled} onChange={event => onChange({ ...values, manualEnabled: event.target.checked })} />Informar DAS manualmente</label>
       {values.manualEnabled && <label className="block space-y-2">Alíquota do DAS (%)<Input aria-label="Alíquota do DAS (%)" type="number" min="0" max="100" step="0.01" value={values.manualRate} onChange={event => onChange({ ...values, manualRate: event.target.value })} /></label>}
     </div>}
   </>;

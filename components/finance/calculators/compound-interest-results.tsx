@@ -1,65 +1,30 @@
 "use client";
 
-import { ChartLine,Coins,PiggyBank } from "lucide-react";
-
 import { CompoundInterestChart } from "@/components/finance/calculators/compound-interest-chart";
-import { CompoundInterestResultMetric } from "@/components/finance/calculators/compound-interest-result-metric";
 import { CompoundInterestTable } from "@/components/finance/calculators/compound-interest-table";
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
-import { Tabs,TabsContent,TabsList,TabsTrigger } from "@/components/ui/tabs";
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
+import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CALCULATOR_ILLUSTRATIONS } from "@/lib/calculator-illustrations";
 import type { CompoundInterestResultsProps } from "@/lib/interfaces/compound-interest";
 
 export function CompoundInterestResults({ simulation }: CompoundInterestResultsProps) {
-  const { formatCurrency } = useFinancialFormatter();
   return (
-    <section aria-labelledby="simulation-result" className="space-y-5 animate-in fade-in slide-in-from-bottom-3 duration-500">
-      <div className="grid gap-4 md:grid-cols-3">
-        <CompoundInterestResultMetric
-          title="Valor total final"
-          value={formatCurrency(simulation.totalBalanceCents)}
-          detail="Patrimônio projetado"
-          icon={<ChartLine className="size-5" />}
-          featured
-        />
-        <CompoundInterestResultMetric
-          title="Valor total investido"
-          value={formatCurrency(simulation.totalInvestedCents)}
-          detail="Valor inicial + aportes"
-          icon={<PiggyBank className="size-5" />}
-        />
-        <CompoundInterestResultMetric
-          title="Total em juros"
-          value={formatCurrency(simulation.totalInterestCents)}
-          detail={`${(simulation.monthlyRate * 100).toFixed(3).replace(".", ",")}% ao mês`}
-          icon={<Coins className="size-5" />}
-        />
-      </div>
-
-      <Card className="gap-0 border-border bg-card shadow-none">
-        <CardHeader>
-          <CardTitle id="simulation-result" className="text-xl text-content-strong">
-            Evolução do patrimônio
-          </CardTitle>
-          <p className="text-sm leading-6 text-content">
-            Compare o crescimento acumulado com o valor que saiu do seu bolso.
-          </p>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <Tabs defaultValue="chart">
-            <TabsList className="mb-4 grid w-full grid-cols-2 sm:w-72">
-              <TabsTrigger value="chart">Gráfico</TabsTrigger>
-              <TabsTrigger value="table">Tabela</TabsTrigger>
-            </TabsList>
-            <TabsContent value="chart">
-              <CompoundInterestChart points={simulation.points} />
-            </TabsContent>
-            <TabsContent value="table">
-              <CompoundInterestTable points={simulation.points} />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+    <section aria-labelledby="simulation-result" className="relative min-w-0 rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
+      <DashboardCardIllustration src={CALCULATOR_ILLUSTRATIONS.evolution} />
+      <h2 id="simulation-result" className="text-lg font-semibold leading-[25px] text-content-strong">Evolução do patrimônio</h2>
+      <p className="mt-1 pr-20 text-xs text-content-muted">Compare o crescimento acumulado com o valor que saiu do seu bolso.</p>
+      <Tabs defaultValue="chart" className="mt-5 gap-4">
+        <TabsList className="grid w-full grid-cols-2 sm:w-72">
+          <TabsTrigger value="chart">Gráfico</TabsTrigger>
+          <TabsTrigger value="table">Tabela</TabsTrigger>
+        </TabsList>
+        <TabsContent value="chart" className="mt-0">
+          <CompoundInterestChart points={simulation.points} />
+        </TabsContent>
+        <TabsContent value="table" className="mt-0">
+          <CompoundInterestTable points={simulation.points} />
+        </TabsContent>
+      </Tabs>
     </section>
   );
 }

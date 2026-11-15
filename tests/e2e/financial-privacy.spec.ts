@@ -146,10 +146,12 @@ test("mobile keyboard control and blocked storage remain usable with isolated de
   await expect(result).toContainText("2.200,00");
   await page.getByRole("button", { name: "Ocultar valores", exact: true }).click();
   await expect(page.getByRole("button", { name: "Mostrar valores para editar" })).toBeVisible();
-  await expect(result.getByRole("img", { name: "Valor oculto" })).toBeVisible();
+  // The final value, its growth multiple and both legend amounts (invested and interest) are hidden.
+  await expect(result.getByRole("img", { name: "Valor oculto" })).toHaveCount(4);
+  await expect(result).not.toContainText(/R\$\s*\d/);
   await expect(page.locator(".recharts-surface")).toHaveCount(0);
   await page.screenshot({ path: "reports/privacy-mobile.png" });
   await page.getByRole("button", { name: "Mostrar valores para editar" }).click();
   await expect(page.getByLabel("Valor inicial")).toHaveValue("1.000,00");
-  await expect(result.getByRole("img", { name: "Valor oculto" })).toBeVisible();
+  await expect(result.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
 });

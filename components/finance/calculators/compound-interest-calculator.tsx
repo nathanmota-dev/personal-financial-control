@@ -1,12 +1,14 @@
 "use client";
 
-import { FinancialPrivacyForm } from "@/components/finance/privacy/privacy-form";
 import { useEffect,useState } from "react";
 
+import { CalculatorEmptyResult } from "@/components/finance/calculators/calculator-empty-result";
 import { CompoundInterestForm } from "@/components/finance/calculators/compound-interest-form";
 import { CompoundInterestResults } from "@/components/finance/calculators/compound-interest-results";
+import { CompoundInterestSummary } from "@/components/finance/calculators/compound-interest-summary";
 import { PageHeader } from "@/components/finance/page-header";
 import { BackButton } from "@/components/ui/back-button";
+import { CALCULATOR_ILLUSTRATIONS } from "@/lib/calculator-illustrations";
 import { calculateCompoundInterest } from "@/lib/compound-interest";
 import { formatMoneyInput,moneyInputToCents } from "@/lib/finance-ui";
 import type {
@@ -122,7 +124,7 @@ export function CompoundInterestCalculator() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
         className="[&>div:last-child]:-order-1"
         eyebrow="Calculadoras · Juros compostos"
@@ -131,13 +133,16 @@ export function CompoundInterestCalculator() {
         actions={<BackButton href="/calculators" label="Voltar para calculadoras" />}
       />
 
-      <FinancialPrivacyForm><CompoundInterestForm
-        values={values}
-        error={error}
-        onChange={setValues}
-        onSubmit={handleSubmit}
-        onClear={handleClear}
-      /></FinancialPrivacyForm>
+      <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
+        <CompoundInterestForm
+          values={values}
+          error={error}
+          onChange={setValues}
+          onSubmit={handleSubmit}
+          onClear={handleClear}
+        />
+        {simulation ? <CompoundInterestSummary simulation={simulation} /> : <CalculatorEmptyResult illustrationSrc={CALCULATOR_ILLUSTRATIONS.compoundInterest} description="Preencha valor inicial, aporte, taxa e período e toque em Calcular." />}
+      </div>
 
       {simulation ? <CompoundInterestResults simulation={simulation} /> : null}
     </div>

@@ -58,14 +58,6 @@ export type CompoundInterestResultsProps = {
   simulation: CompoundInterestSimulation;
 };
 
-export type CompoundInterestResultMetricProps = {
-  title: string;
-  value: ReactNode;
-  detail: ReactNode;
-  icon: ReactNode;
-  featured?: boolean;
-};
-
 export type CompoundInterestChartProps = {
   points: CompoundInterestPoint[];
 };
@@ -79,4 +71,35 @@ export type CalculatorCatalogCardProps = {
   title: string;
   description: string;
   badge: string;
+  illustrationSrc: string;
+  /** Results the calculator answers, listed on the card. */
+  highlights: string[];
+};
+
+export type CalculatorFormCardProps = {
+  illustrationSrc: string;
+  title: string;
+  description: string;
+  children: ReactNode;
+};
+
+export type CalculatorEmptyResultProps = {
+  illustrationSrc: string;
+  description: string;
+};
+
+export type CalculatorSplitSegment = {
+  label: string;
+  cents: number;
+  /** Background utility of the bar segment and of the legend dot. */
+  colorClassName: string;
+  hint?: ReactNode;
+};
+
+export type CalculatorSplitBarProps = {
+  segments: CalculatorSplitSegment[];
+};
+
+export type CompoundInterestSummaryProps = {
+  simulation: CompoundInterestSimulation;
 };

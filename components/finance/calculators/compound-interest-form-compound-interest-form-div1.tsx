@@ -12,7 +12,7 @@ import type { CompoundInterestFormDiv1Props } from "@/lib/interfaces/render/comp
 
 export function CompoundInterestFormDiv1({ values, onChange }: CompoundInterestFormDiv1Props) {
   return (
-<div className="grid gap-5 md:grid-cols-2">
+<div className="grid gap-5 @md:grid-cols-2">
             <CurrencyInput
               id="initial-amount"
               label="Valor inicial"

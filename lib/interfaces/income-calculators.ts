@@ -31,3 +31,4 @@ export interface IncomeTaxResult { baseCents: number; deductionCents: number; si
 
 export interface IncomeDeduction { label: string; amountCents: number; percentage: number; color: string; }
 export interface IncomeDeductionsChartProps { deductions: IncomeDeduction[]; }
+export interface IncomeSummaryProps { result: IncomeResult; pj: boolean; }
