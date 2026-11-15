@@ -26,7 +26,15 @@
     "english": "English",
     "search": "Search",
     "languageGroup": "Language",
-    "themeGroup": "Theme"
+    "themeGroup": "Theme",
+    "profileTitle": "Personal details",
+    "profileHint": "Name shown in the sidebar and in the app greetings.",
+    "previewTitle": "How you appear",
+    "previewDescription": "Preview of the sidebar user card",
+    "previewName": "Display name",
+    "previewEmail": "Sign-in account",
+    "previewNote": "Name changes show up as soon as you save. The email follows your sign-in and cannot be changed here.",
+    "fieldsLabel": "Identification"
   },
   "ui": {
     "common": {

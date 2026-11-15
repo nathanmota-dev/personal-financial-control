@@ -20,7 +20,7 @@ test("collapsed sidebar keeps navigation and account returns to the previous mon
   await expect(page.getByLabel("Sobrenome")).toHaveValue("demo");
   await expect(page.getByLabel("E-mail")).toHaveAttribute("readonly", "");
   await page.screenshot({ path: "reports/account-sidebar-desktop.png", fullPage: true });
-  await page.getByRole("button", { name: "Voltar", exact: true }).click();
+  await page.getByRole("link", { name: "Voltar", exact: true }).click();
   await expect(page).toHaveURL(/\/transactions\?month=2026-08$/);
   await page.getByRole("button", { name: "Expandir sidebar" }).click();
   await sidebar.getByRole("button", { name: "Abrir preferências da conta" }).click();
@@ -29,6 +29,6 @@ test("collapsed sidebar keeps navigation and account returns to the previous mon
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByLabel("E-mail")).toBeVisible();
   await page.screenshot({ path: "reports/account-mobile.png", fullPage: true });
-  await page.getByRole("button", { name: "Voltar", exact: true }).click();
+  await page.getByRole("link", { name: "Voltar", exact: true }).click();
   await expect(page).toHaveURL(/\/transactions\?month=2026-08$/);
 });

@@ -28,3 +28,9 @@ export interface AccountViewProps {
   user: SessionUser;
   demoMode?: boolean;
 }
+
+export interface AccountPreviewCardProps {
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+}

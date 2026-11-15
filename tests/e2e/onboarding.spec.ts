@@ -106,10 +106,10 @@ test("updates the authenticated display name, preserves email and refreshes side
     headers: { Origin: finance.url }, data: { firstName: "Marina", lastName: "Silva", email: "changed@example.test" },
   });
   expect(forbidden.status()).toBe(400);
-  const back = await page.getByRole("button", { name: "Voltar", exact: true }).boundingBox();
+  const back = await page.getByRole("link", { name: "Voltar", exact: true }).boundingBox();
   const heading = await page.getByRole("heading", { name: "Minha conta" }).boundingBox();
-  expect(back!.x).toBe(heading!.x);
-  expect(back!.y).toBeLessThan(heading!.y);
+  expect(back!.x + back!.width).toBeLessThanOrEqual(heading!.x);
+  expect(back!.y).toBeLessThan(heading!.y + heading!.height);
   await page.screenshot({ path: "reports/account-edit-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "Abrir preferências da conta" }).click();
   await page.keyboard.press("Escape");

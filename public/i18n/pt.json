@@ -26,7 +26,15 @@
     "english": "Inglês",
     "search": "Buscar",
     "languageGroup": "Idioma",
-    "themeGroup": "Tema"
+    "themeGroup": "Tema",
+    "profileTitle": "Dados pessoais",
+    "profileHint": "Nome usado na barra lateral e nas saudações do app.",
+    "previewTitle": "Como você aparece",
+    "previewDescription": "Prévia do cartão de usuário da barra lateral",
+    "previewName": "Nome exibido",
+    "previewEmail": "Conta de acesso",
+    "previewNote": "Mudanças no nome aparecem assim que você salvar. O e-mail acompanha o login e não muda por aqui.",
+    "fieldsLabel": "Identificação"
   },
   "ui": {
     "common": {

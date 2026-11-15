@@ -15,7 +15,7 @@ it("shows session identity with a locked email and returns to the previous route
   expect(screen.getByLabelText("E-mail")).toHaveValue("ana@example.com");
   expect(screen.getByLabelText("E-mail")).toHaveAttribute("readonly");
   vi.spyOn(window.history, "length", "get").mockReturnValue(2);
-  await user.click(screen.getByRole("button", { name: "Voltar" }));
+  await user.click(screen.getByRole("link", { name: "Voltar" }));
   expect(navigation.back).toHaveBeenCalledOnce();
 });
 
@@ -24,8 +24,10 @@ it("handles a single name, missing email and direct entry", async () => {
   expect(screen.getByLabelText("Sobrenome")).toHaveValue("");
   expect(screen.getByLabelText("E-mail")).toHaveValue("");
   vi.spyOn(window.history, "length", "get").mockReturnValue(1);
-  await user.click(screen.getByRole("button", { name: "Voltar" }));
-  expect(navigation.replace).toHaveBeenCalledWith("/dashboard");
+  const back = screen.getByRole("link", { name: "Voltar" });
+  expect(back).toHaveAttribute("href", "/dashboard");
+  await user.click(back);
+  expect(navigation.back).not.toHaveBeenCalled();
 });
 
 it("supports demo sessions without an email", async () => {
