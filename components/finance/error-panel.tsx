@@ -1,21 +1,17 @@
-import { AlertTriangle } from "lucide-react";
+import { TriangleAlert } from "lucide-react";
 
-import { Card,CardContent,CardHeader,CardTitle } from "@/components/ui/card";
+import type { ErrorPanelProps } from "@/lib/interfaces/finance-presentation";
 
-export function ErrorPanel({ title, message }: { title: string; message: string }) {
+export function ErrorPanel({ title, message }: ErrorPanelProps) {
   return (
-    <Card className="border-danger/70 bg-danger/80">
-      <CardHeader className="gap-3">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-danger/12 p-2 text-danger">
-            <AlertTriangle className="size-4" />
-          </div>
-          <CardTitle>{title}</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm leading-6 text-danger/80">{message}</p>
-      </CardContent>
-    </Card>
+    <section role="alert" aria-label={title} className="flex min-w-0 items-start gap-3.5 rounded-[20px] border border-border bg-card p-[23px] min-[100.0625rem]:p-5">
+      <span aria-hidden className="tone-soft tone-danger inline-flex size-10 shrink-0 items-center justify-center rounded-xl">
+        <TriangleAlert className="size-[18px]" />
+      </span>
+      <div className="min-w-0">
+        <h2 className="text-sm font-semibold text-content-strong">{title}</h2>
+        <p className="mt-1 text-xs leading-5 text-content">{message}</p>
+      </div>
+    </section>
   );
 }
