@@ -9,6 +9,7 @@ import { getServerEnv } from "@/lib/env";
 import type { FinanceLayoutProps } from "@/lib/interfaces/app-shell";
 import { getOnboarding } from "@/lib/server/onboarding";
 import { OnboardingGate } from "@/components/finance/onboarding/gate";
+import { OnboardingDemoPreview } from "@/components/finance/onboarding/demo-preview";
 import { DatabaseSyncProvider } from "@/components/finance/database-sync-provider";
 import { getDatabaseSyncStatus } from "@/lib/db/replica";
 
@@ -34,7 +35,7 @@ export default async function FinanceLayout({ children }: FinanceLayoutProps) {
         <DatabaseSyncProvider initialStatus={await getDatabaseSyncStatus()}>
           <AppShell demoMode={demoMode} user={user}>{children}</AppShell>
         </DatabaseSyncProvider>
-        {!demoMode && <OnboardingGate initialState={onboarding} name={user.name} />}
+        {demoMode ? <OnboardingDemoPreview name={user.name} /> : <OnboardingGate initialState={onboarding} name={user.name} />}
       </FinancialPrivacyProvider>
     </Suspense>
   );

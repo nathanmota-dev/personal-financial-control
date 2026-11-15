@@ -16,9 +16,9 @@ const stepIndicatorVariants = cva("flex items-center justify-center gap-2", {
 const stepDotVariants = cva("rounded-full transition-all duration-200", {
   variants: {
     variant: {
-      dots: "data-[state=active]:bg-foreground data-[state=completed]:bg-foreground/60 data-[state=inactive]:bg-muted-foreground/30 size-2 data-[state=active]:size-2.5",
+      dots: "data-[state=active]:bg-primary data-[state=completed]:bg-primary/60 data-[state=inactive]:bg-surface-elevated size-2 data-[state=active]:size-2.5",
       pills:
-        "data-[state=active]:bg-foreground data-[state=completed]:bg-foreground/60 data-[state=inactive]:bg-muted-foreground/30 h-1 max-w-8 flex-1 rounded-full",
+        "data-[state=active]:bg-primary data-[state=completed]:bg-primary/60 data-[state=inactive]:bg-surface-elevated h-1.5 max-w-10 flex-1 rounded-full",
     },
   },
   defaultVariants: {

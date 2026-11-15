@@ -75,7 +75,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
+:root,
+.light {
   --font-sans: var(--font-inter), "Inter", sans-serif;
   --font-heading: var(--font-inter), "Inter", sans-serif;
   --font-mono: "SFMono-Regular", Consolas, monospace;

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { OnboardingAccount, OnboardingFlowProps, OnboardingUpdate } from "@/lib/interfaces/onboarding";
 import { requestOnboarding } from "@/lib/onboarding/client";
 
-export function useOnboardingFlow({ onStateChange }: OnboardingFlowProps) {
+export function useOnboardingFlow({ onStateChange, persist = requestOnboarding }: OnboardingFlowProps) {
   const router = useRouter();
   const [accounts, setAccounts] = useState<OnboardingAccount[]>([]);
   const [accountsError, setAccountsError] = useState(false);
@@ -39,7 +39,7 @@ export function useOnboardingFlow({ onStateChange }: OnboardingFlowProps) {
     setBusy(true);
     setError("");
     try {
-      const next = await requestOnboarding(update);
+      const next = await persist(update);
       onStateChange(next);
       if (next.completedAt) { router.push("/dashboard"); router.refresh(); }
     } catch { setError("Não foi possível salvar seu progresso. Tente novamente."); }

@@ -61,7 +61,7 @@ it("navigates, selects theme, saves multiple accounts and completes", async () =
   await user.click(screen.getByRole("button", { name: "Salvar cartão" }));
   expect(createAccountAction).toHaveBeenLastCalledWith({ name: "Visa", type: "credit", initialBalanceCents: 0, creditClosingDay: 31, creditDueDay: 1 });
   await user.click(screen.getByRole("button", { name: "Continuar" }));
-  expect(screen.getByText(/3 conta\(s\) e 1/)).toBeVisible();
+  expect(screen.getByText("3 contas e 1 cartão prontos no Finance.")).toBeVisible();
   await user.click(screen.getByRole("button", { name: "Ir para o Dashboard" }));
   expect(await screen.findByText("Concluído")).toBeVisible();
   expect(navigation.push).toHaveBeenCalledWith("/dashboard");

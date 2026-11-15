@@ -58,8 +58,8 @@ export function OnboardingHeader({
     <div
       className={cn(
         "flex flex-col gap-1 text-center",
-        "[&_[data-slot=onboarding-title]]:text-foreground [&_[data-slot=onboarding-title]]:font-sans [&_[data-slot=onboarding-title]]:text-2xl [&_[data-slot=onboarding-title]]:font-semibold",
-        "[&_[data-slot=onboarding-description]]:text-muted-foreground [&_[data-slot=onboarding-description]]:text-base",
+        "[&_[data-slot=onboarding-title]]:text-content-strong [&_[data-slot=onboarding-title]]:font-sans [&_[data-slot=onboarding-title]]:text-[28px] [&_[data-slot=onboarding-title]]:leading-[36px] [&_[data-slot=onboarding-title]]:tracking-[-1px] [&_[data-slot=onboarding-title]]:font-semibold",
+        "[&_[data-slot=onboarding-description]]:text-content [&_[data-slot=onboarding-description]]:text-[13px]",
         className
       )}
       data-slot="onboarding-header"
@@ -121,7 +121,7 @@ export function OnboardingNavigation({
       {isLastStep ? (
         <Button
           aria-label={completeLabel}
-          className="bg-foreground text-background hover:bg-foreground/90 flex-1 rounded-xl py-5"
+          className="flex-1 rounded-[10px] py-5"
           data-slot="onboarding-complete"
           onClick={handleComplete}
         >
@@ -130,7 +130,7 @@ export function OnboardingNavigation({
       ) : (
         <Button
           aria-label={nextLabel}
-          className="bg-foreground text-background hover:bg-foreground/90 flex-1 rounded-xl py-5"
+          className="flex-1 rounded-[10px] py-5"
           data-slot="onboarding-next"
           disabled={!canGoNext}
           onClick={handleNext}

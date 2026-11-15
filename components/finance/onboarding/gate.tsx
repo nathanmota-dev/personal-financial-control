@@ -43,9 +43,9 @@ export function OnboardingGate({ initialState, name }: OnboardingGateProps) {
 
   if (state?.completedAt) return null;
   return <>
-    {failed && <div role="alert" className="fixed bottom-4 right-4 z-40 max-w-[calc(100%-2rem)] rounded-xl border bg-background p-4 shadow-lg">
-      <p className="mb-2 text-sm">Não foi possível consultar sua configuração inicial.</p>
-      <Button variant="outline" disabled={loading} onClick={() => void reload()}>Tentar novamente</Button>
+    {failed && <div role="alert" className="fixed right-4 bottom-4 z-40 max-w-[calc(100%-2rem)] rounded-[14px] border border-border bg-card p-4 shadow-elevation">
+      <p className="mb-3 text-[13px] text-content-strong">Não foi possível consultar sua configuração inicial.</p>
+      <Button variant="secondary" className="h-10 rounded-[10px] text-[13px] font-medium" disabled={loading} onClick={() => void reload()}>Tentar novamente</Button>
     </div>}
     {state && !dismissed && <OnboardingFlow state={state} name={name} onStateChange={updateState} onDismiss={() => setDismissed(true)} />}
   </>;

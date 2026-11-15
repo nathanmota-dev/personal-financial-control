@@ -1,37 +1,51 @@
 "use client";
 
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Onboarding } from "@/components/ui/onboarding";
-import type { OnboardingFlowProps } from "@/lib/interfaces/onboarding";
+import type { OnboardingFlowProps, OnboardingFormHandle } from "@/lib/interfaces/onboarding";
 import { useOnboardingFlow } from "@/hooks/use-onboarding-flow";
+import { ONBOARDING_TOTAL_STEPS } from "@/lib/onboarding/steps";
+import { OnboardingFooter } from "./footer";
+import { OnboardingStepHeader } from "./step-header";
 import { OnboardingSteps } from "./steps";
 
 export default function OnboardingFlow(props: OnboardingFlowProps) {
   const { state, name, onDismiss } = props;
   const flow = useOnboardingFlow(props);
-  const optional = state.step === 3 || state.step === 4;
+  const formRef = useRef<OnboardingFormHandle>(null);
+
+  async function next() {
+    // A filled-in form is saved before moving on, so a typed account is never lost.
+    if (formRef.current && !await formRef.current.submitPending()) return;
+    await flow.save({ step: state.step + 1 });
+  }
 
   return <Dialog open onOpenChange={open => { if (!open) onDismiss(); }}>
-    <DialogContent className="sm:max-w-xl" onInteractOutside={event => event.preventDefault()}>
+    <DialogContent className="gap-0 bg-card p-0 sm:max-w-[720px]" onInteractOutside={event => event.preventDefault()}>
       <DialogTitle className="sr-only">Configuração inicial do Finance</DialogTitle>
       <DialogDescription className="sr-only">Cinco etapas para personalizar o tema e cadastrar contas e cartões.</DialogDescription>
-      <Onboarding value={state.step} totalSteps={5} onValueChange={step => void flow.save({ step })} onComplete={() => void flow.save({ completed: true })}
-        className="gap-6 border-0 bg-transparent p-0 shadow-none [&_[data-slot=onboarding-header]]:text-left [&_[data-slot=onboarding-description]]:text-sm">
-        <div className="space-y-3 pr-10">
-          <p className="text-sm text-muted-foreground" aria-live="polite">Etapa {state.step} de 5</p>
-          <Onboarding.StepIndicator variant="pills" className="justify-start" aria-label={`Etapa ${state.step} de 5`} />
+      <Onboarding value={state.step} totalSteps={ONBOARDING_TOTAL_STEPS} className="gap-0 rounded-none border-0 bg-transparent p-0 shadow-none">
+        <OnboardingStepHeader step={state.step} totalSteps={ONBOARDING_TOTAL_STEPS} name={name} />
+        <div className="@container space-y-4 px-6 py-6 sm:px-8">
+          <OnboardingSteps accounts={flow.accounts} disabled={flow.busy || flow.accountsLoading || flow.accountsError} onSaved={flow.accountSaved} onBusyChange={flow.accountBusy} formRef={formRef} />
+          {flow.accountsError && <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-border p-4 text-xs text-content">
+            <p>Não foi possível carregar seus cadastros.</p><Button variant="outline" size="sm" disabled={flow.accountsLoading || flow.busy} onClick={flow.reloadAccounts}>Recarregar cadastros</Button>
+          </div>}
+          {flow.error && <p role="alert" className="text-xs text-destructive">{flow.error}</p>}
         </div>
-        <OnboardingSteps name={name} accounts={flow.accounts} disabled={flow.busy || flow.accountsLoading || flow.accountsError} onSaved={flow.accountSaved} onBusyChange={flow.accountBusy} />
-        {flow.accountsError && <div role="alert" className="space-y-2 text-sm">
-          <p>Não foi possível carregar seus cadastros.</p><Button variant="outline" disabled={flow.accountsLoading || flow.busy} onClick={flow.reloadAccounts}>Recarregar cadastros</Button>
-        </div>}
-        {flow.error && <p role="alert" className="text-sm text-destructive">{flow.error}</p>}
-        <Onboarding.Navigation disabled={flow.busy || (optional && flow.accountsLoading)} backLabel="Voltar" nextLabel="Continuar" completeLabel="Ir para o Dashboard" aria-label="Navegação da configuração" />
-        <div className="flex flex-wrap justify-between gap-2 border-t pt-3">
-          {optional && <Button variant="ghost" disabled={flow.busy} onClick={() => void flow.save({ step: state.step + 1 })}>Pular etapa</Button>}
-          <Button variant="ghost" className="ml-auto text-muted-foreground" disabled={flow.busy} onClick={() => void flow.save({ completed: true })}>Pular configuração</Button>
-        </div>
+        <OnboardingFooter
+          step={state.step}
+          totalSteps={ONBOARDING_TOTAL_STEPS}
+          busy={flow.busy}
+          loading={flow.accountsLoading}
+          onBack={() => void flow.save({ step: state.step - 1 })}
+          onNext={() => void next()}
+          onSkipStep={() => void flow.save({ step: state.step + 1 })}
+          onSkipAll={() => void flow.save({ completed: true })}
+          onComplete={() => void flow.save({ completed: true })}
+        />
       </Onboarding>
     </DialogContent>
   </Dialog>;

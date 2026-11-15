@@ -1,61 +1,54 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { createAccountAction } from "@/app/actions/finance";
+import { Plus } from "lucide-react";
+import { useImperativeHandle, useRef, useState } from "react";
 import { FormSelect } from "@/components/finance/form-select";
+import { MoneyInput } from "@/components/finance/money-input";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SelectItem } from "@/components/ui/select";
-import type { OnboardingAccountFormProps } from "@/lib/interfaces/onboarding";
+import { useOnboardingAccountSubmit } from "@/hooks/use-onboarding-account-submit";
+import { moneyInputToCents } from "@/lib/finance-ui";
+import type { OnboardingAccountFormProps, OnboardingBankAccountType } from "@/lib/interfaces/onboarding";
+import { ONBOARDING_ACCOUNT_TYPES } from "@/lib/onboarding/steps";
 
-export function OnboardingAccountForm({ credit, onSaved, onBusyChange, disabled }: OnboardingAccountFormProps) {
-  const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
-  const lock = useRef(false);
-  const prefix = credit ? "onboarding-card" : "onboarding-account";
+const prefix = "onboarding-account";
+const emptyDraft = { name: "", type: "checking" as OnboardingBankAccountType, balance: "" };
 
-  async function submit(form: HTMLFormElement) {
-    if (lock.current || disabled) return;
-    const data = new FormData(form);
-    const name = String(data.get("name")).trim();
-    if (!name) { setError("Informe um nome."); return; }
-    lock.current = true;
-    setSaving(true);
-    onBusyChange(true);
-    setError("");
-    try {
-      const account = await createAccountAction({
-        name,
-        type: credit ? "credit" : data.get("type") as "checking" | "savings" | "cash",
-        initialBalanceCents: credit ? 0 : Math.round(Number(data.get("balance")) * 100),
-        ...(credit ? { creditClosingDay: Number(data.get("closing")), creditDueDay: Number(data.get("due")) } : {}),
-      });
-      onSaved(account);
-      form.reset();
-    } catch { setError("Não foi possível salvar. Confira os dados e tente novamente."); }
-    finally { lock.current = false; setSaving(false); onBusyChange(false); }
+export function OnboardingAccountForm({ onSaved, onBusyChange, disabled, ref }: OnboardingAccountFormProps) {
+  const [draft, setDraft] = useState(emptyDraft);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { error, saving, create } = useOnboardingAccountSubmit({ onSaved, onBusyChange, disabled });
+
+  async function submit() {
+    const saved = await create({ name: draft.name.trim(), type: draft.type, initialBalanceCents: draft.balance ? moneyInputToCents(draft.balance) : 0 });
+    if (saved) setDraft(emptyDraft);
+    return saved;
   }
 
-  return <form onSubmit={event => { event.preventDefault(); void submit(event.currentTarget); }}>
+  useImperativeHandle(ref, () => ({
+    submitPending: async () => !draft.name.trim() || (formRef.current?.reportValidity() !== false && await submit()),
+  }));
+
+  return <form ref={formRef} aria-label="Nova conta" onSubmit={event => { event.preventDefault(); void submit(); }}>
     <fieldset disabled={disabled || saving} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor={`${prefix}-name`}>Nome {credit ? "do cartão" : "da conta"}</Label>
-        <Input id={`${prefix}-name`} name="name" required placeholder={credit ? "Ex.: Cartão principal" : "Ex.: Conta do banco"} />
+        <Label htmlFor={`${prefix}-name`}>Nome da conta</Label>
+        <Input id={`${prefix}-name`} name="name" required value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} placeholder="Ex.: Conta do banco" />
       </div>
-      {credit ? <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2"><Label htmlFor={`${prefix}-closing`}>Dia de fechamento</Label><Input id={`${prefix}-closing`} name="closing" type="number" min="1" max="31" step="1" required /></div>
-        <div className="space-y-2"><Label htmlFor={`${prefix}-due`}>Dia de vencimento</Label><Input id={`${prefix}-due`} name="due" type="number" min="1" max="31" step="1" required /></div>
-      </div> : <>
-        <div className="space-y-2"><Label htmlFor={`${prefix}-type`}>Tipo de conta</Label>
-          <FormSelect id={`${prefix}-type`} name="type" defaultValue="checking" className="w-full">
-            <SelectItem value="checking">Corrente</SelectItem><SelectItem value="savings">Poupança</SelectItem><SelectItem value="cash">Dinheiro</SelectItem>
+      <div className="grid gap-4 @sm:grid-cols-2">
+        <div className="min-w-0 space-y-2"><Label htmlFor={`${prefix}-type`}>Tipo de conta</Label>
+          <FormSelect id={`${prefix}-type`} value={draft.type} onValueChange={type => setDraft({ ...draft, type: type as OnboardingBankAccountType })} className="w-full">
+            {Object.entries(ONBOARDING_ACCOUNT_TYPES).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
           </FormSelect>
         </div>
-        <div className="space-y-2"><Label htmlFor={`${prefix}-balance`}>Saldo inicial (R$)</Label><Input id={`${prefix}-balance`} name="balance" type="number" step="0.01" defaultValue="0" required /></div>
-      </>}
-      <Button type="submit" variant="outline" className="w-full">{saving ? "Salvando…" : credit ? "Salvar cartão" : "Salvar conta"}</Button>
+        <div className="min-w-0 space-y-2"><Label htmlFor={`${prefix}-balance`}>Saldo inicial (R$)</Label>
+          <MoneyInput id={`${prefix}-balance`} name="balance" value={draft.balance} onValueChange={balance => setDraft(current => ({ ...current, balance }))} placeholder="0,00" />
+        </div>
+      </div>
+      <Button type="submit" variant="secondary" className="h-10 w-full gap-[10px] rounded-[10px] text-[13px] font-medium"><Plus className="size-[17px]" />{saving ? "Salvando…" : "Salvar conta"}</Button>
     </fieldset>
-    {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
+    {error && <p role="alert" className="mt-3 text-xs text-destructive">{error}</p>}
   </form>;
 }
