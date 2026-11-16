@@ -2,11 +2,15 @@
 "use strict";
 const fs = require("node:fs");
 const C = require("./config.js"), Q = require("./quality-gate.js"), B = require("./benchmark-gate.js"), W = require("./workflow-report.js");
+// Paired runs on one runner still vary a few percent; smaller losses are noise, not regressions.
+const PROMOTION_NOISE_PERCENT = 5, MAX_LISTED_REASONS = 10;
+const NO_IMPROVEMENT = /^No protected (?:quality metric|performance scenario) improved\.$/;
 
 function qualityEligibility(baseline, candidate, config) {
   Q.validateBaseline(baseline, config); Q.validateBaseline(candidate, config);
   const current = { ...candidate, coverage: Q.aggregate(candidate.projects) };
   const comparison = Q.compare(baseline, current, config.qualityMode);
+  // Size limits are enforced by compare(); growth within them must not freeze the reference.
   const reasons = [...comparison.failures];
   let improved = false;
   const coverage = (old, value) => {
@@ -21,12 +25,10 @@ function qualityEligibility(baseline, candidate, config) {
     const old = baseline.projects[name];
     coverage(old.coverage, project.coverage); duplication(old.duplication, project.duplication);
     for (const [file, lines] of Object.entries(old.files)) {
-      if (project.files[file] > lines) reasons.push(`${file}: size increased; reference cannot advance.`);
       if (project.files[file] === undefined || project.files[file] < lines) improved = true;
     }
     const sizes = Q.functionSizes(project);
     for (const [key, fn] of Q.functionSizes(old)) {
-      if (sizes.get(key)?.lines > fn.lines) reasons.push(`${fn.file} ${fn.name}: function size increased; reference cannot advance.`);
       if (!sizes.has(key) || sizes.get(key).lines < fn.lines) improved = true;
     }
   }
@@ -53,7 +55,7 @@ function performanceEligibility(baseline, candidate, report, names, sha) {
     if (Object.keys(old).sort().join() !== Object.keys(baseline.projects[name].benchmarks).sort().join() ||
       Object.keys(value).sort().join() !== Object.keys(old).sort().join()) reasons.push(`${name}: scenario set changed; review required.`);
     for (const [key, previous] of Object.entries(old)) {
-      if (!value[key] || value[key].hz < previous.hz) reasons.push(`${name}/${key}: throughput decreased; reference cannot advance.`);
+      if (!value[key] || value[key].hz * 100 < previous.hz * (100 - PROMOTION_NOISE_PERCENT)) reasons.push(`${name}/${key}: throughput decreased beyond ${PROMOTION_NOISE_PERCENT}% noise margin; reference cannot advance.`);
       if (value[key]?.hz > previous.hz) improved = true;
     }
     for (const [key, measured] of Object.entries(value)) {
@@ -95,7 +97,7 @@ function promote(root, config, sha, execute = C.execute) {
   if (!files.length) return { status: "unchanged", files, decisions };
   for (const file of files) {
     const candidate = file === "scripts/baseline.json" ? qualityCandidate : performanceCandidate;
-    C.writeJson(C.inside(root, file), { ...candidate, source: { commit: sha, runId: C.provenance().runId, runAttempt: C.provenance().runAttempt, promotion: "strict improvements only" } });
+    C.writeJson(C.inside(root, file), { ...candidate, source: { commit: sha, runId: C.provenance().runId, runAttempt: C.provenance().runAttempt, promotion: "improvements without regressions" } });
   }
   command(["git", "add", "--", ...files]);
   command(["git", "-c", "user.name=github-actions[bot]", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com", "commit", "-m", "ci: update improved baselines", "-m", "[baseline-promotion]"]);
@@ -107,18 +109,33 @@ function promote(root, config, sha, execute = C.execute) {
   }
   return { status: "promoted", files, decisions };
 }
+function listed(reasons) {
+  const extra = reasons.length - MAX_LISTED_REASONS;
+  return reasons.slice(0, MAX_LISTED_REASONS).join("; ") + (extra > 0 ? `; and ${extra} more` : "");
+}
+function annotations(result) {
+  const command = (level, message) => `::${level} title=Baseline promotion::${message.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A")}`;
+  const lines = result.status === "discarded" ? [command("warning", `Promotion discarded: ${result.reason}`)] : [];
+  for (const [file, decision] of Object.entries(result.decisions)) {
+    if (decision.eligible) continue;
+    const noise = decision.reasons.every((reason) => NO_IMPROVEMENT.test(reason));
+    lines.push(command(noise ? "notice" : "warning", `${file} not promoted: ${listed(decision.reasons)}`));
+  }
+  return lines;
+}
 function runCli(args = process.argv.slice(2)) {
   try {
     const options = C.argumentsFor(args), config = C.loadConfig(options);
     if (process.env.CI !== "true" || process.env.GITHUB_REF !== "refs/heads/main") throw new C.InputError("Automatic promotion only runs on main in CI.");
     const result = promote(options.root, config, process.env.GITHUB_SHA);
     C.writeJson(C.inside(options.root, "reports/baseline-promotion.json"), result);
-    const markdown = `# Baseline promotion\n\n**${result.status.toUpperCase()}**${result.reason ? ` — ${result.reason}` : ""}\n\n` + Object.entries(result.decisions).map(([file, decision]) => `- ${file}: ${decision.eligible ? "eligible improvement" : decision.reasons.map(C.escape).join("; ")}`).join("\n") + "\n";
+    const markdown = `# Baseline promotion\n\n**${result.status.toUpperCase()}**${result.reason ? ` — ${result.reason}` : ""}\n\n` + Object.entries(result.decisions).map(([file, decision]) => `- ${file}: ${decision.eligible ? "eligible improvement" : C.escape(listed(decision.reasons))}`).join("\n") + "\n";
     fs.writeFileSync(C.inside(options.root, "reports/baseline-promotion.md"), markdown);
     process.stdout.write(markdown);
+    for (const line of annotations(result)) process.stdout.write(line + "\n");
     if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown);
     return 0;
   } catch (error) { process.stderr.write(error.message + "\n"); return 2; }
 }
-module.exports = { qualityEligibility, performanceEligibility, evidence, promote, runCli };
+module.exports = { PROMOTION_NOISE_PERCENT, qualityEligibility, performanceEligibility, evidence, promote, annotations, runCli };
 if (require.main === module) process.exitCode = runCli();

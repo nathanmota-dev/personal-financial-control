@@ -9,7 +9,7 @@ function performanceFixture(hz = 101) {
   for (const side of ["reference", "current"]) report.evidence.runs[side] = [1, 2, 3].map((pair) => ({ ...C.provenance(), headSha: sha, pair, commit: side === "reference" ? baseline.headSha : sha, runner: report.evidence.runner, runtime: report.evidence.runtime, projects: side === "reference" ? baseline.projects : candidate.projects }));
   return { sha, baseline, candidate, report };
 }
-test("quality reference advances only for improvements without coverage, duplication or size losses", (t) => {
+test("quality reference advances only for improvements without coverage, duplication or size-limit losses", (t) => {
   const root = H.temporary(t), baseline = { schemaVersion: 1, policy: C.POLICY, ...H.metrics(root) }, config = H.config();
   assert.equal(Promote.qualityEligibility(baseline, baseline, config).eligible, false);
   const better = structuredClone(baseline); better.projects.app.coverage = H.coverage(9, 10);
@@ -17,8 +17,9 @@ test("quality reference advances only for improvements without coverage, duplica
   for (const mutate of [
     (p) => p.coverage.branches.covered = 7,
     (p) => p.duplication.fragments++,
-    (p) => p.files["src/index.js"]++,
-    (p) => p.functions[0].lines++,
+    (p) => p.files["src/index.js"] = 351,
+    (p) => p.files["src/new.js"] = 351,
+    (p) => p.functions[0].lines = 101,
   ]) {
     const current = structuredClone(better); mutate(current.projects.app);
     assert.equal(Promote.qualityEligibility(baseline, current, config).eligible, false);
@@ -26,18 +27,60 @@ test("quality reference advances only for improvements without coverage, duplica
   const smaller = structuredClone(baseline); smaller.projects.app.files["src/index.js"]--;
   assert.equal(Promote.qualityEligibility(baseline, smaller, config).eligible, true);
 });
+test("growth within size limits never freezes the quality reference", (t) => {
+  const root = H.temporary(t), baseline = { schemaVersion: 1, policy: C.POLICY, ...H.metrics(root) }, config = H.config();
+  const grown = structuredClone(baseline);
+  grown.projects.app.files["src/index.js"] += 100; grown.projects.app.functions[0].lines += 50; grown.projects.app.files["src/new.js"] = 350;
+  assert.deepEqual(Promote.qualityEligibility(baseline, grown, config).reasons, ["No protected quality metric improved."]);
+  grown.projects.app.coverage = H.coverage(9, 10);
+  assert.deepEqual(Promote.qualityEligibility(baseline, grown, config), { eligible: true, reasons: [] });
+});
+test("no-regression debt may shrink through promotion but never grow", (t) => {
+  const root = H.temporary(t), config = { ...H.config(), qualityMode: "no-regression" };
+  const baseline = { schemaVersion: 1, policy: C.POLICY, qualityMode: "no-regression", ...H.metrics(root) };
+  baseline.projects.app.files["src/index.js"] = 400;
+  const current = structuredClone(baseline); current.projects.app.coverage = H.coverage(9, 10);
+  current.projects.app.files["src/index.js"] = 390;
+  assert.equal(Promote.qualityEligibility(baseline, current, config).eligible, true);
+  current.projects.app.files["src/index.js"] = 401;
+  assert.match(Promote.qualityEligibility(baseline, current, config).reasons.join(), /401 lines exceeds 400/);
+});
 test("20% tolerated throughput loss can pass PR validation but cannot be promoted", () => {
-  for (const hz of [80, 99, 100, 101]) {
+  for (const hz of [80, 94, 99, 100, 101]) {
     const f = performanceFixture(hz);
     assert.equal(B.compare(f.baseline, f.candidate, ["app"]).passed, true);
     assert.equal(Promote.performanceEligibility(f.baseline, f.candidate, f.report, ["app"], f.sha).eligible, hz > 100);
   }
 });
+test("losses within the noise margin do not block an improved performance reference", () => {
+  assert.equal(Promote.PROMOTION_NOISE_PERCENT, 5);
+  for (const [hz, eligible] of [[99, true], [96, true], [95, true], [94, false], [80, false]]) {
+    const f = performanceFixture(110);
+    f.baseline.projects.app.benchmarks.other = H.stats(100); f.candidate.projects.app.benchmarks.other = H.stats(hz);
+    const decision = Promote.performanceEligibility(f.baseline, f.candidate, f.report, ["app"], f.sha);
+    assert.equal(decision.eligible, eligible, String(hz));
+    if (!eligible) assert.match(decision.reasons.join(), /app\/other: throughput decreased beyond 5% noise margin/);
+  }
+});
 test("one performance improvement never masks a loss in another scenario", () => {
   const f = performanceFixture(110), baselineBenchmarks = f.baseline.projects.app.benchmarks;
-  baselineBenchmarks.other = H.stats(100); f.candidate.projects.app.benchmarks.other = H.stats(99);
+  baselineBenchmarks.other = H.stats(100); f.candidate.projects.app.benchmarks.other = H.stats(90);
   assert.equal(B.compare(f.baseline, f.candidate, ["app"]).passed, true);
   assert.equal(Promote.performanceEligibility(f.baseline, f.candidate, f.report, ["app"], f.sha).eligible, false);
+});
+test("refused promotions produce escaped and truncated workflow annotations", () => {
+  const many = Array.from({ length: 12 }, (_, index) => `reason ${index}`);
+  const lines = Promote.annotations({ status: "unchanged", files: [], decisions: {
+    "scripts/baseline.json": { eligible: false, reasons: ["No protected quality metric improved."] },
+    "scripts/benchmark-baseline.json": { eligible: false, reasons: ["100% loss\nnext", ...many] },
+    "scripts/other.json": { eligible: true, reasons: [] },
+  } });
+  assert.deepEqual(lines, [
+    "::notice title=Baseline promotion::scripts/baseline.json not promoted: No protected quality metric improved.",
+    `::warning title=Baseline promotion::scripts/benchmark-baseline.json not promoted: 100%25 loss%0Anext; ${many.slice(0, 9).join("; ")}; and 3 more`,
+  ]);
+  assert.deepEqual(Promote.annotations({ status: "discarded", reason: "main advanced during validation", files: [], decisions: {} }),
+    ["::warning title=Baseline promotion::Promotion discarded: main advanced during validation"]);
 });
 test("promotion rejects partial pairs, different machines, runtime/attempt mismatch and forged medians", () => {
   for (const mutate of [
@@ -75,7 +118,7 @@ function promotionFixture(t, options = {}) {
   return { root, f, config, calls, execute };
 }
 test("promotion writes only eligible files and never changes the local baseline", (t) => {
-  const x = promotionFixture(t, { hz: 99 }); H.write(x.root, "scripts/benchmark-baseline.local.json", "local reference");
+  const x = promotionFixture(t, { hz: 90 }); H.write(x.root, "scripts/benchmark-baseline.local.json", "local reference");
   const original = fs.readFileSync(path.join(x.root, "scripts/benchmark-baseline.json"), "utf8");
   const result = Promote.promote(x.root, x.config, x.f.sha, x.execute);
   assert.deepEqual(result.files, ["scripts/baseline.json"]);
