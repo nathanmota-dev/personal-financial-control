@@ -427,6 +427,25 @@ describe("Open Finance settings", () => {
       expect(screen.getByLabelText("Categoria de SALARIO EMPRESA")).toBeEnabled();
     });
 
+    it("shows an AI suggestion and accepts it through the normal rule request", async () => {
+      const suggested: PluggyPendingCategoryGroup = { ...market, suggestion: { categoryId: "cat-food", reason: "Supermercado" } };
+      const calls = stubApi({ pending: [suggested, salary], onPost: () => json({ ok: true, applied: 2, pending: [salary] }) });
+      const { user } = open();
+      expect(await screen.findByText(/Sugestão da IA:/)).toHaveTextContent("Sugestão da IA: Alimentação");
+      expect(screen.getByText("Supermercado")).toBeVisible();
+      expect(screen.getAllByText(/Sugestão da IA:/)).toHaveLength(1);
+      await user.click(screen.getByRole("button", { name: "Aceitar sugestão Alimentação" }));
+      expect(calls).toEqual([{ url: "/api/pluggy/category-rules", method: "POST", body: { normalizedDescription: "MERCADO BOM", direction: "expense", categoryId: "cat-food" } }]);
+      await waitFor(() => expect(screen.queryByText(/Sugestão da IA:/)).toBeNull());
+    });
+
+    it("hides a suggestion whose category is no longer offered", async () => {
+      stubApi({ pending: [{ ...market, suggestion: { categoryId: "cat-old", reason: null } }] });
+      open();
+      await screen.findByLabelText("Categoria de MERCADO BOM");
+      expect(screen.queryByText(/Sugestão da IA:/)).toBeNull();
+    });
+
     it("keeps the row and reports a failure", async () => {
       stubApi({ pending: [market], onPost: () => json({ ok: false, error: { code: "PLUGGY_CATEGORY_RULE_INVALID", message: "Categoria recusada." } }, 400) });
       const { user } = open();

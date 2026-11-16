@@ -1,4 +1,4 @@
-import { encryptedBoolean, encryptedText, encryptedTimestamp } from "@/lib/db/encrypted-content";
+import { encryptedBoolean, encryptedInteger, encryptedText, encryptedTimestamp } from "@/lib/db/encrypted-content";
 import { encryptionChecks } from "@/lib/db/encryption-checks";
 import { index, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { accounts, categories, timestampColumns } from "./accounts";
@@ -86,4 +86,24 @@ export const pluggyCategoryRules = sqliteTable("pluggy_category_rules", {
   ...encryptionChecks(table),
   uniqueIndex("pluggy_category_rules_description_direction_unique").on(table.normalizedDescriptionHash, table.directionHash),
   index("pluggy_category_rules_category_idx").on(table.categoryId),
+]);
+
+/**
+ * What the optional AI categorization answered for one pending description and direction.
+ * A null category records that it was already asked and could not tell, so it is not asked again.
+ */
+export const pluggyCategorySuggestions = sqliteTable("pluggy_category_suggestions", {
+  id: recordId(),
+  normalizedDescription: encryptedText("normalized_description", "pluggy_category_suggestions.normalized_description").notNull(),
+  normalizedDescriptionHash: text("normalized_description_hash"),
+  direction: encryptedText("direction", "pluggy_category_suggestions.direction", { enum: pluggyCategoryRuleDirections }).notNull(),
+  directionHash: text("direction_hash"),
+  categoryId: referenceColumn("category_id", () => categories.id, "cascade"),
+  reason: encryptedText("reason", "pluggy_category_suggestions.reason"),
+  confidence: encryptedInteger("confidence", "pluggy_category_suggestions.confidence").notNull(),
+  ...timestampColumns("pluggy_category_suggestions"),
+}, (table) => [
+  ...encryptionChecks(table),
+  uniqueIndex("pluggy_category_suggestions_description_direction_unique").on(table.normalizedDescriptionHash, table.directionHash),
+  index("pluggy_category_suggestions_category_idx").on(table.categoryId),
 ]);

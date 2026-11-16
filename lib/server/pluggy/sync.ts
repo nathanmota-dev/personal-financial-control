@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import type { AppDb } from "@/lib/db";
 import { pluggyItems } from "@/lib/db/schema";
 import { replicaError } from "@/lib/db/replica-errors";
+import type { AiCategorizationCounts, AiConfig } from "@/lib/interfaces/ai-categorization";
 import type {
   PluggyItemRecord,
   PluggyLinkRecord,
@@ -18,6 +19,7 @@ import type {
   PluggySyncStepResult,
   PluggySyncSummary,
 } from "@/lib/interfaces/pluggy";
+import { getAiConfig } from "@/lib/server/ai/config";
 import { DomainError } from "@/lib/server/errors";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
@@ -139,6 +141,27 @@ async function loadTargets(db: AppDb) {
   return { items, links: links.filter((link) => link.isEnabled) };
 }
 
+/** Only the error's name: a provider message could echo part of the request. */
+function logAiFailure(error: unknown) {
+  console.warn(`[ai] Não foi possível sugerir categorias: ${error instanceof Error ? error.name : "erro desconhecido"}.`);
+}
+
+/**
+ * Optional and isolated: without a complete AI configuration nothing is loaded or sent, and a failed
+ * suggestion never changes the outcome of the sync.
+ */
+async function suggestCategoriesSafely(options: PluggySyncOptions, config: AiConfig): Promise<{ counts: AiCategorizationCounts } | undefined> {
+  try {
+    const { suggestPendingCategories } = await import("@/lib/server/ai/categorize-pending");
+    const suggester = options.suggester ?? (await import("@/lib/server/ai/category-suggester")).createAiCategorySuggester(config);
+    return { counts: await suggestPendingCategories(options.db, suggester) };
+  } catch (error) {
+    if (replicaError(error)) throw error;
+    logAiFailure(error);
+    return undefined;
+  }
+}
+
 async function executeSteps(options: PluggySyncOptions, runId: string | null, startedAt: Date, dryRun: boolean): Promise<PluggySyncRunView> {
   const { items, links } = await loadTargets(options.db);
   const state: Pipeline = {
@@ -151,6 +174,9 @@ async function executeSteps(options: PluggySyncOptions, runId: string | null, st
     if (step.scope === "item") await runItemStep(step, items, state);
     else await runAccountStep(step, items, links, state);
   }
+  const aiConfig = dryRun ? null : getAiConfig();
+  if (aiConfig && options.defer) options.defer(async () => { await suggestCategoriesSafely(options, aiConfig).catch(logAiFailure); });
+  else if (aiConfig) addResult(state.summary, await suggestCategoriesSafely(options, aiConfig));
   state.summary.accounts.skipped = links.filter((link) => state.failedItems.has(link.itemId)).length;
   const status = resolveStatus(state);
   if (!runId) return { id: null, startedAt: startedAt.toISOString(), finishedAt: new Date().toISOString(), status, errorCode: null, summary: state.summary };

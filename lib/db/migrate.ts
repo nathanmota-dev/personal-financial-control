@@ -37,7 +37,8 @@ export async function migrateDatabase(client: Client) {
     const columns = getTableColumns(categories);
     for (const category of defaultCategories) {
       const row = withContentIndexes(categories, category, true);
-      const entries = Object.entries(columns);
+      // Empty columns are left out: a column added by a later migration does not exist yet at bootstrap.
+      const entries = Object.entries(columns).filter(([key]) => row[key] != null);
       statements.push({
         sql: `INSERT INTO categories (${entries.map(([, column]) => `"${column.name}"`).join(",")}) VALUES (${entries.map(() => "?").join(",")})`,
         args: entries.map(([key, column]) => row[key] == null ? null : column.mapToDriverValue(row[key]) as InValue),

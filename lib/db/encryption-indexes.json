@@ -45,5 +45,9 @@
   "pluggy_category_rules": [
     "normalized_description",
     "direction"
+  ],
+  "pluggy_category_suggestions": [
+    "normalized_description",
+    "direction"
   ]
 }

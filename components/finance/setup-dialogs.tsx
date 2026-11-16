@@ -136,6 +136,7 @@ export function CategorySetupDialog({
     const payload = {
       name: String(formData.get("name")),
       group: String(formData.get("group")) as CategoryRow["group"],
+      description: String(formData.get("description") ?? ""),
     };
 
     try {

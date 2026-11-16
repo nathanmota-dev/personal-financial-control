@@ -31,6 +31,7 @@ export type CategoryRow = {
   id: string;
   name: string;
   group: "income" | "fixed_expense" | "variable_expense" | "investment";
+  description?: string | null;
 };
 export type AccountSetupDialogProps = {
   account?: AccountRow;

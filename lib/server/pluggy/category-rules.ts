@@ -1,6 +1,6 @@
 import { and, eq, inArray, isNull, or } from "drizzle-orm";
 
-import { categories, creditCardCharges, pluggyCategoryRules, transactions } from "@/lib/db/schema";
+import { categories, creditCardCharges, pluggyCategoryRules, pluggyCategorySuggestions, transactions } from "@/lib/db/schema";
 import type { CategoryGroup } from "@/lib/db/schema";
 import type {
   PluggyCategoryRuleDirection,
@@ -57,6 +57,8 @@ export async function upsertCategoryRule(db: TransactionDb, { normalizedDescript
   const updatedAt = currentTimestamp();
   if (existing) await db.update(pluggyCategoryRules).set({ categoryId, updatedAt }).where(eq(pluggyCategoryRules.id, existing.id));
   else await db.insert(pluggyCategoryRules).values({ normalizedDescription, direction, categoryId, updatedAt });
+  // Once a rule exists the description is no longer pending, so its AI suggestion has nothing left to suggest.
+  await db.delete(pluggyCategorySuggestions).where(and(eq(pluggyCategorySuggestions.normalizedDescription, normalizedDescription), eq(pluggyCategorySuggestions.direction, direction)));
 }
 
 /** Imported records still waiting for a category. Manually created records are never included. */
@@ -69,11 +71,11 @@ export async function findPendingRecords(db: TransactionDb): Promise<PluggyPendi
   const records: PluggyPendingRecord[] = [];
   for (const row of bankRows) {
     if (!isPluggyImported(row.importFingerprint) || !isRuleDirection(row.type)) continue;
-    records.push({ table: "transactions", id: row.id, direction: row.type, normalizedDescription: normalizeDescription(row.description), amountCents: row.amountCents, isCancelled: row.status === "cancelled" });
+    records.push({ table: "transactions", id: row.id, direction: row.type, description: row.description, normalizedDescription: normalizeDescription(row.description), amountCents: row.amountCents, isCancelled: row.status === "cancelled" });
   }
   for (const row of cardRows) {
     if (!isPluggyImported(row.importFingerprint)) continue;
-    records.push({ table: "credit_card_charges", id: row.id, direction: "expense", normalizedDescription: normalizeDescription(row.description), amountCents: row.totalAmountCents, isCancelled: false });
+    records.push({ table: "credit_card_charges", id: row.id, direction: "expense", description: row.description, normalizedDescription: normalizeDescription(row.description), amountCents: row.totalAmountCents, isCancelled: false });
   }
   return records;
 }

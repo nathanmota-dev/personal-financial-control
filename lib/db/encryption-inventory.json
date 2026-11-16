@@ -15,6 +15,7 @@
     "name": "text",
     "group": "text",
     "is_archived": "boolean",
+    "description": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },
@@ -350,6 +351,16 @@
     "normalized_description": "text",
     "direction": "text",
     "category_id": "technical",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "pluggy_category_suggestions": {
+    "id": "technical",
+    "normalized_description": "text",
+    "direction": "text",
+    "category_id": "technical",
+    "reason": "text",
+    "confidence": "integer",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   }
