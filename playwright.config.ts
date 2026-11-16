@@ -33,6 +33,9 @@ export default defineConfig({
       FIREBASE_PROJECT_ID: "",
       FIREBASE_CLIENT_EMAIL: "",
       FIREBASE_PRIVATE_KEY: "",
+      AI_PROVIDER: "",
+      AI_MODEL: "",
+      AI_API_KEY: "",
     },
   },
 });

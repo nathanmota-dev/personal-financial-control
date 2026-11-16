@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { SelectItem } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { CATEGORY_CATALOG } from "@/lib/category-catalog";
 import { categoryGroupLabels } from "@/lib/finance-ui";
 import type { CategoryRow } from "@/lib/interfaces/finance-fields";
@@ -40,6 +41,17 @@ export function CategorySetupDialogContent({ category, isPending, selectedGroup,
               <SelectItem key={value} value={value}>{label}</SelectItem>
             ))}
           </FormSelect>
+        </FinanceField>
+        <FinanceField label="Descrição (opcional)">
+          <Textarea
+            name="description"
+            maxLength={200}
+            rows={2}
+            defaultValue={category?.description ?? ""}
+            placeholder="Ex.: supermercado, atacarejo, padaria. Não inclui delivery"
+            className="font-normal text-foreground"
+          />
+          <span className="text-xs font-normal text-content-muted">O que entra e o que não entra nesta categoria. Ajuda a categorização automática, quando ativada.</span>
         </FinanceField>
         <DialogFooter>
           <Button type="submit" disabled={isPending}>

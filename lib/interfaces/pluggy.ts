@@ -2,6 +2,7 @@ import type { z } from "zod";
 
 import type { AppDb } from "@/lib/db";
 import type { pluggyAccountKinds, pluggySyncRunStatuses } from "@/lib/db/schema/enums";
+import type { CategorySuggester } from "@/lib/interfaces/ai-categorization";
 import type {
   pluggyAccountSchema,
   pluggyBillSchema,
@@ -182,7 +183,16 @@ export type PluggySyncOptions = {
   client: PluggyApi;
   dryRun?: boolean;
   steps?: readonly PluggySyncStep[];
+  /** Replaces the AI model call, for tests. AI categorization still runs only when it is configured. */
+  suggester?: CategorySuggester;
+  /**
+   * Schedules AI suggestions to run after the response, so a slow provider never delays the sync.
+   * Route Handlers pass Next's `after`; without it they run inline and their counts join the summary.
+   */
+  defer?: PluggyDeferTask;
 };
+
+export type PluggyDeferTask = (task: () => Promise<void>) => void;
 
 export type PluggyOverview = {
   items: PluggyItemView[];
@@ -206,6 +216,7 @@ export type PluggyDailySyncOptions = {
   client: () => PluggyApi;
   configured: boolean;
   now?: Date;
+  defer?: PluggyDeferTask;
 };
 
 export type PluggyAccountRow = {

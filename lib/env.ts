@@ -47,6 +47,10 @@ const serverEnvSchema = z.object({
   INVESTMENT_QUOTE_MIN_INTERVAL_MINUTES: z.coerce.number().int().nonnegative().default(30),
   PLUGGY_CLIENT_ID: optionalCredential,
   PLUGGY_CLIENT_SECRET: optionalCredential,
+  // Optional AI categorization. Validated by `getAiConfig`, so a bad value disables the feature instead of the app.
+  AI_PROVIDER: optionalCredential,
+  AI_MODEL: optionalCredential,
+  AI_API_KEY: optionalCredential,
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & {

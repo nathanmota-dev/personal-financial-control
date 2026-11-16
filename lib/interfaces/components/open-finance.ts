@@ -13,7 +13,8 @@ export type OpenFinanceCategoryReviewRowProps = {
   disabled: boolean;
   onApply: (group: PluggyPendingCategoryGroup, categoryId: string) => void;
 };
-export type OpenFinanceItemFormProps = { busy: boolean; onAdd: (externalItemId: string, label: string) => Promise<boolean> };
+export type OpenFinanceCategorySuggestionProps = { categoryName: string; reason: string | null; disabled: boolean; onAccept: () => void };
+export type OpenFinanceItemFormProps ={ busy: boolean; onAdd: (externalItemId: string, label: string) => Promise<boolean> };
 export type OpenFinanceSyncPanelProps = { run: PluggySyncRunView | null; syncing: boolean; onSync: () => void };
 export type OpenFinanceRunSummaryProps = { run: PluggySyncRunView };
 export type OpenFinanceRunAttentionProps = { items: PluggyAttentionItem[] };

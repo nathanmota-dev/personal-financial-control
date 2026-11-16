@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { createAccount } from "@/lib/server/accounts";
-import { createCategory, deleteCategory, listCategories } from "@/lib/server/categories";
+import { createCategory, deleteCategory, listCategories, updateCategory } from "@/lib/server/categories";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createTransaction } from "@/lib/server/transactions";
 import { createTestDatabase } from "@/tests/helpers/database";
@@ -33,6 +33,20 @@ describe("categories", () => {
     const first = await createCategory({ name: "Outros", group: "variable_expense" }, db);
     const second = await createCategory({ name: "Outros", group: "variable_expense" }, db);
     expect(second.id).toBe(first.id);
+  });
+
+  it("stores an optional encrypted description, keeps it on unrelated edits and clears it when empty", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    cleanups.push(cleanup);
+
+    const created = await createCategory({ name: "Farmácia", group: "variable_expense", description: "  remédios e drogarias  " }, db);
+    expect(created.description).toBe("remédios e drogarias");
+    const { rows } = await db.$client.execute({ sql: "SELECT description FROM categories WHERE id = ?", args: [created.id] });
+    expect(String(rows[0].description)).toMatch(/^pfc:v2:/);
+
+    expect((await updateCategory({ id: created.id, name: "Farmácias" }, db)).description).toBe("remédios e drogarias");
+    expect((await updateCategory({ id: created.id, description: "" }, db)).description).toBeNull();
+    expect((await createCategory({ name: "Sem descrição", group: "variable_expense" }, db)).description).toBeNull();
   });
 
   it("prevents deleting categories that are already in use", async () => {

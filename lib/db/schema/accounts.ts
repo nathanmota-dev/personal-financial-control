@@ -41,6 +41,8 @@ export const categories = sqliteTable(
     name: encryptedText("name", "categories.name").notNull(),
     group: encryptedText("group", "categories.group", { enum: categoryGroups }).notNull(),
     isArchived: encryptedBoolean("is_archived", "categories.is_archived").notNull().$defaultFn(() => false),
+    /** Optional note on what belongs here, sent to AI categorization when it is enabled. */
+    description: encryptedText("description", "categories.description"),
     nameHash: text("name_hash"),
     ...timestampColumns("categories"),
   },

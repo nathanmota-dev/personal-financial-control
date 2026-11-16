@@ -1,7 +1,8 @@
 "use client";
 
-import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { FormSelect } from "@/components/finance/form-select";
+import { OpenFinanceCategorySuggestion } from "@/components/finance/open-finance/open-finance-category-suggestion";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { Label } from "@/components/ui/label";
 import { SelectItem } from "@/components/ui/select";
 import type { OpenFinanceCategoryReviewRowProps } from "@/lib/interfaces/components/open-finance";
@@ -10,6 +11,8 @@ import { pluggyDirectionLabels, pluggyRuleCategoryOptions } from "@/lib/pluggy-u
 export function OpenFinanceCategoryReviewRow({ group, categories, applying, disabled, onApply }: OpenFinanceCategoryReviewRowProps) {
   const { formatCurrency } = useFinancialFormatter();
   const fieldId = `open-finance-category-${group.direction}-${group.normalizedDescription}`;
+  const options = pluggyRuleCategoryOptions(categories, group.direction);
+  const suggested = group.suggestion ? options.find((category) => category.id === group.suggestion?.categoryId) : undefined;
   return (
     <li className="grid items-end gap-3 rounded-lg border border-border p-3 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div className="min-w-0">
@@ -21,8 +24,9 @@ export function OpenFinanceCategoryReviewRow({ group, categories, applying, disa
       <div className="min-w-0 space-y-1.5">
         <Label htmlFor={fieldId}>Categoria de {group.normalizedDescription}</Label>
         <FormSelect id={fieldId} className="w-full" value="" disabled={disabled} placeholder="Selecione uma categoria" onValueChange={(value) => { if (value) onApply(group, value); }}>
-          {pluggyRuleCategoryOptions(categories, group.direction).map((category) => <SelectItem data-user-content key={category.id} value={category.id}>{category.name}</SelectItem>)}
+          {options.map((category) => <SelectItem data-user-content key={category.id} value={category.id}>{category.name}</SelectItem>)}
         </FormSelect>
+        {suggested ? <OpenFinanceCategorySuggestion categoryName={suggested.name} reason={group.suggestion?.reason ?? null} disabled={disabled} onAccept={() => onApply(group, suggested.id)} /> : null}
         {applying ? <p role="status" className="text-xs text-content-muted">Aplicando categoria…</p> : null}
       </div>
     </li>

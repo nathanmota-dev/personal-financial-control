@@ -60,6 +60,10 @@ export async function startFinanceServer(authenticated = false): Promise<Finance
           HOSTNAME: "127.0.0.1",
           TMPDIR: path.join(directory, "tmp"),
           DATABASE_URL: databaseUrl,
+          // Never send E2E data to the AI provider a developer's .env may configure.
+          AI_PROVIDER: "",
+          AI_MODEL: "",
+          AI_API_KEY: "",
           ...(authenticated ? {
             FIREBASE_PROJECT_ID: "onboarding-test", NEXT_PUBLIC_FIREBASE_PROJECT_ID: "onboarding-test",
             NEXT_PUBLIC_FIREBASE_API_KEY: "test", NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "test.firebaseapp.com", NEXT_PUBLIC_FIREBASE_APP_ID: "test",

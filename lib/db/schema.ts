@@ -13,4 +13,4 @@ export { authorizedUsers, userOnboarding } from "./user-schema";
 
 export { monthlyBudgets } from "./schema/budgets";
 export { pluggyAccountKinds, pluggyCategoryRuleDirections, pluggyLedgerOutcomes, pluggySyncRunStatuses } from "./schema/enums";
-export { pluggyAccountLinks, pluggyCategoryRules, pluggyImportLedger, pluggyItems, pluggySettings, pluggySyncRuns } from "./schema/pluggy";
+export { pluggyAccountLinks, pluggyCategoryRules, pluggyCategorySuggestions, pluggyImportLedger, pluggyItems, pluggySettings, pluggySyncRuns } from "./schema/pluggy";

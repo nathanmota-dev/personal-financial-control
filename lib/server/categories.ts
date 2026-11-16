@@ -11,6 +11,8 @@ import { currentTimestamp,serializeTimestamps } from "@/lib/server/finance";
 const categorySchema = z.object({
   name: z.string().trim().min(1),
   group: z.enum(["income", "fixed_expense", "variable_expense", "investment"]),
+  /** An empty value clears it. Left out, an update keeps the current one. */
+  description: z.string().trim().max(200).nullable().optional().transform((value) => value === undefined ? undefined : value || null),
 });
 
 const updateCategorySchema = categorySchema.partial().extend({

@@ -1,3 +1,5 @@
+import { after } from "next/server";
+
 import { apiGuard } from "@/lib/auth/server";
 import { getFinanceDatabase } from "@/lib/db";
 import { getPluggyClient } from "@/lib/server/pluggy/config";
@@ -18,7 +20,7 @@ async function handlePOST(request: Request) {
   if (denied) return denied;
   return pluggyResponse(async () => {
     const { dryRun } = pluggySyncRequestSchema.parse(await request.json());
-    const run = await runPluggySync({ db: await getFinanceDatabase(), client: getPluggyClient(), dryRun });
+    const run = await runPluggySync({ db: await getFinanceDatabase(), client: getPluggyClient(), dryRun, defer: after });
     return Response.json({ ok: true, run });
   });
 }

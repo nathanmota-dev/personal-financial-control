@@ -1,24 +1,46 @@
 import type { AppDb } from "@/lib/db";
-import type { PluggyPendingCategoryGroup } from "@/lib/interfaces/pluggy-category-rules";
+import type { AiPendingGroup } from "@/lib/interfaces/ai-categorization";
+import type { PluggyPendingCategoryGroup, PluggyPendingRecord } from "@/lib/interfaces/pluggy-category-rules";
 import { invariant } from "@/lib/server/errors";
-import { applyRuleToPendingRecords, findPendingRecords, upsertCategoryRule, usableRuleCategory } from "./category-rules";
+import type { TransactionDb } from "@/lib/server/transactions/validation";
+import { applyRuleToPendingRecords, categoryFitsDirection, findPendingRecords, upsertCategoryRule, usableRuleCategory } from "./category-rules";
+import { suggestionKey, suggestionViews } from "./category-suggestions";
 import type { PluggyCategoryRuleInput } from "./inputs";
+
+type GroupDraft = PluggyPendingCategoryGroup & { sampleDescription: string };
 
 function compareGroups(left: PluggyPendingCategoryGroup, right: PluggyPendingCategoryGroup) {
   return Math.abs(right.totalCents) - Math.abs(left.totalCents) || left.normalizedDescription.localeCompare(right.normalizedDescription) || left.direction.localeCompare(right.direction);
 }
 
-export async function listPendingCategoryGroups(db: AppDb) {
-  const groups = new Map<string, PluggyPendingCategoryGroup>();
-  for (const record of await findPendingRecords(db)) {
+function groupPendingRecords(records: PluggyPendingRecord[]) {
+  const groups = new Map<string, GroupDraft>();
+  for (const record of records) {
     if (record.isCancelled) continue;
-    const key = `${record.direction}:${record.normalizedDescription}`;
-    const group = groups.get(key) ?? { normalizedDescription: record.normalizedDescription, direction: record.direction, occurrences: 0, totalCents: 0 };
+    const key = suggestionKey(record);
+    const group = groups.get(key) ?? { normalizedDescription: record.normalizedDescription, direction: record.direction, occurrences: 0, totalCents: 0, sampleDescription: record.description };
     group.occurrences += 1;
     group.totalCents += record.amountCents;
     groups.set(key, group);
   }
   return [...groups.values()].sort(compareGroups);
+}
+
+/** Pending groups in the shape AI categorization sends: no amounts, one raw description as a sample. */
+export async function listPendingGroupsForAi(db: TransactionDb): Promise<AiPendingGroup[]> {
+  return groupPendingRecords(await findPendingRecords(db)).map(({ normalizedDescription, direction, sampleDescription, occurrences }) => ({ normalizedDescription, direction, sampleDescription, occurrences }));
+}
+
+/** A suggestion is shown only while its category can still take this direction. */
+export async function listPendingCategoryGroups(db: AppDb): Promise<PluggyPendingCategoryGroup[]> {
+  const [records, suggestions, categories] = await Promise.all([findPendingRecords(db), suggestionViews(db), db.query.categories.findMany()]);
+  const byId = new Map(categories.map((category) => [category.id, category]));
+  return groupPendingRecords(records).map(({ normalizedDescription, direction, occurrences, totalCents }) => {
+    const group: PluggyPendingCategoryGroup = { normalizedDescription, direction, occurrences, totalCents };
+    const suggestion = suggestions.get(suggestionKey(group));
+    const category = suggestion ? byId.get(suggestion.categoryId) : undefined;
+    return category && categoryFitsDirection(category, group.direction) ? { ...group, suggestion } : group;
+  });
 }
 
 export async function applyPendingCategory(input: PluggyCategoryRuleInput, db: AppDb) {
