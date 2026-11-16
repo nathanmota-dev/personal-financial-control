@@ -1,45 +1,24 @@
+import type { AppDb } from "@/lib/db";
 import { isDemoMode } from "@/lib/demo/mode";
-import { getServerEnv } from "@/lib/env";
-import type { AiConfig, AiProvider } from "@/lib/interfaces/ai-categorization";
+import type { AiConfig } from "@/lib/interfaces/ai-categorization";
+import { configFromEnv, warnAiConfigOnce } from "@/lib/server/ai/env-config";
+import { loadStoredAiConfig } from "@/lib/server/ai/settings";
 
-const providers: Record<AiProvider, true> = { google: true, openai: true, anthropic: true, deepseek: true };
-
-function isProvider(value: string): value is AiProvider {
-  return Object.hasOwn(providers, value);
-}
-
-let warned = false;
-
-function warnOnce(message: string) {
-  if (warned) return;
-  warned = true;
-  console.warn(`[ai] ${message} A categorização por IA ficou desligada.`);
-}
-
-function configFromEnv(): AiConfig | null {
-  const { AI_PROVIDER: provider, AI_MODEL: model, AI_API_KEY: apiKey } = getServerEnv();
-  if (!provider && !model && !apiKey) return null;
-  if (!provider || !model || !apiKey) {
-    warnOnce("AI_PROVIDER, AI_MODEL e AI_API_KEY precisam estar todos preenchidos.");
-    return null;
-  }
-  const normalized = provider.toLowerCase();
-  if (!isProvider(normalized)) {
-    warnOnce(`AI_PROVIDER "${provider}" não é suportado. Use ${Object.keys(providers).join(", ")}.`);
-    return null;
-  }
-  return { provider: normalized, model, apiKey };
-}
+export { resetAiConfigWarning } from "@/lib/server/ai/env-config";
 
 /**
  * AI categorization is optional: without a complete configuration this returns null and nothing is ever sent.
- * Every caller reads the configuration here, so a Settings-stored key can later take precedence over the env.
+ * The configuration saved in Settings wins over the AI_* environment variables, which stay as an alternative.
+ * A saved configuration that cannot be read disables the feature instead of silently using another provider.
  */
-export function getAiConfig(): AiConfig | null {
+export async function getAiConfig(db: AppDb): Promise<AiConfig | null> {
   if (isDemoMode()) return null;
-  return configFromEnv();
-}
-
-export function resetAiConfigWarning() {
-  warned = false;
+  let stored: AiConfig | null;
+  try {
+    stored = await loadStoredAiConfig(db);
+  } catch {
+    warnAiConfigOnce("A configuração salva em Configurações não pôde ser lida.");
+    return null;
+  }
+  return stored ?? configFromEnv();
 }

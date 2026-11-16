@@ -6,7 +6,7 @@ import { listCategories } from "@/lib/server/categories";
 import { getInvestmentProjection } from "@/lib/server/investments";
 import { isPluggyConfigured } from "@/lib/server/pluggy/config";
 
-const SETTINGS_TABS = new Set(["accounts", "cards", "investments", "categories", "open-finance", "security", "mcp"]);
+const SETTINGS_TABS = new Set(["accounts", "cards", "investments", "categories", "open-finance", "ai", "security", "mcp"]);
 
 export default async function SettingsPage({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> } = {}) {
   const session = await requirePageSession();
@@ -33,8 +33,9 @@ export default async function SettingsPage({ searchParams }: { searchParams?: Pr
     : undefined;
 
   const openFinance = security && !isDemoMode() ? { configured: isPluggyConfigured() } : undefined;
+  const ai = Boolean(security && !isDemoMode());
 
   const initialTab = typeof tab === "string" && SETTINGS_TABS.has(tab) ? tab : "accounts";
 
-  return <SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} reserveProjection={data?.reserveProjection ?? null} initialTab={initialTab} security={security} openFinance={openFinance} />;
+  return <SettingsView accounts={data?.accounts ?? []} categories={data?.categories ?? []} reserveProjection={data?.reserveProjection ?? null} initialTab={initialTab} security={security} openFinance={openFinance} ai={ai} />;
 }

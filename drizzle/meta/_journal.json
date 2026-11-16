@@ -211,6 +211,13 @@
       "when": 1794100000000,
       "tag": "0029_ai_category_suggestions",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1794200000000,
+      "tag": "0030_ai_settings",
+      "breakpoints": true
     }
   ]
 }

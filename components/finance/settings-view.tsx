@@ -1,12 +1,13 @@
 "use client";
 
-import { CreditCard, KeyRound, Landmark, Link2, ShieldCheck, Tags, Wallet } from "lucide-react";
+import { CreditCard, KeyRound, Landmark, Link2, ShieldCheck, Sparkles, Tags, Wallet } from "lucide-react";
 
 import { McpTokenSettings } from "@/components/auth/mcp-token-settings";
 import { SecuritySettings } from "@/components/auth/security-settings";
 import { OpenFinanceSettings } from "@/components/finance/open-finance/open-finance-settings";
 import { PageHeader } from "@/components/finance/page-header";
 import { SettingsAccountsPanel } from "@/components/finance/settings/settings-accounts-panel";
+import { SettingsAiPanel } from "@/components/finance/settings/settings-ai-panel";
 import { SettingsCardsPanel } from "@/components/finance/settings/settings-cards-panel";
 import { SettingsCategoriesPanel } from "@/components/finance/settings/settings-categories-panel";
 import { SettingsReservePanel } from "@/components/finance/settings/settings-reserve-panel";
@@ -18,6 +19,7 @@ export function SettingsView({
   categories,
   security,
   openFinance,
+  ai = false,
   reserveProjection = null,
   initialTab = "accounts",
 }: SettingsViewProps) {
@@ -29,7 +31,7 @@ export function SettingsView({
     <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
         title="Configurações"
-        description="Gerencie suas contas, cartões, investimentos, categorias, segurança e integrações do app."
+        description="Gerencie suas contas, cartões, investimentos, categorias, IA, segurança e integrações do app."
       />
 
       <Tabs defaultValue={initialTab} className="gap-5">
@@ -39,6 +41,7 @@ export function SettingsView({
           <TabsTrigger value="investments" className="shrink-0 px-3"><Landmark />Investimentos</TabsTrigger>
           <TabsTrigger value="categories" className="shrink-0 px-3"><Tags />Categorias</TabsTrigger>
           {openFinance ? <TabsTrigger value="open-finance" className="shrink-0 px-3"><Link2 />Open Finance</TabsTrigger> : null}
+          {ai ? <TabsTrigger value="ai" className="shrink-0 px-3"><Sparkles />IA</TabsTrigger> : null}
           {security ? <TabsTrigger value="security" className="shrink-0 px-3"><ShieldCheck />Segurança</TabsTrigger> : null}
           {security ? <TabsTrigger value="mcp" className="shrink-0 px-3"><KeyRound />MCP</TabsTrigger> : null}
         </TabsList>
@@ -81,6 +84,12 @@ export function SettingsView({
         {openFinance ? (
           <TabsContent value="open-finance" className="mt-0">
             <OpenFinanceSettings configured={openFinance.configured} accounts={accounts} categories={categories} />
+          </TabsContent>
+        ) : null}
+
+        {ai ? (
+          <TabsContent value="ai" className="mt-0">
+            <SettingsAiPanel />
           </TabsContent>
         ) : null}
 
