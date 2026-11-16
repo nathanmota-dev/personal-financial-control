@@ -73,6 +73,9 @@
   "app/api/accounts/route.ts": [
     "tests/unit/app/api/accounts/route.test.ts"
   ],
+  "app/api/ai/settings/route.ts": [
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
   "app/api/credit-card/_responses.ts": [
     "tests/unit/app/api/credit-card/_responses.test.ts",
     "tests/unit/app/api/credit-card/bills/[invoiceMonth]/payments/route.test.ts",
@@ -709,6 +712,21 @@
   ],
   "components/finance/settings-view.tsx": [
     "tests/frontend/app/(finance)/settings/page.cases.tsx"
+  ],
+  "components/finance/settings/settings-ai-fields.tsx": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
+  ],
+  "components/finance/settings/settings-ai-key-field.tsx": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
+  ],
+  "components/finance/settings/settings-ai-model-field.tsx": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
+  ],
+  "components/finance/settings/settings-ai-panel.tsx": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
+  ],
+  "components/finance/settings/settings-ai-source-notice.tsx": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
   ],
   "components/finance/setup-dialogs.tsx": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
@@ -1391,6 +1409,9 @@
     "tests/frontend/components/ui/sidebar.cases.tsx",
     "tests/frontend/components/ui/tooltip.cases.tsx"
   ],
+  "hooks/use-ai-settings.ts": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
+  ],
   "hooks/use-mobile.ts": [
     "tests/frontend/components/ui/sidebar.cases.tsx",
     "tests/frontend/hooks/use-mobile.cases.tsx"
@@ -1402,6 +1423,13 @@
   "hooks/use-open-finance.ts": [
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
     "tests/frontend/components/finance/open-finance.cases.tsx"
+  ],
+  "lib/ai-model-catalog.ts": [
+    "tests/ai-config.test.ts",
+    "tests/ai-settings.test.ts",
+    "tests/frontend/components/finance/settings-ai.cases.tsx",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
   ],
   "lib/auth/client.ts": [
     "tests/auth-client.test.ts",
@@ -2383,6 +2411,12 @@
     "tests/unit/app/api/transactions/route.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
+  "lib/db/schema/ai.ts": [
+    "tests/ai-config.test.ts",
+    "tests/ai-settings.test.ts",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
   "lib/db/schema/pluggy.ts": [
     "tests/accounts.test.ts",
     "tests/auth-demo-isolation.test.ts",
@@ -2971,6 +3005,13 @@
     "tests/frontend/components/ui/toggle.cases.tsx",
     "tests/frontend/components/ui/tooltip.cases.tsx"
   ],
+  "lib/interfaces/ai-settings.ts": [
+    "tests/ai-config.test.ts",
+    "tests/ai-settings.test.ts",
+    "tests/frontend/components/finance/settings-ai.cases.tsx",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
   "lib/interfaces/app-shell.ts": [
     "tests/frontend/app/(finance)/layout.cases.tsx",
     "tests/frontend/components/finance/app-shell.cases.tsx"
@@ -2985,6 +3026,9 @@
     "tests/frontend/components/finance/app-shell.cases.tsx",
     "tests/frontend/components/finance/sidebar-footer.cases.tsx",
     "tests/frontend/components/finance/sidebar-navigation.cases.tsx"
+  ],
+  "lib/interfaces/components/ai-settings.ts": [
+    "tests/frontend/components/finance/settings-ai.cases.tsx"
   ],
   "lib/interfaces/components/open-finance.ts": [
     "tests/frontend/app/(finance)/settings/page.cases.tsx",
@@ -3598,6 +3642,30 @@
     "tests/unit/app/api/transactions/route.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
   ],
+  "lib/server/ai/config.ts": [
+    "tests/ai-config.test.ts",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/pluggy-sync.test.ts"
+  ],
+  "lib/server/ai/env-config.ts": [
+    "tests/ai-config.test.ts",
+    "tests/ai-settings.test.ts",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
+  "lib/server/ai/inputs.ts": [
+    "tests/ai-settings.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
+  "lib/server/ai/route.ts": [
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
+  "lib/server/ai/settings.ts": [
+    "tests/ai-config.test.ts",
+    "tests/ai-settings.test.ts",
+    "tests/pluggy-ai-suggestions.test.ts",
+    "tests/unit/app/api/ai/settings/route.test.ts"
+  ],
   "lib/server/brapi.ts": [
     "tests/auth.test.ts",
     "tests/finance-ui.test.ts",
@@ -3786,6 +3854,16 @@
     "tests/unit/lib/server/brapi.test.ts",
     "tests/unit/lib/server/finance.test.ts",
     "tests/unit/lib/server/investment-operations.test.ts"
+  ],
+  "lib/server/feature-route.ts": [
+    "tests/unit/app/api/ai/settings/route.test.ts",
+    "tests/unit/app/api/pluggy/category-rules/route.test.ts",
+    "tests/unit/app/api/pluggy/identity/route.test.ts",
+    "tests/unit/app/api/pluggy/investments/route.test.ts",
+    "tests/unit/app/api/pluggy/items/route.test.ts",
+    "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/daily/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/route.test.ts"
   ],
   "lib/server/finance.ts": [
     "tests/accounts.test.ts",
@@ -4062,8 +4140,12 @@
     "tests/unit/app/api/pluggy/sync/route.test.ts"
   ],
   "lib/server/pluggy/route.ts": [
+    "tests/unit/app/api/pluggy/category-rules/route.test.ts",
+    "tests/unit/app/api/pluggy/identity/route.test.ts",
+    "tests/unit/app/api/pluggy/investments/route.test.ts",
     "tests/unit/app/api/pluggy/items/route.test.ts",
     "tests/unit/app/api/pluggy/links/route.test.ts",
+    "tests/unit/app/api/pluggy/sync/daily/route.test.ts",
     "tests/unit/app/api/pluggy/sync/route.test.ts"
   ],
   "lib/server/pluggy/schemas.ts": [

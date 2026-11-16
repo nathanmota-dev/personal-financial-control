@@ -40,6 +40,7 @@ describe("app/(finance)/settings/page", () => {
     } as never);
     renderUI(await Page());
     expect(screen.queryByRole("tab", { name: "Open Finance" })).toBeNull();
+    expect(screen.queryByRole("tab", { name: "IA" })).toBeNull();
     vi.unstubAllEnvs();
   });
   it("explains the setup in the Open Finance tab when credentials are missing", async () => {
@@ -50,7 +51,7 @@ describe("app/(finance)/settings/page", () => {
       user: { lockTimeoutMinutes: 15, lockOnClose: true, mcpTokenHash: null },
     } as never);
     const { user } = renderUI(await Page());
-    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Cartões", "Investimentos", "Categorias", "Open Finance", "Segurança", "MCP"]);
+    expect(screen.getAllByRole("tab").map((tab) => tab.textContent)).toEqual(["Contas", "Cartões", "Investimentos", "Categorias", "Open Finance", "IA", "Segurança", "MCP"]);
     await user.click(screen.getByRole("tab", { name: "Open Finance" }));
     expect(screen.getByText("Open Finance não configurado")).toBeVisible();
     vi.unstubAllEnvs();

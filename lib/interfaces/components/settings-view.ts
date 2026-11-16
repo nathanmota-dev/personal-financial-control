@@ -23,6 +23,8 @@ export type SettingsViewProps = {
   categories: CategoryRow[];
   security?: SecuritySettingsProps;
   openFinance?: { configured: boolean };
+  /** Shows the AI tab. Its data is loaded by the tab itself, so the API key never passes through the page. */
+  ai?: boolean;
   reserveProjection?: import("@/lib/interfaces/investments").InvestmentProjection | null;
   initialTab?: string;
 };

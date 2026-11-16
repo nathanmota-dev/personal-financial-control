@@ -174,7 +174,7 @@ async function executeSteps(options: PluggySyncOptions, runId: string | null, st
     if (step.scope === "item") await runItemStep(step, items, state);
     else await runAccountStep(step, items, links, state);
   }
-  const aiConfig = dryRun ? null : getAiConfig();
+  const aiConfig = dryRun ? null : await getAiConfig(options.db);
   if (aiConfig && options.defer) options.defer(async () => { await suggestCategoriesSafely(options, aiConfig).catch(logAiFailure); });
   else if (aiConfig) addResult(state.summary, await suggestCategoriesSafely(options, aiConfig));
   state.summary.accounts.skipped = links.filter((link) => state.failedItems.has(link.itemId)).length;

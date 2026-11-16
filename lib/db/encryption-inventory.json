@@ -363,5 +363,13 @@
     "confidence": "integer",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "ai_settings": {
+    "id": "technical",
+    "provider": "text",
+    "model": "text",
+    "api_key": "text",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }
