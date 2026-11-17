@@ -11,3 +11,11 @@ export async function archiveExtraCreditCards(page: Page) {
     await expect(card).toContainText("Arquivada");
   }
 }
+
+/**
+ * Visible invoice row for a purchase. Streamed Suspense content can keep a hidden copy of the
+ * row in the DOM until React reveals it, so hidden matches are ignored.
+ */
+export function invoiceRow(page: Page, description: string) {
+  return page.locator("article").filter({ visible: true }).filter({ has: page.getByText(description, { exact: true }) });
+}

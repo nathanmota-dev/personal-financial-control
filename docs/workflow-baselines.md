@@ -50,13 +50,22 @@ Qualidade e performance são avaliadas de forma independente para escolher os
 arquivos elegíveis, mas a validação geral precisa estar aprovada.
 
 - Qualidade mantém `no-regression`: cobertura por pacote e ponderada, duplicação
-  e fragmentos não podem piorar. Arquivos e funções existentes não podem crescer
-  durante a promoção; os limites de tamanho continuam protegidos. Deve existir
-  pelo menos uma melhoria.
-- Performance exige throughput igual ou maior em todos os cenários medidos na
-  mesma máquina e pelo menos uma melhoria. Uma perda tolerada no check do PR
-  impede a promoção da referência de performance.
+  e fragmentos não podem piorar. Arquivos e funções podem crescer dentro dos
+  limites de 350 e 100 linhas; um arquivo ou função novo acima do limite, ou um
+  débito existente que cresça, bloqueia. O mapa de tamanhos é regravado com os
+  valores atuais, então o débito aceito só diminui. Deve existir pelo menos uma
+  melhoria de cobertura, duplicação ou tamanho.
+- Performance aceita, por cenário, uma perda de até 5% (margem de ruído das
+  medições em pares) e exige pelo menos um cenário mais rápido. Uma perda maior,
+  ainda que tolerada pelo limite de 20% do check do PR, impede a promoção. A
+  referência é um único commit (`headSha`) medido de novo em pares, por isso não
+  há promoção por cenário: misturar cenários de commits diferentes quebraria a
+  comparação. Cada promoção pode aceitar até 5% de perda, o que permite deriva
+  acumulada; o check do PR continua limitado a 20% contra a referência.
 - Somente os arquivos elegíveis são gravados. Sem melhoria, não há commit.
+- O job continua `success` quando a promoção é recusada, mas registra uma
+  anotação `::warning` (regressão, mudança de cenários ou promoção descartada) ou
+  `::notice` (nenhuma melhoria) com até 10 motivos, além do resumo do job.
 - Antes de gravar, a `main` remota deve continuar no SHA validado. Se avançar,
   a promoção é descartada. O push é comum, sem force; um avanço entre a consulta
   e o push também descarta a promoção.

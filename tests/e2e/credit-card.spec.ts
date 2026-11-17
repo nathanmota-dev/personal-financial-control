@@ -1,6 +1,6 @@
 import { test as base } from "@playwright/test";
 import { test, expect } from "./helpers/fixture";
-import { archiveExtraCreditCards } from "./helpers/credit-cards";
+import { archiveExtraCreditCards, invoiceRow } from "./helpers/credit-cards";
 import { choose, saveDialog } from "./helpers/forms";
 import { loginWithPin } from "./helpers/local-auth";
 import { startFinanceServer } from "./helpers/server";
@@ -39,7 +39,7 @@ authenticatedTest("shows a stubbed Open Finance purchase in the correct invoices
 
   for (const delta of [0, 1, 2]) {
     await page.goto(`${finance.url}/credit-card?month=${monthFromNow(delta)}`);
-    await expect(page.getByText("COMPRA CARTAO E2E", { exact: true }).locator("xpath=ancestor::article")).toContainText(/30,00/);
+    await expect(invoiceRow(page, "COMPRA CARTAO E2E")).toContainText(/30,00/);
   }
   await page.goto(`${finance.url}/credit-card?month=${monthFromNow(3)}`);
   await expect(page.getByText("COMPRA CARTAO E2E", { exact: true })).toHaveCount(0);
@@ -97,11 +97,7 @@ test("creates and edits installment purchases and verifies future invoices", asy
   const invoiceChart = page.getByTestId("credit-card-invoice-chart");
   await expect(invoiceChart).toContainText("Ago 26");
   await expect(invoiceChart).toContainText("Set 26");
-  await expect(
-    page
-      .getByText("Compra parcelada E2E", { exact: true })
-      .locator("xpath=ancestor::article"),
-  ).toContainText(/30,00/);
+  await expect(invoiceRow(page, "Compra parcelada E2E")).toContainText(/30,00/);
   const charges = (await (await request.get("/api/credit-card/charges")).json())
     .charges;
   const charge = charges.find(
@@ -110,11 +106,7 @@ test("creates and edits installment purchases and verifies future invoices", asy
   );
   expect(charge).toMatchObject({ totalAmountCents: 9000, installmentCount: 3 });
   await page.goto("/credit-card?month=2026-08");
-  await expect(
-    page
-      .getByText("Compra parcelada E2E", { exact: true })
-      .locator("xpath=ancestor::article"),
-  ).toContainText(/30,00/);
+  await expect(invoiceRow(page, "Compra parcelada E2E")).toContainText(/30,00/);
   const removed = await request.delete(`/api/credit-card/charges/${charge.id}`);
   expect(removed.status()).toBe(204);
   await page.reload();
