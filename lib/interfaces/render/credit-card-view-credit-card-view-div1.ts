@@ -7,6 +7,7 @@ export interface CreditCardViewDiv1Props {
   selectedMonth: string;
   selectMonth: (month: string) => void;
   cards: import("@/lib/interfaces/dashboard-cards").DashboardCardsData;
+  limits: import("@/lib/interfaces/credit-card-limit").CreditCardLimits;
   selectedCardId: string;
   selectCard: (id: string) => void;
   isPending: boolean;

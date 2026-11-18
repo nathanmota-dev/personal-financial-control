@@ -3,6 +3,7 @@ accounts,
 categories,
 creditCardCharges,
 creditCardInstallments,
+creditCardLimits,
 financialGoalAllocations,
 financialGoals,
 investmentHoldings,
@@ -23,6 +24,7 @@ export type DemoFixture = {
   transfers: Array<typeof transfers.$inferInsert>;
   creditCardCharges: Array<typeof creditCardCharges.$inferInsert>;
   creditCardInstallments: Array<typeof creditCardInstallments.$inferInsert>;
+  creditCardLimits: Array<typeof creditCardLimits.$inferInsert>;
   investmentPortfolio: Array<typeof investmentPortfolio.$inferInsert>;
   investmentHoldings: Array<typeof investmentHoldings.$inferInsert>;
   investmentPurposes: Array<typeof investmentPurposes.$inferInsert>;

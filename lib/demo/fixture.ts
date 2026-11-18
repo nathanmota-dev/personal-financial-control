@@ -3,6 +3,7 @@ import { accounts } from "./fixture-data/accounts";
 import { categories } from "./fixture-data/categories";
 import { creditCardCharges } from "./fixture-data/credit-card-charges";
 import { creditCardInstallments } from "./fixture-data/credit-card-installments";
+import { creditCardLimits } from "./fixture-data/credit-card-limits";
 import { financialGoalAllocations } from "./fixture-data/financial-goal-allocations";
 import { financialGoals } from "./fixture-data/financial-goals";
 import { investmentHoldings } from "./fixture-data/investment-holdings";
@@ -23,6 +24,7 @@ export const demoFixture: DemoFixture = {
   transfers,
   creditCardCharges,
   creditCardInstallments,
+  creditCardLimits,
   investmentPortfolio,
   investmentHoldings,
   investmentPurposes,

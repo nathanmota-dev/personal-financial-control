@@ -195,7 +195,7 @@ Trilho `h-3.5 rounded-full bg-surface`, preenchimento `success` (ou `destructive
 
 ### Cartão de crédito
 
-`CreditCardVisual`: `h-[172px] rounded-[14px]`, tema por bandeira (`CARD_BRAND_THEMES`), chip, badge Aberta/Paga, vencimento e fatura nos cantos inferiores, sombra elíptica embaixo. Carrossel com `translateX` e `--card-w: min(300px, 84cqw)`. Próximas faturas: 3 tiles `rounded-[14px] border-2`, selecionado com `border-brand` + preenchimento `bg-brand/10` e pílula "Aberta".
+`CreditCardVisual`: `h-[172px] rounded-[14px]`, tema por bandeira (`CARD_BRAND_THEMES`), chip, badge Aberta/Paga, vencimento e fatura nos cantos inferiores, sombra elíptica embaixo. Carrossel com `translateX` e `--card-w: min(300px, 84cqw)`. Próximas faturas: 3 tiles `rounded-[14px] border-2`, selecionado com `border-brand` + preenchimento `bg-brand/10` e pílula "Aberta". Na rota `/credit-card`, o cartão mostra o limite entre os cantos inferiores (prop `limit`), e abaixo das próximas faturas fica a barra "Limite do cartão": mesmo trilho da barra segmentada, com fatura atual em `chart-1`, comprometido (parcelas futuras) em `chart-3` e disponível em `success`, legenda em 3 colunas e a data informada pelo banco.
 
 ### Gráficos (recharts via `components/ui/chart`)
 

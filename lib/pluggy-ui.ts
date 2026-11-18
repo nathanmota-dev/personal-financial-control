@@ -52,6 +52,8 @@ export const pluggyCardCountLabels: readonly (readonly [string, string])[] = [
   ["billPaymentsAmbiguous", "pagamentos ambíguos"],
   ["billPaymentsDeferred", "pagamentos aguardando faturas"],
   ["billPaymentsExternal", "pagamentos só na fatura"],
+  ["cardLimits", "limites de cartão atualizados"],
+  ["cardLimitsMissing", "cartões sem limite informado"],
 ];
 
 export const pluggyInvestmentCountLabels: readonly (readonly [string, string])[] = [

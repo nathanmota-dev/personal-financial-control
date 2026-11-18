@@ -280,6 +280,9 @@
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx"
   ],
+  "components/finance/credit-card-limit-bar.tsx": [
+    "tests/frontend/components/finance/credit-card-limit.cases.tsx"
+  ],
   "components/finance/credit-card-month-loading.tsx": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx"
@@ -315,6 +318,12 @@
   "components/finance/credit-card-view.tsx": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
     "tests/frontend/components/finance/credit-card-view.cases.tsx"
+  ],
+  "components/finance/credit-card-visual.tsx": [
+    "tests/frontend/components/finance/credit-card-limit.cases.tsx"
+  ],
+  "components/finance/credit-cards-showcase.tsx": [
+    "tests/frontend/components/finance/credit-card-limit.cases.tsx"
   ],
   "components/finance/dashboard-actions.tsx": [
     "tests/frontend/app/(finance)/dashboard/page.cases.tsx"
@@ -1777,6 +1786,10 @@
     "tests/compound-interest.test.ts",
     "tests/frontend/app/(finance)/calculators/compound-interest/page.cases.tsx",
     "tests/frontend/components/finance/calculators/compound-interest-calculator.cases.tsx"
+  ],
+  "lib/credit-card-limit.ts": [
+    "tests/credit-card-limits.test.ts",
+    "tests/frontend/components/finance/credit-card-limit.cases.tsx"
   ],
   "lib/credit-card-view.ts": [
     "tests/frontend/app/(finance)/credit-card/page.cases.tsx",
@@ -3788,6 +3801,9 @@
     "tests/unit/app/api/credit-card/charges/route.test.ts",
     "tests/unit/app/api/projected-balance/route.test.ts"
   ],
+  "lib/server/credit-card/limits.ts": [
+    "tests/credit-card-limits.test.ts"
+  ],
   "lib/server/dashboard.ts": [
     "tests/dashboard.test.ts",
     "tests/demo-mode.test.ts",
@@ -4134,6 +4150,7 @@
     "tests/unit/app/api/pluggy/links/route.test.ts"
   ],
   "lib/server/pluggy/remote.ts": [
+    "tests/credit-card-limits.test.ts",
     "tests/pluggy-sync.test.ts",
     "tests/unit/app/api/pluggy/items/route.test.ts",
     "tests/unit/app/api/pluggy/links/route.test.ts",
@@ -4160,6 +4177,9 @@
   "lib/server/pluggy/steps/account-check.ts": [
     "tests/pluggy-sync.test.ts",
     "tests/unit/app/api/pluggy/sync/route.test.ts"
+  ],
+  "lib/server/pluggy/steps/card-limit.ts": [
+    "tests/credit-card-limits.test.ts"
   ],
   "lib/server/pluggy/steps/item-status.ts": [
     "tests/pluggy-sync.test.ts",

@@ -81,6 +81,7 @@ Suporta:
 - comparação entre valor da fatura e disponibilidade mensal;
 - registro de pagamento da fatura por uma conta financeira;
 - situação de fatura aberta ou paga.
+- limite do cartão informado pelo banco pelo Open Finance, dividido entre fatura atual, parcelas futuras (comprometido) e crédito disponível.
 
 ### `/recurring`
 

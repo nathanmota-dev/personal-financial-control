@@ -18,6 +18,8 @@ export type PluggyRemoteBill = z.infer<typeof pluggyBillSchema>;
 export type PluggyRemoteInvestment = z.infer<typeof pluggyInvestmentSchema>;
 
 export type PluggyCredentials = { clientId: string; clientSecret: string };
+/** What a card account reports about its limit, in cents. */
+export type PluggyCardLimit = { limitCents: number; availableCents: number; collectedAt: Date };
 export type PluggyTransactionFilter = { from?: string; to?: string };
 
 export type PluggyApi = {

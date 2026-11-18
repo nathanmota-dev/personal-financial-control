@@ -101,6 +101,10 @@ Cada pagamento de fatura na conta corrente é procurado primeiro em `payments` d
 - Um pagamento listado na fatura sem lançamento em conta vinculada só é informado, sem criar transação. A fatura continua em aberto.
 - Enquanto um cartão ou uma conta não puder ser lido, os pagamentos sem correspondência aguardam a próxima sincronização.
 
+## Limite do cartão
+
+A cada sincronização, `creditData.creditLimit` e `creditData.availableCreditLimit` de cada cartão vinculado substituem o limite gravado em `credit_card_limits`, com a data em que a Pluggy atualizou a conta. O valor usado é `limite - disponível`. Em **Cartões**, ele é dividido entre a fatura ainda a pagar (calculada com os registros locais; uma fatura paga antes do vencimento não conta) e o restante, mostrado como comprometido com parcelas de faturas futuras. Cartões sem os dois valores aparecem no resumo como **cartões sem limite informado** e não mostram limite.
+
 ## Investimentos
 
 Em **Configurações > Open Finance > Investimentos**, cada posição do banco pode ser vinculada a um ativo existente ou virar um ativo novo. O app sugere o ativo por ticker, nome e instituição, e a escolha é sempre sua. O vínculo guarda somente o `id` da Pluggy, porque `code` e `isin` podem se repetir ou faltar, e não muda em novas sincronizações. **Desvincular** devolve o ativo ao controle manual.

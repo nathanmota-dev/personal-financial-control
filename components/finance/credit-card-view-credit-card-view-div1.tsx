@@ -18,7 +18,7 @@ CategorySetupDialog,
 import { Button } from "@/components/ui/button";
 import type { CreditCardViewDiv1Props } from "@/lib/interfaces/render/credit-card-view-credit-card-view-div1";
 
-export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurchase, monthPoints, selectedMonth, selectMonth, cards, selectedCardId, selectCard, isPending, purchaseCommandId, setupCommandId, categoryCommandId }: CreditCardViewDiv1Props) {
+export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurchase, monthPoints, selectedMonth, selectMonth, cards, limits, selectedCardId, selectCard, isPending, purchaseCommandId, setupCommandId, categoryCommandId }: CreditCardViewDiv1Props) {
   return (
 <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
@@ -60,8 +60,8 @@ export function CreditCardViewDiv1({ overview, expenseCategories, canCreatePurch
       ) : null}
 
       <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
-        {cards.length ? <CreditCardsShowcase cards={cards} selectedId={selectedCardId} month={selectedMonth} onSelect={selectCard} /> : null}
-        <div className="grid min-w-0 content-start gap-6 min-[100.0625rem]:gap-5">
+        {cards.length ? <CreditCardsShowcase cards={cards} limits={limits} selectedId={selectedCardId} month={selectedMonth} onSelect={selectCard} /> : null}
+        <div className="flex min-w-0 flex-col gap-6 min-[100.0625rem]:gap-5">
           <CreditCardInvoiceSummary overview={overview} nextInvoice={monthPoints.find((point) => point.month > overview.month)} />
           <CreditCardCommitments overview={overview} />
         </div>
