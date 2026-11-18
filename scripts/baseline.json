@@ -18,26 +18,26 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 10699,
-          "total": 12046
+          "covered": 10756,
+          "total": 12098
         },
         "statements": {
-          "covered": 12240,
-          "total": 13871
+          "covered": 12309,
+          "total": 13934
         },
         "functions": {
-          "covered": 3902,
-          "total": 4546
+          "covered": 3926,
+          "total": 4569
         },
         "branches": {
-          "covered": 7770,
-          "total": 9653
+          "covered": 7809,
+          "total": 9690
         }
       },
-      "coverageFileCount": 1196,
+      "coverageFileCount": 1202,
       "duplication": {
-        "totalLines": 54828,
-        "duplicatedLines": 397,
+        "totalLines": 55063,
+        "duplicatedLines": 394,
         "fragments": 44
       },
       "lintViolations": 0,
@@ -55,7 +55,7 @@
         "app/(finance)/calculators/pj-income/loading.tsx": 1,
         "app/(finance)/calculators/pj-income/page.tsx": 6,
         "app/(finance)/credit-card/loading.tsx": 1,
-        "app/(finance)/credit-card/page.tsx": 50,
+        "app/(finance)/credit-card/page.tsx": 55,
         "app/(finance)/dashboard/loading.tsx": 1,
         "app/(finance)/dashboard/page.tsx": 68,
         "app/(finance)/error.tsx": 33,
@@ -208,6 +208,7 @@
         "components/finance/credit-card-invoice-line.tsx": 22,
         "components/finance/credit-card-invoice-summary.tsx": 38,
         "components/finance/credit-card-invoice-tile.tsx": 29,
+        "components/finance/credit-card-limit-bar.tsx": 51,
         "components/finance/credit-card-month-loading.tsx": 23,
         "components/finance/credit-card-month-strip-credit-card-month-strip-section1.tsx": 48,
         "components/finance/credit-card-month-strip.tsx": 66,
@@ -222,8 +223,8 @@
         "components/finance/credit-card-transactions-panel.tsx": 36,
         "components/finance/credit-card-view-credit-card-view-div1.tsx": 89,
         "components/finance/credit-card-view.tsx": 146,
-        "components/finance/credit-card-visual.tsx": 63,
-        "components/finance/credit-cards-showcase.tsx": 59,
+        "components/finance/credit-card-visual.tsx": 69,
+        "components/finance/credit-cards-showcase.tsx": 67,
         "components/finance/dashboard-actions.tsx": 66,
         "components/finance/dashboard-balance-forecast-bar.tsx": 12,
         "components/finance/dashboard-balance-forecast-legend.tsx": 30,
@@ -358,7 +359,7 @@
         "components/finance/loading/budgets-skeleton.tsx": 12,
         "components/finance/loading/calculators-skeleton.tsx": 9,
         "components/finance/loading/compound-interest-skeleton.tsx": 13,
-        "components/finance/loading/credit-card-skeleton.tsx": 24,
+        "components/finance/loading/credit-card-skeleton.tsx": 28,
         "components/finance/loading/dashboard-skeleton.tsx": 96,
         "components/finance/loading/finance-skeleton.tsx": 6,
         "components/finance/loading/goals-skeleton.tsx": 25,
@@ -681,6 +682,7 @@
         "lib/category-spending.ts": 34,
         "lib/compound-interest.ts": 62,
         "lib/credit-card-brands.ts": 98,
+        "lib/credit-card-limit.ts": 44,
         "lib/credit-card-timeline.ts": 51,
         "lib/credit-card-view.ts": 98,
         "lib/crypto/content.ts": 56,
@@ -701,7 +703,7 @@
         "lib/db/encrypted-content.ts": 18,
         "lib/db/encrypted-money.ts": 2,
         "lib/db/encryption-checks.ts": 30,
-        "lib/db/index.ts": 132,
+        "lib/db/index.ts": 134,
         "lib/db/keep-alive-fetch.ts": 22,
         "lib/db/migrate.ts": 61,
         "lib/db/replica-client.ts": 87,
@@ -712,7 +714,7 @@
         "lib/db/schema/ai.ts": 16,
         "lib/db/schema/budgets.ts": 17,
         "lib/db/schema/columns.ts": 14,
-        "lib/db/schema/credit-card.ts": 106,
+        "lib/db/schema/credit-card.ts": 123,
         "lib/db/schema/enums.ts": 141,
         "lib/db/schema/goals.ts": 49,
         "lib/db/schema/investment-assets.ts": 78,
@@ -726,11 +728,12 @@
         "lib/db/schema.ts": 17,
         "lib/db/user-schema.ts": 21,
         "lib/demo/constants.ts": 2,
-        "lib/demo/contracts.ts": 33,
+        "lib/demo/contracts.ts": 35,
         "lib/demo/fixture-data/accounts.ts": 53,
         "lib/demo/fixture-data/categories.ts": 17,
         "lib/demo/fixture-data/credit-card-charges.ts": 57,
         "lib/demo/fixture-data/credit-card-installments.ts": 42,
+        "lib/demo/fixture-data/credit-card-limits.ts": 11,
         "lib/demo/fixture-data/financial-goal-allocations.ts": 45,
         "lib/demo/fixture-data/financial-goals.ts": 53,
         "lib/demo/fixture-data/investment-holdings.ts": 38,
@@ -742,7 +745,7 @@
         "lib/demo/fixture-data/support.ts": 251,
         "lib/demo/fixture-data/transactions.ts": 13,
         "lib/demo/fixture-data/transfers.ts": 23,
-        "lib/demo/fixture.ts": 33,
+        "lib/demo/fixture.ts": 35,
         "lib/demo/mode.ts": 6,
         "lib/env.ts": 101,
         "lib/expense-groups-presentation.ts": 9,
@@ -821,13 +824,14 @@
         "lib/interfaces/components/reserve-withdrawal.ts": 17,
         "lib/interfaces/components/settings-view.ts": 30,
         "lib/interfaces/compound-interest.ts": 105,
-        "lib/interfaces/credit-card-view.ts": 103,
+        "lib/interfaces/credit-card-limit.ts": 43,
+        "lib/interfaces/credit-card-view.ts": 107,
         "lib/interfaces/credit-card.ts": 125,
         "lib/interfaces/daily-expenses.ts": 56,
         "lib/interfaces/dashboard-balance-forecast.ts": 33,
         "lib/interfaces/dashboard-bills.ts": 52,
         "lib/interfaces/dashboard-cards-build.ts": 8,
-        "lib/interfaces/dashboard-cards.ts": 83,
+        "lib/interfaces/dashboard-cards.ts": 85,
         "lib/interfaces/dashboard-housing.ts": 35,
         "lib/interfaces/dashboard-investments.ts": 26,
         "lib/interfaces/dashboard.ts": 116,
@@ -864,7 +868,7 @@
         "lib/interfaces/pluggy-category-rules.ts": 29,
         "lib/interfaces/pluggy-cutover.ts": 149,
         "lib/interfaces/pluggy-investments.ts": 47,
-        "lib/interfaces/pluggy.ts": 231,
+        "lib/interfaces/pluggy.ts": 233,
         "lib/interfaces/profile.ts": 10,
         "lib/interfaces/projected-balance-server.ts": 54,
         "lib/interfaces/projected-balance.ts": 113,
@@ -878,7 +882,7 @@
         "lib/interfaces/render/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.ts": 9,
         "lib/interfaces/render/credit-card-purchase-dialog-credit-card-purchase-dialog-form1.ts": 13,
         "lib/interfaces/render/credit-card-transactions-panel-credit-card-transactions-panel-section1.ts": 16,
-        "lib/interfaces/render/credit-card-view-credit-card-view-div1.ts": 16,
+        "lib/interfaces/render/credit-card-view-credit-card-view-div1.ts": 17,
         "lib/interfaces/render/daily-projection-table-daily-projection-table-div1.ts": 5,
         "lib/interfaces/render/distribution-chart-distribution-chart-card-content1.ts": 5,
         "lib/interfaces/render/filters-projection-filters-div3.ts": 12,
@@ -971,7 +975,7 @@
         "lib/pending-category.ts": 7,
         "lib/pj-income.ts": 52,
         "lib/pluggy-account-rules.ts": 12,
-        "lib/pluggy-ui.ts": 155,
+        "lib/pluggy-ui.ts": 157,
         "lib/presumed-income.ts": 15,
         "lib/projected-balance-calendar.ts": 50,
         "lib/projected-balance.ts": 303,
@@ -1000,13 +1004,14 @@
         "lib/server/budgets.ts": 79,
         "lib/server/categories.ts": 137,
         "lib/server/credit-card/expenses.ts": 85,
+        "lib/server/credit-card/limits.ts": 37,
         "lib/server/credit-card/mutations.ts": 208,
         "lib/server/credit-card/overview.ts": 117,
         "lib/server/credit-card/queries.ts": 104,
         "lib/server/credit-card/showcase.ts": 31,
         "lib/server/credit-card/validation.ts": 149,
         "lib/server/credit-card-bills.ts": 315,
-        "lib/server/credit-card.ts": 6,
+        "lib/server/credit-card.ts": 7,
         "lib/server/daily-expenses.ts": 44,
         "lib/server/dashboard-bills.ts": 20,
         "lib/server/dashboard-records.ts": 94,
@@ -1103,17 +1108,18 @@
         "lib/server/pluggy/match-bill-payment.ts": 42,
         "lib/server/pluggy/normalize-description.ts": 26,
         "lib/server/pluggy/own-identity.ts": 51,
-        "lib/server/pluggy/remote.ts": 33,
+        "lib/server/pluggy/remote.ts": 48,
         "lib/server/pluggy/route.ts": 10,
-        "lib/server/pluggy/schemas.ts": 87,
+        "lib/server/pluggy/schemas.ts": 90,
         "lib/server/pluggy/steps/account-check.ts": 13,
+        "lib/server/pluggy/steps/card-limit.ts": 17,
         "lib/server/pluggy/steps/import-bank-transactions.ts": 52,
         "lib/server/pluggy/steps/import-card-bills.ts": 30,
         "lib/server/pluggy/steps/import-card-purchases.ts": 72,
         "lib/server/pluggy/steps/item-status.ts": 18,
         "lib/server/pluggy/steps/sync-investment-positions.ts": 103,
         "lib/server/pluggy/sync-runs.ts": 55,
-        "lib/server/pluggy/sync.ts": 208,
+        "lib/server/pluggy/sync.ts": 209,
         "lib/server/projected-balance/accounts.ts": 135,
         "lib/server/projected-balance/commitments.ts": 141,
         "lib/server/projected-balance/filters.ts": 211,
@@ -1286,14 +1292,21 @@
           "file": "app/(finance)/credit-card/page.tsx",
           "name": "CreditCardPage",
           "startLine": 8,
-          "endLine": 50,
-          "lines": 43
+          "endLine": 55,
+          "lines": 48
         },
         {
           "file": "app/(finance)/credit-card/page.tsx",
           "name": "anonymous",
-          "startLine": 33,
-          "endLine": 33,
+          "startLine": 35,
+          "endLine": 35,
+          "lines": 1
+        },
+        {
+          "file": "app/(finance)/credit-card/page.tsx",
+          "name": "anonymous",
+          "startLine": 40,
+          "endLine": 40,
           "lines": 1
         },
         {
@@ -4545,6 +4558,27 @@
           "lines": 20
         },
         {
+          "file": "components/finance/credit-card-limit-bar.tsx",
+          "name": "CreditCardLimitBar",
+          "startLine": 9,
+          "endLine": 51,
+          "lines": 43
+        },
+        {
+          "file": "components/finance/credit-card-limit-bar.tsx",
+          "name": "anonymous",
+          "startLine": 29,
+          "endLine": 31,
+          "lines": 3
+        },
+        {
+          "file": "components/finance/credit-card-limit-bar.tsx",
+          "name": "anonymous",
+          "startLine": 34,
+          "endLine": 46,
+          "lines": 13
+        },
+        {
           "file": "components/finance/credit-card-month-loading.tsx",
           "name": "CreditCardMonthLoading",
           "startLine": 5,
@@ -4940,28 +4974,21 @@
           "file": "components/finance/credit-card-visual.tsx",
           "name": "CreditCardVisual",
           "startLine": 11,
-          "endLine": 63,
-          "lines": 53
+          "endLine": 69,
+          "lines": 59
         },
         {
           "file": "components/finance/credit-cards-showcase.tsx",
           "name": "CreditCardsShowcase",
-          "startLine": 14,
-          "endLine": 59,
-          "lines": 46
+          "startLine": 16,
+          "endLine": 67,
+          "lines": 52
         },
         {
           "file": "components/finance/credit-cards-showcase.tsx",
           "name": "anonymous",
-          "startLine": 15,
-          "endLine": 15,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/credit-cards-showcase.tsx",
-          "name": "anonymous",
-          "startLine": 30,
-          "endLine": 30,
+          "startLine": 18,
+          "endLine": 18,
           "lines": 1
         },
         {
@@ -4974,15 +5001,22 @@
         {
           "file": "components/finance/credit-cards-showcase.tsx",
           "name": "anonymous",
-          "startLine": 40,
-          "endLine": 52,
-          "lines": 13
+          "startLine": 36,
+          "endLine": 36,
+          "lines": 1
         },
         {
           "file": "components/finance/credit-cards-showcase.tsx",
           "name": "anonymous",
-          "startLine": 46,
-          "endLine": 46,
+          "startLine": 43,
+          "endLine": 59,
+          "lines": 17
+        },
+        {
+          "file": "components/finance/credit-cards-showcase.tsx",
+          "name": "anonymous",
+          "startLine": 49,
+          "endLine": 49,
           "lines": 1
         },
         {
@@ -8216,14 +8250,21 @@
           "file": "components/finance/loading/credit-card-skeleton.tsx",
           "name": "CreditCardSkeleton",
           "startLine": 3,
-          "endLine": 24,
-          "lines": 22
+          "endLine": 28,
+          "lines": 26
         },
         {
           "file": "components/finance/loading/credit-card-skeleton.tsx",
           "name": "anonymous",
-          "startLine": 19,
-          "endLine": 19,
+          "startLine": 12,
+          "endLine": 12,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/loading/credit-card-skeleton.tsx",
+          "name": "anonymous",
+          "startLine": 23,
+          "endLine": 23,
           "lines": 1
         },
         {
@@ -17670,6 +17711,48 @@
           "lines": 4
         },
         {
+          "file": "lib/credit-card-limit.ts",
+          "name": "buildCreditCardLimitView",
+          "startLine": 5,
+          "endLine": 17,
+          "lines": 13
+        },
+        {
+          "file": "lib/credit-card-limit.ts",
+          "name": "share",
+          "startLine": 19,
+          "endLine": 21,
+          "lines": 3
+        },
+        {
+          "file": "lib/credit-card-limit.ts",
+          "name": "creditCardLimitSegments",
+          "startLine": 24,
+          "endLine": 36,
+          "lines": 13
+        },
+        {
+          "file": "lib/credit-card-limit.ts",
+          "name": "anonymous",
+          "startLine": 31,
+          "endLine": 35,
+          "lines": 5
+        },
+        {
+          "file": "lib/credit-card-limit.ts",
+          "name": "creditCardLimitUsedPercent",
+          "startLine": 38,
+          "endLine": 40,
+          "lines": 3
+        },
+        {
+          "file": "lib/credit-card-limit.ts",
+          "name": "formatLimitPercent",
+          "startLine": 42,
+          "endLine": 44,
+          "lines": 3
+        },
+        {
           "file": "lib/credit-card-timeline.ts",
           "name": "buildCreditCardTimeline",
           "startLine": 14,
@@ -19009,50 +19092,50 @@
         {
           "file": "lib/db/index.ts",
           "name": "createDatabase",
-          "startLine": 34,
-          "endLine": 42,
+          "startLine": 35,
+          "endLine": 43,
           "lines": 9
         },
         {
           "file": "lib/db/index.ts",
           "name": "wrapDatabase",
-          "startLine": 44,
-          "endLine": 47,
+          "startLine": 45,
+          "endLine": 48,
           "lines": 4
         },
         {
           "file": "lib/db/index.ts",
           "name": "getDatabase",
-          "startLine": 56,
-          "endLine": 72,
+          "startLine": 57,
+          "endLine": 73,
           "lines": 17
         },
         {
           "file": "lib/db/index.ts",
           "name": "getFinanceDatabase",
-          "startLine": 74,
-          "endLine": 85,
+          "startLine": 75,
+          "endLine": 86,
           "lines": 12
         },
         {
           "file": "lib/db/index.ts",
           "name": "initializeDemoDatabase",
-          "startLine": 87,
-          "endLine": 132,
-          "lines": 46
+          "startLine": 88,
+          "endLine": 134,
+          "lines": 47
         },
         {
           "file": "lib/db/index.ts",
           "name": "anonymous",
-          "startLine": 95,
-          "endLine": 119,
-          "lines": 25
+          "startLine": 96,
+          "endLine": 121,
+          "lines": 26
         },
         {
           "file": "lib/db/index.ts",
           "name": "anonymous",
-          "startLine": 121,
-          "endLine": 123,
+          "startLine": 123,
+          "endLine": 125,
           "lines": 3
         },
         {
@@ -19726,6 +19809,20 @@
           "startLine": 98,
           "endLine": 105,
           "lines": 8
+        },
+        {
+          "file": "lib/db/schema/credit-card.ts",
+          "name": "anonymous",
+          "startLine": 113,
+          "endLine": 113,
+          "lines": 1
+        },
+        {
+          "file": "lib/db/schema/credit-card.ts",
+          "name": "anonymous",
+          "startLine": 119,
+          "endLine": 122,
+          "lines": 4
         },
         {
           "file": "lib/db/schema/goals.ts",
@@ -21508,72 +21605,65 @@
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyCategoryGroupKey",
-          "startLine": 95,
-          "endLine": 97,
+          "startLine": 97,
+          "endLine": 99,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyRuleCategoryOptions",
-          "startLine": 100,
-          "endLine": 103,
+          "startLine": 102,
+          "endLine": 105,
           "lines": 4
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 102,
-          "endLine": 102,
+          "startLine": 104,
+          "endLine": 104,
           "lines": 1
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "formatPluggyDateTime",
-          "startLine": 105,
-          "endLine": 107,
+          "startLine": 107,
+          "endLine": 109,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyDayOf",
-          "startLine": 112,
-          "endLine": 114,
+          "startLine": 114,
+          "endLine": 116,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyToday",
-          "startLine": 116,
-          "endLine": 118,
+          "startLine": 118,
+          "endLine": 120,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "buildPluggyAccountRows",
-          "startLine": 121,
-          "endLine": 136,
+          "startLine": 123,
+          "endLine": 138,
           "lines": 16
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 122,
-          "endLine": 122,
+          "startLine": 124,
+          "endLine": 124,
           "lines": 1
-        },
-        {
-          "file": "lib/pluggy-ui.ts",
-          "name": "anonymous",
-          "startLine": 123,
-          "endLine": 126,
-          "lines": 4
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
           "startLine": 125,
-          "endLine": 125,
-          "lines": 1
+          "endLine": 128,
+          "lines": 4
         },
         {
           "file": "lib/pluggy-ui.ts",
@@ -21585,29 +21675,36 @@
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 128,
-          "endLine": 128,
+          "startLine": 129,
+          "endLine": 129,
           "lines": 1
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 128,
-          "endLine": 134,
+          "startLine": 130,
+          "endLine": 130,
+          "lines": 1
+        },
+        {
+          "file": "lib/pluggy-ui.ts",
+          "name": "anonymous",
+          "startLine": 130,
+          "endLine": 136,
           "lines": 7
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyRequest",
-          "startLine": 138,
-          "endLine": 155,
+          "startLine": 140,
+          "endLine": 157,
           "lines": 18
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 149,
-          "endLine": 149,
+          "startLine": 151,
+          "endLine": 151,
           "lines": 1
         },
         {
@@ -22911,6 +23008,48 @@
           "startLine": 78,
           "endLine": 84,
           "lines": 7
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "saveCreditCardLimit",
+          "startLine": 12,
+          "endLine": 17,
+          "lines": 6
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "getCreditCardLimits",
+          "startLine": 20,
+          "endLine": 37,
+          "lines": 18
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "anonymous",
+          "startLine": 26,
+          "endLine": 26,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "anonymous",
+          "startLine": 29,
+          "endLine": 36,
+          "lines": 8
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "anonymous",
+          "startLine": 30,
+          "endLine": 30,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/limits.ts",
+          "name": "anonymous",
+          "startLine": 32,
+          "endLine": 32,
+          "lines": 1
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
@@ -29824,50 +29963,57 @@
         {
           "file": "lib/server/pluggy/remote.ts",
           "name": "optionalDate",
-          "startLine": 3,
-          "endLine": 7,
+          "startLine": 4,
+          "endLine": 8,
           "lines": 5
         },
         {
           "file": "lib/server/pluggy/remote.ts",
           "name": "remoteItemFields",
-          "startLine": 9,
-          "endLine": 16,
+          "startLine": 10,
+          "endLine": 17,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/remote.ts",
           "name": "remoteAccountKind",
-          "startLine": 18,
-          "endLine": 20,
+          "startLine": 19,
+          "endLine": 21,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/remote.ts",
           "name": "remoteAccountName",
-          "startLine": 22,
-          "endLine": 24,
+          "startLine": 23,
+          "endLine": 25,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/remote.ts",
           "name": "remoteAccountView",
-          "startLine": 26,
-          "endLine": 33,
+          "startLine": 27,
+          "endLine": 34,
           "lines": 8
+        },
+        {
+          "file": "lib/server/pluggy/remote.ts",
+          "name": "remoteCardLimit",
+          "startLine": 37,
+          "endLine": 48,
+          "lines": 12
         },
         {
           "file": "lib/server/pluggy/schemas.ts",
           "name": "pluggyPageSchema",
-          "startLine": 81,
-          "endLine": 83,
+          "startLine": 84,
+          "endLine": 86,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/schemas.ts",
           "name": "pluggyCursorSchema",
-          "startLine": 85,
-          "endLine": 87,
+          "startLine": 88,
+          "endLine": 90,
           "lines": 3
         },
         {
@@ -29882,6 +30028,27 @@
           "name": "anonymous",
           "startLine": 10,
           "endLine": 10,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/card-limit.ts",
+          "name": "run",
+          "startLine": 9,
+          "endLine": 16,
+          "lines": 8
+        },
+        {
+          "file": "lib/server/pluggy/steps/card-limit.ts",
+          "name": "anonymous",
+          "startLine": 11,
+          "endLine": 11,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/card-limit.ts",
+          "name": "anonymous",
+          "startLine": 14,
+          "endLine": 14,
           "lines": 1
         },
         {
@@ -30174,176 +30341,176 @@
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "emptySummary",
-          "startLine": 46,
-          "endLine": 48,
+          "startLine": 47,
+          "endLine": 49,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "describeFailure",
-          "startLine": 50,
-          "endLine": 56,
+          "startLine": 51,
+          "endLine": 57,
           "lines": 7
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "addResult",
-          "startLine": 58,
-          "endLine": 66,
+          "startLine": 59,
+          "endLine": 67,
           "lines": 9
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "recordFailure",
-          "startLine": 68,
-          "endLine": 70,
+          "startLine": 69,
+          "endLine": 71,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "runItemStep",
-          "startLine": 72,
-          "endLine": 82,
+          "startLine": 73,
+          "endLine": 83,
           "lines": 11
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "runAccountStep",
-          "startLine": 84,
-          "endLine": 95,
+          "startLine": 85,
+          "endLine": 96,
           "lines": 12
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 85,
-          "endLine": 85,
+          "startLine": 86,
+          "endLine": 86,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "resolveStatus",
-          "startLine": 97,
-          "endLine": 103,
+          "startLine": 98,
+          "endLine": 104,
           "lines": 7
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "createContext",
-          "startLine": 105,
-          "endLine": 128,
+          "startLine": 106,
+          "endLine": 129,
           "lines": 24
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "write",
-          "startLine": 114,
-          "endLine": 114,
+          "startLine": 115,
+          "endLine": 115,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "remoteAccounts",
-          "startLine": 115,
-          "endLine": 118,
+          "startLine": 116,
+          "endLine": 119,
           "lines": 4
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "remoteTransactions",
-          "startLine": 119,
-          "endLine": 122,
+          "startLine": 120,
+          "endLine": 123,
           "lines": 4
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "remoteBills",
-          "startLine": 123,
-          "endLine": 126,
+          "startLine": 124,
+          "endLine": 127,
           "lines": 4
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "recordItemOutcomes",
-          "startLine": 130,
-          "endLine": 137,
+          "startLine": 131,
+          "endLine": 138,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 132,
-          "endLine": 132,
+          "startLine": 133,
+          "endLine": 133,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "loadTargets",
-          "startLine": 139,
-          "endLine": 142,
+          "startLine": 140,
+          "endLine": 143,
           "lines": 4
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 141,
-          "endLine": 141,
+          "startLine": 142,
+          "endLine": 142,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "logAiFailure",
-          "startLine": 145,
-          "endLine": 147,
+          "startLine": 146,
+          "endLine": 148,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "suggestCategoriesSafely",
-          "startLine": 153,
-          "endLine": 163,
+          "startLine": 154,
+          "endLine": 164,
           "lines": 11
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "executeSteps",
-          "startLine": 165,
-          "endLine": 185,
+          "startLine": 166,
+          "endLine": 186,
           "lines": 21
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 178,
-          "endLine": 178,
+          "startLine": 179,
+          "endLine": 179,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 180,
-          "endLine": 180,
+          "startLine": 181,
+          "endLine": 181,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "executeRun",
-          "startLine": 187,
-          "endLine": 197,
+          "startLine": 188,
+          "endLine": 198,
           "lines": 11
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "anonymous",
-          "startLine": 194,
-          "endLine": 194,
+          "startLine": 195,
+          "endLine": 195,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/sync.ts",
           "name": "runPluggySync",
-          "startLine": 199,
-          "endLine": 208,
+          "startLine": 200,
+          "endLine": 209,
           "lines": 10
         },
         {
@@ -33088,33 +33255,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 10699,
-      "total": 12046
+      "covered": 10756,
+      "total": 12098
     },
     "statements": {
-      "covered": 12240,
-      "total": 13871
+      "covered": 12309,
+      "total": 13934
     },
     "functions": {
-      "covered": 3902,
-      "total": 4546
+      "covered": 3926,
+      "total": 4569
     },
     "branches": {
-      "covered": 7770,
-      "total": 9653
+      "covered": 7809,
+      "total": 9690
     }
   },
   "duplication": {
-    "totalLines": 54828,
-    "duplicatedLines": 397,
+    "totalLines": 55063,
+    "duplicatedLines": 394,
     "fragments": 44
   },
-  "headSha": "b9cf6d94100fed8760e80b75f953b5efb00f1ed4",
-  "runId": "43985002746",
+  "headSha": "adb062a2ef4347944262f8c0bcfb8e6543548faa",
+  "runId": "44277631708",
   "runAttempt": "1",
   "source": {
-    "commit": "b9cf6d94100fed8760e80b75f953b5efb00f1ed4",
-    "runId": "43985002746",
+    "commit": "adb062a2ef4347944262f8c0bcfb8e6543548faa",
+    "runId": "44277631708",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
