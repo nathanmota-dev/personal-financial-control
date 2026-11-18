@@ -7,10 +7,14 @@ export function CreditCardSkeleton() {
         <LoadingBar className="h-12 w-56" />
         <LoadingBar className="h-[236px] w-full max-w-[420px] rounded-[14px]" />
         <LoadingBar className="h-[136px] w-full rounded-[14px]" />
+        <LoadingBar className="h-2.5 w-full" />
+        <div className="grid gap-3 sm:grid-cols-3">
+          {Array.from({ length: 3 }, (_, index) => <LoadingBar key={index} className="h-10 w-full rounded-xl" />)}
+        </div>
       </LoadingPanel>
-      <div className="grid content-start gap-6 min-[100.0625rem]:gap-5">
+      <div className="flex flex-col gap-6 min-[100.0625rem]:gap-5">
         <LoadingPanel><LoadingRows count={4} columns={2} /></LoadingPanel>
-        <LoadingPanel><LoadingRows count={3} columns={2} /></LoadingPanel>
+        <LoadingPanel className="xl:flex-1"><LoadingRows count={3} columns={2} /></LoadingPanel>
       </div>
     </div>
     <LoadingPanel>

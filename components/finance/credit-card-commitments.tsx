@@ -14,8 +14,8 @@ export function CreditCardCommitments({ overview }: CreditCardCommitmentsProps) 
   const futureCharges = overview.invoice.futureInstallments.slice(0, 5);
 
   return (
-    <aside className="space-y-6 min-[100.0625rem]:space-y-5">
-      <section className="relative rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
+    <aside className="flex flex-col gap-6 min-[100.0625rem]:gap-5 xl:flex-1">
+      <section data-testid="credit-card-commitments" className="relative rounded-[20px] xl:flex-1 border border-border bg-card px-[22px] pt-5 pb-6">
         <DashboardCardIllustration src="/images/budgets-calculation.webp" />
         <h2 className="text-lg font-semibold leading-[25px]">Parcelas em aberto</h2>
         <p className="mt-1 pr-16 text-xs text-content-muted">Compromissos das próximas faturas</p>

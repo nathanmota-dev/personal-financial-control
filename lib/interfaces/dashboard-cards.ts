@@ -55,6 +55,8 @@ export type CreditCardVisualProps = {
   details?: [CreditCardVisualDetail, CreditCardVisualDetail];
   /** Replaces the invoice status badge; `null` hides it. */
   statusLabel?: string | null;
+  /** Card limit shown between the bottom corners. Only the credit card page passes it. */
+  limit?: CreditCardVisualDetail;
 };
 
 export type CreditCardBrandLogoProps = {

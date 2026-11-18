@@ -18,7 +18,7 @@ AccountSetupDialog
 import { buildCreditCardMonthPoints } from "@/lib/credit-card-view";
 import type { CreditCardViewProps } from "@/lib/interfaces/credit-card-view";
 
-export function CreditCardView({ overview, categories, loadError = false, cards = [], selectedCardId }: CreditCardViewProps) {
+export function CreditCardView({ overview, categories, loadError = false, cards = [], selectedCardId, limits = {} }: CreditCardViewProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -141,6 +141,6 @@ export function CreditCardView({ overview, categories, loadError = false, cards 
   }
 
   return (
-    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} cards={cards} selectedCardId={selectedCard} selectCard={selectCard} isPending={isPending} purchaseCommandId={purchaseCommandId} setupCommandId={setupCommandId} categoryCommandId={categoryCommandId} />
+    <CreditCardViewDiv1 overview={overview} expenseCategories={expenseCategories} canCreatePurchase={canCreatePurchase} monthPoints={monthPoints} selectedMonth={selectedMonth} selectMonth={selectMonth} cards={cards} limits={limits} selectedCardId={selectedCard} selectCard={selectCard} isPending={isPending} purchaseCommandId={purchaseCommandId} setupCommandId={setupCommandId} categoryCommandId={categoryCommandId} />
   );
 }

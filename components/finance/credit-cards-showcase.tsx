@@ -3,15 +3,18 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { CreditCardInvoiceChart } from "@/components/finance/credit-card-invoice-chart";
+import { CreditCardLimitBar } from "@/components/finance/credit-card-limit-bar";
 import { CreditCardVisual } from "@/components/finance/credit-card-visual";
 import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
+import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { Button } from "@/components/ui/button";
 import { longMonthName } from "@/lib/dashboard-cards";
 import type { CreditCardsShowcaseProps } from "@/lib/interfaces/credit-card-view";
 import { cn } from "@/lib/utils";
 
-export function CreditCardsShowcase({ cards, selectedId, month, onSelect }: CreditCardsShowcaseProps) {
+export function CreditCardsShowcase({ cards, selectedId, month, onSelect, limits = {} }: CreditCardsShowcaseProps) {
+  const { formatCurrencyText } = useFinancialFormatter();
   const index = Math.max(0, cards.findIndex((card) => card.id === selectedId));
   const active = cards[index];
   if (!active) return null;
@@ -47,13 +50,18 @@ export function CreditCardsShowcase({ cards, selectedId, month, onSelect }: Cred
               className={cn("shrink-0 rounded-[14px] text-left outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-ring", card.id === active.id ? "opacity-100" : "opacity-60 hover:opacity-90")}
               style={{ width: "var(--card-w)" }}
             >
-              <CreditCardVisual card={card} className="h-[236px] p-6" />
+              <CreditCardVisual
+                card={card}
+                className="h-[236px] p-6"
+                limit={limits[card.id] ? { label: "Limite", value: formatCurrencyText(limits[card.id].limitCents) } : undefined}
+              />
             </button>
           ))}
         </div>
       </div>
       <p className="mt-6 mb-3 text-[10px] font-bold tracking-wider text-content uppercase">Próximas faturas</p>
       <CreditCardInvoiceChart invoices={active.invoices} />
+      {limits[active.id] ? <CreditCardLimitBar limit={limits[active.id]} /> : null}
     </section>
   );
 }

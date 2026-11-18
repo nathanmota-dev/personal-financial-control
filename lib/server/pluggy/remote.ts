@@ -1,4 +1,5 @@
-import type { PluggyAccountKind, PluggyRemoteAccount, PluggyRemoteAccountView, PluggyRemoteItem } from "@/lib/interfaces/pluggy";
+import type { PluggyAccountKind, PluggyCardLimit, PluggyRemoteAccount, PluggyRemoteAccountView, PluggyRemoteItem } from "@/lib/interfaces/pluggy";
+import { toAmountCents } from "./mappers/bank-transaction";
 
 function optionalDate(value?: string | null) {
   if (!value) return null;
@@ -29,5 +30,19 @@ export function remoteAccountView(remote: PluggyRemoteAccount): PluggyRemoteAcco
     name: remoteAccountName(remote),
     kind: remoteAccountKind(remote),
     numberSuffix: remote.number ? remote.number.slice(-4) : null,
+  };
+}
+
+/** Null when the bank did not report both the limit and what is still available. */
+export function remoteCardLimit(remote: PluggyRemoteAccount, now: Date): PluggyCardLimit | null {
+  const limit = remote.creditData?.creditLimit;
+  const available = remote.creditData?.availableCreditLimit;
+  if (limit == null || available == null || limit <= 0) return null;
+  const availableCents = toAmountCents(available);
+  return {
+    limitCents: toAmountCents(limit),
+    // Above the limit the bank reports a negative balance still available.
+    availableCents: available < 0 ? -availableCents : availableCents,
+    collectedAt: optionalDate(remote.updatedAt) ?? now,
   };
 }

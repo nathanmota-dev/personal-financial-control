@@ -1,4 +1,4 @@
-import { encryptedInteger,encryptedText } from "@/lib/db/encrypted-content";
+import { encryptedInteger,encryptedText,encryptedTimestamp } from "@/lib/db/encrypted-content";
 import { encryptionChecks } from "@/lib/db/encryption-checks";
 import {
 index,
@@ -102,5 +102,22 @@ export const creditCardInstallments = sqliteTable(
       table.chargeId,
       table.installmentNumberHash
     ),
+  ]
+);
+
+/** Latest limit the bank reported for a card, one row per card, replaced on every Pluggy sync. */
+export const creditCardLimits = sqliteTable(
+  "credit_card_limits",
+  {
+    id: recordId(),
+    accountId: referenceColumn("account_id", () => accounts.id, "cascade").notNull(),
+    limitCents: encryptedInteger("limit_cents", "credit_card_limits.limit_cents").notNull(),
+    availableCents: encryptedInteger("available_cents", "credit_card_limits.available_cents").notNull(),
+    collectedAt: encryptedTimestamp("collected_at", "credit_card_limits.collected_at").notNull(),
+    ...timestampColumns("credit_card_limits"),
+  },
+  (table) => [
+    ...encryptionChecks(table),
+    uniqueIndex("credit_card_limits_account_unique").on(table.accountId),
   ]
 );

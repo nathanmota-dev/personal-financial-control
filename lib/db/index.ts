@@ -16,6 +16,7 @@ accounts,
 categories,
 creditCardCharges,
 creditCardInstallments,
+creditCardLimits,
 financialGoalAllocations,
 financialGoals,
 investmentHoldings,
@@ -105,6 +106,7 @@ async function initializeDemoDatabase() {
       await transaction
         .insert(creditCardInstallments)
         .values(demoFixture.creditCardInstallments);
+      await transaction.insert(creditCardLimits).values(demoFixture.creditCardLimits);
       await transaction.insert(investmentPortfolio).values(demoFixture.investmentPortfolio);
       await transaction.insert(investmentHoldings).values(demoFixture.investmentHoldings);
       await transaction.insert(investmentPurposes).values(demoFixture.investmentPurposes);

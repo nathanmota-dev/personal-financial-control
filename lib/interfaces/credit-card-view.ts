@@ -2,6 +2,7 @@ import type {
 CreditCardCategoryOption,
 CreditCardOverview,
 } from "@/lib/interfaces/credit-card";
+import type { CreditCardLimits } from "@/lib/interfaces/credit-card-limit";
 import type { DashboardCardsData } from "@/lib/interfaces/dashboard-cards";
 
 export type ReadyCreditCardOverview = Extract<CreditCardOverview, { state: "ready" }>;
@@ -13,6 +14,8 @@ export type CreditCardViewProps = {
   /** Active credit cards for the carousel; empty or omitted when only the overview is known. */
   cards?: DashboardCardsData;
   selectedCardId?: string;
+  /** Limits reported by the bank, by card id; cards without one show no limit. */
+  limits?: CreditCardLimits;
 };
 
 export type CreditCardMonthLoadingProps = {
@@ -58,6 +61,7 @@ export type CreditCardsShowcaseProps = {
   selectedId: string;
   month: string;
   onSelect: (id: string) => void;
+  limits?: CreditCardLimits;
 };
 
 export type CreditCardInvoiceSummaryProps = {

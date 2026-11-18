@@ -19,6 +19,9 @@ export const pluggyAccountSchema = z.object({
   marketingName: optionalText,
   number: optionalText,
   balance: z.number().nullish(),
+  updatedAt: optionalText,
+  // A malformed credit block must not reject the account: the card is reported as having no limit.
+  creditData: z.looseObject({ creditLimit: z.number().nullish(), availableCreditLimit: z.number().nullish() }).nullish().catch(null),
 });
 
 const pluggyPartySchema = z.looseObject({

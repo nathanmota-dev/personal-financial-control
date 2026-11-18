@@ -1,5 +1,5 @@
 export { accounts,categories } from "./schema/accounts";
-export { creditCardBillPayments,creditCardBills,creditCardCharges,creditCardInstallments } from "./schema/credit-card";
+export { creditCardBillPayments,creditCardBills,creditCardCharges,creditCardInstallments,creditCardLimits } from "./schema/credit-card";
 export { accountTypes,allocationTypes,categoryGroups,creditCardBillPaymentKinds,creditCardBillStatuses,creditCardChargeKinds,fixedIncomeIndexers,fixedIncomeSubtypes,goalCategories,goalStatuses,investmentAssetClasses,investmentInstrumentTypes,investmentMarketStates,investmentOperationTypes,investmentPurposeKinds,investmentQuoteProviders,investmentReductionEventTypes,investmentReductionSourceTypes,investmentReductionStatuses,investmentValuationModes,investmentValuationSources,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./schema/enums";
 export { financialGoalAllocations,financialGoals } from "./schema/goals";
 export { investmentHoldings,investmentPortfolio,investmentPurposes } from "./schema/investment-assets";

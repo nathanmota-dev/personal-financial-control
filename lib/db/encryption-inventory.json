@@ -371,5 +371,14 @@
     "api_key": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
+  },
+  "credit_card_limits": {
+    "id": "technical",
+    "account_id": "technical",
+    "limit_cents": "integer",
+    "available_cents": "integer",
+    "collected_at": "timestamp",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
   }
 }

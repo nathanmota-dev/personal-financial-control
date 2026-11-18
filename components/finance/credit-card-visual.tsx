@@ -8,7 +8,7 @@ import { cardProductName, formatCardDueDate } from "@/lib/dashboard-cards";
 import type { CreditCardVisualProps } from "@/lib/interfaces/dashboard-cards";
 import { cn } from "@/lib/utils";
 
-export function CreditCardVisual({ card, className, details, statusLabel: statusOverride }: CreditCardVisualProps) {
+export function CreditCardVisual({ card, className, details, statusLabel: statusOverride, limit }: CreditCardVisualProps) {
   const { formatCurrency } = useFinancialFormatter();
   const theme = CARD_BRAND_THEMES[card.brand];
   const [current] = card.invoices;
@@ -52,6 +52,12 @@ export function CreditCardVisual({ card, className, details, statusLabel: status
           <p className="opacity-70">{left.label}</p>
           <p className="mt-0.5 text-[11px]">{left.value}</p>
         </div>
+        {limit ? (
+          <div data-testid="credit-card-visual-limit" className="text-center">
+            <p className="opacity-70">{limit.label}</p>
+            <p className="mt-0.5 text-[11px]">{limit.value}</p>
+          </div>
+        ) : null}
         <div className="text-right">
           <p className="opacity-70">{right.label}</p>
           <p className="mt-0.5 text-[11px]">{right.value}</p>
