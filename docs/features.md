@@ -18,7 +18,7 @@ Atualmente, o app oferece controle de:
 - investimentos e carteira patrimonial;
 - metas financeiras;
 - integração local com MCP para consultar referências, administrar lançamentos e
-  compras de cartão e categorizá-los.
+  compras de cartão, categorizá-los e consultar gastos, orçamento e faturas.
 
 Os valores monetários persistidos no banco são criptografados. O app também possui um modo de demonstração em memória, que não altera o banco real.
 
@@ -269,6 +269,9 @@ As ferramentas disponíveis são:
   e categorizam um grupo inteiro de uma vez, salvando a regra para as próximas
   sincronizações;
 - `create_category`: cria uma categoria quando nenhuma existente serve.
+- `get_spending_summary`, `get_budget_overview` e `get_credit_card_invoices`:
+  consultas somente leitura de gastos por categoria e mês, orçamento do mês e
+  totais da fatura, contadas como na tela de relatórios.
 
 Os comandos usam datas `YYYY-MM-DD`, competências e meses de fatura `YYYY-MM`,
 valores inteiros em centavos e UUIDs para contas e categorias. Criações exigem uma

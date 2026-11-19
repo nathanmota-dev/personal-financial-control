@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createAccount } from "@/lib/server/accounts";
 import { archiveCategory, createCategory } from "@/lib/server/categories";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
+import { saveBudget } from "@/lib/server/budgets";
+import { upsertCreditCardBill } from "@/lib/server/credit-card-bills";
 import { getOrCreatePendingCategory } from "@/lib/server/pending-category";
 import { createTransaction } from "@/lib/server/transactions";
 import { handleMcpRequest } from "@/lib/mcp/http";
@@ -73,7 +75,7 @@ describe("MCP HTTP security and protocol", () => {
 
     const listed = await handleMcpRequest(request(rpc("tools/list"), { token }));
     const listPayload = await listed.json();
-    expect(listPayload.result.tools).toHaveLength(14);
+    expect(listPayload.result.tools).toHaveLength(17);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "list_transactions").annotations.readOnlyHint).toBe(true);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "delete_transaction").annotations.destructiveHint).toBe(true);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "create_transaction").inputSchema.required).toContain("idempotencyKey");
@@ -248,6 +250,43 @@ describe("MCP categorization tools", () => {
       await archiveCategory(created.structuredContent.data.id, db);
       const archived = await callTool(db, "create_category", { name: "Pets", group: "variable_expense" });
       expect(archived.structuredContent).toMatchObject({ code: "CATEGORY_NAME_TAKEN", message: expect.stringContaining("archived") });
+    } finally {
+      await cleanup();
+    }
+  });
+});
+
+describe("MCP insight tools", () => {
+  it("summarizes spending, budgets and card invoices", async () => {
+    const { db, cleanup } = await createTestDatabase();
+    try {
+      const checking = await createAccount({ name: "Checking Insight", type: "checking", initialBalanceCents: 0 }, db);
+      const card = await createAccount({ name: "Card Insight", type: "credit", creditClosingDay: 25, creditDueDay: 5 }, db);
+      await createAccount({ name: "Other Card", type: "credit", creditClosingDay: 10, creditDueDay: 20 }, db);
+      const market = await createCategory({ name: "Mercado Insight", group: "variable_expense" }, db);
+      await createTransaction({ accountId: checking.id, categoryId: market.id, type: "expense", status: "posted", amountCents: 12000, transactionDate: "2026-03-10", competenceMonth: "2026-03", description: "Supermercado" }, db);
+      await createCreditCardCharge({ accountId: card.id, categoryId: market.id, description: "Atacado", purchaseDate: "2026-03-02", totalAmountCents: 8000, installmentCount: 1, firstInvoiceMonth: "2026-03" }, db);
+      await saveBudget({ categoryId: market.id, competenceMonth: "2026-03", amountCents: 25000 }, db);
+      await upsertCreditCardBill({ accountId: card.id, invoiceMonth: "2026-03", dueDate: "2026-04-05", statementTotalCents: 8000, currentChargesTotalCents: 8000 }, db);
+
+      const spending = await callTool(db, "get_spending_summary", { fromMonth: "2026-03", type: "expense", categoryIds: [market.id] });
+      expect(spending.structuredContent.data.totals).toMatchObject({ expenseCents: 20000, entryCount: 2 });
+      expect(spending.structuredContent.data).not.toHaveProperty("entries");
+      expect((await callTool(db, "get_spending_summary", { fromMonth: "2026-13" })).isError).toBe(true);
+
+      const budget = await callTool(db, "get_budget_overview", { competenceMonth: "2026-03" });
+      expect(budget.structuredContent.data.rows).toEqual([expect.objectContaining({ categoryId: market.id, limitCents: 25000, committedCents: 20000, expenseCount: 2, state: "warning" })]);
+      expect(budget.structuredContent.data.rows[0]).not.toHaveProperty("expenses");
+
+      const invoices = await callTool(db, "get_credit_card_invoices", { invoiceMonth: "2026-03" });
+      expect(invoices.structuredContent.data.map((row: { accountName: string }) => row.accountName).sort()).toEqual(["Card Insight", "Other Card"]);
+      const single = await callTool(db, "get_credit_card_invoices", { invoiceMonth: "2026-03", accountId: card.id });
+      expect(single.structuredContent.data).toEqual([expect.objectContaining({
+        accountId: card.id, totalAmountCents: 8000, purchaseCount: 1, dueDay: 5,
+        bill: expect.objectContaining({ status: "open", dueDate: "2026-04-05", statementTotalCents: 8000 }),
+        categoryTotals: [expect.objectContaining({ categoryId: market.id, amountCents: 8000 })],
+      })]);
+      expect((await callTool(db, "get_credit_card_invoices", { invoiceMonth: "2026-03", accountId: checking.id })).structuredContent.code).toBe("ACCOUNT_TYPE_MISMATCH");
     } finally {
       await cleanup();
     }

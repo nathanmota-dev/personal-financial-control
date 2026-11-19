@@ -413,6 +413,104 @@ e retorna `CATEGORY_RESERVED`.
    `update_credit_card_charge`.
 4. Crie uma categoria com `create_category` só quando nenhuma existente servir.
 
+## Consultas
+
+As consultas são somente leitura e contam os valores como a tela de relatórios:
+lançamentos cancelados e pagamentos de fatura ficam de fora, e compras de cartão
+entram no mês da fatura de cada parcela, não no mês da compra.
+
+### `get_spending_summary`
+
+Responde perguntas como "quanto gastei com mercado?": totais por categoria e por mês
+num intervalo de competências.
+
+| Campo | Obrigatório | Valores |
+| --- | --- | --- |
+| `fromMonth` | sim | mês `YYYY-MM` |
+| `toMonth` | não | mês `YYYY-MM`; se omitido, usa `fromMonth`; no máximo 60 meses |
+| `type` | não | `income`, `expense`, `investment_contribution` ou `investment_withdrawal` |
+| `categoryIds` | não | lista de UUIDs de categoria |
+| `uncategorized` | não | `true` para contar só o que está sem categoria ou em "A classificar" |
+| `accountId` | não | UUID de qualquer conta, inclusive cartão |
+| `search` | não | trecho da descrição, sem diferenciar maiúsculas nem acentos |
+| `includeEntries` | não | `true` para devolver também os lançamentos, dos maiores para os menores, até 200 |
+
+```json
+{
+  "fromMonth": "2026-01",
+  "toMonth": "2026-06",
+  "type": "expense",
+  "categoryIds": ["UUID_DA_CATEGORIA_MERCADO"]
+}
+```
+
+Exemplo de retorno:
+
+```json
+{
+  "fromMonth": "2026-01",
+  "toMonth": "2026-06",
+  "totals": {
+    "incomeCents": 0,
+    "expenseCents": 184320,
+    "fixedExpenseCents": 0,
+    "variableExpenseCents": 184320,
+    "uncategorizedExpenseCents": 0,
+    "investmentContributionCents": 0,
+    "investmentWithdrawalCents": 0,
+    "entryCount": 37
+  },
+  "byCategory": [
+    {
+      "categoryId": "UUID",
+      "categoryName": "Mercado",
+      "categoryGroup": "variable_expense",
+      "type": "expense",
+      "amountCents": 184320,
+      "entryCount": 37
+    }
+  ],
+  "byMonth": [{ "month": "2026-01", "incomeCents": 0, "expenseCents": 30110 }]
+}
+```
+
+Despesas sem categoria, em "A classificar" ou em categoria fora dos grupos de despesa
+somam em `uncategorizedExpenseCents`, como no painel. Com `includeEntries`, cada
+lançamento traz `source` (`transaction` ou `card_installment`), `month`, `date`,
+conta e categoria; `entriesTruncated` indica se havia mais de 200.
+
+### `get_budget_overview`
+
+Compara os limites de orçamento com o que foi gasto em cada categoria de despesa num
+mês, incluindo categorias com gasto e sem limite.
+
+```json
+{
+  "competenceMonth": "2026-09"
+}
+```
+
+Cada linha traz `categoryId`, `categoryName`, `limitCents` (ou `null`),
+`postedCents`, `pendingCents`, `committedCents`, `remainingCents`, `percent`,
+`state` (`below`, `warning` a partir de 80% ou `reached`) e `expenseCount`.
+
+### `get_credit_card_invoices`
+
+Mostra os totais da fatura de um mês para cada cartão ativo, ou só para o cartão
+informado.
+
+```json
+{
+  "invoiceMonth": "2026-10",
+  "accountId": "UUID_DO_CARTAO"
+}
+```
+
+Cada item traz `totalAmountCents`, `calculatedTotalAmountCents` (soma das parcelas
+registradas), `purchaseCount`, `dueDay`, `bill` com `status`, `dueDate`,
+`statementTotalCents` e `paidAt` quando há uma fatura registrada, e `categoryTotals`.
+As compras em si continuam em `list_credit_card_charges`.
+
 ## Fluxo recomendado para importar um documento
 
 1. A LLM lê o PDF e classifica cada linha localmente; o MCP não recebe nem processa
@@ -431,7 +529,7 @@ e retorna `CATEGORY_RESERVED`.
 O MCP não cria nem altera contas, transferências, investimentos, recorrências,
 faturas ou pagamentos. Categorias podem ser criadas, mas não renomeadas, arquivadas
 ou excluídas, e as regras de categorização aprendidas não podem ser listadas nem
-removidas pelo MCP. Também não faz upload, leitura ou classificação
+removidas pelo MCP. As consultas não informam saldos de contas. Também não faz upload, leitura ou classificação
 de PDFs. Essas operações continuam fora do servidor MCP.
 
 ## Teste HTTP básico
