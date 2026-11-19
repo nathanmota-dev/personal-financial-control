@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 10756,
-          "total": 12098
+          "covered": 10759,
+          "total": 12101
         },
         "statements": {
-          "covered": 12309,
-          "total": 13934
+          "covered": 12311,
+          "total": 13936
         },
         "functions": {
           "covered": 3926,
           "total": 4569
         },
         "branches": {
-          "covered": 7809,
-          "total": 9690
+          "covered": 7812,
+          "total": 9693
         }
       },
       "coverageFileCount": 1202,
       "duplication": {
-        "totalLines": 55063,
+        "totalLines": 55071,
         "duplicatedLines": 394,
         "fragments": 44
       },
@@ -550,7 +550,7 @@
         "components/finance/transfer-list.tsx": 56,
         "components/finance/view-toggle.tsx": 28,
         "components/i18n/app-locale-provider.tsx": 100,
-        "components/i18n/locale-dom-bridge.tsx": 159,
+        "components/i18n/locale-dom-bridge.tsx": 167,
         "components/providers.tsx": 40,
         "components/ui/accordion.tsx": 81,
         "components/ui/alert-dialog.tsx": 199,
@@ -12967,92 +12967,92 @@
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "translateValue",
-          "startLine": 69,
-          "endLine": 83,
-          "lines": 15
+          "startLine": 72,
+          "endLine": 91,
+          "lines": 20
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 77,
-          "endLine": 77,
-          "lines": 1
+          "startLine": 81,
+          "endLine": 84,
+          "lines": 4
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 86,
+          "endLine": 86,
           "lines": 1
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "translateTextNode",
-          "startLine": 85,
-          "endLine": 91,
+          "startLine": 93,
+          "endLine": 99,
           "lines": 7
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "translateElement",
-          "startLine": 93,
-          "endLine": 107,
+          "startLine": 101,
+          "endLine": 115,
           "lines": 15
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "isUserContent",
-          "startLine": 109,
-          "endLine": 111,
+          "startLine": 117,
+          "endLine": 119,
           "lines": 3
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "translateSubtree",
-          "startLine": 113,
-          "endLine": 121,
+          "startLine": 121,
+          "endLine": 129,
           "lines": 9
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 120,
-          "endLine": 120,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "LocaleDomBridge",
-          "startLine": 123,
-          "endLine": 159,
+          "startLine": 131,
+          "endLine": 167,
           "lines": 37
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 126,
-          "endLine": 156,
+          "startLine": 134,
+          "endLine": 164,
           "lines": 31
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 136,
-          "endLine": 146,
+          "startLine": 144,
+          "endLine": 154,
           "lines": 11
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 144,
-          "endLine": 144,
+          "startLine": 152,
+          "endLine": 152,
           "lines": 1
         },
         {
           "file": "components/i18n/locale-dom-bridge.tsx",
           "name": "anonymous",
-          "startLine": 155,
-          "endLine": 155,
+          "startLine": 163,
+          "endLine": 163,
           "lines": 1
         },
         {
@@ -33255,33 +33255,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 10756,
-      "total": 12098
+      "covered": 10759,
+      "total": 12101
     },
     "statements": {
-      "covered": 12309,
-      "total": 13934
+      "covered": 12311,
+      "total": 13936
     },
     "functions": {
       "covered": 3926,
       "total": 4569
     },
     "branches": {
-      "covered": 7809,
-      "total": 9690
+      "covered": 7812,
+      "total": 9693
     }
   },
   "duplication": {
-    "totalLines": 55063,
+    "totalLines": 55071,
     "duplicatedLines": 394,
     "fragments": 44
   },
-  "headSha": "adb062a2ef4347944262f8c0bcfb8e6543548faa",
-  "runId": "44277631708",
+  "headSha": "076be914587b9aafebe7d5ea8d86591dfc4b7d35",
+  "runId": "44523609805",
   "runAttempt": "1",
   "source": {
-    "commit": "adb062a2ef4347944262f8c0bcfb8e6543548faa",
-    "runId": "44277631708",
+    "commit": "076be914587b9aafebe7d5ea8d86591dfc4b7d35",
+    "runId": "44523609805",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
