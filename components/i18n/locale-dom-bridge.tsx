@@ -66,7 +66,10 @@ function preserveWhitespace(source: string, translated: string): string {
   return `${match[1]}${translated}${match[3]}`;
 }
 
-function translateValue(source: string, translations: TranslationMap): string {
+// Placeholder values are translated too (e.g. a month label inside a sentence), up to this depth.
+const maxPlaceholderDepth = 2;
+
+function translateValue(source: string, translations: TranslationMap, depth = 0): string {
   const normalized = source.replace(/\s+/g, " ").trim();
   const translated = translations.values.get(normalized);
   if (translated !== undefined) return preserveWhitespace(source, translated);
@@ -74,7 +77,12 @@ function translateValue(source: string, translations: TranslationMap): string {
   for (const pattern of translations.patterns) {
     const match = normalized.match(pattern.expression);
     if (!match) continue;
-    const replacements = new Map(pattern.placeholders.map((placeholder, index) => [placeholder, match[index + 1]]));
+    const replacements = new Map(
+      pattern.placeholders.map((placeholder, index) => {
+        const value = match[index + 1];
+        return [placeholder, depth < maxPlaceholderDepth ? translateValue(value, translations, depth + 1) : value];
+      }),
+    );
     const result = pattern.target.replace(/\{([a-zA-Z][\w]*)\}/gu, (_token, key: string) => replacements.get(key) ?? "");
     return preserveWhitespace(source, result);
   }

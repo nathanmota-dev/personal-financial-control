@@ -45,8 +45,8 @@ it("disables out-of-range months and explicitly unavailable dates", async () => 
   );
   expect(screen.getByRole("button", { name: "Jan" })).toBeDisabled();
   expect(screen.getByRole("button", { name: "Jul" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "Dec" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "Aug" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Dez" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Ago" })).toBeEnabled();
   await user.click(screen.getAllByRole("button")[1]);
   expect(
     within(screen.getByRole("table"))
@@ -62,9 +62,9 @@ it("normalizes a reversed range and permits uncontrolled month selection", async
       maxDate={new Date(2026, 4, 1)}
     />,
   );
-  expect(screen.getByRole("button", { name: "Apr" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "May" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Abr" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Mai" })).toBeEnabled();
   rerender(<MonthPicker />);
-  await user.click(screen.getByRole("button", { name: "Aug" }));
-  expect(screen.getByRole("button", { name: "Aug" })).toHaveClass("bg-primary");
+  await user.click(screen.getByRole("button", { name: "Ago" }));
+  expect(screen.getByRole("button", { name: "Ago" })).toHaveClass("bg-primary");
 });

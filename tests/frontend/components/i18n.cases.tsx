@@ -116,6 +116,17 @@ describe("locale DOM bridge", () => {
       expect(dynamic).toHaveTextContent("3 account(s) and 2 card(s) available in Finance."),
     );
 
+    const nested = document.createElement("p");
+    nested.textContent = "2 recorrências geradas para novembro de 2026.";
+    container.append(nested);
+    await waitFor(() => expect(nested).toHaveTextContent("2 recurring items generated for November 2026."));
+
+    // Placeholder values are translated two levels deep; the third level is kept as is.
+    const deep = document.createElement("p");
+    deep.textContent = "Marcar Prazo novembro de hoje como paga";
+    container.append(deep);
+    await waitFor(() => expect(deep).toHaveTextContent("Mark Deadline November hoje as paid"));
+
     fireEvent.click(screen.getByRole("button", { name: "Change catalog" }));
     await waitFor(() => expect(screen.getByRole("heading", { name: "Visão mensal" })).toBeVisible());
     expect(screen.getByRole("button", { name: "Abrir preferências da conta" })).toBeInTheDocument();
