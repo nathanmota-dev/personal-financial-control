@@ -1,5 +1,7 @@
 import type { RegisterMcpCreditCardToolsContext } from "@/lib/interfaces/stages/register-mcp-credit-card-tools";
+import { matchesRecordFilters,recordFilterFields } from "@/lib/mcp/record-filters";
 import { chargeFields,createAnnotations,destructiveAnnotations,readAnnotations } from "@/lib/mcp/tool-support";
+import { getFinanceDatabase } from "@/lib/db";
 import { getAccountById } from "@/lib/server/accounts";
 import {
 createIdempotentCreditCardCharge,
@@ -9,18 +11,31 @@ listCreditCardCharges,
 updateCreditCardCharge,
 } from "@/lib/server/credit-card";
 import { DomainError } from "@/lib/server/errors";
+import { findPendingCategory } from "@/lib/server/pending-category";
 import { z } from "zod";
 
 export function registerMcpCreditCardTools({ server, handler, database }: RegisterMcpCreditCardToolsContext) {
 server.registerTool("list_credit_card_charges", {
-    description: "List card charges that have an installment in the requested invoice month.",
-    inputSchema: z.object({ accountId: z.string().uuid(), invoiceMonth: z.string() }),
+    description: "List card purchases and adjustments. With invoiceMonth, only charges with an installment in that invoice, showing just those installments. Also filters by card, purchase date range, description text or uncategorized (the pending placeholder).",
+    inputSchema: z.object({
+      accountId: z.string().uuid().optional(),
+      invoiceMonth: z.string().optional(),
+      ...recordFilterFields,
+    }),
     annotations: readAnnotations,
   }, handler(async (input) => {
-    const account = await getAccountById(input.accountId, database);
-    if (account.type !== "credit") throw new DomainError("ACCOUNT_TYPE_MISMATCH", "A credit account is required.");
+    if (input.accountId) {
+      const account = await getAccountById(input.accountId, database);
+      if (account.type !== "credit") throw new DomainError("ACCOUNT_TYPE_MISMATCH", "A credit account is required.");
+    }
+    // Card purchases always have a category, so "uncategorized" means the pending placeholder.
+    const pending = input.uncategorized ? await findPendingCategory(database ?? await getFinanceDatabase()) : null;
     const rows = await listCreditCardCharges(input, database);
-    return rows.filter((row) => row.installments.length > 0);
+    return rows.filter((row) =>
+      (!input.invoiceMonth || row.installments.length > 0) &&
+      (!input.uncategorized || row.categoryId === pending?.id) &&
+      matchesRecordFilters({ date: row.purchaseDate, description: row.description }, input)
+    );
   }));
 
 server.registerTool("get_credit_card_charge", {

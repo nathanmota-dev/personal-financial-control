@@ -17,8 +17,8 @@ Atualmente, o app oferece controle de:
 - saldo projetado;
 - investimentos e carteira patrimonial;
 - metas financeiras;
-- integração local com MCP para consultar referências e administrar lançamentos e
-  compras de cartão.
+- integração local com MCP para consultar referências, administrar lançamentos e
+  compras de cartão e categorizá-los.
 
 Os valores monetários persistidos no banco são criptografados. O app também possui um modo de demonstração em memória, que não altera o banco real.
 
@@ -252,21 +252,30 @@ As ferramentas disponíveis são:
 
 - `list_finance_references`: lista contas e categorias ativas, sem expor saldos;
 - `list_transactions` e `get_transaction`: consultam receitas e despesas de
-  contas que não são cartão de crédito;
+  contas que não são cartão de crédito, com filtros por competência, período,
+  texto da descrição e registros sem categoria;
 - `create_transaction`, `update_transaction` e `delete_transaction`: administram
   receitas e despesas, com criação idempotente e confirmação literal
   `confirm: true` para exclusões;
 - `list_credit_card_charges` e `get_credit_card_charge`: consultam compras e
-  ajustes que possuem parcela na fatura selecionada;
+  ajustes de cartão, com filtros por cartão, fatura, período, texto da descrição e
+  compras em "A classificar";
 - `create_credit_card_charge`, `update_credit_card_charge` e
   `delete_credit_card_charge`: administram compras, ajustes e parcelas, com
-  criação idempotente e confirmação literal para exclusões.
+  criação idempotente e confirmação literal para exclusões; trocar só a categoria
+  mantém as parcelas e funciona mesmo em fatura paga;
+- `list_pending_categories` e `apply_pending_category`: listam os registros
+  sincronizados pelo Open Finance que aguardam categoria, agrupados por descrição,
+  e categorizam um grupo inteiro de uma vez, salvando a regra para as próximas
+  sincronizações;
+- `create_category`: cria uma categoria quando nenhuma existente serve.
 
 Os comandos usam datas `YYYY-MM-DD`, competências e meses de fatura `YYYY-MM`,
 valores inteiros em centavos e UUIDs para contas e categorias. Criações exigem uma
 chave de idempotência estável; em importações, cada linha deve ser enviada em uma
 chamada separada. O MCP não processa PDFs e não expõe operações para contas,
-categorias, transferências, investimentos, recorrências, faturas ou pagamentos.
+transferências, investimentos, recorrências, faturas ou pagamentos; de categorias,
+permite apenas criar.
 
 A configuração, os contratos completos e o fluxo recomendado de importação estão
 em [`docs/mcp.md`](mcp.md).

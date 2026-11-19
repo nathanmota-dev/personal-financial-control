@@ -1,3 +1,4 @@
+import { registerMcpCategoryTools } from "@/lib/server/stages/register-mcp-category-tools";
 import { registerMcpCreditCardTools } from "@/lib/server/stages/register-mcp-credit-card-tools";
 import { registerMcpReadAndCreateTools } from "@/lib/server/stages/register-mcp-read-and-create-tools";
 import { registerMcpTransactionMutationTools } from "@/lib/server/stages/register-mcp-transaction-mutation-tools";
@@ -17,6 +18,8 @@ export function createPersonalFinanceMcpServer(database?: AppDb) {
   registerMcpTransactionMutationTools({ server, handler, requireCommonTransaction, database, requireNonCreditAccount });
 
   registerMcpCreditCardTools({ server, handler, database });
+
+  registerMcpCategoryTools({ server, handler, database });
 
   return server;
 }

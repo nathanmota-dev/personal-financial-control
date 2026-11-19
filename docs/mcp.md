@@ -92,7 +92,9 @@ Exemplo de retorno:
     {
       "id": "UUID",
       "name": "Salário",
-      "group": "income"
+      "group": "income",
+      "description": null,
+      "isPending": false
     }
   ]
 }
@@ -103,25 +105,41 @@ Tipos de conta possíveis: `checking`, `savings`, `cash`, `credit` e `investment
 Grupos de categoria possíveis: `income`, `fixed_expense`, `variable_expense` e
 `investment`.
 
+A categoria com `isPending: true` ("A classificar") marca registros que ainda não
+foram classificados. Ela não deve ser escolhida ao criar ou atualizar registros.
+
 ## Receitas e despesas
 
 ### `list_transactions`
 
-Lista receitas e despesas de contas não-cartão.
+Lista receitas e despesas de contas não-cartão. Todos os filtros são opcionais e
+podem ser combinados.
 
 | Campo | Obrigatório | Valores |
 | --- | --- | --- |
-| `competenceMonth` | sim | mês `YYYY-MM` |
+| `competenceMonth` | não | mês `YYYY-MM` |
 | `accountId` | não | UUID de uma conta não-cartão |
 | `categoryId` | não | UUID da categoria |
 | `type` | não | `income` ou `expense` |
 | `status` | não | `pending`, `posted` ou `cancelled` |
+| `fromDate` | não | data `YYYY-MM-DD`; lançamentos a partir dessa data |
+| `toDate` | não | data `YYYY-MM-DD`; lançamentos até essa data |
+| `search` | não | trecho da descrição, sem diferenciar maiúsculas nem acentos |
+| `uncategorized` | não | `true` para listar só os que não têm categoria ou estão em "A classificar"; tem prioridade sobre `categoryId` |
 
 ```json
 {
   "competenceMonth": "2026-09",
   "type": "expense",
   "status": "posted"
+}
+```
+
+```json
+{
+  "uncategorized": true,
+  "fromDate": "2026-09-01",
+  "toDate": "2026-09-30"
 }
 ```
 
@@ -201,7 +219,17 @@ Exclui uma receita ou despesa após confirmação explícita.
 
 ### `list_credit_card_charges`
 
-Lista somente compras ou ajustes que possuem uma parcela no mês de fatura informado.
+Lista compras e ajustes de cartão. Todos os filtros são opcionais e podem ser
+combinados.
+
+| Campo | Obrigatório | Valores |
+| --- | --- | --- |
+| `accountId` | não | UUID de uma conta `credit` |
+| `invoiceMonth` | não | mês `YYYY-MM`; retorna só compras com parcela nessa fatura, mostrando apenas essas parcelas |
+| `fromDate` | não | data `YYYY-MM-DD`; compras a partir dessa data |
+| `toDate` | não | data `YYYY-MM-DD`; compras até essa data |
+| `search` | não | trecho da descrição, sem diferenciar maiúsculas nem acentos |
+| `uncategorized` | não | `true` para listar só as compras em "A classificar" |
 
 ```json
 {
@@ -271,7 +299,18 @@ necessário.
 }
 ```
 
-Compras vinculadas a uma fatura paga não podem ser alteradas.
+Quando só a categoria muda, as parcelas são mantidas como estão (inclusive valores e
+meses informados pelo banco), e a alteração é aceita mesmo em compra de fatura paga.
+Qualquer outra alteração em compra vinculada a uma fatura paga é recusada. As parcelas
+só são recalculadas quando o total, o número de parcelas ou o mês da primeira fatura
+mudam.
+
+```json
+{
+  "id": "UUID_DA_COMPRA",
+  "categoryId": "UUID_DA_CATEGORIA"
+}
+```
 
 ### `delete_credit_card_charge`
 
@@ -285,6 +324,94 @@ Exclui uma compra ou ajuste e suas parcelas após confirmação explícita.
 ```
 
 Compras vinculadas a uma fatura paga não podem ser excluídas.
+
+## Categorização
+
+### `list_pending_categories`
+
+Lista os registros sincronizados pelo Open Finance que ainda estão sem categoria,
+agrupados pela descrição normalizada do banco e pela direção (`income` ou `expense`),
+dos maiores totais para os menores. Lançamentos criados manualmente ou pelo MCP não
+entram aqui; para eles, use `uncategorized: true` nas listagens.
+
+Argumentos: nenhum.
+
+```json
+[
+  {
+    "normalizedDescription": "IFOOD *RESTAURANTE",
+    "direction": "expense",
+    "occurrences": 4,
+    "totalCents": 18990,
+    "suggestion": { "categoryId": "UUID", "reason": "Delivery de comida" }
+  }
+]
+```
+
+`suggestion` só aparece quando a categorização por IA do app sugeriu uma categoria
+que ainda é válida.
+
+### `apply_pending_category`
+
+Aplica uma categoria a todos os registros pendentes de um grupo e salva a escolha
+como regra: as próximas sincronizações com a mesma descrição já chegam
+categorizadas.
+
+| Campo | Obrigatório | Valores |
+| --- | --- | --- |
+| `normalizedDescription` | sim | descrição do grupo; uma descrição bruta do banco também é aceita e normalizada |
+| `direction` | sim | `income` ou `expense` |
+| `categoryId` | sim | UUID de categoria ativa compatível com a direção |
+
+```json
+{
+  "normalizedDescription": "IFOOD *RESTAURANTE",
+  "direction": "expense",
+  "categoryId": "UUID_DA_CATEGORIA"
+}
+```
+
+Retorna quantos registros foram categorizados e quantos grupos continuam pendentes:
+
+```json
+{ "applied": 4, "remainingGroups": 12 }
+```
+
+Uma categoria arquivada, "A classificar" ou de grupo incompatível retorna
+`PLUGGY_CATEGORY_RULE_INVALID`.
+
+### `create_category`
+
+Cria uma categoria quando nenhuma das existentes serve.
+
+| Campo | Obrigatório | Valores |
+| --- | --- | --- |
+| `name` | sim | texto de 1 a 80 caracteres |
+| `group` | sim | `income`, `fixed_expense`, `variable_expense` ou `investment` |
+| `description` | não | texto de até 200 caracteres |
+
+```json
+{
+  "name": "Pets",
+  "group": "variable_expense",
+  "description": "Ração e veterinário"
+}
+```
+
+Repetir o mesmo nome e grupo retorna a categoria existente com `created: false`. Um
+nome já usado, mesmo com outras maiúsculas ou acentos, em outro grupo ou por uma
+categoria arquivada retorna `CATEGORY_NAME_TAKEN`. O nome "A classificar" é reservado
+e retorna `CATEGORY_RESERVED`.
+
+### Fluxo recomendado para categorizar
+
+1. Execute `list_finance_references` para conhecer as categorias.
+2. Execute `list_pending_categories` e use `apply_pending_category` em cada grupo,
+   aproveitando `suggestion` quando fizer sentido.
+3. Para o que sobrar, liste com `uncategorized: true` em `list_transactions` e
+   `list_credit_card_charges` e atualize o `categoryId` com `update_transaction` ou
+   `update_credit_card_charge`.
+4. Crie uma categoria com `create_category` só quando nenhuma existente servir.
 
 ## Fluxo recomendado para importar um documento
 
@@ -301,8 +428,10 @@ Compras vinculadas a uma fatura paga não podem ser excluídas.
 
 ## O que não está exposto
 
-O MCP não cria nem altera contas, categorias, transferências, investimentos,
-recorrências, faturas ou pagamentos. Também não faz upload, leitura ou classificação
+O MCP não cria nem altera contas, transferências, investimentos, recorrências,
+faturas ou pagamentos. Categorias podem ser criadas, mas não renomeadas, arquivadas
+ou excluídas, e as regras de categorização aprendidas não podem ser listadas nem
+removidas pelo MCP. Também não faz upload, leitura ou classificação
 de PDFs. Essas operações continuam fora do servidor MCP.
 
 ## Teste HTTP básico

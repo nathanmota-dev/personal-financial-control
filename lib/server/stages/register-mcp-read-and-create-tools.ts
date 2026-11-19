@@ -1,5 +1,7 @@
 import type { RegisterMcpReadAndCreateToolsContext } from "@/lib/interfaces/stages/register-mcp-read-and-create-tools";
+import { matchesRecordFilters,recordFilterFields } from "@/lib/mcp/record-filters";
 import { createAnnotations,readAnnotations,transactionFields } from "@/lib/mcp/tool-support";
+import { isPendingCategory } from "@/lib/pending-category";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 import {
@@ -22,18 +24,21 @@ server.registerTool("list_finance_references", {
       accounts: accounts.map(({ id, name, type, creditClosingDay, creditDueDay }) => ({
         id, name, type, creditClosingDay, creditDueDay,
       })),
-      categories: categories.map(({ id, name, group }) => ({ id, name, group })),
+      categories: categories.map(({ id, name, group, description }) => ({
+        id, name, group, description, isPending: isPendingCategory({ name, group }),
+      })),
     };
   }));
 
 server.registerTool("list_transactions", {
-    description: "List income and expense entries on non-credit accounts for a competence month.",
+    description: "List income and expense entries on non-credit accounts. Filter by competence month, transaction date range, description text or uncategorized (no category or the pending placeholder).",
     inputSchema: z.object({
-      competenceMonth: z.string(),
+      competenceMonth: z.string().optional(),
       accountId: z.string().uuid().optional(),
       categoryId: z.string().uuid().optional(),
       type: z.enum(["income", "expense"]).optional(),
       status: z.enum(["pending", "posted", "cancelled"]).optional(),
+      ...recordFilterFields,
     }),
     annotations: readAnnotations,
   }, handler(async (input) => {
@@ -42,7 +47,8 @@ server.registerTool("list_transactions", {
     return rows.filter((row) =>
       (row.type === "income" || row.type === "expense") &&
       row.account?.type !== "credit" &&
-      (!input.type || row.type === input.type)
+      (!input.type || row.type === input.type) &&
+      matchesRecordFilters({ date: row.transactionDate, description: row.description }, input)
     );
   }));
 
