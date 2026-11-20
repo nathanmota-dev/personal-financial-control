@@ -104,6 +104,13 @@ export function formatCurrency(cents: number) {
   return currencyFormatter.format(cents / 100);
 }
 
+const wholeNumberFormatter = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+
+/** Whole reais without the symbol, for cells too narrow for the full amount. */
+export function formatWholeAmount(cents: number) {
+  return wholeNumberFormatter.format(Math.round(cents / 100));
+}
+
 export function formatMonthLabel(month: string) {
   return monthFormatter.format(new Date(`${month}-01T00:00:00Z`));
 }

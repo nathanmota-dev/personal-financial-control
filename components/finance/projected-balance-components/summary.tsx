@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, CalendarClock, Check, ShieldCheck, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import { CalendarClock, Check, ShieldCheck, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 import type {
   ProjectionAlertsProps,
@@ -10,6 +10,8 @@ import type {
 import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { ToneChip } from "@/components/finance/ds/tone-chip";
+import { AlertListItem } from "@/components/finance/ds/alert-list-item";
+import { StatGrid } from "@/components/finance/ds/stat-grid";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { formatDateLabel } from "@/lib/finance-ui";
 import { cn } from "@/lib/utils";
@@ -44,15 +46,7 @@ export function ProjectionSummaryCards({ summary, selectedAccountName }: Project
         className={cn("mt-4 block text-[48px] leading-[52px] font-bold", summary.finalProjectedBalanceCents < 0 ? "text-destructive" : "text-content-strong")}
       />
       <p className="mt-2 pr-24 text-xs text-content">{`Até ${formatDateLabel(summary.endDate)} · ${scope}`}</p>
-      <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-5 sm:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="min-w-0">
-            <dt className="flex items-center gap-1.5 text-xs text-content"><stat.icon aria-hidden className="size-3.5 shrink-0" />{stat.label}</dt>
-            <dd className={cn("mt-1 text-[15px] font-semibold text-content-strong", stat.className)}>{stat.value}</dd>
-            <p className="mt-0.5 truncate text-[11px] text-content-subtle">{stat.hint}</p>
-          </div>
-        ))}
-      </dl>
+      <StatGrid stats={stats} />
     </section>
   );
 }
@@ -98,15 +92,12 @@ export function ProjectionAlerts({ alerts }: ProjectionAlertsProps) {
       {alerts.map((alert) => {
         const danger = alert.code === "PROJECTED_BALANCE_NEGATIVE" || alert.code === "CURRENT_BALANCE_NEGATIVE";
         return (
-          <li key={`${alert.code}-${alert.date ?? "period"}`} className="flex gap-3 py-3 text-[13px]">
-            <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", danger ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning")}>
-              <AlertTriangle aria-hidden className="size-4" />
-            </span>
-            <div className="min-w-0">
-              <p className="font-semibold text-content-strong">{formatAlertTitle(alert)}</p>
-              <p className="mt-0.5 text-xs text-content-muted">{protectText(formatAlertDetail(alert))}</p>
-            </div>
-          </li>
+          <AlertListItem
+            key={`${alert.code}-${alert.date ?? "period"}`}
+            danger={danger}
+            title={formatAlertTitle(alert)}
+            detail={protectText(formatAlertDetail(alert))}
+          />
         );
       })}
     </ul>
