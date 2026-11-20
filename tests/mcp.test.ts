@@ -75,7 +75,7 @@ describe("MCP HTTP security and protocol", () => {
 
     const listed = await handleMcpRequest(request(rpc("tools/list"), { token }));
     const listPayload = await listed.json();
-    expect(listPayload.result.tools).toHaveLength(17);
+    expect(listPayload.result.tools).toHaveLength(18);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "list_transactions").annotations.readOnlyHint).toBe(true);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "delete_transaction").annotations.destructiveHint).toBe(true);
     expect(listPayload.result.tools.find((tool: { name: string }) => tool.name === "create_transaction").inputSchema.required).toContain("idempotencyKey");

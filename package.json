@@ -41,6 +41,7 @@
     "@ai-sdk/deepseek": "^3.0.87",
     "@ai-sdk/google": "^4.0.121",
     "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/react": "^4.0.181",
     "@base-ui/react": "^1.4.1",
     "@libsql/client": "^0.17.3",
     "@modelcontextprotocol/sdk": "^1.30.0",

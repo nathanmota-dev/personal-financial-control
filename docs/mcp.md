@@ -511,6 +511,28 @@ registradas), `purchaseCount`, `dueDay`, `bill` com `status`, `dueDate`,
 `statementTotalCents` e `paidAt` quando há uma fatura registrada, e `categoryTotals`.
 As compras em si continuam em `list_credit_card_charges`.
 
+### `get_spending_capacity`
+
+Responde "ainda posso gastar este mês?" e "as contas estão cheias?". Junta, sem regra
+própria, o saldo projetado (a mesma conta da tela de saldo projetado), o orçamento do
+mês e as faturas de cartão em aberto.
+
+```json
+{
+  "competenceMonth": "2026-09",
+  "minimumReserveCents": 50000
+}
+```
+
+Os dois campos são opcionais (padrão: mês atual e reserva zero). O retorno traz:
+
+- `projection`: da data de hoje até a próxima receita, com `status` (`safe`,
+  `warning` ou `negative`), `balanceNowCents`, `minimumProjectedBalanceCents` e sua
+  data, `availablePerDayCents`, `nextIncomeDate`, `firstNegativeDate` e `alerts`;
+- `budget`: `limitTotalCents`, `committedCents` e `overBudget` (categorias que
+  atingiram o limite);
+- `invoices`: `totalOpenCents` e `items` com as faturas ainda não pagas.
+
 ## Fluxo recomendado para importar um documento
 
 1. A LLM lê o PDF e classifica cada linha localmente; o MCP não recebe nem processa

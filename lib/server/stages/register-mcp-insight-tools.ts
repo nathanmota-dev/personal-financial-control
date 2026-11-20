@@ -4,6 +4,7 @@ import type { RegisterMcpInsightToolsContext } from "@/lib/interfaces/stages/reg
 import { readAnnotations } from "@/lib/mcp/tool-support";
 import { getBudgetOverview } from "@/lib/server/budgets";
 import { getCreditCardInvoiceDigests } from "@/lib/server/credit-card/invoice-digest";
+import { getSpendingCapacity, spendingCapacityInputSchema } from "@/lib/server/spending-capacity";
 import { getSpendingSummary, spendingSummaryInputSchema } from "@/lib/server/spending-summary";
 import { z } from "zod";
 
@@ -36,4 +37,10 @@ export function registerMcpInsightTools({ server, handler, database }: RegisterM
     inputSchema: z.object({ invoiceMonth: month, accountId: z.string().uuid().optional() }),
     annotations: readAnnotations,
   }, handler(async ({ invoiceMonth, accountId }) => getCreditCardInvoiceDigests(invoiceMonth, accountId, await resolveDb())));
+
+  server.registerTool("get_spending_capacity", {
+    description: "Answer \"can I still spend this month?\" / \"are my accounts full?\": the projected balance from today until the next income (status, lowest balance and date, available per day), the month's budget limits against what is committed with the categories over their limit, and the open card invoices. Numbers come from the projected balance, budget and invoice pages.",
+    inputSchema: spendingCapacityInputSchema,
+    annotations: readAnnotations,
+  }, handler(async (input) => getSpendingCapacity(input, await resolveDb())));
 }

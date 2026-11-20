@@ -17,6 +17,8 @@ Atualmente, o app oferece controle de:
 - saldo projetado;
 - investimentos e carteira patrimonial;
 - metas financeiras;
+- chat lateral com IA (somente leitura), disponível após login e PIN quando há
+  uma API key configurada em Configurações → IA;
 - integração local com MCP para consultar referências, administrar lançamentos e
   compras de cartão, categorizá-los e consultar gastos, orçamento e faturas.
 
@@ -241,6 +243,15 @@ A importação cria a conta e as categorias ausentes quando necessário e evita 
 | `POST` | `/api/goals/:id/allocations` | Aloca ou libera recursos da meta. |
 | `POST` | `/api/goals/:id/contributions` | Registra uma contribuição vinculada a uma conta e categoria. |
 
+### Chat com IA
+
+`POST /api/ai/chat` transmite (streaming) a resposta do modelo configurado em
+Configurações → IA, que consulta os dados pelas mesmas ferramentas do MCP, mas
+somente as marcadas como leitura (`readOnlyHint`). `GET /api/ai/chat` informa se há
+IA configurada. Ambos exigem sessão desbloqueada e ficam indisponíveis no modo demo.
+A conversa existe só na memória do navegador; as perguntas e os dados consultados
+são enviados ao provedor escolhido.
+
 ### MCP local
 
 O endpoint `POST /api/mcp` disponibiliza um servidor MCP compatível com clientes
@@ -271,7 +282,9 @@ As ferramentas disponíveis são:
 - `create_category`: cria uma categoria quando nenhuma existente serve.
 - `get_spending_summary`, `get_budget_overview` e `get_credit_card_invoices`:
   consultas somente leitura de gastos por categoria e mês, orçamento do mês e
-  totais da fatura, contadas como na tela de relatórios.
+  totais da fatura, contadas como na tela de relatórios;
+- `get_spending_capacity`: saldo projetado até a próxima receita, orçamento do mês
+  e faturas em aberto, para responder se ainda dá para gastar no mês.
 
 Os comandos usam datas `YYYY-MM-DD`, competências e meses de fatura `YYYY-MM`,
 valores inteiros em centavos e UUIDs para contas e categorias. Criações exigem uma

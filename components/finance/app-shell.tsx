@@ -1,5 +1,8 @@
 "use client";
 
+import { ChatDock } from "@/components/finance/chat/chat-dock";
+import { ChatProvider } from "@/components/finance/chat/chat-provider";
+import { ChatTrigger } from "@/components/finance/chat/chat-trigger";
 import { UserControls } from "@/components/auth/user-controls";
 import { DatabaseSyncIndicator } from "@/components/finance/database-sync-indicator";
 import { FinanceCommandPalette } from "@/components/finance/finance-command-palette";
@@ -19,6 +22,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
   const openCommandPalette = () => setCommandPaletteOpen(true);
 
   return (
+    <ChatProvider demoMode={demoMode}>
     <div className="min-h-screen bg-app-shell text-content-strong app-shell-frame">
       <FinanceCommandPalette
         open={commandPaletteOpen}
@@ -52,6 +56,7 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
                 onOpen={openCommandPalette}
                 className="size-9 border border-border bg-card"
               />
+              <ChatTrigger compact className="border border-border bg-card" />
               <FinancialPrivacyToggle compact />
               <UserControls user={user} demoMode={demoMode} />
               <MobileNavigation user={user} demoMode={demoMode} />
@@ -80,7 +85,9 @@ export function AppShell({ children, demoMode, user }: AppShellProps) {
             {children}
           </main>
         </div>
+        <ChatDock />
       </div>
     </div>
+    </ChatProvider>
   );
 }
