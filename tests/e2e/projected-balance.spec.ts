@@ -14,6 +14,8 @@ test("projection periods, table, daily detail and isolated purchase simulations"
   const before = (await (await request.get("/api/transactions")).json())
     .transactions.length;
   const projectionDay = page.getByRole("button", { name: /^16\/07\/2026\./ });
+  // Values render hidden until the privacy preference hydrates; reading the label earlier makes the final comparison race.
+  await expect(projectionDay).not.toHaveAttribute("aria-label", /Valor oculto/);
   const originalDayLabel = await projectionDay.getAttribute("aria-label");
   await page
     .getByRole("button", { name: "Simular compra", exact: true })
