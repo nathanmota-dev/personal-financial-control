@@ -1,5 +1,6 @@
 "use client";
 
+import { ClickableTableRow } from "@/components/finance/clickable-table-row";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import {
 Table,
@@ -33,17 +34,9 @@ export function DailyProjectionTableDiv1({ daily, onSelectDay }: DailyProjection
               </TableHeader>
               <TableBody>
                 {daily.map((day) => (
-                  <TableRow
+                  <ClickableTableRow
                     key={day.date}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => onSelectDay(day)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        onSelectDay(day);
-                      }
-                    }}
-                    className="cursor-pointer border-border hover:bg-card"
+                    onActivate={() => onSelectDay(day)}
                   >
                     <TableCell className="font-medium text-content-strong">
                       {formatDateLabel(day.date)}
@@ -74,7 +67,7 @@ export function DailyProjectionTableDiv1({ daily, onSelectDay }: DailyProjection
                     <TableCell>
                       <StatusBadge status={day.status} />
                     </TableCell>
-                  </TableRow>
+                  </ClickableTableRow>
                 ))}
               </TableBody>
             </Table>

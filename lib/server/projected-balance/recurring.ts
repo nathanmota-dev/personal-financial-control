@@ -33,7 +33,8 @@ export async function listRecurringEvents(
   startDate: string,
   endDate: string,
   selectedAccounts: ProjectedBalanceAccountRow[],
-  includeInvestments: boolean
+  includeInvestments: boolean,
+  options: { includeMaterialized?: boolean } = {}
 ) {
   const ids = selectedAccounts.map((account) => account.id);
 
@@ -74,7 +75,7 @@ export async function listRecurringEvents(
         continue;
       }
 
-      if (existingOccurrences.has(`${row.id}:${month}`)) {
+      if (!options.includeMaterialized && existingOccurrences.has(`${row.id}:${month}`)) {
         continue;
       }
 

@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 export type Tone =
@@ -56,4 +57,22 @@ export type RingProgressProps = {
 export type DateGroupLabelProps = {
   date: string;
   total?: ReactNode;
+};
+
+export type StatGridItem = {
+  label: string;
+  value: ReactNode;
+  hint: ReactNode;
+  icon: LucideIcon;
+  className?: string;
+};
+
+export type StatGridProps = {
+  stats: StatGridItem[];
+};
+
+export type AlertListItemProps = {
+  danger: boolean;
+  title: ReactNode;
+  detail: ReactNode;
 };

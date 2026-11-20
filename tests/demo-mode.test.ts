@@ -12,6 +12,7 @@ import {
 } from "@/lib/server/investments";
 import { getInvestmentPortfolioDashboard } from "@/lib/server/investment-portfolio";
 import { getProjectedBalance, parseProjectedBalanceSearchParams } from "@/lib/server/projected-balance";
+import { getPredictability } from "@/lib/server/predictability";
 import { listRecurringTemplates } from "@/lib/server/recurring";
 import { createTransaction, listTransactions } from "@/lib/server/transactions";
 import { listAccounts } from "@/lib/server/accounts";
@@ -76,6 +77,15 @@ describe("demo mode", () => {
     expect(portfolioDashboard.holdings).toHaveLength(3);
     expect(portfolioDashboard.purposes).toHaveLength(2);
     expect(portfolioDashboard.holdings.find((holding) => holding.ticker === "BOVA11")?.allocationCount).toBe(1);
+  });
+
+  it("builds the predictability cycle from the demo salary", async () => {
+    const result = await getPredictability({ today: "2026-07-16" });
+    expect(result.cycle).toMatchObject({ start: "2026-07-05", end: "2026-08-04", anchorDay: 5 });
+    expect(result.summary.incomeCents).toBeGreaterThanOrEqual(1500000);
+    expect(result.summary.fixedCents).toBeGreaterThan(0);
+    expect(result.days).toHaveLength(31);
+    expect(result.days.find((day) => day.isToday)?.date).toBe("2026-07-16");
   });
 
   it("calculates a projected balance and keeps mutations in memory", async () => {

@@ -13,6 +13,8 @@ import * as goals from "@/lib/server/goals";
 import * as operations from "@/lib/server/investment-operations";
 import * as portfolio from "@/lib/server/investment-portfolio";
 import * as projection from "@/lib/server/projected-balance";
+import * as predictability from "@/lib/server/predictability";
+import { predictabilityFixture } from "./fixtures/predictability";
 import { requirePageSession } from "@/lib/auth/server";
 import { getOnboarding } from "@/lib/server/onboarding";
 import * as actions from "@/app/actions/finance";
@@ -58,6 +60,10 @@ vi.mock("@/lib/server/investment-portfolio", () => ({
 vi.mock("@/lib/server/projected-balance", async (original) => ({
   ...(await original<typeof import("@/lib/server/projected-balance")>()),
   getProjectedBalance: vi.fn(),
+}));
+vi.mock("@/lib/server/predictability", async (original) => ({
+  ...(await original<typeof import("@/lib/server/predictability")>()),
+  getPredictability: vi.fn(),
 }));
 vi.mock("@/app/actions/finance", () => ({
   createAccountAction: vi.fn(),
@@ -180,6 +186,9 @@ beforeEach(() => {
   vi.mocked(projection.getProjectedBalance)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.projectedBalance) as never);
+  vi.mocked(predictability.getPredictability)
+    .mockReset()
+    .mockResolvedValue(structuredClone(predictabilityFixture));
   vi.mocked(operations.getInvestmentAssetDetails)
     .mockReset()
     .mockResolvedValue(null);

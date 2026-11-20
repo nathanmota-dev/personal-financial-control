@@ -10,6 +10,7 @@ import { GoalsSkeleton } from "./goals-skeleton";
 import { HousingSkeleton } from "./housing-skeleton";
 import { InvestmentsSkeleton } from "./investments-skeleton";
 import { PortfolioSkeleton } from "./portfolio-skeleton";
+import { PredictabilitySkeleton } from "./predictability-skeleton";
 import { ProjectedBalanceSkeleton } from "./projected-balance-skeleton";
 import { RecurringSkeleton } from "./recurring-skeleton";
 import { ReportsSkeleton } from "./reports-skeleton";
@@ -25,6 +26,7 @@ export const FINANCE_ROUTE_SKELETONS: FinanceRouteSkeletonEntry[] = [
   { prefix: "/transactions", Skeleton: TransactionsSkeleton },
   { prefix: "/budgets", Skeleton: BudgetsSkeleton },
   { prefix: "/recurring", Skeleton: RecurringSkeleton },
+  { prefix: "/predictability", Skeleton: PredictabilitySkeleton },
   { prefix: "/projected-balance", Skeleton: ProjectedBalanceSkeleton },
   { prefix: "/investments", Skeleton: InvestmentsSkeleton },
   { prefix: "/investments/portfolio", Skeleton: PortfolioSkeleton },
