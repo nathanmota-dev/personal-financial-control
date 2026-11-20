@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 10759,
-          "total": 12101
+          "covered": 11013,
+          "total": 12350
         },
         "statements": {
-          "covered": 12311,
-          "total": 13936
+          "covered": 12627,
+          "total": 14256
         },
         "functions": {
-          "covered": 3926,
-          "total": 4569
+          "covered": 4025,
+          "total": 4670
         },
         "branches": {
-          "covered": 7812,
-          "total": 9693
+          "covered": 8061,
+          "total": 9960
         }
       },
-      "coverageFileCount": 1202,
+      "coverageFileCount": 1239,
       "duplication": {
-        "totalLines": 55071,
+        "totalLines": 55977,
         "duplicatedLines": 394,
         "fragments": 44
       },
@@ -92,6 +92,7 @@
         "app/actions/finance/investment-portfolio.ts": 184,
         "app/actions/finance.ts": 4,
         "app/api/accounts/route.ts": 35,
+        "app/api/ai/chat/route.ts": 32,
         "app/api/ai/settings/route.ts": 37,
         "app/api/credit-card/_responses.ts": 31,
         "app/api/credit-card/bills/[invoiceMonth]/payments/route.ts": 34,
@@ -155,7 +156,7 @@
         "components/auth/session-activity.tsx": 40,
         "components/auth/user-controls.tsx": 88,
         "components/finance/app-brand.tsx": 11,
-        "components/finance/app-shell.tsx": 86,
+        "components/finance/app-shell.tsx": 93,
         "components/finance/archive-account-button.tsx": 40,
         "components/finance/archive-category-button.tsx": 40,
         "components/finance/bank-reserve-control.tsx": 21,
@@ -199,6 +200,17 @@
         "components/finance/calculators/pj-regime-guide.tsx": 21,
         "components/finance/category-breakdown.tsx": 37,
         "components/finance/category-spending-charts.tsx": 8,
+        "components/finance/chat/chat-composer.tsx": 44,
+        "components/finance/chat/chat-context.ts": 13,
+        "components/finance/chat/chat-dock.tsx": 32,
+        "components/finance/chat/chat-empty-state.tsx": 21,
+        "components/finance/chat/chat-message-list.tsx": 18,
+        "components/finance/chat/chat-message.tsx": 25,
+        "components/finance/chat/chat-panel.tsx": 38,
+        "components/finance/chat/chat-provider.tsx": 54,
+        "components/finance/chat/chat-setup-notice.tsx": 14,
+        "components/finance/chat/chat-tool-status.tsx": 14,
+        "components/finance/chat/chat-trigger.tsx": 26,
         "components/finance/credit-budget-summary.tsx": 65,
         "components/finance/credit-card-brand-logo.tsx": 56,
         "components/finance/credit-card-charge-actions.tsx": 67,
@@ -269,7 +281,7 @@
         "components/finance/finance-command-trigger.tsx": 59,
         "components/finance/finance-field.tsx": 20,
         "components/finance/finance-metric.tsx": 34,
-        "components/finance/finance-sidebar.tsx": 78,
+        "components/finance/finance-sidebar.tsx": 82,
         "components/finance/finance-styles.ts": 19,
         "components/finance/form-select.tsx": 30,
         "components/finance/goals/components/allocation-breakdown-card.tsx": 89,
@@ -647,6 +659,7 @@
         "hooks/use-ai-settings.ts": 46,
         "hooks/use-daily-expense-map.ts": 44,
         "hooks/use-database-synchronization.ts": 60,
+        "hooks/use-desktop-layout.ts": 14,
         "hooks/use-mobile.ts": 24,
         "hooks/use-monthly-summary.ts": 43,
         "hooks/use-onboarding-account-submit.ts": 34,
@@ -680,6 +693,9 @@
         "lib/category-defaults.ts": 81,
         "lib/category-markers.ts": 55,
         "lib/category-spending.ts": 34,
+        "lib/chat/capture-mcp-tools.ts": 26,
+        "lib/chat/tool-labels.ts": 22,
+        "lib/chat/tools.ts": 21,
         "lib/compound-interest.ts": 62,
         "lib/credit-card-brands.ts": 98,
         "lib/credit-card-limit.ts": 44,
@@ -761,6 +777,7 @@
         "lib/income-simulation.ts": 29,
         "lib/income-tax.ts": 31,
         "lib/interfaces/ai-categorization.ts": 65,
+        "lib/interfaces/ai-chat.ts": 1,
         "lib/interfaces/ai-settings.ts": 19,
         "lib/interfaces/app-shell.ts": 20,
         "lib/interfaces/auth.ts": 36,
@@ -769,6 +786,7 @@
         "lib/interfaces/budgets.ts": 29,
         "lib/interfaces/calendar.ts": 12,
         "lib/interfaces/category-catalog.ts": 12,
+        "lib/interfaces/chat-tools.ts": 10,
         "lib/interfaces/component-actions/credit-card-month-strip-show-next-page.ts": 7,
         "lib/interfaces/component-actions/credit-card-month-strip-show-previous-page.ts": 6,
         "lib/interfaces/component-actions/filters-apply-reserve.ts": 7,
@@ -817,6 +835,7 @@
         "lib/interfaces/component-actions/transaction-dialog-show-error.ts": 4,
         "lib/interfaces/components/ai-settings.ts": 26,
         "lib/interfaces/components/bank-reserve.ts": 17,
+        "lib/interfaces/components/chat.ts": 33,
         "lib/interfaces/components/credit-card-transactions-panel.ts": 2,
         "lib/interfaces/components/investment-reduction-dialog.ts": 8,
         "lib/interfaces/components/open-finance.ts": 51,
@@ -859,6 +878,7 @@
         "lib/interfaces/local-auth.ts": 58,
         "lib/interfaces/login-preview.ts": 3,
         "lib/interfaces/market-data.ts": 28,
+        "lib/interfaces/mcp-tool-registrar.ts": 4,
         "lib/interfaces/monthly-retrospective.ts": 21,
         "lib/interfaces/monthpicker.ts": 27,
         "lib/interfaces/onboarding.ts": 98,
@@ -938,6 +958,8 @@
         "lib/interfaces/reserve-withdrawal.ts": 21,
         "lib/interfaces/settings.ts": 57,
         "lib/interfaces/sidebar-navigation.ts": 32,
+        "lib/interfaces/spending-capacity.ts": 26,
+        "lib/interfaces/spending-summary.ts": 50,
         "lib/interfaces/stages/build-available-reduction-sources.ts": 7,
         "lib/interfaces/stages/build-credit-card-timeline.ts": 7,
         "lib/interfaces/stages/build-goals-dashboard-summary.ts": 8,
@@ -950,7 +972,9 @@
         "lib/interfaces/stages/import-financial-rows.ts": 7,
         "lib/interfaces/stages/load-credit-card-bill-context.ts": 6,
         "lib/interfaces/stages/persist-investment-reduction-plan.ts": 11,
+        "lib/interfaces/stages/register-mcp-category-tools.ts": 9,
         "lib/interfaces/stages/register-mcp-credit-card-tools.ts": 8,
+        "lib/interfaces/stages/register-mcp-insight-tools.ts": 9,
         "lib/interfaces/stages/register-mcp-read-and-create-tools.ts": 11,
         "lib/interfaces/stages/register-mcp-transaction-mutation-tools.ts": 11,
         "lib/interfaces/stages/restore-historical-reduction-sources.ts": 13,
@@ -963,8 +987,11 @@
         "lib/investment-asset-illustrations.ts": 6,
         "lib/investment-class-distribution.ts": 11,
         "lib/investment-projection.ts": 257,
+        "lib/mcp/category-creation.ts": 29,
         "lib/mcp/http.ts": 48,
-        "lib/mcp/server.ts": 24,
+        "lib/mcp/record-filters.ts": 20,
+        "lib/mcp/register-tools.ts": 17,
+        "lib/mcp/server.ts": 18,
         "lib/mcp/tool-support.ts": 103,
         "lib/money-input.ts": 17,
         "lib/monthly-retrospective.ts": 40,
@@ -994,6 +1021,9 @@
         "lib/server/ai/categorize-pending.ts": 44,
         "lib/server/ai/category-prompt.ts": 95,
         "lib/server/ai/category-suggester.ts": 82,
+        "lib/server/ai/chat-inputs.ts": 11,
+        "lib/server/ai/chat-prompt.ts": 29,
+        "lib/server/ai/chat.ts": 44,
         "lib/server/ai/config.ts": 24,
         "lib/server/ai/env-config.ts": 32,
         "lib/server/ai/inputs.ts": 12,
@@ -1004,11 +1034,13 @@
         "lib/server/budgets.ts": 79,
         "lib/server/categories.ts": 137,
         "lib/server/credit-card/expenses.ts": 85,
+        "lib/server/credit-card/invoice-digest.ts": 32,
         "lib/server/credit-card/limits.ts": 37,
-        "lib/server/credit-card/mutations.ts": 208,
+        "lib/server/credit-card/mutations.ts": 217,
         "lib/server/credit-card/overview.ts": 117,
         "lib/server/credit-card/queries.ts": 104,
         "lib/server/credit-card/showcase.ts": 31,
+        "lib/server/credit-card/update-scope.ts": 30,
         "lib/server/credit-card/validation.ts": 149,
         "lib/server/credit-card-bills.ts": 315,
         "lib/server/credit-card.ts": 7,
@@ -1137,6 +1169,8 @@
         "lib/server/reports.ts": 51,
         "lib/server/route-response.ts": 21,
         "lib/server/runtime.ts": 12,
+        "lib/server/spending-capacity.ts": 59,
+        "lib/server/spending-summary.ts": 122,
         "lib/server/stages/build-available-reduction-sources.ts": 75,
         "lib/server/stages/build-credit-card-timeline.ts": 48,
         "lib/server/stages/build-goals-dashboard-summary.ts": 76,
@@ -1149,8 +1183,10 @@
         "lib/server/stages/import-financial-rows.ts": 96,
         "lib/server/stages/load-credit-card-bill-context.ts": 22,
         "lib/server/stages/persist-investment-reduction-plan.ts": 48,
-        "lib/server/stages/register-mcp-credit-card-tools.ts": 71,
-        "lib/server/stages/register-mcp-read-and-create-tools.ts": 65,
+        "lib/server/stages/register-mcp-category-tools.ts": 39,
+        "lib/server/stages/register-mcp-credit-card-tools.ts": 86,
+        "lib/server/stages/register-mcp-insight-tools.ts": 46,
+        "lib/server/stages/register-mcp-read-and-create-tools.ts": 71,
         "lib/server/stages/register-mcp-transaction-mutation-tools.ts": 45,
         "lib/server/stages/restore-historical-reduction-sources.ts": 43,
         "lib/server/stages/validate-credit-card-payment-accounts.ts": 42,
@@ -1166,6 +1202,7 @@
         "lib/server/transfers.ts": 85,
         "lib/settings-cards.ts": 31,
         "lib/simples-national.ts": 15,
+        "lib/text-search.ts": 8,
         "lib/theme-script.ts": 16,
         "lib/transaction-navigation.ts": 24,
         "lib/transaction-reduction.ts": 55,
@@ -2113,6 +2150,34 @@
           "startLine": 14,
           "endLine": 28,
           "lines": 15
+        },
+        {
+          "file": "app/api/ai/chat/route.ts",
+          "name": "handleGET",
+          "startLine": 11,
+          "endLine": 15,
+          "lines": 5
+        },
+        {
+          "file": "app/api/ai/chat/route.ts",
+          "name": "anonymous",
+          "startLine": 14,
+          "endLine": 14,
+          "lines": 1
+        },
+        {
+          "file": "app/api/ai/chat/route.ts",
+          "name": "handlePOST",
+          "startLine": 17,
+          "endLine": 24,
+          "lines": 8
+        },
+        {
+          "file": "app/api/ai/chat/route.ts",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 23,
+          "lines": 4
         },
         {
           "file": "app/api/ai/settings/route.ts",
@@ -3412,29 +3477,29 @@
         {
           "file": "components/finance/app-shell.tsx",
           "name": "AppShell",
-          "startLine": 16,
-          "endLine": 86,
-          "lines": 71
+          "startLine": 19,
+          "endLine": 93,
+          "lines": 75
         },
         {
           "file": "components/finance/app-shell.tsx",
           "name": "openCommandPalette",
-          "startLine": 19,
-          "endLine": 19,
+          "startLine": 22,
+          "endLine": 22,
           "lines": 1
         },
         {
           "file": "components/finance/app-shell.tsx",
           "name": "anonymous",
-          "startLine": 34,
-          "endLine": 34,
+          "startLine": 38,
+          "endLine": 38,
           "lines": 1
         },
         {
           "file": "components/finance/app-shell.tsx",
           "name": "anonymous",
-          "startLine": 34,
-          "endLine": 34,
+          "startLine": 38,
+          "endLine": 38,
           "lines": 1
         },
         {
@@ -4423,6 +4488,216 @@
           "startLine": 6,
           "endLine": 8,
           "lines": 3
+        },
+        {
+          "file": "components/finance/chat/chat-composer.tsx",
+          "name": "ChatComposer",
+          "startLine": 10,
+          "endLine": 44,
+          "lines": 35
+        },
+        {
+          "file": "components/finance/chat/chat-composer.tsx",
+          "name": "submit",
+          "startLine": 13,
+          "endLine": 18,
+          "lines": 6
+        },
+        {
+          "file": "components/finance/chat/chat-composer.tsx",
+          "name": "onKeyDown",
+          "startLine": 20,
+          "endLine": 22,
+          "lines": 3
+        },
+        {
+          "file": "components/finance/chat/chat-composer.tsx",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 28,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-context.ts",
+          "name": "useChatPanel",
+          "startLine": 9,
+          "endLine": 13,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/chat/chat-dock.tsx",
+          "name": "ChatDock",
+          "startLine": 11,
+          "endLine": 32,
+          "lines": 22
+        },
+        {
+          "file": "components/finance/chat/chat-dock.tsx",
+          "name": "anonymous",
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-dock.tsx",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 28,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-empty-state.tsx",
+          "name": "ChatEmptyState",
+          "startLine": 5,
+          "endLine": 21,
+          "lines": 17
+        },
+        {
+          "file": "components/finance/chat/chat-empty-state.tsx",
+          "name": "anonymous",
+          "startLine": 13,
+          "endLine": 17,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/chat/chat-empty-state.tsx",
+          "name": "anonymous",
+          "startLine": 14,
+          "endLine": 14,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-message-list.tsx",
+          "name": "ChatMessageList",
+          "startLine": 8,
+          "endLine": 18,
+          "lines": 11
+        },
+        {
+          "file": "components/finance/chat/chat-message-list.tsx",
+          "name": "anonymous",
+          "startLine": 10,
+          "endLine": 10,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-message-list.tsx",
+          "name": "anonymous",
+          "startLine": 13,
+          "endLine": 13,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-message.tsx",
+          "name": "ChatMessage",
+          "startLine": 5,
+          "endLine": 25,
+          "lines": 21
+        },
+        {
+          "file": "components/finance/chat/chat-message.tsx",
+          "name": "anonymous",
+          "startLine": 9,
+          "endLine": 22,
+          "lines": 14
+        },
+        {
+          "file": "components/finance/chat/chat-panel.tsx",
+          "name": "ChatPanel",
+          "startLine": 14,
+          "endLine": 38,
+          "lines": 25
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "loadAvailability",
+          "startLine": 13,
+          "endLine": 21,
+          "lines": 9
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "ChatProvider",
+          "startLine": 27,
+          "endLine": 54,
+          "lines": 28
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 32,
+          "endLine": 37,
+          "lines": 6
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 35,
+          "endLine": 35,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 36,
+          "endLine": 36,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 39,
+          "endLine": 42,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 43,
+          "endLine": 43,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 44,
+          "endLine": 44,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 44,
+          "endLine": 44,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-provider.tsx",
+          "name": "anonymous",
+          "startLine": 46,
+          "endLine": 50,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/chat/chat-setup-notice.tsx",
+          "name": "ChatSetupNotice",
+          "startLine": 5,
+          "endLine": 14,
+          "lines": 10
+        },
+        {
+          "file": "components/finance/chat/chat-tool-status.tsx",
+          "name": "ChatToolStatus",
+          "startLine": 6,
+          "endLine": 14,
+          "lines": 9
+        },
+        {
+          "file": "components/finance/chat/chat-trigger.tsx",
+          "name": "ChatTrigger",
+          "startLine": 11,
+          "endLine": 26,
+          "lines": 16
         },
         {
           "file": "components/finance/credit-budget-summary.tsx",
@@ -5841,9 +6116,9 @@
         {
           "file": "components/finance/finance-sidebar.tsx",
           "name": "FinanceSidebar",
-          "startLine": 10,
-          "endLine": 78,
-          "lines": 69
+          "startLine": 11,
+          "endLine": 82,
+          "lines": 72
         },
         {
           "file": "components/finance/form-select.tsx",
@@ -16479,6 +16754,41 @@
           "lines": 7
         },
         {
+          "file": "hooks/use-desktop-layout.ts",
+          "name": "subscribe",
+          "startLine": 5,
+          "endLine": 9,
+          "lines": 5
+        },
+        {
+          "file": "hooks/use-desktop-layout.ts",
+          "name": "anonymous",
+          "startLine": 8,
+          "endLine": 8,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-desktop-layout.ts",
+          "name": "useDesktopLayout",
+          "startLine": 12,
+          "endLine": 14,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-desktop-layout.ts",
+          "name": "anonymous",
+          "startLine": 13,
+          "endLine": 13,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-desktop-layout.ts",
+          "name": "anonymous",
+          "startLine": 13,
+          "endLine": 13,
+          "lines": 1
+        },
+        {
           "file": "hooks/use-mobile.ts",
           "name": "useIsMobile",
           "startLine": 5,
@@ -17674,6 +17984,41 @@
           "startLine": 25,
           "endLine": 33,
           "lines": 9
+        },
+        {
+          "file": "lib/chat/capture-mcp-tools.ts",
+          "name": "captureMcpTools",
+          "startLine": 10,
+          "endLine": 26,
+          "lines": 17
+        },
+        {
+          "file": "lib/chat/capture-mcp-tools.ts",
+          "name": "registerTool",
+          "startLine": 13,
+          "endLine": 21,
+          "lines": 9
+        },
+        {
+          "file": "lib/chat/tool-labels.ts",
+          "name": "chatToolLabel",
+          "startLine": 14,
+          "endLine": 16,
+          "lines": 3
+        },
+        {
+          "file": "lib/chat/tools.ts",
+          "name": "buildChatTools",
+          "startLine": 10,
+          "endLine": 21,
+          "lines": 12
+        },
+        {
+          "file": "lib/chat/tools.ts",
+          "name": "execute",
+          "startLine": 17,
+          "endLine": 17,
+          "lines": 1
         },
         {
           "file": "lib/compound-interest.ts",
@@ -21323,6 +21668,27 @@
           "lines": 6
         },
         {
+          "file": "lib/mcp/category-creation.ts",
+          "name": "sameName",
+          "startLine": 15,
+          "endLine": 15,
+          "lines": 1
+        },
+        {
+          "file": "lib/mcp/category-creation.ts",
+          "name": "createMcpCategory",
+          "startLine": 21,
+          "endLine": 29,
+          "lines": 9
+        },
+        {
+          "file": "lib/mcp/category-creation.ts",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
           "file": "lib/mcp/http.ts",
           "name": "jsonRpcError",
           "startLine": 10,
@@ -21344,11 +21710,25 @@
           "lines": 26
         },
         {
+          "file": "lib/mcp/record-filters.ts",
+          "name": "matchesRecordFilters",
+          "startLine": 16,
+          "endLine": 20,
+          "lines": 5
+        },
+        {
+          "file": "lib/mcp/register-tools.ts",
+          "name": "registerAllMcpTools",
+          "startLine": 11,
+          "endLine": 17,
+          "lines": 7
+        },
+        {
           "file": "lib/mcp/server.ts",
           "name": "createPersonalFinanceMcpServer",
-          "startLine": 9,
-          "endLine": 22,
-          "lines": 14
+          "startLine": 7,
+          "endLine": 16,
+          "lines": 10
         },
         {
           "file": "lib/mcp/tool-support.ts",
@@ -22681,6 +23061,34 @@
           "lines": 7
         },
         {
+          "file": "lib/server/ai/chat-prompt.ts",
+          "name": "buildChatSystemPrompt",
+          "startLine": 7,
+          "endLine": 29,
+          "lines": 23
+        },
+        {
+          "file": "lib/server/ai/chat.ts",
+          "name": "readMessages",
+          "startLine": 20,
+          "endLine": 24,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/ai/chat.ts",
+          "name": "streamChatResponse",
+          "startLine": 27,
+          "endLine": 44,
+          "lines": 18
+        },
+        {
+          "file": "lib/server/ai/chat.ts",
+          "name": "onError",
+          "startLine": 43,
+          "endLine": 43,
+          "lines": 1
+        },
+        {
           "file": "lib/server/ai/config.ts",
           "name": "getAiConfig",
           "startLine": 14,
@@ -23010,6 +23418,48 @@
           "lines": 7
         },
         {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "digest",
+          "startLine": 9,
+          "endLine": 23,
+          "lines": 15
+        },
+        {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "getCreditCardInvoiceDigests",
+          "startLine": 26,
+          "endLine": 32,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "anonymous",
+          "startLine": 27,
+          "endLine": 27,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 28,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "anonymous",
+          "startLine": 30,
+          "endLine": 30,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/invoice-digest.ts",
+          "name": "anonymous",
+          "startLine": 31,
+          "endLine": 31,
+          "lines": 1
+        },
+        {
           "file": "lib/server/credit-card/limits.ts",
           "name": "saveCreditCardLimit",
           "startLine": 12,
@@ -23054,78 +23504,92 @@
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "createCreditCardCharge",
-          "startLine": 19,
-          "endLine": 100,
+          "startLine": 21,
+          "endLine": 102,
           "lines": 82
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "anonymous",
-          "startLine": 60,
-          "endLine": 60,
+          "startLine": 62,
+          "endLine": 62,
           "lines": 1
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "anonymous",
-          "startLine": 64,
-          "endLine": 64,
+          "startLine": 66,
+          "endLine": 66,
           "lines": 1
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "anonymous",
-          "startLine": 69,
-          "endLine": 99,
+          "startLine": 71,
+          "endLine": 101,
           "lines": 31
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "anonymous",
-          "startLine": 83,
-          "endLine": 89,
+          "startLine": 85,
+          "endLine": 91,
           "lines": 7
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
-          "name": "createIdempotentCreditCardCharge",
-          "startLine": 102,
-          "endLine": 113,
-          "lines": 12
-        },
-        {
-          "file": "lib/server/credit-card/mutations.ts",
-          "name": "updateCreditCardCharge",
-          "startLine": 115,
-          "endLine": 194,
-          "lines": 80
-        },
-        {
-          "file": "lib/server/credit-card/mutations.ts",
-          "name": "anonymous",
-          "startLine": 161,
-          "endLine": 193,
-          "lines": 33
-        },
-        {
-          "file": "lib/server/credit-card/mutations.ts",
-          "name": "anonymous",
-          "startLine": 180,
-          "endLine": 186,
-          "lines": 7
-        },
-        {
-          "file": "lib/server/credit-card/mutations.ts",
-          "name": "deleteCreditCardCharge",
-          "startLine": 196,
-          "endLine": 208,
+          "name": "replaceInstallments",
+          "startLine": 104,
+          "endLine": 116,
           "lines": 13
         },
         {
           "file": "lib/server/credit-card/mutations.ts",
           "name": "anonymous",
-          "startLine": 200,
-          "endLine": 207,
+          "startLine": 108,
+          "endLine": 114,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "createIdempotentCreditCardCharge",
+          "startLine": 118,
+          "endLine": 129,
+          "lines": 12
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "updateCreditCardCharge",
+          "startLine": 131,
+          "endLine": 203,
+          "lines": 73
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "anonymous",
+          "startLine": 179,
+          "endLine": 202,
+          "lines": 24
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "orderBy",
+          "startLine": 195,
+          "endLine": 195,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "deleteCreditCardCharge",
+          "startLine": 205,
+          "endLine": 217,
+          "lines": 13
+        },
+        {
+          "file": "lib/server/credit-card/mutations.ts",
+          "name": "anonymous",
+          "startLine": 209,
+          "endLine": 216,
           "lines": 8
         },
         {
@@ -23267,6 +23731,27 @@
           "startLine": 24,
           "endLine": 24,
           "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/update-scope.ts",
+          "name": "sameNotes",
+          "startLine": 9,
+          "endLine": 9,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/credit-card/update-scope.ts",
+          "name": "keepsInstallmentSchedule",
+          "startLine": 15,
+          "endLine": 19,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/credit-card/update-scope.ts",
+          "name": "changesOnlyCategory",
+          "startLine": 22,
+          "endLine": 30,
+          "lines": 9
         },
         {
           "file": "lib/server/credit-card/validation.ts",
@@ -31214,6 +31699,167 @@
           "lines": 3
         },
         {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "getSpendingCapacity",
+          "startLine": 22,
+          "endLine": 59,
+          "lines": 38
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 36,
+          "endLine": 36,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 37,
+          "endLine": 37,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 37,
+          "endLine": 40,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 49,
+          "endLine": 49,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 52,
+          "endLine": 52,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 54,
+          "endLine": 54,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 55,
+          "endLine": 55,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-capacity.ts",
+          "name": "anonymous",
+          "startLine": 57,
+          "endLine": 57,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "monthRange",
+          "startLine": 34,
+          "endLine": 40,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "isUncategorized",
+          "startLine": 43,
+          "endLine": 46,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "describe",
+          "startLine": 48,
+          "endLine": 54,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "spendingEntries",
+          "startLine": 56,
+          "endLine": 68,
+          "lines": 13
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 57,
+          "endLine": 61,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 62,
+          "endLine": 66,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "matches",
+          "startLine": 70,
+          "endLine": 76,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "addToTotals",
+          "startLine": 78,
+          "endLine": 88,
+          "lines": 11
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "summarize",
+          "startLine": 90,
+          "endLine": 107,
+          "lines": 18
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 93,
+          "endLine": 93,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 105,
+          "endLine": 105,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "getSpendingSummary",
+          "startLine": 113,
+          "endLine": 122,
+          "lines": 10
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 117,
+          "endLine": 117,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/spending-summary.ts",
+          "name": "anonymous",
+          "startLine": 120,
+          "endLine": 120,
+          "lines": 1
+        },
+        {
           "file": "lib/server/stages/build-available-reduction-sources.ts",
           "name": "buildAvailableReductionSources",
           "startLine": 8,
@@ -31711,122 +32357,206 @@
           "lines": 5
         },
         {
-          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
-          "name": "registerMcpCreditCardTools",
-          "startLine": 14,
-          "endLine": 71,
-          "lines": 58
+          "file": "lib/server/stages/register-mcp-category-tools.ts",
+          "name": "registerMcpCategoryTools",
+          "startLine": 10,
+          "endLine": 39,
+          "lines": 30
         },
         {
-          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "file": "lib/server/stages/register-mcp-category-tools.ts",
+          "name": "resolveDb",
+          "startLine": 11,
+          "endLine": 11,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-category-tools.ts",
           "name": "anonymous",
-          "startLine": 19,
-          "endLine": 24,
+          "startLine": 17,
+          "endLine": 17,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-category-tools.ts",
+          "name": "anonymous",
+          "startLine": 27,
+          "endLine": 32,
           "lines": 6
         },
         {
-          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "file": "lib/server/stages/register-mcp-category-tools.ts",
           "name": "anonymous",
-          "startLine": 23,
-          "endLine": 23,
+          "startLine": 38,
+          "endLine": 38,
           "lines": 1
         },
         {
           "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
-          "name": "anonymous",
-          "startLine": 30,
-          "endLine": 30,
-          "lines": 1
+          "name": "registerMcpCreditCardTools",
+          "startLine": 17,
+          "endLine": 86,
+          "lines": 70
         },
         {
           "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
           "name": "anonymous",
-          "startLine": 36,
+          "startLine": 26,
           "endLine": 39,
+          "lines": 14
+        },
+        {
+          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "name": "anonymous",
+          "startLine": 34,
+          "endLine": 37,
           "lines": 4
         },
         {
           "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
           "name": "anonymous",
-          "startLine": 52,
-          "endLine": 52,
+          "startLine": 45,
+          "endLine": 45,
           "lines": 1
         },
         {
           "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
           "name": "anonymous",
-          "startLine": 52,
-          "endLine": 52,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
-          "name": "anonymous",
-          "startLine": 60,
-          "endLine": 60,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
-          "name": "anonymous",
-          "startLine": 66,
-          "endLine": 69,
+          "startLine": 51,
+          "endLine": 54,
           "lines": 4
+        },
+        {
+          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "name": "anonymous",
+          "startLine": 67,
+          "endLine": 67,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "name": "anonymous",
+          "startLine": 67,
+          "endLine": 67,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "name": "anonymous",
+          "startLine": 75,
+          "endLine": 75,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-credit-card-tools.ts",
+          "name": "anonymous",
+          "startLine": 81,
+          "endLine": 84,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "registerMcpInsightTools",
+          "startLine": 13,
+          "endLine": 46,
+          "lines": 34
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "resolveDb",
+          "startLine": 14,
+          "endLine": 14,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 20,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "anonymous",
+          "startLine": 26,
+          "endLine": 33,
+          "lines": 8
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "anonymous",
+          "startLine": 31,
+          "endLine": 31,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "anonymous",
+          "startLine": 39,
+          "endLine": 39,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-insight-tools.ts",
+          "name": "anonymous",
+          "startLine": 45,
+          "endLine": 45,
+          "lines": 1
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "registerMcpReadAndCreateTools",
-          "startLine": 11,
-          "endLine": 65,
-          "lines": 55
+          "startLine": 13,
+          "endLine": 71,
+          "lines": 59
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "anonymous",
-          "startLine": 16,
-          "endLine": 27,
-          "lines": 12
+          "startLine": 18,
+          "endLine": 31,
+          "lines": 14
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "anonymous",
-          "startLine": 22,
-          "endLine": 24,
+          "startLine": 24,
+          "endLine": 26,
           "lines": 3
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "anonymous",
-          "startLine": 25,
-          "endLine": 25,
-          "lines": 1
+          "startLine": 27,
+          "endLine": 29,
+          "lines": 3
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "anonymous",
-          "startLine": 39,
-          "endLine": 47,
-          "lines": 9
-        },
-        {
-          "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 45,
-          "lines": 4
-        },
-        {
-          "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
-          "name": "anonymous",
-          "startLine": 53,
+          "startLine": 44,
           "endLine": 53,
-          "lines": 1
+          "lines": 10
+        },
+        {
+          "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
+          "name": "anonymous",
+          "startLine": 47,
+          "endLine": 51,
+          "lines": 5
         },
         {
           "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
           "name": "anonymous",
           "startLine": 59,
-          "endLine": 63,
+          "endLine": 59,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/stages/register-mcp-read-and-create-tools.ts",
+          "name": "anonymous",
+          "startLine": 65,
+          "endLine": 69,
           "lines": 5
         },
         {
@@ -32332,6 +33062,20 @@
           "startLine": 11,
           "endLine": 11,
           "lines": 1
+        },
+        {
+          "file": "lib/text-search.ts",
+          "name": "fold",
+          "startLine": 2,
+          "endLine": 4,
+          "lines": 3
+        },
+        {
+          "file": "lib/text-search.ts",
+          "name": "matchesTextSearch",
+          "startLine": 6,
+          "endLine": 8,
+          "lines": 3
         },
         {
           "file": "lib/transaction-navigation.ts",
@@ -33255,33 +33999,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 10759,
-      "total": 12101
+      "covered": 11013,
+      "total": 12350
     },
     "statements": {
-      "covered": 12311,
-      "total": 13936
+      "covered": 12627,
+      "total": 14256
     },
     "functions": {
-      "covered": 3926,
-      "total": 4569
+      "covered": 4025,
+      "total": 4670
     },
     "branches": {
-      "covered": 7812,
-      "total": 9693
+      "covered": 8061,
+      "total": 9960
     }
   },
   "duplication": {
-    "totalLines": 55071,
+    "totalLines": 55977,
     "duplicatedLines": 394,
     "fragments": 44
   },
-  "headSha": "076be914587b9aafebe7d5ea8d86591dfc4b7d35",
-  "runId": "44523609805",
+  "headSha": "ef6d05b2acbefe3d67d97209608db7841cc04528",
+  "runId": "44784334335",
   "runAttempt": "1",
   "source": {
-    "commit": "076be914587b9aafebe7d5ea8d86591dfc4b7d35",
-    "runId": "44523609805",
+    "commit": "ef6d05b2acbefe3d67d97209608db7841cc04528",
+    "runId": "44784334335",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
