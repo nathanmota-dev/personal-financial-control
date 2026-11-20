@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 11252,
-          "total": 12586
+          "covered": 11282,
+          "total": 12616
         },
         "statements": {
-          "covered": 12887,
-          "total": 14513
+          "covered": 12917,
+          "total": 14542
         },
         "functions": {
-          "covered": 4123,
-          "total": 4767
+          "covered": 4144,
+          "total": 4788
         },
         "branches": {
-          "covered": 8247,
-          "total": 10153
+          "covered": 8245,
+          "total": 10150
         }
       },
-      "coverageFileCount": 1271,
+      "coverageFileCount": 1273,
       "duplication": {
-        "totalLines": 57257,
+        "totalLines": 57321,
         "duplicatedLines": 382,
         "fragments": 42
       },
@@ -207,13 +207,15 @@
         "components/finance/chat/chat-context.ts": 13,
         "components/finance/chat/chat-dock.tsx": 32,
         "components/finance/chat/chat-empty-state.tsx": 21,
+        "components/finance/chat/chat-launcher.tsx": 35,
+        "components/finance/chat/chat-markdown-elements.tsx": 38,
+        "components/finance/chat/chat-markdown.tsx": 20,
         "components/finance/chat/chat-message-list.tsx": 18,
-        "components/finance/chat/chat-message.tsx": 25,
+        "components/finance/chat/chat-message.tsx": 27,
         "components/finance/chat/chat-panel.tsx": 38,
-        "components/finance/chat/chat-provider.tsx": 54,
+        "components/finance/chat/chat-provider.tsx": 53,
         "components/finance/chat/chat-setup-notice.tsx": 14,
         "components/finance/chat/chat-tool-status.tsx": 14,
-        "components/finance/chat/chat-trigger.tsx": 26,
         "components/finance/clickable-table-row.tsx": 23,
         "components/finance/credit-budget-summary.tsx": 65,
         "components/finance/credit-card-brand-logo.tsx": 56,
@@ -289,7 +291,7 @@
         "components/finance/finance-command-trigger.tsx": 59,
         "components/finance/finance-field.tsx": 20,
         "components/finance/finance-metric.tsx": 34,
-        "components/finance/finance-sidebar.tsx": 82,
+        "components/finance/finance-sidebar.tsx": 78,
         "components/finance/finance-styles.ts": 19,
         "components/finance/form-select.tsx": 30,
         "components/finance/goals/components/allocation-breakdown-card.tsx": 89,
@@ -862,7 +864,7 @@
         "lib/interfaces/component-actions/transaction-dialog-show-error.ts": 4,
         "lib/interfaces/components/ai-settings.ts": 26,
         "lib/interfaces/components/bank-reserve.ts": 17,
-        "lib/interfaces/components/chat.ts": 33,
+        "lib/interfaces/components/chat.ts": 32,
         "lib/interfaces/components/credit-card-transactions-panel.ts": 2,
         "lib/interfaces/components/investment-reduction-dialog.ts": 8,
         "lib/interfaces/components/open-finance.ts": 51,
@@ -4606,6 +4608,174 @@
           "lines": 1
         },
         {
+          "file": "components/finance/chat/chat-launcher.tsx",
+          "name": "ChatLauncher",
+          "startLine": 12,
+          "endLine": 35,
+          "lines": 24
+        },
+        {
+          "file": "components/finance/chat/chat-launcher.tsx",
+          "name": "anonymous",
+          "startLine": 18,
+          "endLine": 21,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/chat/chat-launcher.tsx",
+          "name": "anonymous",
+          "startLine": 29,
+          "endLine": 29,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "withoutNode",
+          "startLine": 4,
+          "endLine": 8,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "p",
+          "startLine": 15,
+          "endLine": 15,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "h1",
+          "startLine": 16,
+          "endLine": 16,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "h2",
+          "startLine": 17,
+          "endLine": 17,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "h3",
+          "startLine": 18,
+          "endLine": 18,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "h4",
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "strong",
+          "startLine": 20,
+          "endLine": 20,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "em",
+          "startLine": 21,
+          "endLine": 21,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "del",
+          "startLine": 22,
+          "endLine": 22,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "ul",
+          "startLine": 23,
+          "endLine": 23,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "ol",
+          "startLine": 24,
+          "endLine": 24,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "li",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "a",
+          "startLine": 26,
+          "endLine": 26,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "blockquote",
+          "startLine": 27,
+          "endLine": 27,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "hr",
+          "startLine": 28,
+          "endLine": 28,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "code",
+          "startLine": 29,
+          "endLine": 29,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "pre",
+          "startLine": 30,
+          "endLine": 30,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "table",
+          "startLine": 31,
+          "endLine": 35,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "th",
+          "startLine": 36,
+          "endLine": 36,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown-elements.tsx",
+          "name": "td",
+          "startLine": 37,
+          "endLine": 37,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/chat/chat-markdown.tsx",
+          "name": "ChatMarkdown",
+          "startLine": 12,
+          "endLine": 20,
+          "lines": 9
+        },
+        {
           "file": "components/finance/chat/chat-message-list.tsx",
           "name": "ChatMessageList",
           "startLine": 8,
@@ -4629,16 +4799,16 @@
         {
           "file": "components/finance/chat/chat-message.tsx",
           "name": "ChatMessage",
-          "startLine": 5,
-          "endLine": 25,
-          "lines": 21
+          "startLine": 6,
+          "endLine": 27,
+          "lines": 22
         },
         {
           "file": "components/finance/chat/chat-message.tsx",
           "name": "anonymous",
-          "startLine": 9,
-          "endLine": 22,
-          "lines": 14
+          "startLine": 10,
+          "endLine": 24,
+          "lines": 15
         },
         {
           "file": "components/finance/chat/chat-panel.tsx",
@@ -4657,23 +4827,16 @@
         {
           "file": "components/finance/chat/chat-provider.tsx",
           "name": "ChatProvider",
-          "startLine": 27,
-          "endLine": 54,
-          "lines": 28
+          "startLine": 28,
+          "endLine": 53,
+          "lines": 26
         },
         {
           "file": "components/finance/chat/chat-provider.tsx",
           "name": "anonymous",
-          "startLine": 32,
-          "endLine": 37,
+          "startLine": 33,
+          "endLine": 38,
           "lines": 6
-        },
-        {
-          "file": "components/finance/chat/chat-provider.tsx",
-          "name": "anonymous",
-          "startLine": 35,
-          "endLine": 35,
-          "lines": 1
         },
         {
           "file": "components/finance/chat/chat-provider.tsx",
@@ -4685,23 +4848,16 @@
         {
           "file": "components/finance/chat/chat-provider.tsx",
           "name": "anonymous",
-          "startLine": 39,
-          "endLine": 42,
-          "lines": 4
+          "startLine": 37,
+          "endLine": 37,
+          "lines": 1
         },
         {
           "file": "components/finance/chat/chat-provider.tsx",
           "name": "anonymous",
-          "startLine": 43,
+          "startLine": 40,
           "endLine": 43,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/chat/chat-provider.tsx",
-          "name": "anonymous",
-          "startLine": 44,
-          "endLine": 44,
-          "lines": 1
+          "lines": 4
         },
         {
           "file": "components/finance/chat/chat-provider.tsx",
@@ -4730,13 +4886,6 @@
           "startLine": 6,
           "endLine": 14,
           "lines": 9
-        },
-        {
-          "file": "components/finance/chat/chat-trigger.tsx",
-          "name": "ChatTrigger",
-          "startLine": 11,
-          "endLine": 26,
-          "lines": 16
         },
         {
           "file": "components/finance/clickable-table-row.tsx",
@@ -6211,9 +6360,9 @@
         {
           "file": "components/finance/finance-sidebar.tsx",
           "name": "FinanceSidebar",
-          "startLine": 11,
-          "endLine": 82,
-          "lines": 72
+          "startLine": 10,
+          "endLine": 78,
+          "lines": 69
         },
         {
           "file": "components/finance/form-select.tsx",
@@ -34710,33 +34859,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 11252,
-      "total": 12586
+      "covered": 11282,
+      "total": 12616
     },
     "statements": {
-      "covered": 12887,
-      "total": 14513
+      "covered": 12917,
+      "total": 14542
     },
     "functions": {
-      "covered": 4123,
-      "total": 4767
+      "covered": 4144,
+      "total": 4788
     },
     "branches": {
-      "covered": 8247,
-      "total": 10153
+      "covered": 8245,
+      "total": 10150
     }
   },
   "duplication": {
-    "totalLines": 57257,
+    "totalLines": 57321,
     "duplicatedLines": 382,
     "fragments": 42
   },
-  "headSha": "ff68c820c93c939a8738ddfda5ab7afeee4bdc66",
-  "runId": "44790553350",
+  "headSha": "a851046e57625cd2e4e364914b4f485c0ac12794",
+  "runId": "44804965954",
   "runAttempt": "1",
   "source": {
-    "commit": "ff68c820c93c939a8738ddfda5ab7afeee4bdc66",
-    "runId": "44790553350",
+    "commit": "a851046e57625cd2e4e364914b4f485c0ac12794",
+    "runId": "44804965954",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
