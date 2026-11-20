@@ -130,10 +130,13 @@ test("mobile keyboard control and blocked storage remain usable with isolated de
   await hide.focus();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("button", { name: "Mostrar valores", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: /Ativar tema/ }).click();
+  // Keyboard, not pointer: the demo's recurring-generation toast can cover the mobile header, and a pointer
+  // resting on it pauses its timer, so a click would wait on it forever.
+  await page.getByRole("button", { name: /Ativar tema/ }).press("Enter");
   await expect(page.locator("body")).not.toContainText(/R\$\s*\d/);
-  await page.getByRole("button", { name: "Abrir menu" }).click();
-  await page.getByRole("link", { name: "Lançamentos", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir menu" }).press("Enter");
+  await page.getByRole("link", { name: "Lançamentos", exact: true }).press("Enter");
+  await expect(page).toHaveURL(/\/transactions/);
   await expect(page.locator("body")).not.toContainText(/R\$\s*\d/);
   await page.goto("/calculators/compound-interest");
   await page.getByRole("button", { name: "Mostrar valores", exact: true }).click();

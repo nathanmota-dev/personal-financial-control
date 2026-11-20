@@ -6,7 +6,6 @@ export type ChatAvailability = "loading" | "ready" | "unconfigured" | "unavailab
 export type ChatPanelState = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  toggle: () => void;
   availability: ChatAvailability;
   messages: UIMessage[];
   busy: boolean;
@@ -28,6 +27,6 @@ export type ChatEmptyStateProps = { disabled: boolean; onPick: (question: string
 
 export type ChatToolStatusProps = { toolName: string; done: boolean; failed: boolean };
 
-export type ChatTriggerProps = { className?: string; compact?: boolean };
+export type ChatMarkdownProps = { text: string };
 
 export type ChatPanelProps = { onClose: () => void };

@@ -7,8 +7,8 @@ export function ChatSetupNotice({ availability }: { availability: ChatAvailabili
   if (availability === "unavailable") return <p className="text-sm text-content-muted" role="status">O chat não está disponível agora.</p>;
   return (
     <div className="flex flex-1 flex-col justify-center gap-2 px-1">
-      <p className="text-base font-semibold text-content-strong">Configure uma IA para usar o chat</p>
-      <p className="text-sm text-content-muted">Informe a API key do seu provedor em <Link href="/settings" className="font-medium text-brand underline-offset-2 hover:underline">Configurações → IA</Link>.</p>
+      <p className="text-base font-semibold text-content-strong">Configure um provider de LLM para usar o chat</p>
+      <p className="text-sm text-content-muted">O assistente só funciona com um provider de LLM configurado. Informe a API key em <Link href="/settings" className="font-medium text-brand underline-offset-2 hover:underline">Configurações → IA</Link>.</p>
     </div>
   );
 }

@@ -17,8 +17,9 @@ Atualmente, o app oferece controle de:
 - saldo projetado;
 - investimentos e carteira patrimonial;
 - metas financeiras;
-- chat lateral com IA (somente leitura), disponível após login e PIN quando há
-  uma API key configurada em Configurações → IA;
+- chat lateral com IA (somente leitura), aberto pelo botão flutuante azul no
+  canto inferior direito, disponível após login e PIN quando há uma API key
+  configurada em Configurações → IA;
 - integração local com MCP para consultar referências, administrar lançamentos e
   compras de cartão, categorizá-los e consultar gastos, orçamento e faturas.
 
@@ -248,9 +249,12 @@ A importação cria a conta e as categorias ausentes quando necessário e evita 
 `POST /api/ai/chat` transmite (streaming) a resposta do modelo configurado em
 Configurações → IA, que consulta os dados pelas mesmas ferramentas do MCP, mas
 somente as marcadas como leitura (`readOnlyHint`). `GET /api/ai/chat` informa se há
-IA configurada. Ambos exigem sessão desbloqueada e ficam indisponíveis no modo demo.
+IA configurada. Ambos exigem sessão desbloqueada e ficam indisponíveis no modo demo;
+lá o chat abre direto no aviso para configurar um provider de LLM, sem chamar a API.
 A conversa existe só na memória do navegador; as perguntas e os dados consultados
-são enviados ao provedor escolhido.
+são enviados ao provedor escolhido. As respostas são renderizadas como Markdown
+(GFM: negrito, listas, tabelas, código e links) com `react-markdown`, sem HTML cru
+nem imagens.
 
 ### MCP local
 
