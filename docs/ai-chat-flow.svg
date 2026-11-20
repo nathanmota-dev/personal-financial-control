@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Fluxo do Assistente de IA</title>
+  <desc id="desc">O navegador envia a pergunta para POST /api/ai/chat. O servidor chama o provider de LLM com o prompt e as tools de leitura; quando o modelo pede uma tool, o servidor executa o mesmo handler do servidor MCP, que consulta o banco, e devolve o resultado ao modelo. Isso se repete até 8 passos, e a resposta em markdown volta ao navegador por streaming.</desc>
+  <style>
+    .bg { fill: #f5f5f3; }
+    .card { fill: #ffffff; stroke: #e2e2de; stroke-width: 1.5; }
+    .group { fill: none; stroke: #c9c9c4; stroke-width: 1.5; stroke-dasharray: 6 5; }
+    .external { fill: #ffffff; stroke: #2f73df; stroke-width: 1.5; }
+    .title { fill: #161616; font: 600 22px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .group-label { fill: #8a8a8a; font: 600 12px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; letter-spacing: 1.5px; }
+    .head { fill: #161616; font: 600 15px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .text { fill: #666666; font: 13px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .code { fill: #666666; font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .note { fill: #8a8a8a; font: italic 12px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    .flow { stroke: #2f73df; stroke-width: 2; fill: none; }
+    .link { stroke: #8a8a8a; stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; }
+    .tip-flow { fill: #2f73df; }
+    .tip-link { fill: #8a8a8a; }
+    .badge { fill: #2f73df; }
+    .badge-text { fill: #ffffff; font: 700 12px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #171819; }
+      .card { fill: #202223; stroke: #37393c; }
+      .group { stroke: #4a4c50; }
+      .external { fill: #202223; stroke: #79a9ef; }
+      .title, .head { fill: #f1f1ef; }
+      .text, .code { fill: #b4b5b8; }
+      .group-label, .note { fill: #9b9da1; }
+      .flow { stroke: #79a9ef; }
+      .tip-flow, .badge { fill: #79a9ef; }
+      .badge-text { fill: #171819; }
+      .link { stroke: #9b9da1; }
+      .tip-link { fill: #9b9da1; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="tip-flow"/>
+    </marker>
+    <marker id="arrow-link" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" class="tip-link"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="720" rx="24"/>
+  <text class="title" x="40" y="48">Fluxo do Assistente de IA</text>
+
+  <!-- Navegador -->
+  <rect class="card" x="40" y="90" width="230" height="200" rx="18"/>
+  <text class="group-label" x="60" y="118">NAVEGADOR</text>
+  <text class="head" x="60" y="146">Chat</text>
+  <text class="text" x="60" y="174">Botão flutuante abre o painel</text>
+  <text class="text" x="60" y="198">useChat (AI SDK)</text>
+  <text class="text" x="60" y="222">Conversa só na memória</text>
+  <text class="text" x="60" y="246">Resposta em markdown</text>
+  <text class="code" x="60" y="270">react-markdown + gfm</text>
+
+  <!-- Legenda -->
+  <text class="group-label" x="40" y="340">PASSOS</text>
+  <circle class="badge" cx="52" cy="370" r="11"/><text class="badge-text" x="52" y="374" text-anchor="middle">1</text>
+  <text class="text" x="72" y="374">Pergunta + histórico</text>
+  <circle class="badge" cx="52" cy="402" r="11"/><text class="badge-text" x="52" y="406" text-anchor="middle">2</text>
+  <text class="text" x="72" y="406">Prompt, tools e resultados</text>
+  <circle class="badge" cx="52" cy="434" r="11"/><text class="badge-text" x="52" y="438" text-anchor="middle">3</text>
+  <text class="text" x="72" y="438">Modelo pede uma tool</text>
+  <circle class="badge" cx="52" cy="466" r="11"/><text class="badge-text" x="52" y="470" text-anchor="middle">4</text>
+  <text class="text" x="72" y="470">Executa a tool de leitura</text>
+  <circle class="badge" cx="52" cy="498" r="11"/><text class="badge-text" x="52" y="502" text-anchor="middle">5</text>
+  <text class="text" x="72" y="502">Consulta o banco</text>
+  <circle class="badge" cx="52" cy="530" r="11"/><text class="badge-text" x="52" y="534" text-anchor="middle">6</text>
+  <text class="text" x="72" y="534">Resposta via streaming</text>
+  <text class="note" x="40" y="574">Os passos 2 a 5 se repetem</text>
+  <text class="note" x="40" y="592">até o modelo responder</text>
+  <text class="note" x="40" y="610">(no máximo 8 passos, 90 s).</text>
+
+  <!-- Servidor -->
+  <rect class="group" x="310" y="70" width="550" height="610" rx="22"/>
+  <text class="group-label" x="334" y="98">SERVIDOR NEXT.JS</text>
+
+  <rect class="card" x="334" y="114" width="502" height="86" rx="16"/>
+  <text class="head" x="356" y="146">POST /api/ai/chat</text>
+  <text class="text" x="356" y="174">Valida sessão e PIN · lê o provider e a API key (a key não sai do servidor)</text>
+
+  <rect class="card" x="334" y="232" width="502" height="86" rx="16"/>
+  <text class="head" x="356" y="264">streamText (AI SDK)</text>
+  <text class="text" x="356" y="292">Prompt de sistema + histórico + tools · valida o input com zod</text>
+
+  <rect class="card" x="334" y="350" width="240" height="96" rx="16"/>
+  <text class="head" x="356" y="380">Tools do chat</text>
+  <text class="text" x="356" y="406">Só as de leitura</text>
+  <text class="code" x="356" y="428">readOnlyHint: true</text>
+
+  <rect class="card" x="596" y="350" width="240" height="96" rx="16"/>
+  <text class="head" x="618" y="380">Servidor MCP</text>
+  <text class="code" x="618" y="406">/api/mcp</text>
+  <text class="text" x="618" y="428">Leitura e escrita</text>
+
+  <rect class="card" x="334" y="478" width="502" height="76" rx="16"/>
+  <text class="head" x="356" y="508">registerAllMcpTools</text>
+  <text class="text" x="356" y="534">Uma só definição por tool: nome, descrição, schema e handler</text>
+
+  <rect class="card" x="334" y="586" width="502" height="76" rx="16"/>
+  <text class="head" x="356" y="616">Funções de domínio</text>
+  <text class="code" x="356" y="642">getSpendingSummary · getBudgetOverview · getSpendingCapacity…</text>
+
+  <!-- Externos -->
+  <rect class="external" x="900" y="226" width="260" height="98" rx="16"/>
+  <text class="group-label" x="920" y="250">EXTERNO</text>
+  <text class="head" x="920" y="274">Provider de LLM</text>
+  <text class="text" x="920" y="296">OpenAI · Anthropic</text>
+  <text class="text" x="920" y="314">Google · DeepSeek</text>
+
+  <rect class="card" x="900" y="360" width="260" height="76" rx="16"/>
+  <text class="head" x="920" y="390">Clientes MCP</text>
+  <text class="text" x="920" y="416">ex.: Codex · loopback + token</text>
+
+  <rect class="card" x="900" y="586" width="260" height="76" rx="16"/>
+  <text class="head" x="920" y="616">Banco de dados</text>
+  <text class="text" x="920" y="642">SQLite / Turso (Drizzle)</text>
+
+  <!-- 1: pergunta -->
+  <path class="flow" d="M270 140 H334" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="302" cy="124" r="11"/><text class="badge-text" x="302" y="128" text-anchor="middle">1</text>
+  <!-- 6: resposta -->
+  <path class="flow" d="M334 180 H270" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="302" cy="196" r="11"/><text class="badge-text" x="302" y="200" text-anchor="middle">6</text>
+
+  <!-- rota -> streamText -->
+  <path class="flow" d="M585 200 V232" marker-end="url(#arrow-flow)"/>
+
+  <!-- 2 e 3: provider -->
+  <path class="flow" d="M836 258 H900" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="868" cy="242" r="11"/><text class="badge-text" x="868" y="246" text-anchor="middle">2</text>
+  <path class="flow" d="M900 296 H836" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="868" cy="312" r="11"/><text class="badge-text" x="868" y="316" text-anchor="middle">3</text>
+
+  <!-- 4: executa a tool -->
+  <path class="flow" d="M454 318 V350" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="474" cy="334" r="11"/><text class="badge-text" x="474" y="338" text-anchor="middle">4</text>
+  <path class="flow" d="M454 446 V478" marker-end="url(#arrow-flow)"/>
+  <path class="flow" d="M585 554 V586" marker-end="url(#arrow-flow)"/>
+
+  <!-- MCP compartilha as definições -->
+  <path class="link" d="M716 478 V446" marker-end="url(#arrow-link)"/>
+  <path class="link" d="M900 398 H836" marker-end="url(#arrow-link)"/>
+
+  <!-- 5: consulta o banco -->
+  <path class="flow" d="M836 624 H900" marker-end="url(#arrow-flow)"/>
+  <circle class="badge" cx="868" cy="608" r="11"/><text class="badge-text" x="868" y="612" text-anchor="middle">5</text>
+</svg>

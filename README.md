@@ -143,32 +143,7 @@ os seus dados, como "qual foi meu maior gasto do mês?". Ele usa o provider de L
 configurado em **Configurações > IA** (OpenAI, Anthropic, Google ou DeepSeek) e só
 consulta: não cria, edita nem apaga nada.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor U as Você
-    participant C as Chat (navegador)
-    participant R as POST /api/ai/chat
-    participant L as Provider de LLM
-    participant T as Tools de leitura
-    participant D as Banco de dados
-
-    U->>C: Pergunta
-    C->>R: Histórico da conversa
-    R->>R: Valida sessão e PIN, lê a API key
-    R->>L: Prompt + mensagens + tools disponíveis
-    loop Até 8 passos
-        L-->>R: Chamada de tool (ex.: get_spending_summary)
-        R->>T: Executa com o input validado
-        T->>D: Consulta
-        D-->>T: Dados
-        T-->>R: Resultado em JSON
-        R->>L: Resultado da tool
-    end
-    L-->>R: Resposta em Markdown (streaming)
-    R-->>C: Status das tools e texto
-    C-->>U: Resposta formatada
-```
+![Fluxo do Assistente de IA](docs/ai-chat-flow.svg)
 
 As tools são as mesmas do [servidor MCP](docs/mcp.md), reaproveitadas dentro do
 app sem passar pelo protocolo MCP, e o chat recebe só as marcadas como leitura.
