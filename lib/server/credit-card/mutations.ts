@@ -12,8 +12,10 @@ normalizeDate,
 serializeTimestamps,
 } from "@/lib/server/finance";
 import { learnFromChargeUpdate } from "@/lib/server/pluggy/category-learning";
+import type { TransactionDb } from "@/lib/server/transactions/validation";
 import { eq } from "drizzle-orm";
-import { assertChargeCanMutate,getCreditCardCharge } from "./queries";
+import { assertChargeCanMutate,dbGetCharge,getCreditCardCharge } from "./queries";
+import { changesOnlyCategory,keepsInstallmentSchedule } from "./update-scope";
 import { CreateCreditCardChargeInput,createCreditCardChargeSchema,resolveDb,resolveFirstInvoiceMonth,serializeCreditCardCharge,shiftMonth,splitInstallmentAmounts,UpdateCreditCardChargeInput,updateCreditCardChargeSchema,validateCreditCardChargeDependencies } from "./validation";
 
 export async function createCreditCardCharge(
@@ -99,6 +101,20 @@ export async function createCreditCardCharge(
   });
 }
 
+async function replaceInstallments(tx: TransactionDb, chargeId: string, amounts: number[], firstInvoiceMonth: string) {
+  await tx.delete(creditCardInstallments).where(eq(creditCardInstallments.chargeId, chargeId));
+  return tx
+    .insert(creditCardInstallments)
+    .values(amounts.map((amountCents, index) => ({
+      chargeId,
+      installmentNumber: index + 1,
+      amountCents,
+      invoiceMonth: shiftMonth(firstInvoiceMonth, index),
+      updatedAt: currentTimestamp(),
+    })))
+    .returning();
+}
+
 export async function createIdempotentCreditCardCharge(
   input: CreateCreditCardChargeInput & { importFingerprint: string },
   database?: AppDb
@@ -118,7 +134,7 @@ export async function updateCreditCardCharge(
 ) {
   const db = await resolveDb(database);
   const parsedInput = updateCreditCardChargeSchema.parse(input);
-  const existing = await assertChargeCanMutate(parsedInput.id, db);
+  const existing = await dbGetCharge(parsedInput.id, db);
   const values = createCreditCardChargeSchema.parse({
     accountId: parsedInput.accountId ?? existing.accountId,
     categoryId: parsedInput.categoryId ?? existing.categoryId,
@@ -153,6 +169,8 @@ export async function updateCreditCardCharge(
     : parsedInput.purchaseDate || parsedInput.accountId
       ? resolveFirstInvoiceMonth(values.purchaseDate, account.creditClosingDay as number)
       : existing.firstInvoiceMonth;
+  if (!changesOnlyCategory(existing, values, firstInvoiceMonth)) await assertChargeCanMutate(parsedInput.id, db);
+  const keepsSchedule = keepsInstallmentSchedule(existing, values, firstInvoiceMonth);
   const installmentAmounts = splitInstallmentAmounts(
     values.totalAmountCents,
     values.installmentCount
@@ -171,21 +189,12 @@ export async function updateCreditCardCharge(
       .returning();
     invariant(updatedCharge, "CREDIT_CARD_CHARGE_UPDATE_FAILED", "Credit card purchase could not be updated.", 500);
 
-    await tx
-      .delete(creditCardInstallments)
-      .where(eq(creditCardInstallments.chargeId, parsedInput.id));
-    const installments = await tx
-      .insert(creditCardInstallments)
-      .values(
-        installmentAmounts.map((amountCents, index) => ({
-          chargeId: parsedInput.id,
-          installmentNumber: index + 1,
-          amountCents,
-          invoiceMonth: shiftMonth(firstInvoiceMonth, index),
-          updatedAt: currentTimestamp(),
-        }))
-      )
-      .returning();
+    const installments = keepsSchedule
+      ? await tx.query.creditCardInstallments.findMany({
+          where: eq(creditCardInstallments.chargeId, parsedInput.id),
+          orderBy: (table, { asc }) => [asc(table.installmentNumber)],
+        })
+      : await replaceInstallments(tx, parsedInput.id, installmentAmounts, firstInvoiceMonth);
 
     await learnFromChargeUpdate(tx, existing, updatedCharge);
 

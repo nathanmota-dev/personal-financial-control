@@ -1,9 +1,9 @@
 import type { AppDb } from "@/lib/db";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpToolRegistrar } from "@/lib/interfaces/mcp-tool-registrar";
 import { z } from "zod";
 
 export interface RegisterMcpReadAndCreateToolsContext {
-  server: McpServer;
+  server: McpToolRegistrar;
   handler: <T>(callback: (input: T) => Promise<unknown>) => (input: T) => Promise<{ content: { type: "text"; text: string; }[]; structuredContent: { ok: boolean; data: unknown; }; } | { content: { type: "text"; text: string; }[]; structuredContent: { code: string; message: string; issues?: undefined; ok: boolean; } | { code: string; message: string; issues: z.core.$ZodIssue[]; ok: boolean; }; isError: boolean; }>;
   database: import("@/lib/db").AppDb | undefined;
   requireNonCreditAccount: (accountId: string, database?: AppDb) => Promise<{ type: "checking" | "savings" | "cash" | "credit" | "investment"; id: string; name: string; initialBalanceCents: number; creditClosingDay: number | null; creditDueDay: number; isArchived: boolean; nameHash: string | null; createdAt: Date; updatedAt: Date; }>;

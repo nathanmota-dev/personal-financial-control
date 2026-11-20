@@ -1,10 +1,8 @@
-import { registerMcpCreditCardTools } from "@/lib/server/stages/register-mcp-credit-card-tools";
-import { registerMcpReadAndCreateTools } from "@/lib/server/stages/register-mcp-read-and-create-tools";
-import { registerMcpTransactionMutationTools } from "@/lib/server/stages/register-mcp-transaction-mutation-tools";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { handler,instructions,requireCommonTransaction,requireNonCreditAccount } from "./tool-support";
 
 import type { AppDb } from "@/lib/db";
+import { registerAllMcpTools } from "./register-tools";
+import { instructions } from "./tool-support";
 
 export function createPersonalFinanceMcpServer(database?: AppDb) {
   const server = new McpServer(
@@ -12,11 +10,7 @@ export function createPersonalFinanceMcpServer(database?: AppDb) {
     { instructions }
   );
 
-  registerMcpReadAndCreateTools({ server, handler, database, requireNonCreditAccount, requireCommonTransaction });
-
-  registerMcpTransactionMutationTools({ server, handler, requireCommonTransaction, database, requireNonCreditAccount });
-
-  registerMcpCreditCardTools({ server, handler, database });
+  registerAllMcpTools(server, database);
 
   return server;
 }

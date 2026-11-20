@@ -2,6 +2,7 @@
 
 import { SidebarFooter } from "@/components/finance/sidebar-footer";
 import { SidebarNavigation } from "@/components/finance/sidebar-navigation";
+import { ChatTrigger } from "@/components/finance/chat/chat-trigger";
 import { FinanceCommandTrigger } from "@/components/finance/finance-command-trigger";
 import type { FinanceSidebarProps } from "@/lib/interfaces/app-shell";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
@@ -71,6 +72,9 @@ export function FinanceSidebar({
           ) : null}
         </div>
         <SidebarNavigation collapsed={collapsed} onOpenCommandPalette={onOpenCommandPalette} />
+        <div className={collapsed ? "flex justify-center px-2 pb-1" : "px-5 pb-1"}>
+          <ChatTrigger compact={collapsed} className={collapsed ? "bg-card" : "w-full justify-start"} />
+        </div>
         <SidebarFooter collapsed={collapsed} user={user} demoMode={demoMode} />
       </div>
     </aside>
