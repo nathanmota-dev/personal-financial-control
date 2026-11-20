@@ -22,11 +22,12 @@ async function loadAvailability(): Promise<ChatAvailability> {
 
 /**
  * Conversation state lives only in memory: reloading the page starts a new one, so no financial text is stored.
- * Mounted inside the shell, which only renders after sign-in and PIN.
+ * Mounted inside the shell, which only renders after sign-in and PIN. Demo mode has no AI provider, so the chat opens
+ * straight on the setup notice and never calls the API.
  */
 export function ChatProvider({ demoMode, children }: ChatProviderProps) {
   const [open, setOpen] = useState(false);
-  const [availability, setAvailability] = useState<ChatAvailability>(demoMode ? "unavailable" : "loading");
+  const [availability, setAvailability] = useState<ChatAvailability>(demoMode ? "unconfigured" : "loading");
   const { messages, sendMessage, status, stop, setMessages, error, clearError } = useChat({ transport });
 
   useEffect(() => {
@@ -41,14 +42,12 @@ export function ChatProvider({ demoMode, children }: ChatProviderProps) {
     if (trimmed) void sendMessage({ text: trimmed });
   }, [sendMessage]);
   const reset = useCallback(() => { stop(); setMessages([]); clearError(); }, [stop, setMessages, clearError]);
-  const toggle = useCallback(() => setOpen((value) => !value), []);
 
   const value = useMemo<ChatPanelState>(() => ({
-    open, setOpen, toggle, availability, messages, send, stop, reset,
+    open, setOpen, availability, messages, send, stop, reset,
     busy: status === "submitted" || status === "streaming",
     error: error ? "Não foi possível obter a resposta. Tente novamente." : null,
-  }), [open, toggle, availability, messages, send, stop, reset, status, error]);
+  }), [open, availability, messages, send, stop, reset, status, error]);
 
-  if (demoMode) return <>{children}</>;
   return <ChatContext value={value}>{children}</ChatContext>;
 }
