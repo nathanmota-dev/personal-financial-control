@@ -5,17 +5,11 @@ DayDetailSheetProps,
 DetailMetricProps,
 EventRowProps,
 } from "@/app/interfaces/projected-balance";
+import { DetailSheet } from "@/components/finance/detail-sheet";
 import { financeItemClassName } from "@/components/finance/finance-styles";
 import { StatusBadge } from "@/components/finance/projected-balance-components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-Sheet,
-SheetContent,
-SheetDescription,
-SheetHeader,
-SheetTitle,
-} from "@/components/ui/sheet";
 import { formatDateLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { cn } from "@/lib/utils";
@@ -30,79 +24,70 @@ export function DayDetailSheet({
 }: DayDetailSheetProps) {
   const { formatCurrency } = useFinancialFormatter();
   return (
-    <Sheet open={Boolean(day)} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto border-border bg-surface text-content-strong sm:max-w-xl">
-        {day ? (
-          <>
-            <SheetHeader className="border-b border-border px-6 py-5 text-left">
-              <SheetTitle className="text-xl text-content-strong">
-                {formatDateLabel(day.date)}
-              </SheetTitle>
-              <SheetDescription className="text-content">
-                Saldo final de {formatCurrency(day.projectedBalanceCents)}.
-              </SheetDescription>
-            </SheetHeader>
-            <div className="space-y-5 px-6 pb-6">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <DetailMetric
-                  label="Saldo inicial"
-                  value={formatCurrency(day.startingBalanceCents)}
-                />
-                <DetailMetric
-                  label="Entradas"
-                  value={formatCurrency(day.incomeCents + day.transferInCents)}
-                  tone="emerald"
-                />
-                <DetailMetric
-                  label="Saídas"
-                  value={formatCurrency(day.expenseCents + day.transferOutCents)}
-                  tone="rose"
-                />
-                <DetailMetric
-                  label="Investimentos líquidos"
-                  value={formatCurrency(day.investmentCents)}
-                  tone="sky"
-                />
-                <DetailMetric
-                  label="Cartão"
-                  value={formatCurrency(day.creditCardCents)}
-                  tone="blue"
-                />
-                <DetailMetric
-                  label="Saldo final"
-                  value={formatCurrency(day.projectedBalanceCents)}
-                  tone={day.projectedBalanceCents >= 0 ? "cyan" : "rose"}
-                />
-              </div>
+    <DetailSheet
+      header={day ? { title: formatDateLabel(day.date), description: <>Saldo final de {formatCurrency(day.projectedBalanceCents)}.</> } : null}
+      onOpenChange={onOpenChange}
+    >
+      {day ? (
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <DetailMetric
+              label="Saldo inicial"
+              value={formatCurrency(day.startingBalanceCents)}
+            />
+            <DetailMetric
+              label="Entradas"
+              value={formatCurrency(day.incomeCents + day.transferInCents)}
+              tone="emerald"
+            />
+            <DetailMetric
+              label="Saídas"
+              value={formatCurrency(day.expenseCents + day.transferOutCents)}
+              tone="rose"
+            />
+            <DetailMetric
+              label="Investimentos líquidos"
+              value={formatCurrency(day.investmentCents)}
+              tone="sky"
+            />
+            <DetailMetric
+              label="Cartão"
+              value={formatCurrency(day.creditCardCents)}
+              tone="blue"
+            />
+            <DetailMetric
+              label="Saldo final"
+              value={formatCurrency(day.projectedBalanceCents)}
+              tone={day.projectedBalanceCents >= 0 ? "cyan" : "rose"}
+            />
+          </div>
 
-              <div className="rounded-2xl border border-border p-4">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <h3 className="text-base font-semibold text-content-strong">
-                    Eventos do dia
-                  </h3>
-                  <StatusBadge status={day.status} />
-                </div>
-                {day.events.length ? (
-                  <div className="space-y-3">
-                    {day.events.map((event) => (
-                      <EventRow
-                        key={`${event.source}-${event.id}`}
-                        event={event}
-                        onRemoveSimulation={onRemoveSimulation}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-content">
-                    Nenhum evento altera o saldo nesta data.
-                  </p>
-                )}
-              </div>
+          <div className="rounded-2xl border border-border p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h3 className="text-base font-semibold text-content-strong">
+                Eventos do dia
+              </h3>
+              <StatusBadge status={day.status} />
             </div>
-          </>
-        ) : null}
-      </SheetContent>
-    </Sheet>
+            {day.events.length ? (
+              <div className="space-y-3">
+                {day.events.map((event) => (
+                  <EventRow
+                    key={`${event.source}-${event.id}`}
+                    event={event}
+                    onRemoveSimulation={onRemoveSimulation}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-content">
+                Nenhum evento altera o saldo nesta data.
+              </p>
+            )}
+          </div>
+        </>
+      ) : null}
+    </DetailSheet>
   );
 }
 

@@ -1,6 +1,7 @@
 import type { FinancePageDestination } from "@/lib/interfaces/finance-command";
 import type { SidebarNavigationItem } from "@/lib/interfaces/sidebar-navigation";
 import {
+  CalendarRange,
   Calculator,
   ChartNoAxesCombined,
   CreditCard,
@@ -50,6 +51,12 @@ export const FINANCE_NAVIGATION: SidebarNavigationItem[] = [
     label: "Recorrentes",
     icon: Repeat2,
     aliases: ["recorrência", "recorrências", "contas fixas"],
+  },
+  {
+    href: "/predictability",
+    label: "Previsibilidade",
+    icon: CalendarRange,
+    aliases: ["orçamento diário", "quanto posso gastar", "por dia", "gasto diário", "ciclo"],
   },
   {
     href: "/projected-balance",

@@ -7,7 +7,16 @@ import {
   formatMoneyInput,
   moneyInputToCents,
   removeDigitFromMoneyInput,
+  formatWholeAmount,
 } from "@/lib/finance-ui";
+
+describe("finance UI whole amounts", () => {
+  it("rounds cents to whole reais without the currency symbol", () => {
+    expect(formatWholeAmount(20183)).toBe("202");
+    expect(formatWholeAmount(123456789)).toBe("1.234.568");
+    expect(formatWholeAmount(0)).toBe("0");
+  });
+});
 
 describe("finance UI money inputs", () => {
   it("parses Brazilian currency values with a visible currency prefix", () => {

@@ -4,7 +4,7 @@ import { financialPrivacyKey } from "../../lib/financial-privacy";
 
 const routes = [
   "/dashboard?month=2026-07", "/transactions?month=2026-07", "/credit-card?month=2026-07",
-  "/recurring?month=2026-07", "/projected-balance", "/investments", "/investments/portfolio",
+  "/recurring?month=2026-07", "/predictability", "/projected-balance", "/investments", "/investments/portfolio",
   "/reserve", "/goals", "/settings", "/budgets?month=2026-07", "/reports?month=2026-07",
 ];
 
@@ -43,7 +43,7 @@ test("global privacy covers every financial domain, details, charts and reload w
     await expect(page.getByRole("img", { name: "Valor oculto" }).first()).toBeVisible();
     expect(await page.locator("body").innerText()).not.toMatch(/R\$\s*[−+-]?\s*\d/);
     expect(await page.evaluate(() => (window as unknown as { privacyLeaks: string[] }).privacyLeaks)).toEqual([]);
-    if (route === "/projected-balance") {
+    if (route === "/projected-balance" || route === "/predictability") {
       await page.getByRole("tab", { name: "Tabela", exact: true }).click();
       await expect(page.getByRole("table")).not.toContainText(/R\$\s*\d/);
       await page.getByRole("tab", { name: "Calendário", exact: true }).click();
