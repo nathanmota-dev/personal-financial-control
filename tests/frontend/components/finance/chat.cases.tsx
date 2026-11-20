@@ -4,6 +4,8 @@ import { afterEach, expect, it, vi } from "vitest";
 import type { UIMessage } from "ai";
 import { ChatComposer } from "@/components/finance/chat/chat-composer";
 import { ChatMarkdown } from "@/components/finance/chat/chat-markdown";
+import { ChatLauncher } from "@/components/finance/chat/chat-launcher";
+import { ChatSetupNotice } from "@/components/finance/chat/chat-setup-notice";
 import { ChatEmptyState } from "@/components/finance/chat/chat-empty-state";
 import { ChatMessage } from "@/components/finance/chat/chat-message";
 import { ChatToolStatus } from "@/components/finance/chat/chat-tool-status";
@@ -102,6 +104,29 @@ it("renders the assistant's Markdown as formatted text", () => {
   expect(screen.getByText("x").getAttribute("href") ?? "").not.toContain("javascript");
   expect(container.querySelector("b")).toBeNull();
   expect(container.querySelector("img")).toBeNull();
+});
+
+it("renders the remaining Markdown blocks: headings, quotes, rules and code blocks", () => {
+  const reply = ["# Título", "### Seção", "#### Detalhe", "> Citação", "", "---", "", "```", "total = 10", "```"].join("\n");
+  const { container } = renderUI(<ChatMarkdown text={reply} />);
+  expect(screen.getByRole("heading", { level: 3, name: "Título" })).toBeVisible();
+  expect(screen.getByRole("heading", { level: 4, name: "Seção" })).toBeVisible();
+  expect(screen.getByRole("heading", { level: 4, name: "Detalhe" })).toBeVisible();
+  expect(screen.getByText("Citação").closest("blockquote")).not.toBeNull();
+  expect(container.querySelector("hr")).not.toBeNull();
+  expect(screen.getByText("total = 10").closest("pre")).not.toBeNull();
+});
+
+it("renders no launcher outside the chat provider", () => {
+  renderUI(<ChatLauncher />);
+  expect(screen.queryByRole("button", { name: "Abrir assistente" })).toBeNull();
+});
+
+it("tells while the AI configuration is loading or unavailable", () => {
+  const { rerender } = renderUI(<ChatSetupNotice availability="loading" />);
+  expect(screen.getByRole("status")).toHaveTextContent("Verificando a configuração de IA…");
+  rerender(<ChatSetupNotice availability="unavailable" />);
+  expect(screen.getByRole("status")).toHaveTextContent("O chat não está disponível agora.");
 });
 
 it("keeps the user's own text literal and renders the assistant's as Markdown", () => {
