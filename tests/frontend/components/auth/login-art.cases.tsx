@@ -98,6 +98,8 @@ describe("login carousel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Próximo slide" }));
     expect(api.scrollTo).not.toHaveBeenCalled();
     expect(screen.getAllByText(/PRÉVIA ILUSTRATIVA/)).toHaveLength(3);
-    expect(screen.getByText("Próxima viagem")).toBeInTheDocument();
+    expect(screen.getByText("Alocado em metas")).toBeInTheDocument();
+    expect(screen.getByText("Saldo previsto")).toBeInTheDocument();
+    expect(screen.getByText("Aluguel")).toBeInTheDocument();
   });
 });

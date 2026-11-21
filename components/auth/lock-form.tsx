@@ -47,7 +47,7 @@ export function LockForm({ setup, destination, attempts, user }: LockFormProps) 
       <h1 className="text-[35px] leading-[44px] font-semibold tracking-[-1px] text-content-strong">{t(setup ? "setupTitle" : "lockTitle")}</h1>
       <p className="mt-2 text-xs text-content">{t(setup ? "setupDescription" : "lockDescription")}</p>
     </header>
-    <section className="mt-6 min-w-0 rounded-[20px] border border-border bg-card p-[23px] min-[100.0625rem]:p-5">
+    <section className="mt-8 min-w-0">
       <div className="flex items-center justify-between gap-4">
         <LockUserCard user={user} />
         {/* Below lg the brand panel is hidden, so the card carries the illustration. */}

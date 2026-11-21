@@ -18,3 +18,5 @@ export interface FinanceLayoutProps {
 }
 
 export type MobileNavigationProps = Pick<AppShellProps, "user" | "demoMode">;
+
+export interface ThemeToggleProps { className?: string; }
