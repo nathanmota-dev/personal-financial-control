@@ -3,12 +3,15 @@
 import type { PredictabilityAllocationRowProps } from "@/app/interfaces/predictability";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { formatDateLabel } from "@/lib/finance-ui";
+import { SIMULATED_PURCHASE_ID } from "@/lib/predictability-simulation";
 import { cn } from "@/lib/utils";
 
 export function PredictabilityAllocationRow({ allocation, dayDate }: PredictabilityAllocationRowProps) {
   const { formatCurrency } = useFinancialFormatter();
   const isRelease = allocation.cents < 0;
-  const origin = allocation.transactionDate === dayDate ? "lançado neste dia" : `lançado em ${formatDateLabel(allocation.transactionDate)}`;
+  const isSimulated = allocation.transactionId === SIMULATED_PURCHASE_ID;
+  const verb = isSimulated ? "simulado" : "lançado";
+  const origin = allocation.transactionDate === dayDate ? `${verb} neste dia` : `${verb} em ${formatDateLabel(allocation.transactionDate)}`;
 
   return (
     <li className="flex items-center justify-between gap-3 py-2.5 text-[13px]">

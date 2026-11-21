@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { dayStatusCellClassNames } from "./labels";
 import { PredictabilityStatusChip } from "./predictability-status-chip";
 
-export function PredictabilityTableRow({ day, onSelectDay }: PredictabilityDayItemProps) {
+export function PredictabilityTableRow({ day, onSelectDay, simulatedCents }: PredictabilityDayItemProps) {
   const { formatCurrency } = useFinancialFormatter();
 
   return (
@@ -21,6 +21,7 @@ export function PredictabilityTableRow({ day, onSelectDay }: PredictabilityDayIt
       <TableCell className="font-medium text-content-strong">
         {formatDateLabel(day.date)}
         {day.isToday ? <span className="ml-2 text-xs font-semibold text-brand">hoje</span> : null}
+        {simulatedCents ? <span className="ml-2 text-xs font-medium text-brand">−{formatCurrency(simulatedCents)} simulado</span> : null}
       </TableCell>
       <TableCell className="text-right tabular-nums">{formatCurrency(day.allowanceCents)}</TableCell>
       <TableCell className="text-right tabular-nums text-danger">{day.spentCents ? formatCurrency(day.spentCents) : "—"}</TableCell>

@@ -20,6 +20,8 @@ export type DayViewTabsProps = {
   title: string;
   description: string;
   actions?: ReactNode;
+  /** Shown between the header and the active view, for both views. */
+  notice?: ReactNode;
   calendar: ReactNode;
   table: ReactNode;
   children?: ReactNode;

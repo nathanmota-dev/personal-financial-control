@@ -10,6 +10,8 @@ import type {
   PredictabilityDayStatus,
   PredictabilityExpense,
   PredictabilityResult,
+  PredictabilitySimulatedPurchase,
+  PredictabilitySimulationImpact,
   PredictabilitySummary,
 } from "@/lib/interfaces/predictability";
 
@@ -18,8 +20,9 @@ export type PredictabilityViewProps = {
   loadError?: string;
 };
 
-export type PredictabilityCycleNavProps = {
-  cycle: PredictabilityCycle;
+export type PredictabilityMonthPickerProps = {
+  /** Month the cycle starts in (YYYY-MM). */
+  month: string;
 };
 
 export type PredictabilityHeroProps = {
@@ -43,16 +46,31 @@ export type PredictabilityAlertsProps = {
 export type PredictabilityDaySelectProps = {
   days: PredictabilityDay[];
   onSelectDay: (day: PredictabilityDay) => void;
+  /** Cents a simulated purchase takes from each affected day. */
+  simulatedCentsByDate?: Record<string, number>;
 };
 
 export type PredictabilityExplorerProps = {
-  days: PredictabilityDay[];
-  overflowCents: number;
+  predictability: PredictabilityResult;
 };
 
 export type PredictabilityCalendarDayProps = {
   cell: PredictabilityCalendarCell;
   onSelectDay: (day: PredictabilityDay) => void;
+  simulatedCents?: number;
+};
+
+export type PredictabilitySimulationDialogProps = {
+  predictability: Pick<PredictabilityResult, "today" | "cycle">;
+  purchase: PredictabilitySimulatedPurchase | null;
+  onSimulate: (purchase: PredictabilitySimulatedPurchase) => void;
+};
+
+export type PredictabilitySimulationFormProps = PredictabilitySimulationDialogProps;
+
+export type PredictabilitySimulationBannerProps = {
+  impact: PredictabilitySimulationImpact;
+  onClear: () => void;
 };
 
 export type PredictabilityTableProps = PredictabilityDaySelectProps & {
@@ -62,6 +80,7 @@ export type PredictabilityTableProps = PredictabilityDaySelectProps & {
 export type PredictabilityDayItemProps = {
   day: PredictabilityDay;
   onSelectDay: (day: PredictabilityDay) => void;
+  simulatedCents?: number;
 };
 
 export type PredictabilityStatusChipProps = {
