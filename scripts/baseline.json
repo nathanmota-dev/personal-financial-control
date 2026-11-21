@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 11282,
-          "total": 12616
+          "covered": 11377,
+          "total": 12712
         },
         "statements": {
-          "covered": 12917,
-          "total": 14542
+          "covered": 13013,
+          "total": 14639
         },
         "functions": {
-          "covered": 4144,
-          "total": 4788
+          "covered": 4177,
+          "total": 4819
         },
         "branches": {
-          "covered": 8245,
-          "total": 10150
+          "covered": 8301,
+          "total": 10207
         }
       },
-      "coverageFileCount": 1273,
+      "coverageFileCount": 1286,
       "duplication": {
-        "totalLines": 57321,
+        "totalLines": 57807,
         "duplicatedLines": 382,
         "fragments": 42
       },
@@ -73,7 +73,7 @@
         "app/(finance)/loading.tsx": 1,
         "app/(finance)/not-found.tsx": 5,
         "app/(finance)/predictability/loading.tsx": 1,
-        "app/(finance)/predictability/page.tsx": 37,
+        "app/(finance)/predictability/page.tsx": 34,
         "app/(finance)/projected-balance/loading.tsx": 1,
         "app/(finance)/projected-balance/page.tsx": 137,
         "app/(finance)/recurring/loading.tsx": 1,
@@ -128,7 +128,7 @@
         "app/api/session/route.ts": 45,
         "app/api/transactions/route.ts": 36,
         "app/api/unlock/route.ts": 2,
-        "app/interfaces/predictability.ts": 89,
+        "app/interfaces/predictability.ts": 108,
         "app/interfaces/projected-balance.ts": 181,
         "app/layout.tsx": 56,
         "app/lock/loading.tsx": 1,
@@ -140,17 +140,24 @@
         "components/auth/account-preferences.tsx": 64,
         "components/auth/account-preview-card.tsx": 42,
         "components/auth/account-view.tsx": 68,
+        "components/auth/carousel-controls.tsx": 31,
         "components/auth/compact-account-controls.tsx": 26,
         "components/auth/google-icon.tsx": 10,
         "components/auth/lock-attempts.tsx": 21,
+        "components/auth/lock-feature-preview.tsx": 24,
         "components/auth/lock-form.tsx": 72,
-        "components/auth/lock-showcase.tsx": 30,
-        "components/auth/lock-skeleton.tsx": 31,
+        "components/auth/lock-showcase-carousel.tsx": 33,
+        "components/auth/lock-showcase.tsx": 25,
+        "components/auth/lock-skeleton.tsx": 34,
         "components/auth/lock-timeout-slider.tsx": 21,
         "components/auth/lock-user-card.tsx": 20,
-        "components/auth/login-art.tsx": 61,
+        "components/auth/login-art.tsx": 32,
         "components/auth/login-form.tsx": 43,
-        "components/auth/login-preview.tsx": 22,
+        "components/auth/login-preview-bills.tsx": 36,
+        "components/auth/login-preview-forecast.tsx": 35,
+        "components/auth/login-preview-goals.tsx": 31,
+        "components/auth/login-preview-money.tsx": 7,
+        "components/auth/login-preview.tsx": 17,
         "components/auth/login-skeleton.tsx": 22,
         "components/auth/logout-button.tsx": 49,
         "components/auth/mcp-token-settings.tsx": 35,
@@ -271,7 +278,7 @@
         "components/finance/dashboard-portfolio.tsx": 29,
         "components/finance/database-sync-indicator.tsx": 18,
         "components/finance/database-sync-provider.tsx": 9,
-        "components/finance/day-view-tabs.tsx": 54,
+        "components/finance/day-view-tabs.tsx": 56,
         "components/finance/delete-category-button.tsx": 41,
         "components/finance/detail-sheet.tsx": 32,
         "components/finance/ds/alert-list-item.tsx": 18,
@@ -440,20 +447,23 @@
         "components/finance/page-header.tsx": 13,
         "components/finance/predictability/labels.ts": 59,
         "components/finance/predictability/predictability-alerts.tsx": 35,
-        "components/finance/predictability/predictability-allocation-row.tsx": 25,
+        "components/finance/predictability/predictability-allocation-row.tsx": 28,
         "components/finance/predictability/predictability-breakdown.tsx": 54,
         "components/finance/predictability/predictability-budget-row.tsx": 35,
-        "components/finance/predictability/predictability-calendar-day.tsx": 49,
-        "components/finance/predictability/predictability-calendar.tsx": 52,
-        "components/finance/predictability/predictability-cycle-nav.tsx": 26,
+        "components/finance/predictability/predictability-calendar-day.tsx": 57,
+        "components/finance/predictability/predictability-calendar.tsx": 63,
         "components/finance/predictability/predictability-day-metric.tsx": 12,
         "components/finance/predictability/predictability-day-sheet.tsx": 67,
         "components/finance/predictability/predictability-expense-row.tsx": 25,
-        "components/finance/predictability/predictability-explorer.tsx": 35,
+        "components/finance/predictability/predictability-explorer.tsx": 51,
         "components/finance/predictability/predictability-hero.tsx": 52,
-        "components/finance/predictability/predictability-mobile-day.tsx": 35,
+        "components/finance/predictability/predictability-mobile-day.tsx": 36,
+        "components/finance/predictability/predictability-month-picker.tsx": 21,
+        "components/finance/predictability/predictability-simulation-banner.tsx": 73,
+        "components/finance/predictability/predictability-simulation-dialog.tsx": 42,
+        "components/finance/predictability/predictability-simulation-form.tsx": 65,
         "components/finance/predictability/predictability-status-chip.tsx": 12,
-        "components/finance/predictability/predictability-table-row.tsx": 36,
+        "components/finance/predictability/predictability-table-row.tsx": 37,
         "components/finance/predictability/predictability-table.tsx": 76,
         "components/finance/predictability/predictability-view.tsx": 35,
         "components/finance/privacy/hidden-financial-value.tsx": 14,
@@ -569,7 +579,7 @@
         "components/finance/sidebar-navigation-links.tsx": 102,
         "components/finance/sidebar-navigation.tsx": 57,
         "components/finance/status-dot-badge.tsx": 25,
-        "components/finance/theme-toggle.tsx": 33,
+        "components/finance/theme-toggle.tsx": 35,
         "components/finance/transaction-actions-transfer-dialog-dialog1.tsx": 109,
         "components/finance/transaction-actions.tsx": 114,
         "components/finance/transaction-dialog-transaction-dialog-dialog7.tsx": 96,
@@ -686,6 +696,7 @@
         "hooks/finance/use-transaction-dialog.ts": 120,
         "hooks/use-account-profile.ts": 49,
         "hooks/use-ai-settings.ts": 46,
+        "hooks/use-auto-carousel.ts": 54,
         "hooks/use-daily-expense-map.ts": 44,
         "hooks/use-database-synchronization.ts": 60,
         "hooks/use-desktop-layout.ts": 14,
@@ -808,8 +819,9 @@
         "lib/interfaces/ai-categorization.ts": 65,
         "lib/interfaces/ai-chat.ts": 1,
         "lib/interfaces/ai-settings.ts": 19,
-        "lib/interfaces/app-shell.ts": 20,
+        "lib/interfaces/app-shell.ts": 22,
         "lib/interfaces/auth.ts": 36,
+        "lib/interfaces/auto-carousel.ts": 31,
         "lib/interfaces/back-button.ts": 8,
         "lib/interfaces/bank-reserve.ts": 41,
         "lib/interfaces/budgets.ts": 29,
@@ -886,7 +898,7 @@
         "lib/interfaces/database-replica.ts": 39,
         "lib/interfaces/database.ts": 9,
         "lib/interfaces/date-pickers.ts": 53,
-        "lib/interfaces/day-detail.ts": 30,
+        "lib/interfaces/day-detail.ts": 32,
         "lib/interfaces/design-system.ts": 78,
         "lib/interfaces/expense-groups.ts": 39,
         "lib/interfaces/finance-actions.ts": 9,
@@ -906,7 +918,7 @@
         "lib/interfaces/investments.ts": 117,
         "lib/interfaces/loading.ts": 28,
         "lib/interfaces/local-auth.ts": 58,
-        "lib/interfaces/login-preview.ts": 3,
+        "lib/interfaces/login-preview.ts": 9,
         "lib/interfaces/market-data.ts": 28,
         "lib/interfaces/mcp-tool-registrar.ts": 4,
         "lib/interfaces/monthly-retrospective.ts": 21,
@@ -919,7 +931,7 @@
         "lib/interfaces/pluggy-cutover.ts": 149,
         "lib/interfaces/pluggy-investments.ts": 47,
         "lib/interfaces/pluggy.ts": 233,
-        "lib/interfaces/predictability.ts": 112,
+        "lib/interfaces/predictability.ts": 137,
         "lib/interfaces/profile.ts": 10,
         "lib/interfaces/projected-balance-server.ts": 54,
         "lib/interfaces/projected-balance.ts": 113,
@@ -1035,6 +1047,7 @@
         "lib/pluggy-account-rules.ts": 12,
         "lib/pluggy-ui.ts": 157,
         "lib/predictability-calendar.ts": 29,
+        "lib/predictability-simulation.ts": 64,
         "lib/predictability.ts": 256,
         "lib/presumed-income.ts": 15,
         "lib/projected-balance-calendar.ts": 50,
@@ -1185,7 +1198,7 @@
         "lib/server/pluggy/steps/sync-investment-positions.ts": 103,
         "lib/server/pluggy/sync-runs.ts": 55,
         "lib/server/pluggy/sync.ts": 209,
-        "lib/server/predictability.ts": 129,
+        "lib/server/predictability.ts": 120,
         "lib/server/projected-balance/accounts.ts": 135,
         "lib/server/projected-balance/commitments.ts": 141,
         "lib/server/projected-balance/filters.ts": 211,
@@ -1496,8 +1509,8 @@
           "file": "app/(finance)/predictability/page.tsx",
           "name": "PredictabilityPage",
           "startLine": 12,
-          "endLine": 37,
-          "lines": 26
+          "endLine": 34,
+          "lines": 23
         },
         {
           "file": "app/(finance)/projected-balance/page.tsx",
@@ -2970,6 +2983,41 @@
           "lines": 1
         },
         {
+          "file": "components/auth/carousel-controls.tsx",
+          "name": "CarouselControls",
+          "startLine": 20,
+          "endLine": 31,
+          "lines": 12
+        },
+        {
+          "file": "components/auth/carousel-controls.tsx",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/carousel-controls.tsx",
+          "name": "anonymous",
+          "startLine": 26,
+          "endLine": 26,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/carousel-controls.tsx",
+          "name": "anonymous",
+          "startLine": 26,
+          "endLine": 26,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/carousel-controls.tsx",
+          "name": "anonymous",
+          "startLine": 27,
+          "endLine": 27,
+          "lines": 1
+        },
+        {
           "file": "components/auth/compact-account-controls.tsx",
           "name": "CompactAccountControls",
           "startLine": 10,
@@ -2995,6 +3043,20 @@
           "name": "anonymous",
           "startLine": 18,
           "endLine": 18,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/lock-feature-preview.tsx",
+          "name": "LockFeaturePreview",
+          "startLine": 9,
+          "endLine": 24,
+          "lines": 16
+        },
+        {
+          "file": "components/auth/lock-feature-preview.tsx",
+          "name": "anonymous",
+          "startLine": 12,
+          "endLine": 12,
           "lines": 1
         },
         {
@@ -3026,38 +3088,45 @@
           "lines": 1
         },
         {
-          "file": "components/auth/lock-showcase.tsx",
-          "name": "LockShowcase",
+          "file": "components/auth/lock-showcase-carousel.tsx",
+          "name": "LockShowcaseCarousel",
           "startLine": 12,
-          "endLine": 30,
-          "lines": 19
+          "endLine": 33,
+          "lines": 22
+        },
+        {
+          "file": "components/auth/lock-showcase-carousel.tsx",
+          "name": "anonymous",
+          "startLine": 17,
+          "endLine": 28,
+          "lines": 12
+        },
+        {
+          "file": "components/auth/lock-showcase-carousel.tsx",
+          "name": "anonymous",
+          "startLine": 31,
+          "endLine": 31,
+          "lines": 1
         },
         {
           "file": "components/auth/lock-showcase.tsx",
-          "name": "anonymous",
-          "startLine": 24,
-          "endLine": 27,
-          "lines": 4
+          "name": "LockShowcase",
+          "startLine": 6,
+          "endLine": 25,
+          "lines": 20
         },
         {
           "file": "components/auth/lock-skeleton.tsx",
           "name": "LockSkeleton",
           "startLine": 3,
-          "endLine": 31,
-          "lines": 29
+          "endLine": 34,
+          "lines": 32
         },
         {
           "file": "components/auth/lock-skeleton.tsx",
           "name": "anonymous",
           "startLine": 15,
           "endLine": 15,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/lock-skeleton.tsx",
-          "name": "anonymous",
-          "startLine": 27,
-          "endLine": 27,
           "lines": 1
         },
         {
@@ -3104,136 +3173,24 @@
         },
         {
           "file": "components/auth/login-art.tsx",
+          "name": "anonymous",
+          "startLine": 12,
+          "endLine": 12,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/login-art.tsx",
           "name": "LoginArt",
           "startLine": 14,
-          "endLine": 61,
-          "lines": 48
+          "endLine": 32,
+          "lines": 19
         },
         {
           "file": "components/auth/login-art.tsx",
           "name": "anonymous",
           "startLine": 21,
-          "endLine": 27,
-          "lines": 7
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "update",
-          "startLine": 23,
-          "endLine": 23,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 26,
           "endLine": 26,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 29,
-          "endLine": 36,
-          "lines": 8
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 32,
-          "endLine": 34,
-          "lines": 3
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 35,
-          "endLine": 35,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "navigate",
-          "startLine": 38,
-          "endLine": 38,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 45,
-          "endLine": 50,
           "lines": 6
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 54,
-          "endLine": 54,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 55,
-          "endLine": 55,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 55,
-          "endLine": 55,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 56,
-          "endLine": 56,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-art.tsx",
-          "name": "anonymous",
-          "startLine": 57,
-          "endLine": 57,
-          "lines": 1
         },
         {
           "file": "components/auth/login-form.tsx",
@@ -3250,32 +3207,81 @@
           "lines": 20
         },
         {
+          "file": "components/auth/login-preview-bills.tsx",
+          "name": "LoginPreviewBills",
+          "startLine": 8,
+          "endLine": 36,
+          "lines": 29
+        },
+        {
+          "file": "components/auth/login-preview-bills.tsx",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 26,
+          "lines": 7
+        },
+        {
+          "file": "components/auth/login-preview-bills.tsx",
+          "name": "anonymous",
+          "startLine": 24,
+          "endLine": 24,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/login-preview-bills.tsx",
+          "name": "anonymous",
+          "startLine": 29,
+          "endLine": 33,
+          "lines": 5
+        },
+        {
+          "file": "components/auth/login-preview-forecast.tsx",
+          "name": "LoginPreviewForecast",
+          "startLine": 13,
+          "endLine": 35,
+          "lines": 23
+        },
+        {
+          "file": "components/auth/login-preview-forecast.tsx",
+          "name": "anonymous",
+          "startLine": 27,
+          "endLine": 27,
+          "lines": 1
+        },
+        {
+          "file": "components/auth/login-preview-forecast.tsx",
+          "name": "anonymous",
+          "startLine": 29,
+          "endLine": 32,
+          "lines": 4
+        },
+        {
+          "file": "components/auth/login-preview-goals.tsx",
+          "name": "LoginPreviewGoals",
+          "startLine": 11,
+          "endLine": 31,
+          "lines": 21
+        },
+        {
+          "file": "components/auth/login-preview-goals.tsx",
+          "name": "anonymous",
+          "startLine": 24,
+          "endLine": 28,
+          "lines": 5
+        },
+        {
+          "file": "components/auth/login-preview-money.tsx",
+          "name": "LoginPreviewMoney",
+          "startLine": 5,
+          "endLine": 7,
+          "lines": 3
+        },
+        {
           "file": "components/auth/login-preview.tsx",
           "name": "LoginPreview",
-          "startLine": 4,
-          "endLine": 22,
-          "lines": 19
-        },
-        {
-          "file": "components/auth/login-preview.tsx",
-          "name": "anonymous",
           "startLine": 9,
-          "endLine": 9,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-preview.tsx",
-          "name": "anonymous",
-          "startLine": 13,
-          "endLine": 13,
-          "lines": 1
-        },
-        {
-          "file": "components/auth/login-preview.tsx",
-          "name": "anonymous",
-          "startLine": 16,
-          "endLine": 16,
-          "lines": 1
+          "endLine": 17,
+          "lines": 9
         },
         {
           "file": "components/auth/login-skeleton.tsx",
@@ -6011,8 +6017,8 @@
           "file": "components/finance/day-view-tabs.tsx",
           "name": "DayViewTabs",
           "startLine": 10,
-          "endLine": 54,
-          "lines": 45
+          "endLine": 56,
+          "lines": 47
         },
         {
           "file": "components/finance/day-view-tabs.tsx",
@@ -10168,9 +10174,9 @@
         {
           "file": "components/finance/predictability/predictability-allocation-row.tsx",
           "name": "PredictabilityAllocationRow",
-          "startLine": 8,
-          "endLine": 25,
-          "lines": 18
+          "startLine": 9,
+          "endLine": 28,
+          "lines": 20
         },
         {
           "file": "components/finance/predictability/predictability-breakdown.tsx",
@@ -10204,22 +10210,22 @@
           "file": "components/finance/predictability/predictability-calendar-day.tsx",
           "name": "PredictabilityCalendarDay",
           "startLine": 10,
-          "endLine": 49,
-          "lines": 40
+          "endLine": 57,
+          "lines": 48
         },
         {
           "file": "components/finance/predictability/predictability-calendar-day.tsx",
           "name": "anonymous",
-          "startLine": 24,
-          "endLine": 24,
+          "startLine": 25,
+          "endLine": 25,
           "lines": 1
         },
         {
           "file": "components/finance/predictability/predictability-calendar.tsx",
           "name": "PredictabilityCalendar",
           "startLine": 13,
-          "endLine": 52,
-          "lines": 40
+          "endLine": 63,
+          "lines": 51
         },
         {
           "file": "components/finance/predictability/predictability-calendar.tsx",
@@ -10239,22 +10245,15 @@
           "file": "components/finance/predictability/predictability-calendar.tsx",
           "name": "anonymous",
           "startLine": 25,
-          "endLine": 31,
-          "lines": 7
+          "endLine": 36,
+          "lines": 12
         },
         {
           "file": "components/finance/predictability/predictability-calendar.tsx",
           "name": "anonymous",
           "startLine": 27,
-          "endLine": 29,
-          "lines": 3
-        },
-        {
-          "file": "components/finance/predictability/predictability-cycle-nav.tsx",
-          "name": "PredictabilityCycleNav",
-          "startLine": 8,
-          "endLine": 26,
-          "lines": 19
+          "endLine": 34,
+          "lines": 8
         },
         {
           "file": "components/finance/predictability/predictability-day-metric.tsx",
@@ -10294,29 +10293,43 @@
         {
           "file": "components/finance/predictability/predictability-explorer.tsx",
           "name": "PredictabilityExplorer",
-          "startLine": 13,
-          "endLine": 35,
-          "lines": 23
+          "startLine": 16,
+          "endLine": 51,
+          "lines": 36
         },
         {
           "file": "components/finance/predictability/predictability-explorer.tsx",
           "name": "anonymous",
-          "startLine": 15,
-          "endLine": 15,
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/predictability/predictability-explorer.tsx",
+          "name": "anonymous",
+          "startLine": 22,
+          "endLine": 22,
           "lines": 1
         },
         {
           "file": "components/finance/predictability/predictability-explorer.tsx",
           "name": "selectDay",
-          "startLine": 16,
-          "endLine": 16,
+          "startLine": 23,
+          "endLine": 23,
           "lines": 1
         },
         {
           "file": "components/finance/predictability/predictability-explorer.tsx",
           "name": "anonymous",
-          "startLine": 27,
-          "endLine": 31,
+          "startLine": 30,
+          "endLine": 30,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/predictability/predictability-explorer.tsx",
+          "name": "anonymous",
+          "startLine": 43,
+          "endLine": 47,
           "lines": 5
         },
         {
@@ -10330,14 +10343,91 @@
           "file": "components/finance/predictability/predictability-mobile-day.tsx",
           "name": "PredictabilityMobileDay",
           "startLine": 12,
-          "endLine": 35,
-          "lines": 24
+          "endLine": 36,
+          "lines": 25
         },
         {
           "file": "components/finance/predictability/predictability-mobile-day.tsx",
           "name": "anonymous",
           "startLine": 18,
           "endLine": 18,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/predictability/predictability-month-picker.tsx",
+          "name": "PredictabilityMonthPicker",
+          "startLine": 8,
+          "endLine": 21,
+          "lines": 14
+        },
+        {
+          "file": "components/finance/predictability/predictability-month-picker.tsx",
+          "name": "anonymous",
+          "startLine": 18,
+          "endLine": 18,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-banner.tsx",
+          "name": "describeReach",
+          "startLine": 12,
+          "endLine": 23,
+          "lines": 12
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-banner.tsx",
+          "name": "PredictabilitySimulationBanner",
+          "startLine": 25,
+          "endLine": 73,
+          "lines": 49
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-dialog.tsx",
+          "name": "PredictabilitySimulationDialog",
+          "startLine": 13,
+          "endLine": 42,
+          "lines": 30
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-dialog.tsx",
+          "name": "anonymous",
+          "startLine": 34,
+          "endLine": 37,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-form.tsx",
+          "name": "parseAmount",
+          "startLine": 16,
+          "endLine": 22,
+          "lines": 7
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-form.tsx",
+          "name": "PredictabilitySimulationForm",
+          "startLine": 24,
+          "endLine": 65,
+          "lines": 42
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-form.tsx",
+          "name": "submit",
+          "startLine": 31,
+          "endLine": 40,
+          "lines": 10
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-form.tsx",
+          "name": "anonymous",
+          "startLine": 44,
+          "endLine": 47,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/predictability/predictability-simulation-form.tsx",
+          "name": "anonymous",
+          "startLine": 57,
+          "endLine": 57,
           "lines": 1
         },
         {
@@ -10351,8 +10441,8 @@
           "file": "components/finance/predictability/predictability-table-row.tsx",
           "name": "PredictabilityTableRow",
           "startLine": 13,
-          "endLine": 36,
-          "lines": 24
+          "endLine": 37,
+          "lines": 25
         },
         {
           "file": "components/finance/predictability/predictability-table-row.tsx",
@@ -13073,43 +13163,43 @@
         {
           "file": "components/finance/theme-toggle.tsx",
           "name": "subscribe",
-          "startLine": 9,
-          "endLine": 9,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/theme-toggle.tsx",
-          "name": "anonymous",
-          "startLine": 9,
-          "endLine": 9,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/theme-toggle.tsx",
-          "name": "getSnapshot",
-          "startLine": 10,
-          "endLine": 10,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/theme-toggle.tsx",
-          "name": "getServerSnapshot",
           "startLine": 11,
           "endLine": 11,
           "lines": 1
         },
         {
           "file": "components/finance/theme-toggle.tsx",
-          "name": "ThemeToggle",
+          "name": "anonymous",
+          "startLine": 11,
+          "endLine": 11,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/theme-toggle.tsx",
+          "name": "getSnapshot",
+          "startLine": 12,
+          "endLine": 12,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/theme-toggle.tsx",
+          "name": "getServerSnapshot",
           "startLine": 13,
-          "endLine": 33,
+          "endLine": 13,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/theme-toggle.tsx",
+          "name": "ThemeToggle",
+          "startLine": 15,
+          "endLine": 35,
           "lines": 21
         },
         {
           "file": "components/finance/theme-toggle.tsx",
           "name": "anonymous",
-          "startLine": 28,
-          "endLine": 28,
+          "startLine": 30,
+          "endLine": 30,
           "lines": 1
         },
         {
@@ -17115,6 +17205,118 @@
           "startLine": 43,
           "endLine": 43,
           "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "reducedMotion",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "useAutoCarousel",
+          "startLine": 10,
+          "endLine": 54,
+          "lines": 45
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 17,
+          "endLine": 23,
+          "lines": 7
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "update",
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 22,
+          "endLine": 22,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 32,
+          "lines": 8
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 30,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 31,
+          "endLine": 31,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "navigate",
+          "startLine": 34,
+          "endLine": 34,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "togglePause",
+          "startLine": 41,
+          "endLine": 41,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "anonymous",
+          "startLine": 41,
+          "endLine": 41,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "onMouseEnter",
+          "startLine": 43,
+          "endLine": 43,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "onMouseLeave",
+          "startLine": 44,
+          "endLine": 44,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "onFocusCapture",
+          "startLine": 45,
+          "endLine": 45,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "onBlurCapture",
+          "startLine": 46,
+          "endLine": 46,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-auto-carousel.ts",
+          "name": "onKeyDown",
+          "startLine": 47,
+          "endLine": 51,
+          "lines": 5
         },
         {
           "file": "hooks/use-daily-expense-map.ts",
@@ -22624,6 +22826,41 @@
           "startLine": 27,
           "endLine": 27,
           "lines": 1
+        },
+        {
+          "file": "lib/predictability-simulation.ts",
+          "name": "simulatePurchase",
+          "startLine": 14,
+          "endLine": 58,
+          "lines": 45
+        },
+        {
+          "file": "lib/predictability-simulation.ts",
+          "name": "anonymous",
+          "startLine": 23,
+          "endLine": 23,
+          "lines": 1
+        },
+        {
+          "file": "lib/predictability-simulation.ts",
+          "name": "anonymous",
+          "startLine": 37,
+          "endLine": 37,
+          "lines": 1
+        },
+        {
+          "file": "lib/predictability-simulation.ts",
+          "name": "anonymous",
+          "startLine": 38,
+          "endLine": 38,
+          "lines": 1
+        },
+        {
+          "file": "lib/predictability-simulation.ts",
+          "name": "resolveSimulationMinDate",
+          "startLine": 61,
+          "endLine": 64,
+          "lines": 4
         },
         {
           "file": "lib/predictability.ts",
@@ -31748,114 +31985,107 @@
         },
         {
           "file": "lib/server/predictability.ts",
-          "name": "parsePredictabilityReference",
-          "startLine": 23,
-          "endLine": 30,
-          "lines": 8
-        },
-        {
-          "file": "lib/server/predictability.ts",
           "name": "findCycleAnchorDay",
-          "startLine": 33,
-          "endLine": 41,
+          "startLine": 23,
+          "endLine": 31,
           "lines": 9
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 34,
-          "endLine": 34,
+          "startLine": 24,
+          "endLine": 24,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 37,
-          "endLine": 37,
+          "startLine": 27,
+          "endLine": 27,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 38,
-          "endLine": 38,
+          "startLine": 28,
+          "endLine": 28,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "eventAccountName",
-          "startLine": 43,
-          "endLine": 45,
+          "startLine": 33,
+          "endLine": 35,
           "lines": 3
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "toBudgetItem",
-          "startLine": 47,
-          "endLine": 56,
+          "startLine": 37,
+          "endLine": 46,
           "lines": 10
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "listPredictabilityExpenses",
-          "startLine": 59,
-          "endLine": 109,
+          "startLine": 49,
+          "endLine": 99,
           "lines": 51
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 64,
-          "endLine": 64,
+          "startLine": 54,
+          "endLine": 54,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 83,
+          "startLine": 73,
+          "endLine": 73,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/predictability.ts",
+          "name": "anonymous",
+          "startLine": 74,
+          "endLine": 74,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/predictability.ts",
+          "name": "anonymous",
+          "startLine": 79,
           "endLine": 83,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/predictability.ts",
-          "name": "anonymous",
-          "startLine": 84,
-          "endLine": 84,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/predictability.ts",
-          "name": "anonymous",
-          "startLine": 89,
-          "endLine": 93,
           "lines": 5
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 96,
-          "endLine": 99,
+          "startLine": 86,
+          "endLine": 89,
           "lines": 4
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 101,
-          "endLine": 108,
+          "startLine": 91,
+          "endLine": 98,
           "lines": 8
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "getPredictability",
-          "startLine": 111,
-          "endLine": 129,
-          "lines": 19
+          "startLine": 101,
+          "endLine": 120,
+          "lines": 20
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 126,
-          "endLine": 126,
+          "startLine": 117,
+          "endLine": 117,
           "lines": 1
         },
         {
@@ -34859,33 +35089,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 11282,
-      "total": 12616
+      "covered": 11377,
+      "total": 12712
     },
     "statements": {
-      "covered": 12917,
-      "total": 14542
+      "covered": 13013,
+      "total": 14639
     },
     "functions": {
-      "covered": 4144,
-      "total": 4788
+      "covered": 4177,
+      "total": 4819
     },
     "branches": {
-      "covered": 8245,
-      "total": 10150
+      "covered": 8301,
+      "total": 10207
     }
   },
   "duplication": {
-    "totalLines": 57321,
+    "totalLines": 57807,
     "duplicatedLines": 382,
     "fragments": 42
   },
-  "headSha": "a851046e57625cd2e4e364914b4f485c0ac12794",
-  "runId": "44804965954",
+  "headSha": "f3c83100415139146f5ef83c90186d83d0a81aff",
+  "runId": "44909680012",
   "runAttempt": "1",
   "source": {
-    "commit": "a851046e57625cd2e4e364914b4f485c0ac12794",
-    "runId": "44804965954",
+    "commit": "f3c83100415139146f5ef83c90186d83d0a81aff",
+    "runId": "44909680012",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
