@@ -2,6 +2,7 @@
 export interface InvestmentsViewDiv2Props {
   projection: import("@/lib/interfaces/investments").InvestmentProjection | null;
   contributionHistory: import("@/lib/interfaces/investments").InvestmentContributionHistory;
+  reserveDestinations: import("@/lib/interfaces/reserve-destination").ReserveDestinationContribution[];
   cards: { months: number; value: number | null; }[];
   isSimulationPickerOpen: boolean;
   setIsSimulationPickerOpen: import("react").Dispatch<import("react").SetStateAction<boolean>>;

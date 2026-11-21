@@ -51,8 +51,15 @@ export const transactions = sqliteTable(
     isIncludedInInvestmentCheckpoint: encryptedBoolean("is_included_in_investment_checkpoint", "transactions.is_included_in_investment_checkpoint")
       .notNull()
       .$defaultFn(() => true),
-    /** Only on bank-tracked withdrawals; it never changes the account side of the movement. */
+    /**
+     * Only on bank-tracked movements; it never changes the account side of the movement.
+     * A withdrawal keeps where it came from. A contribution is only `pending` while it waits for its destination.
+     */
     investmentOrigin: encryptedText("investment_origin", "transactions.investment_origin", { enum: investmentWithdrawalOrigins }),
+    /** The part of a bank-tracked contribution that went to the reserve; the rest went to investments. `null` until classified. */
+    reserveShareCents: encryptedInteger("reserve_share_cents", "transactions.reserve_share_cents"),
+    /** The day the share was set. A reserve amount typed on or after it already includes the share. */
+    reserveClassifiedOn: encryptedText("reserve_classified_on", "transactions.reserve_classified_on"),
     importFingerprintHash: text("import_fingerprint_hash"),
     competenceMonthHash: text("competence_month_hash"),
     ...timestampColumns("transactions"),

@@ -23,7 +23,7 @@ const split = (overrides: Partial<BankReserveSplit> = {}): BankReserveSplit => (
   ...overrides,
 });
 
-const overview = (bank: BankReserveSplit) => ({ ...fixtures.overview, totalCents: bank.totalCents, reserve: { ...fixtures.overview.reserve, amountCents: bank.reserveCents, configured: bank.configuredReserveCents !== null }, portfolioCents: bank.portfolioCents, bank, pendingWithdrawals: [] as PendingReserveWithdrawal[] });
+const overview = (bank: BankReserveSplit) => ({ ...fixtures.overview, totalCents: bank.totalCents, reserve: { ...fixtures.overview.reserve, amountCents: bank.reserveCents, configured: bank.configuredReserveCents !== null }, portfolioCents: bank.portfolioCents, bank, pendingWithdrawals: [] as PendingReserveWithdrawal[], reserveDestinations: [], stalePositions: [] });
 const projection = (bank: BankReserveSplit) => ({ ...fixtures.projection, source: "bank" as const, bank, currentBalanceCents: bank.reserveCents });
 
 it("sets the reserve over the bank's total from the investments overview", async () => {

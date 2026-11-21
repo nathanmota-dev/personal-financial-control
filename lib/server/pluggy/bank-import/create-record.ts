@@ -1,5 +1,6 @@
 import { pluggyImportLedger } from "@/lib/db/schema";
 import type { BankImportLocalRow, BankImportScope, PluggyBankClassification, PluggyBankRow } from "@/lib/interfaces/pluggy-bank-import";
+import { markPendingReserveDestination } from "@/lib/server/investments/reserve-destinations";
 import { createSingleTransactionInTransaction } from "@/lib/server/transactions/creation";
 import type { TransactionValues } from "@/lib/server/transactions/validation";
 import { resolveRuleCategory } from "../category-rules";
@@ -28,10 +29,15 @@ export async function createBankRecord(scope: BankImportScope, row: PluggyBankRo
     importFingerprint: row.fingerprint,
   };
   const holder: { row?: BankImportLocalRow } = {};
-  const tracksReserve = classification === "investment_withdrawal" && await tracksLinkedPositions(scope);
+  // Only connections that report followed positions move the reserve, in either direction.
+  const tracksReserve = isInvestment && await tracksLinkedPositions(scope);
   await context.write((db) => db.transaction(async (tx) => {
     const created = await createSingleTransactionInTransaction(tx, values, { externallyTracked: isInvestment });
-    if (tracksReserve) created.investmentOrigin = await attributeImportedWithdrawal(tx, created);
+    if (tracksReserve) {
+      created.investmentOrigin = classification === "investment_withdrawal"
+        ? await attributeImportedWithdrawal(tx, created)
+        : await markPendingReserveDestination(tx, created);
+    }
     holder.row = created;
     await tx.insert(pluggyImportLedger).values(ledgerValues({ fingerprint: row.fingerprint, outcome: "created", localTable: "transactions", localId: created.id }, context.now));
   }));

@@ -1,0 +1,1 @@
+ALTER TABLE transactions ADD reserve_share_cents TEXT CONSTRAINT transactions_reserve_share_cents_encrypted CHECK (reserve_share_cents IS NULL OR (typeof(reserve_share_cents) = 'text' AND reserve_share_cents LIKE 'pfc:v2:%'));

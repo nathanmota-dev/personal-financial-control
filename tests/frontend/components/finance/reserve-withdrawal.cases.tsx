@@ -31,6 +31,8 @@ const overview = (pendingWithdrawals: PendingReserveWithdrawal[], split: BankRes
   portfolioCents: bank.portfolioCents,
   bank: split,
   pendingWithdrawals,
+  reserveDestinations: [],
+  stalePositions: [],
 });
 
 it("lists bank withdrawals waiting for an origin and classifies one as reserve", async () => {

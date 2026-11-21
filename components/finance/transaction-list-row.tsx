@@ -5,6 +5,7 @@ import { IconTile } from "@/components/finance/ds/icon-tile";
 import { ToneChip } from "@/components/finance/ds/tone-chip";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { DeleteTransactionDialog } from "@/components/finance/transaction-actions";
+import { TransactionDestinationButton } from "@/components/finance/transaction-destination-button";
 import { TransactionDialog } from "@/components/finance/transaction-dialog";
 import { Button } from "@/components/ui/button";
 import { toneClass, toneForStatus, toneForTransactionType } from "@/lib/finance-tone";
@@ -50,6 +51,7 @@ export function TransactionListRow({ transaction, accounts, categories, filters,
       <div role="cell" className="col-span-2 col-start-2 flex min-w-0 flex-wrap items-center gap-1.5 md:col-span-1 md:col-start-auto">
         <CategoryChip name={transaction.category?.name} />
         {transaction.isGeneratedByFunding ? <ToneChip tone="warning">Automático</ToneChip> : transaction.fundingSource === "investments" ? <ToneChip tone="brand">Investimentos</ToneChip> : null}
+        <TransactionDestinationButton transaction={transaction} />
       </div>
       <div role="cell" className="col-start-2 md:col-start-auto">
         <ToneChip tone={toneForStatus(transaction.status)} dot>{transactionStatusLabels[transaction.status]}</ToneChip>

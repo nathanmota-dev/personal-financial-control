@@ -11,6 +11,7 @@ import { projectCompoundBalance } from "@/lib/investment-projection";
 export function InvestmentsView({
   projection,
   contributionHistory,
+  reserveDestinations = [],
 }: InvestmentsViewProps) {
   const today = new Date();
   const currentMonth = startOfMonth(today);
@@ -72,6 +73,6 @@ export function InvestmentsView({
   }
 
   return (
-    <InvestmentsViewDiv2 projection={projection} contributionHistory={contributionHistory} cards={cards} isSimulationPickerOpen={isSimulationPickerOpen} setIsSimulationPickerOpen={setIsSimulationPickerOpen} selectedSimulationDate={selectedSimulationDate} applySimulation={applySimulation} minSimulationMonth={minSimulationMonth} maxSimulationMonth={maxSimulationMonth} simulatedMonths={simulatedMonths} simulatedValue={simulatedValue} />
+    <InvestmentsViewDiv2 projection={projection} contributionHistory={contributionHistory} reserveDestinations={reserveDestinations} cards={cards} isSimulationPickerOpen={isSimulationPickerOpen} setIsSimulationPickerOpen={setIsSimulationPickerOpen} selectedSimulationDate={selectedSimulationDate} applySimulation={applySimulation} minSimulationMonth={minSimulationMonth} maxSimulationMonth={maxSimulationMonth} simulatedMonths={simulatedMonths} simulatedValue={simulatedValue} />
   );
 }

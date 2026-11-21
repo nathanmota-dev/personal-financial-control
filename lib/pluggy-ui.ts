@@ -62,6 +62,7 @@ export const pluggyInvestmentCountLabels: readonly (readonly [string, string])[]
   ["investmentsBelowAllocations", "investimentos abaixo das alocações"],
   ["investmentsWithdrawn", "investimentos com resgate total"],
   ["investmentsWithoutValue", "investimentos sem saldo informado"],
+  ["investmentsAutoLinked", "investimentos novos vinculados"],
   ["investmentsUnlinked", "investimentos sem vínculo"],
   ["investmentsIgnored", "investimentos de ativos arquivados"],
   ["investmentItemsEmpty", "conexões sem investimentos"],

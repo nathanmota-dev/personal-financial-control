@@ -9,6 +9,8 @@ import { currentTimestamp } from "@/lib/server/finance";
 import { getFinanceToday } from "@/lib/server/runtime";
 import type { PluggyInvestmentLinkInput } from "../inputs";
 import { mapPluggyInvestment } from "../mappers/investment";
+import { askDestinationsForNewPosition } from "@/lib/server/investments/reserve-destinations";
+import { insertLinkedHolding } from "./create-linked-holding";
 import { linkedHoldingsByAsset, PLUGGY_PROVIDER, suggestHolding, uniqueMatchCodes } from "./match-holdings";
 import { readRemoteInvestments } from "./read-positions";
 
@@ -53,13 +55,6 @@ async function findRemotePosition({ itemId, externalAssetId }: PluggyInvestmentL
   return remote;
 }
 
-/** One insert, so a holding can never exist without the link that keeps it from being created twice. */
-async function insertLinkedHolding(position: PluggyMappedInvestment, tx: Transaction) {
-  const { name, institutionName, assetClass, instrumentType, currentValueCents, valueAsOf, externalAssetId } = position;
-  invariant(currentValueCents !== null, "PLUGGY_INVESTMENT_WITHOUT_VALUE", "O banco não informou o saldo em reais deste investimento.");
-  await tx.insert(investmentHoldings).values({ name, institutionName, assetClass, instrumentType, currentValueCents, valueAsOf, externalProvider: PLUGGY_PROVIDER, externalAssetId });
-}
-
 async function claimHolding(holdingId: string, holdings: PluggyLocalHolding[], externalAssetId: string, tx: Transaction) {
   const holding = holdings.find((row) => row.id === holdingId);
   invariant(holding && !holding.isArchived, "INVESTMENT_HOLDING_NOT_FOUND", "Ativo não encontrado.", 404);
@@ -76,7 +71,11 @@ export async function linkPluggyInvestment(input: PluggyInvestmentLinkInput, db:
     const holdings = await tx.query.investmentHoldings.findMany();
     invariant(!linkedHoldingsByAsset(holdings).has(position.externalAssetId), "PLUGGY_INVESTMENT_LINK_EXISTS", "Este investimento já está vinculado.", 409);
     if (input.holdingId) await claimHolding(input.holdingId, holdings, position.externalAssetId, tx);
-    else await insertLinkedHolding(position, tx);
+    else {
+      await insertLinkedHolding(tx, position);
+      // A new holding adds money the reserve amount did not see.
+      await askDestinationsForNewPosition(tx, input.itemId);
+    }
   });
 }
 

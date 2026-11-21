@@ -6,6 +6,7 @@ import { InvestmentMovementList } from "@/components/finance/investment-movement
 import { InvestmentsViewCard1 } from "@/components/finance/investments-view-investments-view-card1";
 import { InvestmentsViewSection1 } from "@/components/finance/investments-view-investments-view-section1";
 import { PageHeader } from "@/components/finance/page-header";
+import { ReserveDestinationNotice } from "@/components/finance/reserve-destination-notice";
 import { Button } from "@/components/ui/button";
 import type { InvestmentsViewDiv2Props } from "@/lib/interfaces/render/investments-view-investments-view-div2";
 import { formatSimulationMonth } from "@/lib/utils/components/investments-view";
@@ -15,7 +16,7 @@ import Link from "next/link";
 const headerButtonClassName = "h-10 gap-[10px] rounded-[10px] text-[13px] font-medium";
 const gridClassName = "grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]";
 
-export function InvestmentsViewDiv2({ projection, contributionHistory, cards, isSimulationPickerOpen, setIsSimulationPickerOpen, selectedSimulationDate, applySimulation, minSimulationMonth, maxSimulationMonth, simulatedMonths, simulatedValue }: InvestmentsViewDiv2Props) {
+export function InvestmentsViewDiv2({ projection, contributionHistory, reserveDestinations, cards, isSimulationPickerOpen, setIsSimulationPickerOpen, selectedSimulationDate, applySimulation, minSimulationMonth, maxSimulationMonth, simulatedMonths, simulatedValue }: InvestmentsViewDiv2Props) {
   return (
     <div className="space-y-6 min-[100.0625rem]:space-y-5">
       <PageHeader
@@ -45,6 +46,8 @@ export function InvestmentsViewDiv2({ projection, contributionHistory, cards, is
           </div>
         }
       />
+
+      {projection?.source === "bank" ? <ReserveDestinationNotice contributions={reserveDestinations} className="mt-0" /> : null}
 
       <div className={gridClassName}>
         <InvestmentsViewSection1 projection={projection} />

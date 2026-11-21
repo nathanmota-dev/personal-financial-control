@@ -49,6 +49,8 @@
     "import_fingerprint": "text",
     "is_included_in_investment_checkpoint": "boolean",
     "investment_origin": "text",
+    "reserve_share_cents": "integer",
+    "reserve_classified_on": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },

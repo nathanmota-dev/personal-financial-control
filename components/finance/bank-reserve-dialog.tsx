@@ -7,6 +7,7 @@ import { useState, useTransition } from "react";
 import { CurrencyInput } from "@/components/finance/calculators/currency-input";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { DialogContent } from "@/components/finance/privacy/privacy-dialog-content";
+import { ReserveShortcutButtons } from "@/components/finance/reserve-shortcut-buttons";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { BankReserveDialogProps } from "@/lib/interfaces/components/bank-reserve";
@@ -41,13 +42,7 @@ export function BankReserveDialog({ split, open, onOpenChange }: BankReserveDial
           }}
         >
           <CurrencyInput id="bank-reserve-amount" label="Reserva" value={value} onValueChange={setValue} />
-          <div className="flex flex-wrap gap-2">
-            {bankReserveShortcuts(split.totalCents).map((shortcut) => (
-              <Button key={shortcut.label} type="button" variant="outline" size="sm" className="h-8 rounded-lg text-xs" onClick={() => setValue(formatReserveInput(shortcut.cents))}>
-                {shortcut.label}
-              </Button>
-            ))}
-          </div>
+          <ReserveShortcutButtons shortcuts={bankReserveShortcuts(split.totalCents)} onPick={(cents) => setValue(formatReserveInput(cents))} />
           <dl className="grid grid-cols-3 gap-4 rounded-xl border border-border p-4 text-xs">
             <div className="min-w-0"><dt className="text-content">Total investido</dt><dd className="mt-1 text-[15px] font-semibold text-content-strong">{formatCurrency(split.totalCents)}</dd></div>
             <div className="min-w-0"><dt className="text-content">Reserva</dt><dd className="mt-1 text-[15px] font-semibold text-content-strong">{formatCurrency(invalid || aboveTotal ? 0 : reserveCents)}</dd></div>
