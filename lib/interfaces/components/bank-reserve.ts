@@ -8,7 +8,7 @@ export type BankReserveDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-export type BankReserveShortcut = { label: string; cents: number };
+export type BankReserveShortcut = import("@/lib/interfaces/components/reserve-shortcuts").ReserveShortcut;
 
 export type BankReserveSubmitContext = {
   reserveCents: number;

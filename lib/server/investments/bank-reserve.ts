@@ -7,6 +7,7 @@ import { currentTimestamp } from "@/lib/server/finance";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
+import { settlePendingDestinationsBefore } from "./settle-destinations";
 import { InvestmentDb, resolveDb, resolveReadDb } from "./validation";
 
 type HoldingRow = typeof investmentHoldings.$inferSelect;
@@ -70,6 +71,7 @@ export async function setBankReserveAmount(input: SetBankReserveInput, database?
     } else {
       await transaction.insert(investmentPortfolio).values({ checkpointBalanceCents: 0, expectedMonthlyRateBps: 0, checkpointDate: reserveConfiguredOn, reserveAmountCents, reserveConfiguredOn, updatedAt });
     }
+    await settlePendingDestinationsBefore(transaction, reserveConfiguredOn);
     return { ...split, configuredReserveCents: reserveAmountCents, ...splitBankReserve(split.totalCents, reserveAmountCents) };
   });
 }

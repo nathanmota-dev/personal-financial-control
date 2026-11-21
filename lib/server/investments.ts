@@ -4,3 +4,4 @@ export { getInvestmentProjection } from "./investments/projection";
 export { getBankReserveSplit,setBankReserveAmount } from "./investments/bank-reserve";
 export { setReserveMonthlyContribution } from "./investments/reserve-contribution";
 export { classifyPendingReserveWithdrawal,listPendingReserveWithdrawals } from "./investments/reserve-withdrawals";
+export { classifyReserveDestination,listReserveDestinations } from "./investments/reserve-destinations";

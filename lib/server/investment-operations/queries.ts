@@ -15,7 +15,8 @@ import { BrapiMarketDataProvider } from "@/lib/server/brapi";
 import { invariant } from "@/lib/server/errors";
 import { currentTimestamp,serializeTimestamps } from "@/lib/server/finance";
 import { deductReserveFromClasses } from "@/lib/bank-reserve";
-import { getInvestmentProjection,listPendingReserveWithdrawals } from "@/lib/server/investments";
+import { getInvestmentProjection,listPendingReserveWithdrawals,listReserveDestinations } from "@/lib/server/investments";
+import { listStalePositions } from "@/lib/server/investment-portfolio/stale-positions";
 import { isBankReserveMode } from "@/lib/server/investments/bank-reserve";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { and,asc,desc,eq } from "drizzle-orm";
@@ -74,8 +75,8 @@ export async function getInvestmentOverview(database?: Db) {
   const classes = investmentAssetClasses.map((assetClass) => ({ assetClass, amountCents: positions.filter((row) => row.assetClass === assetClass).reduce((sum, row) => sum + row.currentValueCents, 0) })).filter((item) => item.amountCents > 0);
   const distribution = bank ? deductReserveFromClasses(classes, bank.reserveCents) : classes;
   // Only bank-tracked withdrawals can wait for a classification.
-  const pendingWithdrawals = bank ? await listPendingReserveWithdrawals(db) : [];
-  return { pendingWithdrawals, totalCents: reserveCents + portfolioCents, reserve: { amountCents: reserveCents, purposeId: reservePurpose?.id ?? null, configured: bank ? bank.configuredReserveCents !== null : Boolean(projection) }, bank, portfolioCents, knownCostCents, resultCents: knownValueCents - knownCostCents, distribution, history: history.map(serializeTimestamps), lastUpdatedAt: positions.map((row) => row.updatedAt).sort().at(-1) ?? null };
+  const [pendingWithdrawals, reserveDestinations, stalePositions] = bank ? await Promise.all([listPendingReserveWithdrawals(db), listReserveDestinations(db), listStalePositions(db)]) : [[], [], []];
+  return { pendingWithdrawals, reserveDestinations, stalePositions, totalCents: reserveCents + portfolioCents, reserve: { amountCents: reserveCents, purposeId: reservePurpose?.id ?? null, configured: bank ? bank.configuredReserveCents !== null : Boolean(projection) }, bank, portfolioCents, knownCostCents, resultCents: knownValueCents - knownCostCents, distribution, history: history.map(serializeTimestamps), lastUpdatedAt: positions.map((row) => row.updatedAt).sort().at(-1) ?? null };
 }
 
 export async function getEmergencyReserveComposition(database?: Db) {

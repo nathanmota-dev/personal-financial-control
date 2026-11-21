@@ -58,6 +58,9 @@ export type TransactionRow = {
   isGeneratedByFunding: boolean;
   account: { id: string; name: string } | null;
   category: { id: string; name: string; group: CategoryGroup } | null;
+  /** `pending` on a bank contribution that waits for its reserve destination. */
+  investmentOrigin?: "reserve" | "portfolio" | "pending" | null;
+  reserveShareCents?: number | null;
 };
 
 export type TransferRow = {

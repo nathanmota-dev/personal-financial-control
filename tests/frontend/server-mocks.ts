@@ -46,6 +46,7 @@ vi.mock("@/lib/server/credit-card", () => ({ getCreditCardDefaultMonth: vi.fn(),
 vi.mock("@/lib/server/investments", () => ({
   getInvestmentProjection: vi.fn(),
   getInvestmentContributionHistory: vi.fn(),
+  listReserveDestinations: vi.fn(),
 }));
 vi.mock("@/lib/server/goals", () => ({ getGoalsDashboard: vi.fn() }));
 vi.mock("@/lib/server/investment-operations", () => ({
@@ -89,6 +90,8 @@ vi.mock("@/app/actions/finance", () => ({
   configureInvestmentPortfolioAction: vi.fn(),
   updateInvestmentSettingsAction: vi.fn(),
   setBankReserveAmountAction: vi.fn(),
+  classifyReserveDestinationAction: vi.fn(),
+  retireStalePositionAction: vi.fn(),
   classifyReserveWithdrawalAction: vi.fn(),
   setReserveMonthlyContributionAction: vi.fn(),
   reconcileInvestmentBalanceAction: vi.fn(),
@@ -168,6 +171,9 @@ beforeEach(() => {
   vi.mocked(investments.getInvestmentContributionHistory)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.history) as never);
+  vi.mocked(investments.listReserveDestinations)
+    .mockReset()
+    .mockResolvedValue([]);
   vi.mocked(goals.getGoalsDashboard)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.goals) as never);

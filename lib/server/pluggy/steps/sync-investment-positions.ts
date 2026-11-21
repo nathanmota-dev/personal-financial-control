@@ -9,10 +9,14 @@ import { calculateInvestmentPosition } from "@/lib/server/investment-operations/
 import { writeInvestmentSnapshots } from "@/lib/server/investment-operations/snapshots";
 import { updateInvestmentHolding } from "@/lib/server/investment-portfolio";
 import { sumBlockingAllocations } from "@/lib/server/investment-portfolio/validation";
+import { askDestinationsForNewPosition } from "@/lib/server/investments/reserve-destinations";
 import { applyReserveYield } from "@/lib/server/investments/reserve-yield";
+import { yieldWithoutContributions } from "@/lib/reserve-destination";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { bump } from "../bank-import/scope";
-import { linkedHoldingsByAsset } from "../investments/match-holdings";
+import { contributionsSinceCents } from "../investments/contributions-since";
+import { insertLinkedHolding } from "../investments/create-linked-holding";
+import { linkedHoldingsByAsset, suggestHolding, uniqueMatchCodes } from "../investments/match-holdings";
 import { readRemoteInvestments } from "../investments/read-positions";
 import { mapPluggyInvestment } from "../mappers/investment";
 
@@ -25,6 +29,10 @@ type PositionScope = {
   attention: PluggyAttentionItem[];
   /** Growth of positions that already had a value; drops are withdrawals and are left out. */
   yieldCents: number;
+  /** Whether the connection already has followed positions, and the manual holdings a new position could be. */
+  newPositions: { tracked: boolean; free: PluggyLocalHolding[]; uniqueCodes: Set<string> };
+  /** Value of the positions linked on their own in this run. */
+  newPositionsCents: number;
 };
 
 function flag(scope: PositionScope, reason: PluggyAttentionReason, position: PluggyMappedInvestment, amountCents: number) {
@@ -64,8 +72,21 @@ function reportQuoteDifference(scope: PositionScope, holding: PluggyLocalHolding
   if (differenceCents) flag(scope, "investment_quote_difference", position, differenceCents);
 }
 
+/**
+ * A connection the app already follows gets its new positions on its own. The person still decides when the
+ * connection is new, when the position holds nothing, or when a manual holding may be the same asset.
+ */
+async function linkNewPosition(scope: PositionScope, position: PluggyMappedInvestment) {
+  const { tracked, free, uniqueCodes } = scope.newPositions;
+  const valueCents = position.currentValueCents;
+  if (!tracked || position.withdrawn || !valueCents || suggestHolding(position, free, uniqueCodes)) return bump(scope, "investmentsUnlinked");
+  await scope.context.write((db) => insertLinkedHolding(db, position));
+  scope.newPositionsCents += valueCents;
+  bump(scope, "investmentsAutoLinked");
+}
+
 async function syncPosition(scope: PositionScope, position: PluggyMappedInvestment, holding: PluggyLocalHolding | undefined) {
-  if (!holding) return bump(scope, "investmentsUnlinked");
+  if (!holding) return linkNewPosition(scope, position);
   if (holding.isArchived) return bump(scope, "investmentsIgnored");
   const valueCents = position.currentValueCents;
   if (position.withdrawn) {
@@ -84,14 +105,22 @@ async function syncItemPositions(context: PluggySyncStepContext, item: PluggyIte
   const { positions, error } = await readRemoteInvestments(context.client, item);
   if (error) return { counts: { investmentItemsUnavailable: 1 } };
   if (!positions.length) return { counts: { investmentItemsEmpty: 1 } };
-  const scope: PositionScope = { context, item, counts: {}, attention: [], yieldCents: 0 };
   const today = getFinanceToday();
   const holdings = await context.db.query.investmentHoldings.findMany();
   const totalBeforeCents = holdings.reduce((total, holding) => total + (holding.isArchived ? 0 : holding.currentValueCents), 0);
   const linked = linkedHoldingsByAsset(holdings);
-  for (const remote of positions) await syncPosition(scope, mapPluggyInvestment(remote, today), linked.get(remote.id));
+  const mapped = positions.map((remote) => ({ position: mapPluggyInvestment(remote, today), holding: linked.get(remote.id) }));
+  const followed = mapped.flatMap(({ holding }) => holding && !holding.isArchived ? [holding] : []);
+  const newPositions = { tracked: followed.length > 0, free: holdings.filter((holding) => !holding.isArchived && !holding.externalAssetId), uniqueCodes: uniqueMatchCodes(mapped.map(({ position }) => position)) };
+  const scope: PositionScope = { context, item, counts: {}, attention: [], yieldCents: 0, newPositions, newPositionsCents: 0 };
+  const valuedSince = followed.filter((holding) => holding.currentValueCents > 0).map((holding) => holding.valueAsOf).sort()[0] ?? null;
+  for (const { position, holding } of mapped) await syncPosition(scope, position, holding);
+  if (scope.newPositionsCents) await context.write((db) => askDestinationsForNewPosition(db, item.id));
+  // A contribution into an existing position grows it like yield, and its destination already moved the reserve.
+  const contributionsCents = valuedSince ? await contributionsSinceCents(context.db, item.id, valuedSince) : 0;
+  const yieldCents = yieldWithoutContributions(scope.yieldCents, contributionsCents, scope.newPositionsCents);
   // The difference is taken over the stored values, so a second sync on the same day adds nothing.
-  if (scope.yieldCents > 0) await context.write((db) => applyReserveYield(db, scope.yieldCents, totalBeforeCents));
+  if (yieldCents > 0) await context.write((db) => applyReserveYield(db, yieldCents, totalBeforeCents));
   return { counts: scope.counts, attention: scope.attention };
 }
 

@@ -14,6 +14,7 @@ serializeTimestamps
 import {
 reverseInvestmentReductionForTransaction
 } from "@/lib/server/investment-reconciliation";
+import { followReserveShare } from "@/lib/server/investments/reserve-destinations";
 import { learnFromTransactionUpdate } from "@/lib/server/pluggy/category-learning";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { convertExpenseToInvestmentFunding } from "@/lib/server/stages/convert-expense-to-investment-funding";
@@ -80,6 +81,7 @@ export async function updateTransaction(
   return db.transaction(async (transactionDb) => {
     const existing = await getTransactionById(id, transactionDb);
     const updated = await applyTransactionUpdate(id, rawValues, existing, transactionDb);
+    await followReserveShare(transactionDb, existing, updated);
     await learnFromTransactionUpdate(transactionDb, existing, updated);
     return serializeTimestamps(updated);
   });
@@ -128,5 +130,6 @@ export async function deleteTransactionInTransaction(
     await reverseInvestmentReductionForTransaction(id, database);
   }
 
+  await followReserveShare(database, existing, null);
   await database.delete(transactions).where(eq(transactions.id, id));
 }

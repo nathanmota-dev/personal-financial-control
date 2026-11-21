@@ -57,6 +57,8 @@ export type InvestmentCategoryOption = InvestmentAccountOption;
 export type InvestmentsViewProps = {
   projection: InvestmentProjection | null;
   contributionHistory: InvestmentContributionHistory;
+  /** Bank contributions waiting for, or holding, a reserve destination. Only in bank mode. */
+  reserveDestinations?: import("@/lib/interfaces/reserve-destination").ReserveDestinationContribution[];
 };
 
 export type InvestmentGrowthChartProps = {

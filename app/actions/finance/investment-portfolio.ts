@@ -7,6 +7,7 @@ archiveInvestmentPurpose,
 createInvestmentHolding,
 createInvestmentPurpose,
 deleteInvestmentPurposeAllocation,
+retireStalePosition,
 updateInvestmentHolding,
 updateInvestmentPurpose,
 upsertInvestmentPurposeAllocation,
@@ -17,6 +18,7 @@ getInvestmentReductionSources,
 } from "@/lib/server/investment-reconciliation";
 import {
 classifyPendingReserveWithdrawal,
+classifyReserveDestination,
 configureInvestmentPortfolio,
 createInvestmentContribution,
 createInvestmentWithdrawal,
@@ -50,6 +52,24 @@ export async function classifyReserveWithdrawalAction(
 ) {
   await requireActionSession();
   const result = await classifyPendingReserveWithdrawal(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function classifyReserveDestinationAction(
+  input: Parameters<typeof classifyReserveDestination>[0]
+) {
+  await requireActionSession();
+  const result = await classifyReserveDestination(input);
+  revalidateFinanceViews();
+  return result;
+}
+
+export async function retireStalePositionAction(
+  input: Parameters<typeof retireStalePosition>[0]
+) {
+  await requireActionSession();
+  const result = await retireStalePosition(input);
   revalidateFinanceViews();
   return result;
 }

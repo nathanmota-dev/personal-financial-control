@@ -1,0 +1,1 @@
+ALTER TABLE transactions ADD reserve_classified_on TEXT CONSTRAINT transactions_reserve_classified_on_encrypted CHECK (reserve_classified_on IS NULL OR (typeof(reserve_classified_on) = 'text' AND reserve_classified_on LIKE 'pfc:v2:%'));
