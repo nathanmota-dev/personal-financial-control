@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 11377,
-          "total": 12712
+          "covered": 11563,
+          "total": 12906
         },
         "statements": {
-          "covered": 13013,
-          "total": 14639
+          "covered": 13244,
+          "total": 14882
         },
         "functions": {
-          "covered": 4177,
-          "total": 4819
+          "covered": 4252,
+          "total": 4896
         },
         "branches": {
-          "covered": 8301,
-          "total": 10207
+          "covered": 8489,
+          "total": 10407
         }
       },
-      "coverageFileCount": 1286,
+      "coverageFileCount": 1310,
       "duplication": {
-        "totalLines": 57807,
+        "totalLines": 58483,
         "duplicatedLines": 382,
         "fragments": 42
       },
@@ -81,7 +81,7 @@
         "app/(finance)/reports/loading.tsx": 1,
         "app/(finance)/reports/page.tsx": 30,
         "app/(finance)/reserve/loading.tsx": 1,
-        "app/(finance)/reserve/page.tsx": 28,
+        "app/(finance)/reserve/page.tsx": 31,
         "app/(finance)/settings/loading.tsx": 1,
         "app/(finance)/settings/page.tsx": 41,
         "app/(finance)/transactions/loading.tsx": 1,
@@ -91,7 +91,7 @@
         "app/actions/finance/budgets.ts": 18,
         "app/actions/finance/credit-recurring.ts": 92,
         "app/actions/finance/investment-operations.ts": 66,
-        "app/actions/finance/investment-portfolio.ts": 184,
+        "app/actions/finance/investment-portfolio.ts": 204,
         "app/actions/finance.ts": 4,
         "app/api/accounts/route.ts": 35,
         "app/api/ai/chat/route.ts": 32,
@@ -170,7 +170,7 @@
         "components/finance/archive-account-button.tsx": 40,
         "components/finance/archive-category-button.tsx": 40,
         "components/finance/bank-reserve-control.tsx": 21,
-        "components/finance/bank-reserve-dialog.tsx": 65,
+        "components/finance/bank-reserve-dialog.tsx": 60,
         "components/finance/budgets/budget-actions.tsx": 19,
         "components/finance/budgets/budget-card.tsx": 17,
         "components/finance/budgets/budget-copy.tsx": 22,
@@ -346,7 +346,7 @@
         "components/finance/investment-movement-list.tsx": 31,
         "components/finance/investment-operation-row.tsx": 37,
         "components/finance/investment-overview-link.tsx": 23,
-        "components/finance/investment-overview-view.tsx": 95,
+        "components/finance/investment-overview-view.tsx": 99,
         "components/finance/investment-portfolio/allocation-dialog-allocation-dialog-dialog-footer3.tsx": 34,
         "components/finance/investment-portfolio/allocation-dialog-allocation-dialog-div2.tsx": 35,
         "components/finance/investment-portfolio/allocation-dialog-allocation-dialog-portfolio-field1.tsx": 36,
@@ -380,9 +380,9 @@
         "components/finance/investment-reduction-dialog-investment-reduction-dialog-section1.tsx": 72,
         "components/finance/investment-reduction-dialog.tsx": 108,
         "components/finance/investments-view-investments-view-card1.tsx": 79,
-        "components/finance/investments-view-investments-view-div2.tsx": 71,
+        "components/finance/investments-view-investments-view-div2.tsx": 74,
         "components/finance/investments-view-investments-view-section1.tsx": 29,
-        "components/finance/investments-view.tsx": 77,
+        "components/finance/investments-view.tsx": 78,
         "components/finance/loading/account-skeleton.tsx": 10,
         "components/finance/loading/asset-skeleton.tsx": 11,
         "components/finance/loading/budgets-skeleton.tsx": 12,
@@ -548,9 +548,14 @@
         "components/finance/reports/summary-evidence.tsx": 10,
         "components/finance/reports/tables.tsx": 40,
         "components/finance/reports/view-loading.tsx": 8,
+        "components/finance/reserve-classification-dialog.tsx": 24,
         "components/finance/reserve-contribution-form.tsx": 49,
+        "components/finance/reserve-destination-dialog.tsx": 23,
+        "components/finance/reserve-destination-notice.tsx": 31,
+        "components/finance/reserve-destination-row.tsx": 69,
         "components/finance/reserve-figure.tsx": 15,
-        "components/finance/reserve-withdrawal-dialog.tsx": 30,
+        "components/finance/reserve-shortcut-buttons.tsx": 17,
+        "components/finance/reserve-withdrawal-dialog.tsx": 22,
         "components/finance/reserve-withdrawal-notice.tsx": 27,
         "components/finance/reserve-withdrawal-row.tsx": 38,
         "components/finance/route-status.tsx": 21,
@@ -578,10 +583,14 @@
         "components/finance/sidebar-footer.tsx": 43,
         "components/finance/sidebar-navigation-links.tsx": 102,
         "components/finance/sidebar-navigation.tsx": 57,
+        "components/finance/stale-position-row.tsx": 39,
+        "components/finance/stale-positions-dialog.tsx": 23,
+        "components/finance/stale-positions-notice.tsx": 31,
         "components/finance/status-dot-badge.tsx": 25,
         "components/finance/theme-toggle.tsx": 35,
         "components/finance/transaction-actions-transfer-dialog-dialog1.tsx": 109,
         "components/finance/transaction-actions.tsx": 114,
+        "components/finance/transaction-destination-button.tsx": 26,
         "components/finance/transaction-dialog-transaction-dialog-dialog7.tsx": 96,
         "components/finance/transaction-dialog-transaction-dialog-div2.tsx": 45,
         "components/finance/transaction-dialog-transaction-dialog-div3.tsx": 49,
@@ -593,7 +602,7 @@
         "components/finance/transaction-dialog.tsx": 28,
         "components/finance/transaction-empty-state.tsx": 16,
         "components/finance/transaction-filters.tsx": 132,
-        "components/finance/transaction-list-row.tsx": 76,
+        "components/finance/transaction-list-row.tsx": 78,
         "components/finance/transaction-list.tsx": 51,
         "components/finance/transactions-flow-bar.tsx": 12,
         "components/finance/transactions-summary.tsx": 36,
@@ -779,7 +788,7 @@
         "lib/db/schema/pluggy.ts": 109,
         "lib/db/schema/relations-core.ts": 114,
         "lib/db/schema/relations-finance.ts": 126,
-        "lib/db/schema/transactions.ts": 106,
+        "lib/db/schema/transactions.ts": 113,
         "lib/db/schema/types.ts": 39,
         "lib/db/schema.ts": 17,
         "lib/db/user-schema.ts": 21,
@@ -881,8 +890,11 @@
         "lib/interfaces/components/investment-reduction-dialog.ts": 8,
         "lib/interfaces/components/open-finance.ts": 51,
         "lib/interfaces/components/reserve-contribution.ts": 8,
+        "lib/interfaces/components/reserve-destination.ts": 19,
+        "lib/interfaces/components/reserve-shortcuts.ts": 19,
         "lib/interfaces/components/reserve-withdrawal.ts": 17,
         "lib/interfaces/components/settings-view.ts": 30,
+        "lib/interfaces/components/stale-positions.ts": 16,
         "lib/interfaces/compound-interest.ts": 105,
         "lib/interfaces/credit-card-limit.ts": 43,
         "lib/interfaces/credit-card-view.ts": 107,
@@ -915,7 +927,7 @@
         "lib/interfaces/investment-portfolio.ts": 171,
         "lib/interfaces/investment-reconciliation.ts": 52,
         "lib/interfaces/investment-reserve.ts": 5,
-        "lib/interfaces/investments.ts": 117,
+        "lib/interfaces/investments.ts": 119,
         "lib/interfaces/loading.ts": 28,
         "lib/interfaces/local-auth.ts": 58,
         "lib/interfaces/login-preview.ts": 9,
@@ -970,7 +982,7 @@
         "lib/interfaces/render/investment-reduction-dialog-investment-reduction-dialog-div2.ts": 14,
         "lib/interfaces/render/investment-reduction-dialog-investment-reduction-dialog-section1.ts": 9,
         "lib/interfaces/render/investments-view-investments-view-card1.ts": 13,
-        "lib/interfaces/render/investments-view-investments-view-div2.ts": 14,
+        "lib/interfaces/render/investments-view-investments-view-div2.ts": 15,
         "lib/interfaces/render/investments-view-investments-view-section1.ts": 4,
         "lib/interfaces/render/projected-balance-view-projected-balance-view-div1.ts": 15,
         "lib/interfaces/render/projection-simulation-dialog-projection-simulation-dialog-form1.ts": 18,
@@ -997,6 +1009,7 @@
         "lib/interfaces/report-export.ts": 4,
         "lib/interfaces/reports.ts": 57,
         "lib/interfaces/reserve-contribution.ts": 11,
+        "lib/interfaces/reserve-destination.ts": 27,
         "lib/interfaces/reserve-hero.ts": 8,
         "lib/interfaces/reserve-withdrawal.ts": 21,
         "lib/interfaces/settings.ts": 57,
@@ -1025,8 +1038,9 @@
         "lib/interfaces/stages/validate-credit-card-payment-accounts.ts": 7,
         "lib/interfaces/stages/validate-investment-reduction-plan.ts": 6,
         "lib/interfaces/stages/validate-purpose-allocation-capacity.ts": 8,
+        "lib/interfaces/stale-positions.ts": 9,
         "lib/interfaces/transaction-funding.ts": 14,
-        "lib/interfaces/transactions.ts": 177,
+        "lib/interfaces/transactions.ts": 180,
         "lib/investment-asset-illustrations.ts": 6,
         "lib/investment-class-distribution.ts": 11,
         "lib/investment-projection.ts": 257,
@@ -1045,7 +1059,7 @@
         "lib/pending-category.ts": 7,
         "lib/pj-income.ts": 52,
         "lib/pluggy-account-rules.ts": 12,
-        "lib/pluggy-ui.ts": 157,
+        "lib/pluggy-ui.ts": 158,
         "lib/predictability-calendar.ts": 29,
         "lib/predictability-simulation.ts": 64,
         "lib/predictability.ts": 256,
@@ -1061,6 +1075,7 @@
         "lib/report-overview.ts": 21,
         "lib/report-periods.ts": 34,
         "lib/reserve-contribution.ts": 26,
+        "lib/reserve-destination.ts": 39,
         "lib/reserve-withdrawal.ts": 26,
         "lib/route-status.ts": 14,
         "lib/server/accounts.ts": 191,
@@ -1110,7 +1125,7 @@
         "lib/server/housing.ts": 25,
         "lib/server/investment-operations/mutations.ts": 144,
         "lib/server/investment-operations/position.ts": 128,
-        "lib/server/investment-operations/queries.ts": 128,
+        "lib/server/investment-operations/queries.ts": 129,
         "lib/server/investment-operations/snapshots.ts": 48,
         "lib/server/investment-operations/validation.ts": 84,
         "lib/server/investment-operations.ts": 3,
@@ -1118,8 +1133,9 @@
         "lib/server/investment-portfolio/dashboard.ts": 183,
         "lib/server/investment-portfolio/holdings.ts": 147,
         "lib/server/investment-portfolio/purposes.ts": 101,
+        "lib/server/investment-portfolio/stale-positions.ts": 42,
         "lib/server/investment-portfolio/validation.ts": 183,
-        "lib/server/investment-portfolio.ts": 5,
+        "lib/server/investment-portfolio.ts": 6,
         "lib/server/investment-reconciliation/apply.ts": 82,
         "lib/server/investment-reconciliation/reversal.ts": 117,
         "lib/server/investment-reconciliation/selection.ts": 68,
@@ -1127,22 +1143,24 @@
         "lib/server/investment-reconciliation/sources.ts": 121,
         "lib/server/investment-reconciliation/validation.ts": 129,
         "lib/server/investment-reconciliation.ts": 3,
-        "lib/server/investments/bank-reserve.ts": 75,
+        "lib/server/investments/bank-reserve.ts": 77,
         "lib/server/investments/movements.ts": 127,
         "lib/server/investments/planned-movements.ts": 120,
         "lib/server/investments/portfolio.ts": 140,
         "lib/server/investments/projection.ts": 183,
         "lib/server/investments/reserve-contribution.ts": 63,
+        "lib/server/investments/reserve-destinations.ts": 129,
         "lib/server/investments/reserve-withdrawals.ts": 95,
         "lib/server/investments/reserve-yield.ts": 17,
+        "lib/server/investments/settle-destinations.ts": 11,
         "lib/server/investments/validation.ts": 48,
-        "lib/server/investments.ts": 6,
+        "lib/server/investments.ts": 7,
         "lib/server/onboarding.ts": 28,
         "lib/server/pending-category.ts": 27,
-        "lib/server/pluggy/bank-import/create-record.ts": 51,
+        "lib/server/pluggy/bank-import/create-record.ts": 57,
         "lib/server/pluggy/bank-import/own-transfer.ts": 96,
         "lib/server/pluggy/bank-import/reserve-withdrawal.ts": 44,
-        "lib/server/pluggy/bank-import/resync.ts": 93,
+        "lib/server/pluggy/bank-import/resync.ts": 103,
         "lib/server/pluggy/bank-import/run-state.ts": 75,
         "lib/server/pluggy/bank-import/scope.ts": 35,
         "lib/server/pluggy/card-bill-reconciliation.ts": 15,
@@ -1174,7 +1192,9 @@
         "lib/server/pluggy/errors.ts": 23,
         "lib/server/pluggy/group-card-installments.ts": 173,
         "lib/server/pluggy/inputs.ts": 53,
-        "lib/server/pluggy/investments/links.ts": 89,
+        "lib/server/pluggy/investments/contributions-since.ts": 14,
+        "lib/server/pluggy/investments/create-linked-holding.ts": 14,
+        "lib/server/pluggy/investments/links.ts": 88,
         "lib/server/pluggy/investments/match-holdings.ts": 43,
         "lib/server/pluggy/investments/read-positions.ts": 13,
         "lib/server/pluggy/items.ts": 60,
@@ -1195,7 +1215,7 @@
         "lib/server/pluggy/steps/import-card-bills.ts": 30,
         "lib/server/pluggy/steps/import-card-purchases.ts": 72,
         "lib/server/pluggy/steps/item-status.ts": 18,
-        "lib/server/pluggy/steps/sync-investment-positions.ts": 103,
+        "lib/server/pluggy/steps/sync-investment-positions.ts": 132,
         "lib/server/pluggy/sync-runs.ts": 55,
         "lib/server/pluggy/sync.ts": 209,
         "lib/server/predictability.ts": 120,
@@ -1240,7 +1260,7 @@
         "lib/server/stages/validate-investment-reduction-plan.ts": 86,
         "lib/server/stages/validate-purpose-allocation-capacity.ts": 54,
         "lib/server/transactions/creation.ts": 176,
-        "lib/server/transactions/mutations.ts": 132,
+        "lib/server/transactions/mutations.ts": 135,
         "lib/server/transactions/queries.ts": 185,
         "lib/server/transactions/update-funded.ts": 109,
         "lib/server/transactions/update-single.ts": 122,
@@ -1249,6 +1269,7 @@
         "lib/server/transfers.ts": 85,
         "lib/settings-cards.ts": 31,
         "lib/simples-national.ts": 15,
+        "lib/stale-positions.ts": 8,
         "lib/text-search.ts": 8,
         "lib/theme-script.ts": 16,
         "lib/transaction-navigation.ts": 24,
@@ -1297,7 +1318,9 @@
         "lib/utils/component-actions/recurring-dialog-on-submit.ts": 81,
         "lib/utils/component-actions/recurring-dialog-reset-form-state.ts": 14,
         "lib/utils/component-actions/reserve-contribution-submit.ts": 14,
+        "lib/utils/component-actions/reserve-destination-submit.ts": 14,
         "lib/utils/component-actions/reserve-withdrawal-submit.ts": 14,
+        "lib/utils/component-actions/stale-position-submit.ts": 14,
         "lib/utils/component-actions/transaction-dialog-clear-reduction-state.ts": 8,
         "lib/utils/component-actions/transaction-dialog-confirm-reduction.ts": 20,
         "lib/utils/component-actions/transaction-dialog-handle-open-change.ts": 8,
@@ -1321,6 +1344,7 @@
         "lib/utils/components/investments-view.ts": 39,
         "lib/utils/components/projection-simulation-dialog.ts": 14,
         "lib/utils/components/recurring-dialog.ts": 50,
+        "lib/utils/components/reserve-destination.ts": 26,
         "lib/utils/components/reserve-hero.ts": 45,
         "lib/utils/components/transaction-dialog.ts": 66,
         "lib/utils/finance-date.ts": 4,
@@ -1585,9 +1609,9 @@
         {
           "file": "app/(finance)/reserve/page.tsx",
           "name": "EmergencyReservePage",
-          "startLine": 12,
-          "endLine": 28,
-          "lines": 17
+          "startLine": 13,
+          "endLine": 31,
+          "lines": 19
         },
         {
           "file": "app/(finance)/settings/page.tsx",
@@ -2068,127 +2092,141 @@
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "configureInvestmentPortfolioAction",
-          "startLine": 30,
-          "endLine": 37,
+          "startLine": 32,
+          "endLine": 39,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "setBankReserveAmountAction",
-          "startLine": 39,
-          "endLine": 46,
+          "startLine": 41,
+          "endLine": 48,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "classifyReserveWithdrawalAction",
-          "startLine": 48,
-          "endLine": 55,
+          "startLine": 50,
+          "endLine": 57,
+          "lines": 8
+        },
+        {
+          "file": "app/actions/finance/investment-portfolio.ts",
+          "name": "classifyReserveDestinationAction",
+          "startLine": 59,
+          "endLine": 66,
+          "lines": 8
+        },
+        {
+          "file": "app/actions/finance/investment-portfolio.ts",
+          "name": "retireStalePositionAction",
+          "startLine": 68,
+          "endLine": 75,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "setReserveMonthlyContributionAction",
-          "startLine": 57,
-          "endLine": 64,
+          "startLine": 77,
+          "endLine": 84,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "updateInvestmentSettingsAction",
-          "startLine": 66,
-          "endLine": 73,
+          "startLine": 86,
+          "endLine": 93,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "reconcileInvestmentBalanceAction",
-          "startLine": 75,
-          "endLine": 82,
+          "startLine": 95,
+          "endLine": 102,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "getInvestmentReductionSourcesAction",
-          "startLine": 84,
-          "endLine": 89,
+          "startLine": 104,
+          "endLine": 109,
           "lines": 6
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "applyInvestmentReductionAction",
-          "startLine": 91,
-          "endLine": 98,
+          "startLine": 111,
+          "endLine": 118,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "createInvestmentContributionAction",
-          "startLine": 100,
-          "endLine": 107,
+          "startLine": 120,
+          "endLine": 127,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "createInvestmentWithdrawalAction",
-          "startLine": 109,
-          "endLine": 116,
+          "startLine": 129,
+          "endLine": 136,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "createInvestmentHoldingAction",
-          "startLine": 118,
-          "endLine": 125,
+          "startLine": 138,
+          "endLine": 145,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "updateInvestmentHoldingAction",
-          "startLine": 127,
-          "endLine": 134,
+          "startLine": 147,
+          "endLine": 154,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "archiveInvestmentHoldingAction",
-          "startLine": 136,
-          "endLine": 141,
+          "startLine": 156,
+          "endLine": 161,
           "lines": 6
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "createInvestmentPurposeAction",
-          "startLine": 143,
-          "endLine": 150,
+          "startLine": 163,
+          "endLine": 170,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "updateInvestmentPurposeAction",
-          "startLine": 152,
-          "endLine": 159,
+          "startLine": 172,
+          "endLine": 179,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "archiveInvestmentPurposeAction",
-          "startLine": 161,
-          "endLine": 166,
+          "startLine": 181,
+          "endLine": 186,
           "lines": 6
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "upsertInvestmentPurposeAllocationAction",
-          "startLine": 168,
-          "endLine": 175,
+          "startLine": 188,
+          "endLine": 195,
           "lines": 8
         },
         {
           "file": "app/actions/finance/investment-portfolio.ts",
           "name": "deleteInvestmentPurposeAllocationAction",
-          "startLine": 177,
-          "endLine": 184,
+          "startLine": 197,
+          "endLine": 204,
           "lines": 8
         },
         {
@@ -3608,50 +3646,43 @@
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "BankReserveDialog",
-          "startLine": 16,
-          "endLine": 65,
-          "lines": 50
+          "startLine": 17,
+          "endLine": 60,
+          "lines": 44
         },
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "anonymous",
-          "startLine": 38,
-          "endLine": 41,
+          "startLine": 39,
+          "endLine": 42,
           "lines": 4
         },
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "anonymous",
-          "startLine": 40,
-          "endLine": 40,
+          "startLine": 41,
+          "endLine": 41,
           "lines": 1
         },
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "onDone",
-          "startLine": 40,
-          "endLine": 40,
+          "startLine": 41,
+          "endLine": 41,
           "lines": 1
         },
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "anonymous",
           "startLine": 45,
-          "endLine": 49,
-          "lines": 5
-        },
-        {
-          "file": "components/finance/bank-reserve-dialog.tsx",
-          "name": "anonymous",
-          "startLine": 46,
-          "endLine": 46,
+          "endLine": 45,
           "lines": 1
         },
         {
           "file": "components/finance/bank-reserve-dialog.tsx",
           "name": "anonymous",
-          "startLine": 58,
-          "endLine": 58,
+          "startLine": 53,
+          "endLine": 53,
           "lines": 1
         },
         {
@@ -7612,22 +7643,22 @@
         {
           "file": "components/finance/investment-overview-view.tsx",
           "name": "InvestmentOverviewView",
-          "startLine": 22,
-          "endLine": 95,
-          "lines": 74
+          "startLine": 24,
+          "endLine": 99,
+          "lines": 76
         },
         {
           "file": "components/finance/investment-overview-view.tsx",
           "name": "anonymous",
-          "startLine": 72,
-          "endLine": 78,
+          "startLine": 76,
+          "endLine": 82,
           "lines": 7
         },
         {
           "file": "components/finance/investment-overview-view.tsx",
           "name": "anonymous",
-          "startLine": 84,
-          "endLine": 84,
+          "startLine": 88,
+          "endLine": 88,
           "lines": 1
         },
         {
@@ -8683,9 +8714,9 @@
         {
           "file": "components/finance/investments-view-investments-view-div2.tsx",
           "name": "InvestmentsViewDiv2",
-          "startLine": 18,
-          "endLine": 71,
-          "lines": 54
+          "startLine": 19,
+          "endLine": 74,
+          "lines": 56
         },
         {
           "file": "components/finance/investments-view-investments-view-section1.tsx",
@@ -8705,21 +8736,21 @@
           "file": "components/finance/investments-view.tsx",
           "name": "InvestmentsView",
           "startLine": 11,
-          "endLine": 77,
-          "lines": 67
+          "endLine": 78,
+          "lines": 68
         },
         {
           "file": "components/finance/investments-view.tsx",
           "name": "anonymous",
-          "startLine": 39,
-          "endLine": 42,
+          "startLine": 40,
+          "endLine": 43,
           "lines": 4
         },
         {
           "file": "components/finance/investments-view.tsx",
           "name": "applySimulation",
-          "startLine": 54,
-          "endLine": 72,
+          "startLine": 55,
+          "endLine": 73,
           "lines": 19
         },
         {
@@ -12328,6 +12359,20 @@
           "lines": 5
         },
         {
+          "file": "components/finance/reserve-classification-dialog.tsx",
+          "name": "ReserveClassificationDialog",
+          "startLine": 9,
+          "endLine": 24,
+          "lines": 16
+        },
+        {
+          "file": "components/finance/reserve-classification-dialog.tsx",
+          "name": "anonymous",
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
           "file": "components/finance/reserve-contribution-form.tsx",
           "name": "ReserveContributionForm",
           "startLine": 14,
@@ -12363,6 +12408,76 @@
           "lines": 1
         },
         {
+          "file": "components/finance/reserve-destination-dialog.tsx",
+          "name": "ReserveDestinationDialog",
+          "startLine": 9,
+          "endLine": 23,
+          "lines": 15
+        },
+        {
+          "file": "components/finance/reserve-destination-dialog.tsx",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 20,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/reserve-destination-notice.tsx",
+          "name": "ReserveDestinationNotice",
+          "startLine": 11,
+          "endLine": 31,
+          "lines": 21
+        },
+        {
+          "file": "components/finance/reserve-destination-notice.tsx",
+          "name": "anonymous",
+          "startLine": 14,
+          "endLine": 14,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/reserve-destination-notice.tsx",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/reserve-destination-row.tsx",
+          "name": "ReserveDestinationRow",
+          "startLine": 16,
+          "endLine": 69,
+          "lines": 54
+        },
+        {
+          "file": "components/finance/reserve-destination-row.tsx",
+          "name": "save",
+          "startLine": 26,
+          "endLine": 29,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/reserve-destination-row.tsx",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 28,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/reserve-destination-row.tsx",
+          "name": "anonymous",
+          "startLine": 48,
+          "endLine": 51,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/reserve-destination-row.tsx",
+          "name": "anonymous",
+          "startLine": 55,
+          "endLine": 55,
+          "lines": 1
+        },
+        {
           "file": "components/finance/reserve-figure.tsx",
           "name": "ReserveFigure",
           "startLine": 7,
@@ -12370,24 +12485,38 @@
           "lines": 9
         },
         {
-          "file": "components/finance/reserve-withdrawal-dialog.tsx",
-          "name": "ReserveWithdrawalDialog",
-          "startLine": 11,
-          "endLine": 30,
-          "lines": 20
+          "file": "components/finance/reserve-shortcut-buttons.tsx",
+          "name": "ReserveShortcutButtons",
+          "startLine": 7,
+          "endLine": 17,
+          "lines": 11
         },
         {
-          "file": "components/finance/reserve-withdrawal-dialog.tsx",
+          "file": "components/finance/reserve-shortcut-buttons.tsx",
           "name": "anonymous",
-          "startLine": 22,
-          "endLine": 22,
+          "startLine": 10,
+          "endLine": 14,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/reserve-shortcut-buttons.tsx",
+          "name": "anonymous",
+          "startLine": 11,
+          "endLine": 11,
           "lines": 1
         },
         {
           "file": "components/finance/reserve-withdrawal-dialog.tsx",
+          "name": "ReserveWithdrawalDialog",
+          "startLine": 9,
+          "endLine": 22,
+          "lines": 14
+        },
+        {
+          "file": "components/finance/reserve-withdrawal-dialog.tsx",
           "name": "anonymous",
-          "startLine": 25,
-          "endLine": 25,
+          "startLine": 19,
+          "endLine": 19,
           "lines": 1
         },
         {
@@ -13147,6 +13276,62 @@
           "lines": 1
         },
         {
+          "file": "components/finance/stale-position-row.tsx",
+          "name": "StalePositionRow",
+          "startLine": 12,
+          "endLine": 39,
+          "lines": 28
+        },
+        {
+          "file": "components/finance/stale-position-row.tsx",
+          "name": "anonymous",
+          "startLine": 32,
+          "endLine": 32,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/stale-position-row.tsx",
+          "name": "anonymous",
+          "startLine": 32,
+          "endLine": 32,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/stale-positions-dialog.tsx",
+          "name": "StalePositionsDialog",
+          "startLine": 10,
+          "endLine": 23,
+          "lines": 14
+        },
+        {
+          "file": "components/finance/stale-positions-dialog.tsx",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 20,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/stale-positions-notice.tsx",
+          "name": "StalePositionsNotice",
+          "startLine": 12,
+          "endLine": 31,
+          "lines": 20
+        },
+        {
+          "file": "components/finance/stale-positions-notice.tsx",
+          "name": "anonymous",
+          "startLine": 16,
+          "endLine": 16,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/stale-positions-notice.tsx",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
           "file": "components/finance/status-dot-badge.tsx",
           "name": "StatusDotBadge",
           "startLine": 5,
@@ -13284,6 +13469,20 @@
           "name": "anonymous",
           "startLine": 104,
           "endLine": 104,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/transaction-destination-button.tsx",
+          "name": "TransactionDestinationButton",
+          "startLine": 12,
+          "endLine": 26,
+          "lines": 15
+        },
+        {
+          "file": "components/finance/transaction-destination-button.tsx",
+          "name": "anonymous",
+          "startLine": 19,
+          "endLine": 19,
           "lines": 1
         },
         {
@@ -13534,9 +13733,9 @@
         {
           "file": "components/finance/transaction-list-row.tsx",
           "name": "TransactionListRow",
-          "startLine": 24,
-          "endLine": 76,
-          "lines": 53
+          "startLine": 25,
+          "endLine": 78,
+          "lines": 54
         },
         {
           "file": "components/finance/transaction-list.tsx",
@@ -21465,50 +21664,50 @@
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
-          "startLine": 60,
-          "endLine": 70,
+          "startLine": 67,
+          "endLine": 77,
           "lines": 11
         },
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
-          "startLine": 77,
-          "endLine": 77,
+          "startLine": 84,
+          "endLine": 84,
           "lines": 1
         },
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 85,
+          "endLine": 85,
           "lines": 1
         },
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
-          "startLine": 82,
-          "endLine": 86,
+          "startLine": 89,
+          "endLine": 93,
           "lines": 5
         },
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
-          "startLine": 93,
-          "endLine": 93,
-          "lines": 1
-        },
-        {
-          "file": "lib/db/schema/transactions.ts",
-          "name": "anonymous",
-          "startLine": 94,
-          "endLine": 94,
+          "startLine": 100,
+          "endLine": 100,
           "lines": 1
         },
         {
           "file": "lib/db/schema/transactions.ts",
           "name": "anonymous",
           "startLine": 101,
-          "endLine": 105,
+          "endLine": 101,
+          "lines": 1
+        },
+        {
+          "file": "lib/db/schema/transactions.ts",
+          "name": "anonymous",
+          "startLine": 108,
+          "endLine": 112,
           "lines": 5
         },
         {
@@ -22683,78 +22882,71 @@
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyCategoryGroupKey",
-          "startLine": 97,
-          "endLine": 99,
+          "startLine": 98,
+          "endLine": 100,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyRuleCategoryOptions",
-          "startLine": 102,
-          "endLine": 105,
+          "startLine": 103,
+          "endLine": 106,
           "lines": 4
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 104,
-          "endLine": 104,
+          "startLine": 105,
+          "endLine": 105,
           "lines": 1
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "formatPluggyDateTime",
-          "startLine": 107,
-          "endLine": 109,
+          "startLine": 108,
+          "endLine": 110,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyDayOf",
-          "startLine": 114,
-          "endLine": 116,
+          "startLine": 115,
+          "endLine": 117,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyToday",
-          "startLine": 118,
-          "endLine": 120,
+          "startLine": 119,
+          "endLine": 121,
           "lines": 3
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "buildPluggyAccountRows",
-          "startLine": 123,
-          "endLine": 138,
+          "startLine": 124,
+          "endLine": 139,
           "lines": 16
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 124,
-          "endLine": 124,
+          "startLine": 125,
+          "endLine": 125,
           "lines": 1
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 125,
-          "endLine": 128,
+          "startLine": 126,
+          "endLine": 129,
           "lines": 4
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 127,
-          "endLine": 127,
-          "lines": 1
-        },
-        {
-          "file": "lib/pluggy-ui.ts",
-          "name": "anonymous",
-          "startLine": 129,
-          "endLine": 129,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
@@ -22767,22 +22959,29 @@
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 130,
-          "endLine": 136,
+          "startLine": 131,
+          "endLine": 131,
+          "lines": 1
+        },
+        {
+          "file": "lib/pluggy-ui.ts",
+          "name": "anonymous",
+          "startLine": 131,
+          "endLine": 137,
           "lines": 7
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "pluggyRequest",
-          "startLine": 140,
-          "endLine": 157,
+          "startLine": 141,
+          "endLine": 158,
           "lines": 18
         },
         {
           "file": "lib/pluggy-ui.ts",
           "name": "anonymous",
-          "startLine": 151,
-          "endLine": 151,
+          "startLine": 152,
+          "endLine": 152,
           "lines": 1
         },
         {
@@ -23680,6 +23879,41 @@
           "startLine": 25,
           "endLine": 25,
           "lines": 1
+        },
+        {
+          "file": "lib/reserve-destination.ts",
+          "name": "isShareAbsorbed",
+          "startLine": 10,
+          "endLine": 13,
+          "lines": 4
+        },
+        {
+          "file": "lib/reserve-destination.ts",
+          "name": "effectiveReserveShare",
+          "startLine": 16,
+          "endLine": 20,
+          "lines": 5
+        },
+        {
+          "file": "lib/reserve-destination.ts",
+          "name": "reserveAfterShareChange",
+          "startLine": 23,
+          "endLine": 25,
+          "lines": 3
+        },
+        {
+          "file": "lib/reserve-destination.ts",
+          "name": "keptReserveShare",
+          "startLine": 28,
+          "endLine": 31,
+          "lines": 4
+        },
+        {
+          "file": "lib/reserve-destination.ts",
+          "name": "yieldWithoutContributions",
+          "startLine": 37,
+          "endLine": 39,
+          "lines": 3
         },
         {
           "file": "lib/reserve-withdrawal.ts",
@@ -25833,16 +26067,9 @@
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "listLongTermInvestmentPositions",
-          "startLine": 25,
-          "endLine": 43,
+          "startLine": 26,
+          "endLine": 44,
           "lines": 19
-        },
-        {
-          "file": "lib/server/investment-operations/queries.ts",
-          "name": "anonymous",
-          "startLine": 33,
-          "endLine": 33,
-          "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
@@ -25854,16 +26081,16 @@
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 34,
-          "endLine": 40,
-          "lines": 7
+          "startLine": 35,
+          "endLine": 35,
+          "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 41,
+          "startLine": 35,
           "endLine": 41,
-          "lines": 1
+          "lines": 7
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
@@ -25874,30 +26101,30 @@
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
+          "name": "anonymous",
+          "startLine": 43,
+          "endLine": 43,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-operations/queries.ts",
           "name": "getInvestmentAssetDetails",
-          "startLine": 45,
-          "endLine": 57,
+          "startLine": 46,
+          "endLine": 58,
           "lines": 13
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "getInvestmentOverview",
-          "startLine": 59,
-          "endLine": 79,
+          "startLine": 60,
+          "endLine": 80,
           "lines": 21
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 69,
-          "endLine": 69,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/investment-operations/queries.ts",
-          "name": "anonymous",
-          "startLine": 72,
-          "endLine": 72,
+          "startLine": 70,
+          "endLine": 70,
           "lines": 1
         },
         {
@@ -25917,51 +26144,51 @@
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 74,
-          "endLine": 74,
+          "startLine": 75,
+          "endLine": 75,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 74,
-          "endLine": 74,
+          "startLine": 75,
+          "endLine": 75,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 74,
-          "endLine": 74,
+          "startLine": 75,
+          "endLine": 75,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 78,
-          "endLine": 78,
+          "startLine": 75,
+          "endLine": 75,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-operations/queries.ts",
+          "name": "anonymous",
+          "startLine": 79,
+          "endLine": 79,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "getEmergencyReserveComposition",
-          "startLine": 81,
-          "endLine": 97,
+          "startLine": 82,
+          "endLine": 98,
           "lines": 17
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 89,
-          "endLine": 92,
-          "lines": 4
-        },
-        {
-          "file": "lib/server/investment-operations/queries.ts",
-          "name": "anonymous",
-          "startLine": 93,
+          "startLine": 90,
           "endLine": 93,
-          "lines": 1
+          "lines": 4
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
@@ -25972,37 +26199,44 @@
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
+          "name": "anonymous",
+          "startLine": 95,
+          "endLine": 95,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-operations/queries.ts",
           "name": "refreshInvestmentQuotes",
-          "startLine": 99,
-          "endLine": 128,
+          "startLine": 100,
+          "endLine": 129,
           "lines": 30
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 127,
-          "endLine": 127,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 127,
-          "endLine": 127,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 127,
-          "endLine": 127,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
           "file": "lib/server/investment-operations/queries.ts",
           "name": "anonymous",
-          "startLine": 127,
-          "endLine": 127,
+          "startLine": 128,
+          "endLine": 128,
           "lines": 1
         },
         {
@@ -26242,6 +26476,41 @@
           "startLine": 74,
           "endLine": 100,
           "lines": 27
+        },
+        {
+          "file": "lib/server/investment-portfolio/stale-positions.ts",
+          "name": "listStalePositions",
+          "startLine": 18,
+          "endLine": 24,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/investment-portfolio/stale-positions.ts",
+          "name": "anonymous",
+          "startLine": 21,
+          "endLine": 21,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-portfolio/stale-positions.ts",
+          "name": "anonymous",
+          "startLine": 22,
+          "endLine": 22,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-portfolio/stale-positions.ts",
+          "name": "anonymous",
+          "startLine": 23,
+          "endLine": 23,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investment-portfolio/stale-positions.ts",
+          "name": "retireStalePosition",
+          "startLine": 30,
+          "endLine": 42,
+          "lines": 13
         },
         {
           "file": "lib/server/investment-portfolio/validation.ts",
@@ -26680,93 +26949,93 @@
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "isBankReserveMode",
-          "startLine": 18,
-          "endLine": 20,
+          "startLine": 19,
+          "endLine": 21,
           "lines": 3
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 19,
-          "endLine": 19,
+          "startLine": 20,
+          "endLine": 20,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "readRealizedYield",
-          "startLine": 22,
-          "endLine": 27,
+          "startLine": 23,
+          "endLine": 28,
           "lines": 6
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 23,
-          "endLine": 23,
+          "startLine": 24,
+          "endLine": 24,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 25,
-          "endLine": 25,
+          "startLine": 26,
+          "endLine": 26,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "buildBankReserveSplit",
-          "startLine": 30,
-          "endLine": 45,
+          "startLine": 31,
+          "endLine": 46,
           "lines": 16
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 31,
-          "endLine": 31,
+          "startLine": 32,
+          "endLine": 32,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 33,
-          "endLine": 33,
+          "startLine": 34,
+          "endLine": 34,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 36,
-          "endLine": 36,
+          "startLine": 37,
+          "endLine": 37,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 36,
-          "endLine": 36,
+          "startLine": 37,
+          "endLine": 37,
           "lines": 1
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "getBankReserveSplit",
-          "startLine": 47,
-          "endLine": 54,
+          "startLine": 48,
+          "endLine": 55,
           "lines": 8
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "setBankReserveAmount",
-          "startLine": 57,
-          "endLine": 75,
-          "lines": 19
+          "startLine": 58,
+          "endLine": 77,
+          "lines": 20
         },
         {
           "file": "lib/server/investments/bank-reserve.ts",
           "name": "anonymous",
-          "startLine": 60,
-          "endLine": 74,
-          "lines": 15
+          "startLine": 61,
+          "endLine": 76,
+          "lines": 16
         },
         {
           "file": "lib/server/investments/movements.ts",
@@ -27063,6 +27332,132 @@
           "lines": 12
         },
         {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "isBankTracked",
+          "startLine": 21,
+          "endLine": 21,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "isPostedBankContribution",
+          "startLine": 22,
+          "endLine": 22,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "needsReserveDestination",
+          "startLine": 25,
+          "endLine": 27,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "readConfiguredOn",
+          "startLine": 30,
+          "endLine": 34,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "isOpenForDestination",
+          "startLine": 37,
+          "endLine": 41,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "markPendingReserveDestination",
+          "startLine": 47,
+          "endLine": 53,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "askDestinationsForNewPosition",
+          "startLine": 59,
+          "endLine": 69,
+          "lines": 11
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 63,
+          "endLine": 63,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 65,
+          "endLine": 65,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 66,
+          "endLine": 66,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 66,
+          "endLine": 66,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "listReserveDestinations",
+          "startLine": 72,
+          "endLine": 90,
+          "lines": 19
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 78,
+          "endLine": 78,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 79,
+          "endLine": 88,
+          "lines": 10
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 89,
+          "endLine": 89,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "classifyReserveDestination",
+          "startLine": 93,
+          "endLine": 113,
+          "lines": 21
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "anonymous",
+          "startLine": 96,
+          "endLine": 112,
+          "lines": 17
+        },
+        {
+          "file": "lib/server/investments/reserve-destinations.ts",
+          "name": "followReserveShare",
+          "startLine": 119,
+          "endLine": 129,
+          "lines": 11
+        },
+        {
           "file": "lib/server/investments/reserve-withdrawals.ts",
           "name": "reserveConfiguredOn",
           "startLine": 17,
@@ -27161,6 +27556,27 @@
           "lines": 8
         },
         {
+          "file": "lib/server/investments/settle-destinations.ts",
+          "name": "settlePendingDestinationsBefore",
+          "startLine": 7,
+          "endLine": 11,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/investments/settle-destinations.ts",
+          "name": "anonymous",
+          "startLine": 9,
+          "endLine": 9,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/investments/settle-destinations.ts",
+          "name": "anonymous",
+          "startLine": 9,
+          "endLine": 9,
+          "lines": 1
+        },
+        {
           "file": "lib/server/investments/validation.ts",
           "name": "resolveDb",
           "startLine": 38,
@@ -27212,36 +27628,36 @@
         {
           "file": "lib/server/pluggy/bank-import/create-record.ts",
           "name": "createBankRecord",
-          "startLine": 15,
-          "endLine": 41,
-          "lines": 27
+          "startLine": 16,
+          "endLine": 47,
+          "lines": 32
         },
         {
           "file": "lib/server/pluggy/bank-import/create-record.ts",
           "name": "anonymous",
-          "startLine": 32,
-          "endLine": 37,
-          "lines": 6
+          "startLine": 34,
+          "endLine": 43,
+          "lines": 10
         },
         {
           "file": "lib/server/pluggy/bank-import/create-record.ts",
           "name": "anonymous",
-          "startLine": 32,
-          "endLine": 37,
-          "lines": 6
+          "startLine": 34,
+          "endLine": 43,
+          "lines": 10
         },
         {
           "file": "lib/server/pluggy/bank-import/create-record.ts",
           "name": "recordCardPayment",
-          "startLine": 44,
-          "endLine": 51,
+          "startLine": 50,
+          "endLine": 57,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/bank-import/create-record.ts",
           "name": "anonymous",
-          "startLine": 48,
-          "endLine": 48,
+          "startLine": 54,
+          "endLine": 54,
           "lines": 1
         },
         {
@@ -27436,92 +27852,106 @@
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "bankOwnedPatch",
-          "startLine": 11,
-          "endLine": 20,
+          "startLine": 12,
+          "endLine": 21,
           "lines": 10
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "bankStateChanged",
-          "startLine": 22,
-          "endLine": 24,
+          "startLine": 23,
+          "endLine": 25,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "writeRowChange",
-          "startLine": 26,
-          "endLine": 37,
+          "startLine": 27,
+          "endLine": 38,
           "lines": 12
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "anonymous",
-          "startLine": 31,
-          "endLine": 35,
+          "startLine": 32,
+          "endLine": 36,
           "lines": 5
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "anonymous",
-          "startLine": 31,
-          "endLine": 35,
+          "startLine": 32,
+          "endLine": 36,
           "lines": 5
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
+          "name": "askReserveDestination",
+          "startLine": 41,
+          "endLine": 47,
+          "lines": 7
+        },
+        {
+          "file": "lib/server/pluggy/bank-import/resync.ts",
+          "name": "anonymous",
+          "startLine": 43,
+          "endLine": 46,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "restoreCancelled",
-          "startLine": 40,
-          "endLine": 45,
+          "startLine": 50,
+          "endLine": 55,
           "lines": 6
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "resyncExistingRow",
-          "startLine": 47,
-          "endLine": 54,
+          "startLine": 57,
+          "endLine": 64,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "replaceableRows",
-          "startLine": 57,
-          "endLine": 62,
+          "startLine": 67,
+          "endLine": 72,
           "lines": 6
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "anonymous",
-          "startLine": 58,
-          "endLine": 61,
+          "startLine": 68,
+          "endLine": 71,
           "lines": 4
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "adoptReplacedRow",
-          "startLine": 65,
-          "endLine": 80,
+          "startLine": 75,
+          "endLine": 90,
           "lines": 16
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "anonymous",
-          "startLine": 67,
-          "endLine": 69,
+          "startLine": 77,
+          "endLine": 79,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "anonymous",
-          "startLine": 70,
-          "endLine": 70,
+          "startLine": 80,
+          "endLine": 80,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/bank-import/resync.ts",
           "name": "cancelMissingPendingRows",
-          "startLine": 82,
-          "endLine": 93,
+          "startLine": 92,
+          "endLine": 103,
           "lines": 12
         },
         {
@@ -30703,43 +31133,71 @@
           "lines": 1
         },
         {
+          "file": "lib/server/pluggy/investments/contributions-since.ts",
+          "name": "contributionsSinceCents",
+          "startLine": 7,
+          "endLine": 14,
+          "lines": 8
+        },
+        {
+          "file": "lib/server/pluggy/investments/contributions-since.ts",
+          "name": "anonymous",
+          "startLine": 8,
+          "endLine": 8,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/contributions-since.ts",
+          "name": "anonymous",
+          "startLine": 10,
+          "endLine": 10,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/contributions-since.ts",
+          "name": "anonymous",
+          "startLine": 12,
+          "endLine": 12,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/contributions-since.ts",
+          "name": "anonymous",
+          "startLine": 13,
+          "endLine": 13,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/create-linked-holding.ts",
+          "name": "insertLinkedHolding",
+          "startLine": 10,
+          "endLine": 14,
+          "lines": 5
+        },
+        {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "positionView",
-          "startLine": 19,
-          "endLine": 26,
+          "startLine": 21,
+          "endLine": 28,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "compareViews",
-          "startLine": 28,
-          "endLine": 30,
+          "startLine": 30,
+          "endLine": 32,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "getPluggyInvestmentOverview",
-          "startLine": 32,
-          "endLine": 46,
+          "startLine": 34,
+          "endLine": 48,
           "lines": 15
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 35,
-          "endLine": 35,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/pluggy/investments/links.ts",
-          "name": "anonymous",
-          "startLine": 36,
-          "endLine": 36,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/pluggy/investments/links.ts",
-          "name": "anonymous",
           "startLine": 37,
           "endLine": 37,
           "lines": 1
@@ -30747,8 +31205,8 @@
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 37,
-          "endLine": 37,
+          "startLine": 38,
+          "endLine": 38,
           "lines": 1
         },
         {
@@ -30761,8 +31219,15 @@
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 40,
-          "endLine": 40,
+          "startLine": 39,
+          "endLine": 39,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/links.ts",
+          "name": "anonymous",
+          "startLine": 41,
+          "endLine": 41,
           "lines": 1
         },
         {
@@ -30775,71 +31240,71 @@
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 43,
-          "endLine": 43,
+          "startLine": 44,
+          "endLine": 44,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 43,
-          "endLine": 43,
+          "startLine": 45,
+          "endLine": 45,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/investments/links.ts",
+          "name": "anonymous",
+          "startLine": 45,
+          "endLine": 45,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "findRemotePosition",
-          "startLine": 48,
-          "endLine": 54,
+          "startLine": 50,
+          "endLine": 56,
           "lines": 7
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 51,
-          "endLine": 51,
+          "startLine": 53,
+          "endLine": 53,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
-          "name": "insertLinkedHolding",
-          "startLine": 57,
-          "endLine": 61,
-          "lines": 5
-        },
-        {
-          "file": "lib/server/pluggy/investments/links.ts",
           "name": "claimHolding",
-          "startLine": 63,
-          "endLine": 70,
+          "startLine": 58,
+          "endLine": 65,
           "lines": 8
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 64,
-          "endLine": 64,
+          "startLine": 59,
+          "endLine": 59,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "linkPluggyInvestment",
-          "startLine": 73,
-          "endLine": 81,
-          "lines": 9
+          "startLine": 68,
+          "endLine": 80,
+          "lines": 13
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "anonymous",
-          "startLine": 75,
-          "endLine": 80,
-          "lines": 6
+          "startLine": 70,
+          "endLine": 79,
+          "lines": 10
         },
         {
           "file": "lib/server/pluggy/investments/links.ts",
           "name": "unlinkPluggyInvestment",
-          "startLine": 83,
-          "endLine": 89,
+          "startLine": 82,
+          "endLine": 88,
           "lines": 7
         },
         {
@@ -31685,71 +32150,134 @@
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "flag",
-          "startLine": 30,
-          "endLine": 32,
+          "startLine": 38,
+          "endLine": 40,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "writeBankValue",
-          "startLine": 34,
-          "endLine": 39,
+          "startLine": 42,
+          "endLine": 47,
           "lines": 6
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "assertCoversAllocations",
-          "startLine": 42,
-          "endLine": 44,
+          "startLine": 50,
+          "endLine": 52,
           "lines": 3
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "applyBankValue",
-          "startLine": 46,
-          "endLine": 58,
+          "startLine": 54,
+          "endLine": 66,
           "lines": 13
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "anonymous",
-          "startLine": 50,
-          "endLine": 50,
+          "startLine": 58,
+          "endLine": 58,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "reportQuoteDifference",
-          "startLine": 61,
-          "endLine": 65,
+          "startLine": 69,
+          "endLine": 73,
           "lines": 5
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "linkNewPosition",
+          "startLine": 79,
+          "endLine": 86,
+          "lines": 8
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 83,
+          "endLine": 83,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "syncPosition",
-          "startLine": 67,
-          "endLine": 81,
+          "startLine": 88,
+          "endLine": 102,
           "lines": 15
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "syncItemPositions",
-          "startLine": 83,
-          "endLine": 96,
-          "lines": 14
+          "startLine": 104,
+          "endLine": 125,
+          "lines": 22
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "anonymous",
-          "startLine": 90,
-          "endLine": 90,
+          "startLine": 110,
+          "endLine": 110,
           "lines": 1
         },
         {
           "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
           "name": "anonymous",
-          "startLine": 94,
-          "endLine": 94,
+          "startLine": 112,
+          "endLine": 112,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 113,
+          "endLine": 113,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 114,
+          "endLine": 114,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 114,
+          "endLine": 114,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 116,
+          "endLine": 116,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 116,
+          "endLine": 116,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 118,
+          "endLine": 118,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/pluggy/steps/sync-investment-positions.ts",
+          "name": "anonymous",
+          "startLine": 123,
+          "endLine": 123,
           "lines": 1
         },
         {
@@ -33827,51 +34355,51 @@
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "applyTransactionUpdate",
-          "startLine": 27,
-          "endLine": 70,
+          "startLine": 28,
+          "endLine": 71,
           "lines": 44
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "updateTransaction",
-          "startLine": 72,
-          "endLine": 86,
-          "lines": 15
+          "startLine": 73,
+          "endLine": 88,
+          "lines": 16
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "anonymous",
-          "startLine": 80,
-          "endLine": 85,
-          "lines": 6
+          "startLine": 81,
+          "endLine": 87,
+          "lines": 7
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "isEffectiveInvestmentWithdrawal",
-          "startLine": 88,
-          "endLine": 102,
+          "startLine": 90,
+          "endLine": 104,
           "lines": 15
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "deleteTransaction",
-          "startLine": 104,
-          "endLine": 108,
+          "startLine": 106,
+          "endLine": 110,
           "lines": 5
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "anonymous",
-          "startLine": 107,
-          "endLine": 107,
+          "startLine": 109,
+          "endLine": 109,
           "lines": 1
         },
         {
           "file": "lib/server/transactions/mutations.ts",
           "name": "deleteTransactionInTransaction",
-          "startLine": 110,
-          "endLine": 132,
-          "lines": 23
+          "startLine": 112,
+          "endLine": 135,
+          "lines": 24
         },
         {
           "file": "lib/server/transactions/queries.ts",
@@ -34152,6 +34680,13 @@
           "startLine": 11,
           "endLine": 11,
           "lines": 1
+        },
+        {
+          "file": "lib/stale-positions.ts",
+          "name": "isStalePosition",
+          "startLine": 6,
+          "endLine": 8,
+          "lines": 3
         },
         {
           "file": "lib/text-search.ts",
@@ -34651,8 +35186,22 @@
           "lines": 9
         },
         {
+          "file": "lib/utils/component-actions/reserve-destination-submit.ts",
+          "name": "ReserveDestinationSubmit",
+          "startLine": 6,
+          "endLine": 14,
+          "lines": 9
+        },
+        {
           "file": "lib/utils/component-actions/reserve-withdrawal-submit.ts",
           "name": "ReserveWithdrawalSubmit",
+          "startLine": 6,
+          "endLine": 14,
+          "lines": 9
+        },
+        {
+          "file": "lib/utils/component-actions/stale-position-submit.ts",
+          "name": "StalePositionSubmit",
           "startLine": 6,
           "endLine": 14,
           "lines": 9
@@ -34924,6 +35473,20 @@
           "lines": 1
         },
         {
+          "file": "lib/utils/components/reserve-destination.ts",
+          "name": "reserveDestinationShortcuts",
+          "startLine": 5,
+          "endLine": 11,
+          "lines": 7
+        },
+        {
+          "file": "lib/utils/components/reserve-destination.ts",
+          "name": "pendingDestinationOf",
+          "startLine": 14,
+          "endLine": 26,
+          "lines": 13
+        },
+        {
           "file": "lib/utils/components/reserve-hero.ts",
           "name": "nextContribution",
           "startLine": 7,
@@ -35089,33 +35652,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 11377,
-      "total": 12712
+      "covered": 11563,
+      "total": 12906
     },
     "statements": {
-      "covered": 13013,
-      "total": 14639
+      "covered": 13244,
+      "total": 14882
     },
     "functions": {
-      "covered": 4177,
-      "total": 4819
+      "covered": 4252,
+      "total": 4896
     },
     "branches": {
-      "covered": 8301,
-      "total": 10207
+      "covered": 8489,
+      "total": 10407
     }
   },
   "duplication": {
-    "totalLines": 57807,
+    "totalLines": 58483,
     "duplicatedLines": 382,
     "fragments": 42
   },
-  "headSha": "f3c83100415139146f5ef83c90186d83d0a81aff",
-  "runId": "44909680012",
+  "headSha": "5365d2a833b85f51af3a702006c80b47bbaa9c22",
+  "runId": "44959134520",
   "runAttempt": "1",
   "source": {
-    "commit": "f3c83100415139146f5ef83c90186d83d0a81aff",
-    "runId": "44909680012",
+    "commit": "5365d2a833b85f51af3a702006c80b47bbaa9c22",
+    "runId": "44959134520",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
