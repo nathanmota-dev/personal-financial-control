@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { transactionFundingLinks } from "@/lib/db/schema";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createCreditCardBillPayment, upsertCreditCardBill } from "@/lib/server/credit-card-bills";
-import { DomainError } from "@/lib/server/errors";
-import { getPredictability, parsePredictabilityReference } from "@/lib/server/predictability";
+import { getPredictability } from "@/lib/server/predictability";
 import { createRecurringTemplate } from "@/lib/server/recurring";
 import { createTransaction } from "@/lib/server/transactions";
 import { createTransfer } from "@/lib/server/transfers";
@@ -84,6 +83,9 @@ describe("predictability data", () => {
     ]);
     expect(result.budgetItems[0].accountName).toBe("Main");
     expect(result.days.find((day) => day.isToday)?.date).toBe("2026-07-15");
+
+    const august = await getPredictability({ today: "2026-07-15", month: "2026-08" }, db);
+    expect(august.cycle).toMatchObject({ start: "2026-08-05", end: "2026-09-04" });
   });
 
   it("only counts one-off debit, Pix and cash entries as daily spending", async () => {
@@ -124,7 +126,7 @@ describe("predictability data", () => {
       db
     );
 
-    const result = await getPredictability({ today: "2026-07-02", reference: "2026-07-15" }, db);
+    const result = await getPredictability({ today: "2026-07-02", month: "2026-07" }, db);
 
     expect(result.cycle).toMatchObject({ start: "2026-07-01", end: "2026-07-31", dayCount: 31 });
     expect(result.days.flatMap((day) => day.expenses.map((expense) => expense.description))).toEqual([
@@ -146,11 +148,4 @@ describe("predictability data", () => {
     expect(result.summary.alerts).toEqual([{ code: "NO_RECURRING_INCOME" }]);
   });
 
-  it("parses the cycle reference from the URL", () => {
-    expect(parsePredictabilityReference(undefined)).toBeUndefined();
-    expect(parsePredictabilityReference(["2026-07-01"])).toBeUndefined();
-    expect(parsePredictabilityReference("")).toBeUndefined();
-    expect(parsePredictabilityReference("2026-07-01")).toBe("2026-07-01");
-    expect(() => parsePredictabilityReference("julho")).toThrow(DomainError);
-  });
 });

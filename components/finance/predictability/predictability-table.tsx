@@ -15,7 +15,7 @@ import {
 import { PredictabilityMobileDay } from "./predictability-mobile-day";
 import { PredictabilityTableRow } from "./predictability-table-row";
 
-export function PredictabilityTable({ days, overflowCents, onSelectDay }: PredictabilityTableProps) {
+export function PredictabilityTable({ days, overflowCents, onSelectDay, simulatedCentsByDate }: PredictabilityTableProps) {
   const { formatCurrency } = useFinancialFormatter();
   const totals = days.reduce(
     (sum, day) => ({
@@ -44,7 +44,7 @@ export function PredictabilityTable({ days, overflowCents, onSelectDay }: Predic
           </TableHeader>
           <TableBody>
             {days.map((day) => (
-              <PredictabilityTableRow key={day.date} day={day} onSelectDay={onSelectDay} />
+              <PredictabilityTableRow key={day.date} day={day} onSelectDay={onSelectDay} simulatedCents={simulatedCentsByDate?.[day.date]} />
             ))}
           </TableBody>
           <TableFooter>
@@ -64,7 +64,7 @@ export function PredictabilityTable({ days, overflowCents, onSelectDay }: Predic
 
       <div className="grid gap-3 md:hidden">
         {days.map((day) => (
-          <PredictabilityMobileDay key={day.date} day={day} onSelectDay={onSelectDay} />
+          <PredictabilityMobileDay key={day.date} day={day} onSelectDay={onSelectDay} simulatedCents={simulatedCentsByDate?.[day.date]} />
         ))}
         <p className="text-sm text-content">
           Restam <span className="font-semibold text-content-strong">{formatCurrency(totals.remaining)}</span> no ciclo

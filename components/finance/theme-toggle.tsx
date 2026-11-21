@@ -5,12 +5,14 @@ import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
+import type { ThemeToggleProps } from "@/lib/interfaces/app-shell";
+import { cn } from "@/lib/utils";
 
 const subscribe = () => () => {};
 const getSnapshot = () => true;
 const getServerSnapshot = () => false;
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const isDark = mounted && resolvedTheme === "dark";
@@ -21,7 +23,7 @@ export function ThemeToggle() {
       type="button"
       variant="outline"
       size="icon"
-      className="rounded-xl"
+      className={cn("rounded-xl", className)}
       disabled={!mounted}
       aria-label={label}
       title={label}

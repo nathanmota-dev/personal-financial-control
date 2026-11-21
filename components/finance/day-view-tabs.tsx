@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { DayViewMode, DayViewTabsProps } from "@/lib/interfaces/day-detail";
 
 /** Card that switches a day-by-day reading between a calendar and a table. */
-export function DayViewTabs({ title, description, actions, calendar, table, children }: DayViewTabsProps) {
+export function DayViewTabs({ title, description, actions, notice, calendar, table, children }: DayViewTabsProps) {
   const [view, setView] = useState<DayViewMode>("calendar");
 
   return (
@@ -39,6 +39,8 @@ export function DayViewTabs({ title, description, actions, calendar, table, chil
           </TabsList>
         </div>
       </div>
+
+      {notice ? <div className="px-[22px]">{notice}</div> : null}
 
       <TabsContent value="calendar" className="mt-0">
         {calendar}

@@ -10,24 +10,14 @@ import type {
   PredictabilityResult,
 } from "@/lib/interfaces/predictability";
 import { calculatePredictability, resolveCycle } from "@/lib/predictability";
-import { invariant } from "@/lib/server/errors";
+import { buildDateInMonth } from "@/lib/utils/finance-month";
 import { and, gte, inArray, lte } from "drizzle-orm";
 import { resolveProjectionAccounts } from "./projected-balance/accounts";
 import { listCreditCardEvents } from "./projected-balance/commitments";
 import { resolveDb } from "./projected-balance/filters";
 import { listRecurringEvents } from "./projected-balance/recurring";
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const variableTypes = new Set<string>(["expense", "investment_contribution"]);
-
-export function parsePredictabilityReference(value: string | string[] | undefined) {
-  if (typeof value !== "string" || !value) {
-    return undefined;
-  }
-
-  invariant(datePattern.test(value), "INVALID_CYCLE", "cycle must be a YYYY-MM-DD date.");
-  return value;
-}
 
 /** The biggest active recurring income (the salary) sets the cycle's pay day. */
 export async function findCycleAnchorDay(db: AppDb, selectedAccounts: ProjectedBalanceAccountRow[]) {
@@ -115,7 +105,8 @@ export async function getPredictability(
   const db = await resolveDb(database);
   const { selectedAccounts, selectedCreditAccounts } = await resolveProjectionAccounts(db, [], []);
   const anchorDay = await findCycleAnchorDay(db, selectedAccounts);
-  const cycle = resolveCycle(anchorDay, request.reference ?? request.today);
+  const reference = request.month ? buildDateInMonth(request.month, anchorDay ?? 1) : request.today;
+  const cycle = resolveCycle(anchorDay, reference);
   const [recurringEvents, creditCardEvents, expenses] = await Promise.all([
     listRecurringEvents(db, cycle.start, cycle.end, selectedAccounts, true, { includeMaterialized: true }),
     listCreditCardEvents(db, cycle.start, cycle.end, selectedCreditAccounts),

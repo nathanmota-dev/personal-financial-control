@@ -10,7 +10,7 @@ import {
 
 import { PredictabilityCalendarDay } from "./predictability-calendar-day";
 
-export function PredictabilityCalendar({ days, onSelectDay }: PredictabilityDaySelectProps) {
+export function PredictabilityCalendar({ days, onSelectDay, simulatedCentsByDate }: PredictabilityDaySelectProps) {
   const weeks = useMemo(() => buildPredictabilityCalendarWeeks(days), [days]);
 
   return (
@@ -25,7 +25,12 @@ export function PredictabilityCalendar({ days, onSelectDay }: PredictabilityDayS
           {weeks.map((week) => (
             <ul key={week.key} className="grid grid-cols-7 gap-1 sm:gap-2">
               {week.cells.map((cell) => (
-                <PredictabilityCalendarDay key={cell.key} cell={cell} onSelectDay={onSelectDay} />
+                <PredictabilityCalendarDay
+                  key={cell.key}
+                  cell={cell}
+                  onSelectDay={onSelectDay}
+                  simulatedCents={cell.day ? simulatedCentsByDate?.[cell.day.date] : undefined}
+                />
               ))}
             </ul>
           ))}
@@ -45,6 +50,12 @@ export function PredictabilityCalendar({ days, onSelectDay }: PredictabilityDayS
           <span className="size-1.5 rounded-full bg-danger" aria-hidden="true" />
           Consumido
         </span>
+        {simulatedCentsByDate ? (
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-2.5 rounded-[3px] border border-dashed border-brand" aria-hidden="true" />
+            Afetado pela simulação
+          </span>
+        ) : null}
         <span className="ml-auto text-content-subtle">Selecione um dia para ver o que consumiu o valor</span>
       </div>
     </div>

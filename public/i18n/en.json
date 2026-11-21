@@ -2741,7 +2741,13 @@
       "hashTitle": "Protected PIN",
       "hashDescription": "Stored as a hash, never in plain text.",
       "recoveryTitle": "Forgot your PIN?",
-      "recoveryDescription": "Sign in again with Google and create a new one."
+      "recoveryDescription": "Sign in again with Google and create a new one.",
+      "carouselLabel": "How the lock keeps you safe",
+      "previewIdle": "Idle time before locking",
+      "previewPin": "Your PIN",
+      "previewStored": "Stored",
+      "previewGoogle": "Sign in with Google",
+      "previewNewPin": "Create a new PIN"
     }
   },
   "chat": {

@@ -3,8 +3,8 @@ import { connection } from "next/server";
 
 import { PredictabilityView } from "@/components/finance/predictability/predictability-view";
 import type { PredictabilityResult } from "@/lib/interfaces/predictability";
-import { DomainError } from "@/lib/server/errors";
-import { getPredictability, parsePredictabilityReference } from "@/lib/server/predictability";
+import { isValidMonth } from "@/lib/finance-ui";
+import { getPredictability } from "@/lib/server/predictability";
 import { getFinanceToday } from "@/lib/server/runtime";
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -24,13 +24,10 @@ export default async function PredictabilityPage({
   try {
     predictability = await getPredictability({
       today: getFinanceToday(),
-      reference: parsePredictabilityReference(params.cycle),
+      month: isValidMonth(typeof params.month === "string" ? params.month : undefined) ? (params.month as string) : undefined,
     });
-  } catch (error) {
-    loadError =
-      error instanceof DomainError
-        ? "Ciclo inválido. Use os botões de ciclo anterior e próximo para navegar."
-        : "Não foi possível carregar a previsibilidade agora.";
+  } catch {
+    loadError = "Não foi possível carregar a previsibilidade agora.";
   }
 
   return <PredictabilityView predictability={predictability} loadError={loadError} />;

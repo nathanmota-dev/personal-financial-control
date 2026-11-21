@@ -84,8 +84,8 @@ export type PredictabilityResult = {
 
 export type PredictabilityRequest = {
   today: string;
-  /** Any date inside the wanted cycle; defaults to today. */
-  reference?: string;
+  /** Month (YYYY-MM) the wanted cycle starts in, on the pay day; defaults to the cycle containing today. */
+  month?: string;
 };
 
 export type PredictabilityCalculationInput = {
@@ -99,6 +99,31 @@ export type PredictabilityAllocationResult = {
   remainingCents: number[];
   allocations: PredictabilityAllocation[][];
   overflowCents: number;
+};
+
+/** A purchase the user is considering; it is never saved. */
+export type PredictabilitySimulatedPurchase = {
+  date: string;
+  amountCents: number;
+  description: string;
+};
+
+export type PredictabilitySimulationImpact = {
+  purchase: PredictabilitySimulatedPurchase;
+  /** Cents the purchase takes from each day it reaches, in cycle order. */
+  consumedByDate: Record<string, number>;
+  affectedDates: string[];
+  remainingBeforeCents: number;
+  remainingAfterCents: number;
+  freeDaysBefore: number;
+  freeDaysAfter: number;
+  /** Part of the purchase that no day of the cycle can cover. */
+  overflowAddedCents: number;
+};
+
+export type PredictabilitySimulation = {
+  result: PredictabilityResult;
+  impact: PredictabilitySimulationImpact;
 };
 
 export type PredictabilityCalendarCell = {

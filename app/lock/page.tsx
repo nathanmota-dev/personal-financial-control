@@ -16,7 +16,7 @@ export default async function LockPage({ searchParams }: LoginPageProps) {
   return <main className="flex min-h-svh items-center justify-center bg-surface p-4 text-content-strong sm:p-8 lg:p-12">
     <div className="grid w-full max-w-6xl overflow-hidden rounded-[28px] border border-border bg-surface shadow-elevation lg:min-h-[680px] lg:grid-cols-2">
       <section className="flex min-w-0 flex-col px-5 py-6 sm:px-12 sm:py-9 lg:px-14">
-        <header className="flex items-center justify-between"><AppBrand /><ThemeToggle /></header>
+        <header className="flex items-center justify-between"><AppBrand /><ThemeToggle className="bg-transparent" /></header>
         <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10 lg:py-12">
           <LockForm setup={!session.user.pinHash || session.user.pinResetRequested} destination={safeDestination(params.next)} attempts={session.user.pinFailedAttempts} user={user} />
         </div>

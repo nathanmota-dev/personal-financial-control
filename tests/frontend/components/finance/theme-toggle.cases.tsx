@@ -14,3 +14,7 @@ it("switches between light and dark themes", async () => {
 it("disables the toggle before hydration", () => {
   expect(renderToString(<ThemeToggle />)).toContain("disabled");
 });
+it("merges a custom class into the toggle", () => {
+  renderUI(<ThemeToggle className="bg-transparent" />);
+  expect(screen.getByRole("button", { name: "Ativar tema escuro" })).toHaveClass("rounded-xl", "bg-transparent");
+});

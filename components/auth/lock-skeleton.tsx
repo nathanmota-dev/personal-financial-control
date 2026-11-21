@@ -8,7 +8,7 @@ export function LockSkeleton() {
         <div className="flex justify-between"><LoadingBar className="h-8 w-28" /><LoadingBar className="size-9 rounded-xl" /></div>
         <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col justify-center py-10 lg:py-12">
           <LoadingBar className="h-11 w-72" /><LoadingBar className="mt-2 h-3 w-56" />
-          <div className="mt-6 rounded-[20px] border border-border bg-card p-[23px] min-[100.0625rem]:p-5">
+          <div className="mt-8">
             <div className="flex items-center gap-3"><LoadingBar className="size-11" /><div className="space-y-2"><LoadingBar className="h-3 w-24" /><LoadingBar className="h-4 w-32" /></div></div>
             <div className="mt-6 border-t border-border pt-5">
               <LoadingBar className="h-2.5 w-10" />
@@ -21,10 +21,13 @@ export function LockSkeleton() {
         </div>
         <LoadingBar className="mx-auto h-3 w-64" />
       </section>
-      <section className="bg-hero hidden flex-col justify-center gap-8 px-12 py-12 lg:flex xl:px-16">
-        <div className="mx-auto size-[240px] rounded-[40px] bg-white/10 motion-safe:animate-pulse" />
+      <section className="bg-hero hidden flex-col justify-center gap-7 px-12 py-12 lg:flex xl:px-16">
+        <div className="mx-auto size-[200px] rounded-[40px] bg-white/10 motion-safe:animate-pulse" />
         <div className="space-y-3"><div className="h-8 w-72 rounded-full bg-white/15" /><div className="h-4 w-full rounded-full bg-white/10" /></div>
-        <div className="space-y-2.5">{Array.from({ length: 3 }, (_, index) => <div key={index} className="h-[70px] rounded-[14px] border border-white/18 bg-white/12" />)}</div>
+        <div>
+          <div className="h-[170px] rounded-[20px] border border-white/18 bg-white/12" />
+          <div className="mt-4 flex h-9 items-center justify-center gap-2"><div className="h-1.5 w-6 rounded-full bg-white/40" /><div className="size-1.5 rounded-full bg-white/25" /><div className="size-1.5 rounded-full bg-white/25" /></div>
+        </div>
       </section>
     </div>
   </main>;
