@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 11563,
-          "total": 12906
+          "covered": 11712,
+          "total": 13052
         },
         "statements": {
-          "covered": 13244,
-          "total": 14882
+          "covered": 13429,
+          "total": 15064
         },
         "functions": {
-          "covered": 4252,
-          "total": 4896
+          "covered": 4315,
+          "total": 4955
         },
         "branches": {
-          "covered": 8489,
-          "total": 10407
+          "covered": 8609,
+          "total": 10531
         }
       },
-      "coverageFileCount": 1310,
+      "coverageFileCount": 1327,
       "duplication": {
-        "totalLines": 58483,
+        "totalLines": 58950,
         "duplicatedLines": 382,
         "fragments": 42
       },
@@ -95,6 +95,8 @@
         "app/actions/finance.ts": 4,
         "app/api/accounts/route.ts": 35,
         "app/api/ai/chat/route.ts": 32,
+        "app/api/ai/settings/check/route.ts": 11,
+        "app/api/ai/settings/models/route.ts": 11,
         "app/api/ai/settings/route.ts": 37,
         "app/api/credit-card/_responses.ts": 31,
         "app/api/credit-card/bills/[invoiceMonth]/payments/route.ts": 34,
@@ -561,11 +563,13 @@
         "components/finance/route-status.tsx": 21,
         "components/finance/settings/settings-account-row.tsx": 49,
         "components/finance/settings/settings-accounts-panel.tsx": 38,
-        "components/finance/settings/settings-ai-fields.tsx": 60,
+        "components/finance/settings/settings-ai-fields.tsx": 94,
         "components/finance/settings/settings-ai-key-field.tsx": 55,
-        "components/finance/settings/settings-ai-model-field.tsx": 27,
-        "components/finance/settings/settings-ai-panel.tsx": 25,
-        "components/finance/settings/settings-ai-source-notice.tsx": 19,
+        "components/finance/settings/settings-ai-model-discovery-note.tsx": 27,
+        "components/finance/settings/settings-ai-model-field.tsx": 33,
+        "components/finance/settings/settings-ai-panel.tsx": 32,
+        "components/finance/settings/settings-ai-source-notice.tsx": 20,
+        "components/finance/settings/settings-ai-url-field.tsx": 27,
         "components/finance/settings/settings-card-brand-picker.tsx": 33,
         "components/finance/settings/settings-card-form.tsx": 111,
         "components/finance/settings/settings-card-preview.tsx": 18,
@@ -704,7 +708,8 @@
         "hooks/finance/use-transaction-dialog-state.ts": 66,
         "hooks/finance/use-transaction-dialog.ts": 120,
         "hooks/use-account-profile.ts": 49,
-        "hooks/use-ai-settings.ts": 46,
+        "hooks/use-ai-models.ts": 44,
+        "hooks/use-ai-settings.ts": 57,
         "hooks/use-auto-carousel.ts": 54,
         "hooks/use-daily-expense-map.ts": 44,
         "hooks/use-database-synchronization.ts": 60,
@@ -719,7 +724,8 @@
         "hooks/use-open-finance.ts": 74,
         "hooks/use-report-views.ts": 35,
         "lib/account-illustrations.ts": 5,
-        "lib/ai-model-catalog.ts": 68,
+        "lib/ai-model-catalog.ts": 90,
+        "lib/ai-settings-form.ts": 25,
         "lib/auth/client.ts": 27,
         "lib/auth/config.ts": 36,
         "lib/auth/cookies.ts": 24,
@@ -776,7 +782,7 @@
         "lib/db/replica-lock.ts": 29,
         "lib/db/replica.ts": 102,
         "lib/db/schema/accounts.ts": 52,
-        "lib/db/schema/ai.ts": 16,
+        "lib/db/schema/ai.ts": 19,
         "lib/db/schema/budgets.ts": 17,
         "lib/db/schema/columns.ts": 14,
         "lib/db/schema/credit-card.ts": 123,
@@ -812,7 +818,7 @@
         "lib/demo/fixture-data/transfers.ts": 23,
         "lib/demo/fixture.ts": 35,
         "lib/demo/mode.ts": 6,
-        "lib/env.ts": 101,
+        "lib/env.ts": 103,
         "lib/expense-groups-presentation.ts": 9,
         "lib/expense-groups.ts": 55,
         "lib/finance-command-catalog.ts": 119,
@@ -825,9 +831,10 @@
         "lib/income-deductions.ts": 16,
         "lib/income-simulation.ts": 29,
         "lib/income-tax.ts": 31,
-        "lib/interfaces/ai-categorization.ts": 65,
+        "lib/interfaces/ai-categorization.ts": 66,
         "lib/interfaces/ai-chat.ts": 1,
-        "lib/interfaces/ai-settings.ts": 19,
+        "lib/interfaces/ai-provider.ts": 37,
+        "lib/interfaces/ai-settings.ts": 44,
         "lib/interfaces/app-shell.ts": 22,
         "lib/interfaces/auth.ts": 36,
         "lib/interfaces/auto-carousel.ts": 31,
@@ -883,7 +890,7 @@
         "lib/interfaces/component-actions/transaction-dialog-persist-transaction.ts": 12,
         "lib/interfaces/component-actions/transaction-dialog-reset-form-state.ts": 17,
         "lib/interfaces/component-actions/transaction-dialog-show-error.ts": 4,
-        "lib/interfaces/components/ai-settings.ts": 26,
+        "lib/interfaces/components/ai-settings.ts": 46,
         "lib/interfaces/components/bank-reserve.ts": 17,
         "lib/interfaces/components/chat.ts": 32,
         "lib/interfaces/components/credit-card-transactions-panel.ts": 2,
@@ -1082,15 +1089,25 @@
         "lib/server/ai/categorize-pending.ts": 44,
         "lib/server/ai/category-prompt.ts": 95,
         "lib/server/ai/category-suggester.ts": 82,
-        "lib/server/ai/chat-inputs.ts": 11,
+        "lib/server/ai/chat-inputs.ts": 10,
         "lib/server/ai/chat-prompt.ts": 29,
         "lib/server/ai/chat.ts": 44,
+        "lib/server/ai/check-connection.ts": 42,
         "lib/server/ai/config.ts": 24,
-        "lib/server/ai/env-config.ts": 32,
-        "lib/server/ai/inputs.ts": 12,
-        "lib/server/ai/model.ts": 31,
-        "lib/server/ai/route.ts": 10,
-        "lib/server/ai/settings.ts": 46,
+        "lib/server/ai/connection.ts": 50,
+        "lib/server/ai/env-config.ts": 44,
+        "lib/server/ai/inputs.ts": 21,
+        "lib/server/ai/model.ts": 19,
+        "lib/server/ai/providers/anthropic.ts": 9,
+        "lib/server/ai/providers/cloud-timeouts.ts": 4,
+        "lib/server/ai/providers/deepseek.ts": 9,
+        "lib/server/ai/providers/google.ts": 14,
+        "lib/server/ai/providers/ollama.ts": 47,
+        "lib/server/ai/providers/openai.ts": 9,
+        "lib/server/ai/providers/registry.ts": 24,
+        "lib/server/ai/route.ts": 16,
+        "lib/server/ai/settings-requests.ts": 14,
+        "lib/server/ai/settings.ts": 67,
         "lib/server/brapi.ts": 55,
         "lib/server/budgets.ts": 79,
         "lib/server/categories.ts": 137,
@@ -2270,6 +2287,20 @@
           "startLine": 20,
           "endLine": 23,
           "lines": 4
+        },
+        {
+          "file": "app/api/ai/settings/check/route.ts",
+          "name": "anonymous",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
+        },
+        {
+          "file": "app/api/ai/settings/models/route.ts",
+          "name": "anonymous",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
         },
         {
           "file": "app/api/ai/settings/route.ts",
@@ -12619,51 +12650,100 @@
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
-          "name": "isCatalogModel",
-          "startLine": 15,
-          "endLine": 17,
+          "name": "isLocal",
+          "startLine": 19,
+          "endLine": 19,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "startsCustom",
+          "startLine": 22,
+          "endLine": 25,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "anonymous",
+          "startLine": 24,
+          "endLine": 24,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "initialModelsDraft",
+          "startLine": 27,
+          "endLine": 29,
           "lines": 3
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "SettingsAiFields",
+          "startLine": 31,
+          "endLine": 94,
+          "lines": 64
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
           "name": "anonymous",
-          "startLine": 16,
-          "endLine": 16,
+          "startLine": 35,
+          "endLine": 35,
           "lines": 1
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
-          "name": "SettingsAiFields",
-          "startLine": 19,
-          "endLine": 60,
-          "lines": 42
+          "name": "listModels",
+          "startLine": 44,
+          "endLine": 47,
+          "lines": 4
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
           "name": "chooseProvider",
-          "startLine": 28,
-          "endLine": 35,
-          "lines": 8
+          "startLine": 49,
+          "endLine": 59,
+          "lines": 11
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
           "name": "submit",
-          "startLine": 37,
-          "endLine": 41,
-          "lines": 5
+          "startLine": 61,
+          "endLine": 64,
+          "lines": 4
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
           "name": "anonymous",
-          "startLine": 48,
-          "endLine": 48,
+          "startLine": 71,
+          "endLine": 71,
           "lines": 1
         },
         {
           "file": "components/finance/settings/settings-ai-fields.tsx",
           "name": "anonymous",
-          "startLine": 52,
-          "endLine": 52,
+          "startLine": 80,
+          "endLine": 80,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "onRefresh",
+          "startLine": 81,
+          "endLine": 81,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "anonymous",
+          "startLine": 85,
+          "endLine": 85,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-fields.tsx",
+          "name": "anonymous",
+          "startLine": 89,
+          "endLine": 89,
           "lines": 1
         },
         {
@@ -12709,46 +12789,102 @@
           "lines": 1
         },
         {
+          "file": "components/finance/settings/settings-ai-model-discovery-note.tsx",
+          "name": "discoveryText",
+          "startLine": 8,
+          "endLine": 13,
+          "lines": 6
+        },
+        {
+          "file": "components/finance/settings/settings-ai-model-discovery-note.tsx",
+          "name": "SettingsAiModelDiscoveryNote",
+          "startLine": 16,
+          "endLine": 27,
+          "lines": 12
+        },
+        {
+          "file": "components/finance/settings/settings-ai-model-field.tsx",
+          "name": "withCurrent",
+          "startLine": 13,
+          "endLine": 15,
+          "lines": 3
+        },
+        {
+          "file": "components/finance/settings/settings-ai-model-field.tsx",
+          "name": "anonymous",
+          "startLine": 14,
+          "endLine": 14,
+          "lines": 1
+        },
+        {
           "file": "components/finance/settings/settings-ai-model-field.tsx",
           "name": "SettingsAiModelField",
-          "startLine": 12,
-          "endLine": 27,
-          "lines": 16
-        },
-        {
-          "file": "components/finance/settings/settings-ai-model-field.tsx",
-          "name": "anonymous",
           "startLine": 17,
-          "endLine": 17,
+          "endLine": 33,
+          "lines": 17
+        },
+        {
+          "file": "components/finance/settings/settings-ai-model-field.tsx",
+          "name": "anonymous",
+          "startLine": 23,
+          "endLine": 23,
           "lines": 1
         },
         {
           "file": "components/finance/settings/settings-ai-model-field.tsx",
           "name": "anonymous",
-          "startLine": 18,
-          "endLine": 18,
+          "startLine": 24,
+          "endLine": 24,
           "lines": 1
         },
         {
           "file": "components/finance/settings/settings-ai-model-field.tsx",
           "name": "anonymous",
-          "startLine": 22,
-          "endLine": 22,
+          "startLine": 28,
+          "endLine": 28,
           "lines": 1
         },
         {
           "file": "components/finance/settings/settings-ai-panel.tsx",
+          "name": "settingsKey",
+          "startLine": 11,
+          "endLine": 14,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/settings/settings-ai-panel.tsx",
           "name": "SettingsAiPanel",
-          "startLine": 9,
-          "endLine": 25,
+          "startLine": 16,
+          "endLine": 32,
           "lines": 17
         },
         {
           "file": "components/finance/settings/settings-ai-source-notice.tsx",
           "name": "SettingsAiSourceNotice",
           "startLine": 6,
-          "endLine": 19,
-          "lines": 14
+          "endLine": 20,
+          "lines": 15
+        },
+        {
+          "file": "components/finance/settings/settings-ai-url-field.tsx",
+          "name": "SettingsAiUrlField",
+          "startLine": 8,
+          "endLine": 27,
+          "lines": 20
+        },
+        {
+          "file": "components/finance/settings/settings-ai-url-field.tsx",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 20,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/settings/settings-ai-url-field.tsx",
+          "name": "anonymous",
+          "startLine": 22,
+          "endLine": 22,
+          "lines": 1
         },
         {
           "file": "components/finance/settings/settings-card-brand-picker.tsx",
@@ -17343,32 +17479,88 @@
           "lines": 23
         },
         {
+          "file": "hooks/use-ai-models.ts",
+          "name": "failureMessage",
+          "startLine": 12,
+          "endLine": 12,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "useAiModels",
+          "startLine": 18,
+          "endLine": 44,
+          "lines": 27
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 23,
+          "endLine": 26,
+          "lines": 4
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 24,
+          "endLine": 24,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 25,
+          "endLine": 25,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 30,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 32,
+          "endLine": 36,
+          "lines": 5
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 34,
+          "endLine": 34,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-models.ts",
+          "name": "anonymous",
+          "startLine": 38,
+          "endLine": 41,
+          "lines": 4
+        },
+        {
           "file": "hooks/use-ai-settings.ts",
           "name": "failureMessage",
-          "startLine": 10,
-          "endLine": 10,
+          "startLine": 11,
+          "endLine": 11,
           "lines": 1
         },
         {
           "file": "hooks/use-ai-settings.ts",
           "name": "useAiSettings",
-          "startLine": 12,
-          "endLine": 46,
-          "lines": 35
+          "startLine": 13,
+          "endLine": 57,
+          "lines": 45
         },
         {
           "file": "hooks/use-ai-settings.ts",
           "name": "anonymous",
-          "startLine": 18,
-          "endLine": 24,
+          "startLine": 19,
+          "endLine": 25,
           "lines": 7
-        },
-        {
-          "file": "hooks/use-ai-settings.ts",
-          "name": "anonymous",
-          "startLine": 21,
-          "endLine": 21,
-          "lines": 1
         },
         {
           "file": "hooks/use-ai-settings.ts",
@@ -17387,23 +17579,58 @@
         {
           "file": "hooks/use-ai-settings.ts",
           "name": "anonymous",
-          "startLine": 26,
-          "endLine": 40,
+          "startLine": 24,
+          "endLine": 24,
+          "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-settings.ts",
+          "name": "anonymous",
+          "startLine": 28,
+          "endLine": 42,
           "lines": 15
         },
         {
           "file": "hooks/use-ai-settings.ts",
           "name": "anonymous",
-          "startLine": 42,
-          "endLine": 42,
+          "startLine": 44,
+          "endLine": 46,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-ai-settings.ts",
+          "name": "anonymous",
+          "startLine": 44,
+          "endLine": 46,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-ai-settings.ts",
+          "name": "anonymous",
+          "startLine": 48,
+          "endLine": 48,
           "lines": 1
         },
         {
           "file": "hooks/use-ai-settings.ts",
           "name": "anonymous",
-          "startLine": 43,
-          "endLine": 43,
+          "startLine": 49,
+          "endLine": 49,
           "lines": 1
+        },
+        {
+          "file": "hooks/use-ai-settings.ts",
+          "name": "anonymous",
+          "startLine": 52,
+          "endLine": 54,
+          "lines": 3
+        },
+        {
+          "file": "hooks/use-ai-settings.ts",
+          "name": "anonymous",
+          "startLine": 52,
+          "endLine": 54,
+          "lines": 3
         },
         {
           "file": "hooks/use-auto-carousel.ts",
@@ -18248,51 +18475,100 @@
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "anonymous",
-          "startLine": 51,
-          "endLine": 51,
+          "startLine": 64,
+          "endLine": 64,
           "lines": 1
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "isAiProvider",
-          "startLine": 53,
-          "endLine": 55,
+          "startLine": 66,
+          "endLine": 68,
           "lines": 3
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "aiProviderModels",
-          "startLine": 57,
-          "endLine": 59,
+          "startLine": 70,
+          "endLine": 72,
           "lines": 3
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "anonymous",
-          "startLine": 58,
-          "endLine": 58,
+          "startLine": 71,
+          "endLine": 71,
+          "lines": 1
+        },
+        {
+          "file": "lib/ai-model-catalog.ts",
+          "name": "aiProviderConnectionKind",
+          "startLine": 74,
+          "endLine": 76,
+          "lines": 3
+        },
+        {
+          "file": "lib/ai-model-catalog.ts",
+          "name": "anonymous",
+          "startLine": 75,
+          "endLine": 75,
+          "lines": 1
+        },
+        {
+          "file": "lib/ai-model-catalog.ts",
+          "name": "aiProviderDefaultBaseUrl",
+          "startLine": 78,
+          "endLine": 81,
+          "lines": 4
+        },
+        {
+          "file": "lib/ai-model-catalog.ts",
+          "name": "anonymous",
+          "startLine": 79,
+          "endLine": 79,
           "lines": 1
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "aiProviderLabel",
-          "startLine": 61,
-          "endLine": 63,
+          "startLine": 83,
+          "endLine": 85,
           "lines": 3
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "anonymous",
-          "startLine": 62,
-          "endLine": 62,
+          "startLine": 84,
+          "endLine": 84,
           "lines": 1
         },
         {
           "file": "lib/ai-model-catalog.ts",
           "name": "maskApiKey",
-          "startLine": 66,
-          "endLine": 68,
+          "startLine": 88,
+          "endLine": 90,
           "lines": 3
+        },
+        {
+          "file": "lib/ai-settings-form.ts",
+          "name": "aiConnectionDraft",
+          "startLine": 5,
+          "endLine": 13,
+          "lines": 9
+        },
+        {
+          "file": "lib/ai-settings-form.ts",
+          "name": "aiSettingsFormReady",
+          "startLine": 16,
+          "endLine": 19,
+          "lines": 4
+        },
+        {
+          "file": "lib/ai-settings-form.ts",
+          "name": "aiSettingsDraft",
+          "startLine": 21,
+          "endLine": 25,
+          "lines": 5
         },
         {
           "file": "lib/auth/client.ts",
@@ -20922,8 +21198,8 @@
         {
           "file": "lib/db/schema/ai.ts",
           "name": "anonymous",
-          "startLine": 16,
-          "endLine": 16,
+          "startLine": 19,
+          "endLine": 19,
           "lines": 1
         },
         {
@@ -21909,15 +22185,15 @@
         {
           "file": "lib/env.ts",
           "name": "getServerEnv",
-          "startLine": 60,
-          "endLine": 101,
+          "startLine": 62,
+          "endLine": 103,
           "lines": 42
         },
         {
           "file": "lib/env.ts",
           "name": "anonymous",
-          "startLine": 66,
-          "endLine": 66,
+          "startLine": 68,
+          "endLine": 68,
           "lines": 1
         },
         {
@@ -24233,9 +24509,9 @@
         {
           "file": "lib/server/ai/category-suggester.ts",
           "name": "modelGenerator",
-          "startLine": 23,
+          "startLine": 22,
           "endLine": 39,
-          "lines": 17
+          "lines": 18
         },
         {
           "file": "lib/server/ai/category-suggester.ts",
@@ -24308,6 +24584,20 @@
           "lines": 1
         },
         {
+          "file": "lib/server/ai/check-connection.ts",
+          "name": "checkAiSettings",
+          "startLine": 20,
+          "endLine": 35,
+          "lines": 16
+        },
+        {
+          "file": "lib/server/ai/check-connection.ts",
+          "name": "listAiModels",
+          "startLine": 38,
+          "endLine": 42,
+          "lines": 5
+        },
+        {
           "file": "lib/server/ai/config.ts",
           "name": "getAiConfig",
           "startLine": 14,
@@ -24315,101 +24605,241 @@
           "lines": 11
         },
         {
+          "file": "lib/server/ai/connection.ts",
+          "name": "normalizeBaseUrl",
+          "startLine": 12,
+          "endLine": 23,
+          "lines": 12
+        },
+        {
+          "file": "lib/server/ai/connection.ts",
+          "name": "anonymous",
+          "startLine": 27,
+          "endLine": 31,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/ai/connection.ts",
+          "name": "assertConnectionKind",
+          "startLine": 39,
+          "endLine": 43,
+          "lines": 5
+        },
+        {
+          "file": "lib/server/ai/connection.ts",
+          "name": "parseStoredConnection",
+          "startLine": 46,
+          "endLine": 50,
+          "lines": 5
+        },
+        {
           "file": "lib/server/ai/env-config.ts",
           "name": "warnAiConfigOnce",
-          "startLine": 8,
-          "endLine": 12,
+          "startLine": 9,
+          "endLine": 13,
           "lines": 5
         },
         {
           "file": "lib/server/ai/env-config.ts",
           "name": "resetAiConfigWarning",
-          "startLine": 14,
-          "endLine": 16,
+          "startLine": 15,
+          "endLine": 17,
           "lines": 3
         },
         {
           "file": "lib/server/ai/env-config.ts",
           "name": "configFromEnv",
-          "startLine": 19,
-          "endLine": 32,
-          "lines": 14
+          "startLine": 23,
+          "endLine": 44,
+          "lines": 22
         },
         {
           "file": "lib/server/ai/model.ts",
-          "name": "google",
+          "name": "createLanguageModel",
+          "startLine": 8,
+          "endLine": 11,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/ai/model.ts",
+          "name": "languageModelOptions",
+          "startLine": 13,
+          "endLine": 15,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/ai/model.ts",
+          "name": "languageModelTimeouts",
+          "startLine": 17,
+          "endLine": 19,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/ai/providers/anthropic.ts",
+          "name": "createModel",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/providers/deepseek.ts",
+          "name": "createModel",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/providers/google.ts",
+          "name": "createModel",
           "startLine": 11,
           "endLine": 11,
           "lines": 1
         },
         {
-          "file": "lib/server/ai/model.ts",
-          "name": "openai",
-          "startLine": 12,
-          "endLine": 12,
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "toOptions",
+          "startLine": 17,
+          "endLine": 22,
+          "lines": 6
+        },
+        {
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "anonymous",
+          "startLine": 19,
+          "endLine": 19,
           "lines": 1
         },
         {
-          "file": "lib/server/ai/model.ts",
-          "name": "anthropic",
-          "startLine": 13,
-          "endLine": 13,
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "anonymous",
+          "startLine": 20,
+          "endLine": 20,
           "lines": 1
         },
         {
-          "file": "lib/server/ai/model.ts",
-          "name": "deepseek",
-          "startLine": 14,
-          "endLine": 14,
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "anonymous",
+          "startLine": 21,
+          "endLine": 21,
           "lines": 1
         },
         {
-          "file": "lib/server/ai/model.ts",
-          "name": "createLanguageModel",
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "listOllamaModels",
           "startLine": 25,
-          "endLine": 27,
+          "endLine": 37,
+          "lines": 13
+        },
+        {
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "anonymous",
+          "startLine": 36,
+          "endLine": 36,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/providers/ollama.ts",
+          "name": "createModel",
+          "startLine": 44,
+          "endLine": 44,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/providers/openai.ts",
+          "name": "createModel",
+          "startLine": 7,
+          "endLine": 7,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/providers/registry.ts",
+          "name": "getAiProvider",
+          "startLine": 22,
+          "endLine": 24,
           "lines": 3
         },
         {
-          "file": "lib/server/ai/model.ts",
-          "name": "languageModelOptions",
-          "startLine": 29,
-          "endLine": 31,
+          "file": "lib/server/ai/route.ts",
+          "name": "aiJsonResponse",
+          "startLine": 14,
+          "endLine": 16,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/ai/route.ts",
+          "name": "anonymous",
+          "startLine": 15,
+          "endLine": 15,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/ai/settings-requests.ts",
+          "name": "checkAiSettingsRequest",
+          "startLine": 6,
+          "endLine": 9,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/ai/settings-requests.ts",
+          "name": "listAiModelsRequest",
+          "startLine": 12,
+          "endLine": 14,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/ai/settings.ts",
+          "name": "connectionView",
+          "startLine": 14,
+          "endLine": 16,
           "lines": 3
         },
         {
           "file": "lib/server/ai/settings.ts",
           "name": "viewOf",
-          "startLine": 12,
-          "endLine": 15,
-          "lines": 4
-        },
-        {
-          "file": "lib/server/ai/settings.ts",
-          "name": "loadStoredAiConfig",
           "startLine": 18,
           "endLine": 21,
           "lines": 4
         },
         {
           "file": "lib/server/ai/settings.ts",
-          "name": "getAiSettingsView",
-          "startLine": 23,
-          "endLine": 26,
+          "name": "loadStoredAiConfig",
+          "startLine": 24,
+          "endLine": 27,
           "lines": 4
         },
         {
           "file": "lib/server/ai/settings.ts",
+          "name": "getAiSettingsView",
+          "startLine": 29,
+          "endLine": 32,
+          "lines": 4
+        },
+        {
+          "file": "lib/server/ai/settings.ts",
+          "name": "resolveAiConnection",
+          "startLine": 38,
+          "endLine": 48,
+          "lines": 11
+        },
+        {
+          "file": "lib/server/ai/settings.ts",
+          "name": "resolveAiConfig",
+          "startLine": 50,
+          "endLine": 52,
+          "lines": 3
+        },
+        {
+          "file": "lib/server/ai/settings.ts",
           "name": "saveAiSettings",
-          "startLine": 32,
-          "endLine": 40,
-          "lines": 9
+          "startLine": 54,
+          "endLine": 61,
+          "lines": 8
         },
         {
           "file": "lib/server/ai/settings.ts",
           "name": "deleteAiSettings",
-          "startLine": 43,
-          "endLine": 46,
+          "startLine": 64,
+          "endLine": 67,
           "lines": 4
         },
         {
@@ -35652,33 +36082,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 11563,
-      "total": 12906
+      "covered": 11712,
+      "total": 13052
     },
     "statements": {
-      "covered": 13244,
-      "total": 14882
+      "covered": 13429,
+      "total": 15064
     },
     "functions": {
-      "covered": 4252,
-      "total": 4896
+      "covered": 4315,
+      "total": 4955
     },
     "branches": {
-      "covered": 8489,
-      "total": 10407
+      "covered": 8609,
+      "total": 10531
     }
   },
   "duplication": {
-    "totalLines": 58483,
+    "totalLines": 58950,
     "duplicatedLines": 382,
     "fragments": 42
   },
-  "headSha": "5365d2a833b85f51af3a702006c80b47bbaa9c22",
-  "runId": "44959134520",
+  "headSha": "d958d3690095959f1a43b837eaac93b488905bc9",
+  "runId": "45195234061",
   "runAttempt": "1",
   "source": {
-    "commit": "5365d2a833b85f51af3a702006c80b47bbaa9c22",
-    "runId": "44959134520",
+    "commit": "d958d3690095959f1a43b837eaac93b488905bc9",
+    "runId": "45195234061",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
