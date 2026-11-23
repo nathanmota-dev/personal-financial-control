@@ -11,18 +11,18 @@ import type {
 } from "@/lib/interfaces/ai-categorization";
 import { categoryFitsDirection } from "@/lib/server/pluggy/category-rules";
 import { buildCategoryBatches, buildCategoryResponseSchema, buildCategorySystemPrompt } from "./category-prompt";
-import { createLanguageModel, languageModelOptions } from "./model";
+import { createLanguageModel, languageModelOptions, languageModelTimeouts } from "./model";
 
 /** Below this the answer counts as "unknown": a wrong category costs more than a manual one. */
 export const AI_SUGGESTION_MIN_CONFIDENCE = 0.8;
 const MAX_REASON_LENGTH = 120;
-const CALL_TIMEOUT_MS = 30_000;
 
 export type AiBatchGenerator = (batch: AiPromptBatch) => Promise<AiPromptResult[]>;
 
 function modelGenerator(config: AiConfig): AiBatchGenerator {
   const model = createLanguageModel(config);
   const providerOptions = languageModelOptions(config);
+  const { categorizeMs } = languageModelTimeouts(config);
   return async (batch) => {
     const schema = buildCategoryResponseSchema([...batch.aliases.categories.keys()]);
     const { output } = await generateText({
@@ -31,7 +31,7 @@ function modelGenerator(config: AiConfig): AiBatchGenerator {
       prompt: JSON.stringify(batch.payload),
       output: Output.object({ schema, name: "categorizacao" }),
       maxRetries: 1,
-      abortSignal: AbortSignal.timeout(CALL_TIMEOUT_MS),
+      abortSignal: AbortSignal.timeout(categorizeMs),
       ...(providerOptions ? { providerOptions } : {}),
     });
     return output.resultados;

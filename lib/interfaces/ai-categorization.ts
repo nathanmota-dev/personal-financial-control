@@ -1,11 +1,12 @@
 import type { generateText } from "ai";
 
 import type { CategoryGroup } from "@/lib/db/schema";
+import type { AiConnection } from "@/lib/interfaces/ai-provider";
 import type { PluggyCategoryRuleDirection } from "@/lib/interfaces/pluggy-category-rules";
 
-export type AiProvider = "google" | "openai" | "anthropic" | "deepseek";
+export type AiProvider = "google" | "openai" | "anthropic" | "deepseek" | "ollama";
 
-export type AiConfig = { provider: AiProvider; model: string; apiKey: string };
+export type AiConfig = { provider: AiProvider; model: string; connection: AiConnection };
 
 /** Provider-specific call settings, keyed by provider name as the AI SDK expects. */
 export type AiProviderOptions = NonNullable<Parameters<typeof generateText>[0]["providerOptions"]>;

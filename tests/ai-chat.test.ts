@@ -7,7 +7,7 @@ import { CHAT_MAX_BODY_BYTES, CHAT_MAX_MESSAGES } from "@/lib/server/ai/chat-inp
 import { streamChatResponse } from "@/lib/server/ai/chat";
 import { createTestDatabase } from "@/tests/helpers/database";
 
-const config: AiConfig = { provider: "anthropic", model: "claude-haiku-5-5", apiKey: "sk-test-key-123456" };
+const config: AiConfig = { provider: "anthropic", model: "claude-haiku-5-5", connection: { kind: "apiKey", apiKey: "sk-test-key-123456" } };
 let database: Awaited<ReturnType<typeof createTestDatabase>>;
 
 beforeEach(async () => { database = await createTestDatabase(); });

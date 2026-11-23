@@ -51,6 +51,8 @@ const serverEnvSchema = z.object({
   AI_PROVIDER: optionalCredential,
   AI_MODEL: optionalCredential,
   AI_API_KEY: optionalCredential,
+  // Address of a local provider such as Ollama; empty uses its default (http://localhost:11434).
+  AI_BASE_URL: optionalCredential,
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema> & {

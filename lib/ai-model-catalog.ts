@@ -1,13 +1,16 @@
 import type { AiProvider } from "@/lib/interfaces/ai-categorization";
+import type { AiConnectionKind } from "@/lib/interfaces/ai-provider";
 import type { AiModelOption, AiProviderOption } from "@/lib/interfaces/ai-settings";
 
 /**
  * Hand-picked current models per provider, checked against each provider's docs in November 2026.
  * The Settings form also accepts any other model id, so an outdated list never blocks a new model.
+ * A local provider has no fixed list: the form asks the server running on the user's machine for its models.
  */
 export const aiProviderCatalog = [
   {
     provider: "google",
+    connectionKind: "apiKey",
     label: "Google Gemini",
     models: [
       { id: "gemini-3.8-flash", label: "Gemini 3.8 Flash" },
@@ -20,6 +23,7 @@ export const aiProviderCatalog = [
   },
   {
     provider: "openai",
+    connectionKind: "apiKey",
     label: "OpenAI",
     models: [
       { id: "gpt-6-luna", label: "GPT-6 Luna" },
@@ -30,6 +34,7 @@ export const aiProviderCatalog = [
   },
   {
     provider: "anthropic",
+    connectionKind: "apiKey",
     label: "Anthropic Claude",
     models: [
       { id: "claude-haiku-5-5", label: "Claude Haiku 5.5" },
@@ -40,11 +45,19 @@ export const aiProviderCatalog = [
   },
   {
     provider: "deepseek",
+    connectionKind: "apiKey",
     label: "DeepSeek",
     models: [
       { id: "deepseek-flash", label: "DeepSeek Flash" },
       { id: "deepseek-v4-pro", label: "DeepSeek V4 Pro" },
     ],
+  },
+  {
+    provider: "ollama",
+    connectionKind: "local",
+    label: "Ollama (local)",
+    defaultBaseUrl: "http://localhost:11434",
+    models: [],
   },
 ] as const satisfies readonly AiProviderOption[];
 
@@ -56,6 +69,15 @@ export function isAiProvider(value: string): value is AiProvider {
 
 export function aiProviderModels(provider: AiProvider): readonly AiModelOption[] {
   return aiProviderCatalog.find((entry) => entry.provider === provider)?.models ?? [];
+}
+
+export function aiProviderConnectionKind(provider: AiProvider): AiConnectionKind {
+  return aiProviderCatalog.find((entry) => entry.provider === provider)?.connectionKind ?? "apiKey";
+}
+
+export function aiProviderDefaultBaseUrl(provider: AiProvider): string {
+  const entry: AiProviderOption | undefined = aiProviderCatalog.find((item) => item.provider === provider);
+  return entry?.defaultBaseUrl ?? "";
 }
 
 export function aiProviderLabel(provider: AiProvider): string {

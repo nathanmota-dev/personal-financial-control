@@ -7,7 +7,8 @@ export function SettingsAiSourceNotice({ settings }: SettingsAiSourceNoticeProps
   if (!settings.source || !settings.provider) {
     return <p className="text-sm text-content-muted">A categorização por IA está desligada. Nada é enviado a nenhum provedor até você salvar uma configuração.</p>;
   }
-  const active = `${aiProviderLabel(settings.provider)} · ${settings.model}`;
+  const address = settings.connection?.kind === "local" ? ` em ${settings.connection.baseUrl}` : "";
+  const active = `${aiProviderLabel(settings.provider)} · ${settings.model}${address}`;
   if (settings.source === "env") {
     return (
       <Alert>

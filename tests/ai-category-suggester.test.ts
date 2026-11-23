@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { AiCategoryRequest, AiPromptResult } from "@/lib/interfaces/ai-categorization";
+import type { AiCategoryRequest, AiConfig, AiPromptResult } from "@/lib/interfaces/ai-categorization";
 import { buildCategoryBatches } from "@/lib/server/ai/category-prompt";
 import { AI_SUGGESTION_MIN_CONFIDENCE, createAiCategorySuggester, validateBatchResults } from "@/lib/server/ai/category-suggester";
 
-const config = { provider: "google", model: "test-model", apiKey: "test-key" } as const;
+const config: AiConfig = { provider: "google", model: "test-model", connection: { kind: "apiKey", apiKey: "test-key" } };
 
 const request: AiCategoryRequest = {
   categories: [
