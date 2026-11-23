@@ -370,7 +370,7 @@
     "id": "technical",
     "provider": "text",
     "model": "text",
-    "api_key": "text",
+    "connection": "text",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },

@@ -6,11 +6,14 @@ import { sqliteTable } from "drizzle-orm/sqlite-core";
 import { timestampColumns } from "./accounts";
 import { recordId } from "./columns";
 
-/** Single row with the AI provider chosen in Settings. It takes precedence over the AI_* environment variables. */
+/**
+ * Single row with the AI provider chosen in Settings. It takes precedence over the AI_* environment variables.
+ * `connection` is the JSON of an `AiConnection` (a key, a local address…), so a new kind needs no new column.
+ */
 export const aiSettings = sqliteTable("ai_settings", {
   id: recordId(),
   provider: encryptedText<AiProvider>("provider", "ai_settings.provider", { enum: aiProviders }).notNull(),
   model: encryptedText("model", "ai_settings.model").notNull(),
-  apiKey: encryptedText("api_key", "ai_settings.api_key").notNull(),
+  connection: encryptedText("connection", "ai_settings.connection").notNull(),
   ...timestampColumns("ai_settings"),
 }, (table) => [...encryptionChecks(table)]);

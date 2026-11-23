@@ -20,7 +20,7 @@ import { GET, HEAD, POST } from "@/app/api/ai/chat/route";
 const url = "http://localhost/api/ai/chat";
 const post = () => new Request(url, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
 
-beforeEach(() => { state.denied = null; state.config = { provider: "openai", model: "m", apiKey: "k-123456789" }; state.demo = false; });
+beforeEach(() => { state.denied = null; state.config = { provider: "openai", model: "m", connection: { kind: "apiKey", apiKey: "k-123456789" } }; state.demo = false; });
 
 describe("/api/ai/chat", () => {
   it("reports whether an AI is configured", async () => {
