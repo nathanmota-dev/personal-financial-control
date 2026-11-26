@@ -18,25 +18,25 @@
     "app": {
       "coverage": {
         "lines": {
-          "covered": 11712,
-          "total": 13052
+          "covered": 11793,
+          "total": 13071
         },
         "statements": {
-          "covered": 13429,
-          "total": 15064
+          "covered": 13517,
+          "total": 15083
         },
         "functions": {
-          "covered": 4315,
-          "total": 4955
+          "covered": 4353,
+          "total": 4963
         },
         "branches": {
-          "covered": 8609,
-          "total": 10531
+          "covered": 8682,
+          "total": 10537
         }
       },
-      "coverageFileCount": 1327,
+      "coverageFileCount": 1330,
       "duplication": {
-        "totalLines": 58950,
+        "totalLines": 59032,
         "duplicatedLines": 382,
         "fragments": 42
       },
@@ -210,7 +210,6 @@
         "components/finance/calculators/income-summary.tsx": 39,
         "components/finance/calculators/income-table.tsx": 12,
         "components/finance/calculators/pj-regime-guide.tsx": 21,
-        "components/finance/category-breakdown.tsx": 37,
         "components/finance/category-spending-charts.tsx": 8,
         "components/finance/chat/chat-composer.tsx": 44,
         "components/finance/chat/chat-context.ts": 13,
@@ -239,14 +238,14 @@
         "components/finance/credit-card-month-loading.tsx": 23,
         "components/finance/credit-card-month-strip-credit-card-month-strip-section1.tsx": 48,
         "components/finance/credit-card-month-strip.tsx": 66,
-        "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx": 82,
+        "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx": 58,
         "components/finance/credit-card-next-invoice-card.tsx": 77,
         "components/finance/credit-card-page-actions.tsx": 54,
         "components/finance/credit-card-purchase-dialog-credit-card-purchase-dialog-form1.tsx": 102,
         "components/finance/credit-card-purchase-dialog.tsx": 128,
         "components/finance/credit-card-setup-card.tsx": 16,
         "components/finance/credit-card-transaction-row.tsx": 72,
-        "components/finance/credit-card-transactions-panel-credit-card-transactions-panel-section1.tsx": 104,
+        "components/finance/credit-card-transactions-panel-credit-card-transactions-panel-section1.tsx": 106,
         "components/finance/credit-card-transactions-panel.tsx": 36,
         "components/finance/credit-card-view-credit-card-view-div1.tsx": 89,
         "components/finance/credit-card-view.tsx": 146,
@@ -280,6 +279,9 @@
         "components/finance/dashboard-portfolio.tsx": 29,
         "components/finance/database-sync-indicator.tsx": 18,
         "components/finance/database-sync-provider.tsx": 9,
+        "components/finance/day-of-month-adjustments.tsx": 25,
+        "components/finance/day-of-month-grid.tsx": 36,
+        "components/finance/day-of-month-picker-field.tsx": 53,
         "components/finance/day-view-tabs.tsx": 56,
         "components/finance/delete-category-button.tsx": 41,
         "components/finance/detail-sheet.tsx": 32,
@@ -498,19 +500,19 @@
         "components/finance/projected-balance-view-projected-balance-view-div1.tsx": 96,
         "components/finance/projected-balance-view.tsx": 49,
         "components/finance/recurring-actions.tsx": 158,
-        "components/finance/recurring-agenda.tsx": 55,
+        "components/finance/recurring-agenda.tsx": 56,
         "components/finance/recurring-auto-generator.tsx": 75,
         "components/finance/recurring-calendar-event.tsx": 80,
         "components/finance/recurring-calendar-nav.tsx": 53,
         "components/finance/recurring-calendar.tsx": 61,
-        "components/finance/recurring-card.tsx": 66,
+        "components/finance/recurring-card.tsx": 71,
         "components/finance/recurring-dialog-recurring-dialog-dialog7.tsx": 104,
         "components/finance/recurring-dialog-recurring-dialog-div1.tsx": 57,
         "components/finance/recurring-dialog-recurring-dialog-div2.tsx": 65,
         "components/finance/recurring-dialog-recurring-dialog-div3.tsx": 48,
         "components/finance/recurring-dialog-recurring-dialog-div4.tsx": 55,
         "components/finance/recurring-dialog-recurring-dialog-div5.tsx": 48,
-        "components/finance/recurring-dialog-recurring-dialog-div6.tsx": 91,
+        "components/finance/recurring-dialog-recurring-dialog-div6.tsx": 83,
         "components/finance/recurring-dialog.tsx": 82,
         "components/finance/recurring-group.tsx": 31,
         "components/finance/recurring-header-month-picker.tsx": 22,
@@ -768,6 +770,7 @@
         "lib/dashboard-housing.ts": 67,
         "lib/dashboard-investments.ts": 28,
         "lib/database-sync-context.ts": 8,
+        "lib/day-of-month.ts": 20,
         "lib/db/content-indexes.ts": 24,
         "lib/db/content-persistence.ts": 97,
         "lib/db/content-query.ts": 114,
@@ -918,6 +921,7 @@
         "lib/interfaces/database.ts": 9,
         "lib/interfaces/date-pickers.ts": 53,
         "lib/interfaces/day-detail.ts": 32,
+        "lib/interfaces/day-of-month.ts": 26,
         "lib/interfaces/design-system.ts": 78,
         "lib/interfaces/expense-groups.ts": 39,
         "lib/interfaces/finance-actions.ts": 9,
@@ -1235,7 +1239,7 @@
         "lib/server/pluggy/steps/sync-investment-positions.ts": 132,
         "lib/server/pluggy/sync-runs.ts": 55,
         "lib/server/pluggy/sync.ts": 209,
-        "lib/server/predictability.ts": 120,
+        "lib/server/predictability.ts": 121,
         "lib/server/projected-balance/accounts.ts": 135,
         "lib/server/projected-balance/commitments.ts": 141,
         "lib/server/projected-balance/filters.ts": 211,
@@ -1332,7 +1336,7 @@
         "lib/utils/component-actions/parse-transaction-form.ts": 76,
         "lib/utils/component-actions/recurring-dialog-handle-open-change.ts": 8,
         "lib/utils/component-actions/recurring-dialog-handle-type-change.ts": 16,
-        "lib/utils/component-actions/recurring-dialog-on-submit.ts": 81,
+        "lib/utils/component-actions/recurring-dialog-on-submit.ts": 89,
         "lib/utils/component-actions/recurring-dialog-reset-form-state.ts": 14,
         "lib/utils/component-actions/reserve-contribution-submit.ts": 14,
         "lib/utils/component-actions/reserve-destination-submit.ts": 14,
@@ -1348,7 +1352,6 @@
         "lib/utils/component-actions/transaction-dialog-show-error.ts": 7,
         "lib/utils/components/bank-reserve.ts": 27,
         "lib/utils/components/credit-card-month-strip.ts": 4,
-        "lib/utils/components/credit-card-next-invoice-card.ts": 2,
         "lib/utils/components/credit-card-purchase-dialog.ts": 4,
         "lib/utils/components/distribution-chart.ts": 7,
         "lib/utils/components/filters.ts": 23,
@@ -4571,27 +4574,6 @@
           "lines": 5
         },
         {
-          "file": "components/finance/category-breakdown.tsx",
-          "name": "CategoryBreakdown",
-          "startLine": 9,
-          "endLine": 37,
-          "lines": 29
-        },
-        {
-          "file": "components/finance/category-breakdown.tsx",
-          "name": "anonymous",
-          "startLine": 15,
-          "endLine": 15,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/category-breakdown.tsx",
-          "name": "anonymous",
-          "startLine": 23,
-          "endLine": 34,
-          "lines": 12
-        },
-        {
           "file": "components/finance/category-spending-charts.tsx",
           "name": "CategorySpendingCharts",
           "startLine": 6,
@@ -5203,36 +5185,22 @@
         {
           "file": "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx",
           "name": "CreditCardNextInvoiceCardDialogContent1",
-          "startLine": 16,
-          "endLine": 82,
-          "lines": 67
+          "startLine": 15,
+          "endLine": 58,
+          "lines": 44
         },
         {
           "file": "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx",
           "name": "anonymous",
-          "startLine": 44,
-          "endLine": 65,
-          "lines": 22
-        },
-        {
-          "file": "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx",
-          "name": "anonymous",
-          "startLine": 53,
-          "endLine": 53,
+          "startLine": 49,
+          "endLine": 49,
           "lines": 1
         },
         {
           "file": "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx",
           "name": "anonymous",
-          "startLine": 73,
-          "endLine": 73,
-          "lines": 1
-        },
-        {
-          "file": "components/finance/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1.tsx",
-          "name": "anonymous",
-          "startLine": 76,
-          "endLine": 76,
+          "startLine": 52,
+          "endLine": 52,
           "lines": 1
         },
         {
@@ -5365,8 +5333,8 @@
           "file": "components/finance/credit-card-transactions-panel-credit-card-transactions-panel-section1.tsx",
           "name": "CreditCardTransactionsPanelSection1",
           "startLine": 17,
-          "endLine": 104,
-          "lines": 88
+          "endLine": 106,
+          "lines": 90
         },
         {
           "file": "components/finance/credit-card-transactions-panel-credit-card-transactions-panel-section1.tsx",
@@ -6073,6 +6041,55 @@
           "name": "DatabaseSyncProvider",
           "startLine": 6,
           "endLine": 9,
+          "lines": 4
+        },
+        {
+          "file": "components/finance/day-of-month-adjustments.tsx",
+          "name": "DayOfMonthAdjustments",
+          "startLine": 6,
+          "endLine": 25,
+          "lines": 20
+        },
+        {
+          "file": "components/finance/day-of-month-adjustments.tsx",
+          "name": "anonymous",
+          "startLine": 17,
+          "endLine": 21,
+          "lines": 5
+        },
+        {
+          "file": "components/finance/day-of-month-grid.tsx",
+          "name": "DayOfMonthGrid",
+          "startLine": 9,
+          "endLine": 36,
+          "lines": 28
+        },
+        {
+          "file": "components/finance/day-of-month-grid.tsx",
+          "name": "anonymous",
+          "startLine": 12,
+          "endLine": 33,
+          "lines": 22
+        },
+        {
+          "file": "components/finance/day-of-month-grid.tsx",
+          "name": "anonymous",
+          "startLine": 21,
+          "endLine": 21,
+          "lines": 1
+        },
+        {
+          "file": "components/finance/day-of-month-picker-field.tsx",
+          "name": "DayOfMonthPickerField",
+          "startLine": 15,
+          "endLine": 53,
+          "lines": 39
+        },
+        {
+          "file": "components/finance/day-of-month-picker-field.tsx",
+          "name": "selectDay",
+          "startLine": 22,
+          "endLine": 25,
           "lines": 4
         },
         {
@@ -11349,22 +11366,22 @@
         {
           "file": "components/finance/recurring-agenda.tsx",
           "name": "RecurringAgenda",
-          "startLine": 16,
-          "endLine": 55,
+          "startLine": 17,
+          "endLine": 56,
           "lines": 40
         },
         {
           "file": "components/finance/recurring-agenda.tsx",
           "name": "anonymous",
-          "startLine": 19,
-          "endLine": 19,
+          "startLine": 20,
+          "endLine": 20,
           "lines": 1
         },
         {
           "file": "components/finance/recurring-agenda.tsx",
           "name": "anonymous",
-          "startLine": 29,
-          "endLine": 45,
+          "startLine": 30,
+          "endLine": 46,
           "lines": 17
         },
         {
@@ -11461,9 +11478,9 @@
         {
           "file": "components/finance/recurring-card.tsx",
           "name": "RecurringCard",
-          "startLine": 22,
-          "endLine": 66,
-          "lines": 45
+          "startLine": 23,
+          "endLine": 71,
+          "lines": 49
         },
         {
           "file": "components/finance/recurring-dialog-recurring-dialog-dialog7.tsx",
@@ -11539,14 +11556,14 @@
           "file": "components/finance/recurring-dialog-recurring-dialog-div6.tsx",
           "name": "RecurringDialogDiv6",
           "startLine": 14,
-          "endLine": 91,
-          "lines": 78
+          "endLine": 83,
+          "lines": 70
         },
         {
           "file": "components/finance/recurring-dialog-recurring-dialog-div6.tsx",
           "name": "anonymous",
-          "startLine": 64,
-          "endLine": 66,
+          "startLine": 56,
+          "endLine": 58,
           "lines": 3
         },
         {
@@ -20136,6 +20153,55 @@
           "name": "useDatabaseSync",
           "startLine": 8,
           "endLine": 8,
+          "lines": 1
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "anonymous",
+          "startLine": 4,
+          "endLine": 4,
+          "lines": 1
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "isValidDayOfMonth",
+          "startLine": 6,
+          "endLine": 8,
+          "lines": 3
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "effectiveDayInMonth",
+          "startLine": 11,
+          "endLine": 13,
+          "lines": 3
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "listDayOfMonthAdjustments",
+          "startLine": 16,
+          "endLine": 20,
+          "lines": 5
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "anonymous",
+          "startLine": 17,
+          "endLine": 17,
+          "lines": 1
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "anonymous",
+          "startLine": 18,
+          "endLine": 18,
+          "lines": 1
+        },
+        {
+          "file": "lib/day-of-month.ts",
+          "name": "anonymous",
+          "startLine": 19,
+          "endLine": 19,
           "lines": 1
         },
         {
@@ -32944,64 +33010,57 @@
         {
           "file": "lib/server/predictability.ts",
           "name": "findCycleAnchorDay",
-          "startLine": 23,
-          "endLine": 31,
+          "startLine": 21,
+          "endLine": 29,
           "lines": 9
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 24,
-          "endLine": 24,
+          "startLine": 22,
+          "endLine": 22,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 27,
-          "endLine": 27,
+          "startLine": 25,
+          "endLine": 25,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 28,
-          "endLine": 28,
+          "startLine": 26,
+          "endLine": 26,
           "lines": 1
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "eventAccountName",
-          "startLine": 33,
-          "endLine": 35,
+          "startLine": 31,
+          "endLine": 33,
           "lines": 3
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "toBudgetItem",
-          "startLine": 37,
-          "endLine": 46,
+          "startLine": 35,
+          "endLine": 44,
           "lines": 10
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "listPredictabilityExpenses",
-          "startLine": 49,
-          "endLine": 99,
+          "startLine": 50,
+          "endLine": 100,
           "lines": 51
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 54,
-          "endLine": 54,
-          "lines": 1
-        },
-        {
-          "file": "lib/server/predictability.ts",
-          "name": "anonymous",
-          "startLine": 73,
-          "endLine": 73,
+          "startLine": 55,
+          "endLine": 55,
           "lines": 1
         },
         {
@@ -33014,36 +33073,43 @@
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 79,
-          "endLine": 83,
+          "startLine": 75,
+          "endLine": 75,
+          "lines": 1
+        },
+        {
+          "file": "lib/server/predictability.ts",
+          "name": "anonymous",
+          "startLine": 80,
+          "endLine": 84,
           "lines": 5
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 86,
-          "endLine": 89,
+          "startLine": 87,
+          "endLine": 90,
           "lines": 4
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 91,
-          "endLine": 98,
+          "startLine": 92,
+          "endLine": 99,
           "lines": 8
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "getPredictability",
-          "startLine": 101,
-          "endLine": 120,
+          "startLine": 102,
+          "endLine": 121,
           "lines": 20
         },
         {
           "file": "lib/server/predictability.ts",
           "name": "anonymous",
-          "startLine": 117,
-          "endLine": 117,
+          "startLine": 118,
+          "endLine": 118,
           "lines": 1
         },
         {
@@ -35597,9 +35663,9 @@
         {
           "file": "lib/utils/component-actions/recurring-dialog-on-submit.ts",
           "name": "RecurringDialogOnSubmit",
-          "startLine": 15,
-          "endLine": 81,
-          "lines": 67
+          "startLine": 16,
+          "endLine": 89,
+          "lines": 74
         },
         {
           "file": "lib/utils/component-actions/recurring-dialog-reset-form-state.ts",
@@ -35712,13 +35778,6 @@
           "startLine": 25,
           "endLine": 27,
           "lines": 3
-        },
-        {
-          "file": "lib/utils/components/credit-card-next-invoice-card.ts",
-          "name": "anonymous",
-          "startLine": 2,
-          "endLine": 2,
-          "lines": 1
         },
         {
           "file": "lib/utils/components/credit-card-purchase-dialog.ts",
@@ -36082,33 +36141,33 @@
   },
   "coverage": {
     "lines": {
-      "covered": 11712,
-      "total": 13052
+      "covered": 11793,
+      "total": 13071
     },
     "statements": {
-      "covered": 13429,
-      "total": 15064
+      "covered": 13517,
+      "total": 15083
     },
     "functions": {
-      "covered": 4315,
-      "total": 4955
+      "covered": 4353,
+      "total": 4963
     },
     "branches": {
-      "covered": 8609,
-      "total": 10531
+      "covered": 8682,
+      "total": 10537
     }
   },
   "duplication": {
-    "totalLines": 58950,
+    "totalLines": 59032,
     "duplicatedLines": 382,
     "fragments": 42
   },
-  "headSha": "d958d3690095959f1a43b837eaac93b488905bc9",
-  "runId": "45195234061",
+  "headSha": "e18d2804e0bf731fa90064f0ebdcebb91576bca3",
+  "runId": "45870869545",
   "runAttempt": "1",
   "source": {
-    "commit": "d958d3690095959f1a43b837eaac93b488905bc9",
-    "runId": "45195234061",
+    "commit": "e18d2804e0bf731fa90064f0ebdcebb91576bca3",
+    "runId": "45870869545",
     "runAttempt": "1",
     "promotion": "improvements without regressions"
   }
