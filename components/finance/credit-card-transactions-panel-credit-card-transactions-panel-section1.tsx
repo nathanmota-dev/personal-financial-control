@@ -1,6 +1,6 @@
 "use client";
 
-import { CategoryBreakdown } from "@/components/finance/category-breakdown";
+import { CategorySpendingCharts } from "@/components/finance/category-spending-charts";
 import { FormSelect } from "@/components/finance/form-select";
 import { CreditCardTransactionRow } from "@/components/finance/credit-card-transaction-row";
 import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
@@ -97,7 +97,9 @@ export function CreditCardTransactionsPanelSection1({ entries, view, setView, qu
           <TransactionEmptyState query={query} />
         )
       ) : (
-        <CategoryBreakdown categoryTotals={categoryTotals} />
+        <div className="p-5 sm:p-6">
+          <CategorySpendingCharts categorySpending={categoryTotals} size="expanded" className="2xl:grid-cols-2" />
+        </div>
       )}
     </section>
   );

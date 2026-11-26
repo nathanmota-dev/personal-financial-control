@@ -1,5 +1,6 @@
 "use client";
 
+import { DayOfMonthGrid } from "@/components/finance/day-of-month-grid";
 import { Button } from "@/components/ui/button";
 import {
 DialogContent,
@@ -9,9 +10,7 @@ DialogHeader,
 DialogTitle
 } from "@/components/ui/dialog";
 import type { CreditCardNextInvoiceCardDialogContent1Props } from "@/lib/interfaces/render/credit-card-next-invoice-card-credit-card-next-invoice-card-dialog-content1";
-import { cn } from "@/lib/utils";
-import { daysOfMonth } from "@/lib/utils/components/credit-card-next-invoice-card";
-import { CalendarDays,Check } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
 export function CreditCardNextInvoiceCardDialogContent1({ selectedDay, setSelectedDay, setOpen, isSaving, saveDueDay, creditDueDay }: CreditCardNextInvoiceCardDialogContent1Props) {
   return (
@@ -40,30 +39,7 @@ export function CreditCardNextInvoiceCardDialogContent1({ selectedDay, setSelect
           </p>
         </div>
 
-        <div role="group" aria-label="Dias do mês" className="grid grid-cols-7 gap-1.5">
-          {daysOfMonth.map((day) => {
-            const isSelected = day === selectedDay;
-
-            return (
-              <button
-                key={day}
-                type="button"
-                aria-label={`Dia ${day}`}
-                aria-pressed={isSelected}
-                onClick={() => setSelectedDay(day)}
-                className={cn(
-                  "relative flex h-10 items-center justify-center rounded-xl border text-sm font-medium tabular-nums outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand/50",
-                  isSelected
-                    ? "border-brand/40 bg-brand/15 text-brand"
-                    : "border-transparent text-content hover:border-border hover:bg-card hover:text-content-strong"
-                )}
-              >
-                {day}
-                {isSelected ? <Check aria-hidden="true" className="absolute right-1 top-1 size-2.5" /> : null}
-              </button>
-            );
-          })}
-        </div>
+        <DayOfMonthGrid selectedDay={selectedDay} onSelectDay={setSelectedDay} />
 
         <p className="text-xs leading-5 text-content-subtle">
           Em meses mais curtos, o vencimento fica no último dia disponível.

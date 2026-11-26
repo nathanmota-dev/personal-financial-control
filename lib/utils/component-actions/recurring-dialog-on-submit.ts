@@ -5,6 +5,7 @@ updateRecurringTemplateAction,
 import {
 moneyInputToCents
 } from "@/lib/finance-ui";
+import { isValidDayOfMonth } from "@/lib/day-of-month";
 import { resetRecurringGeneration } from "@/lib/recurring-generation-session";
 import type { RecurringDialogOnSubmitContext } from "@/lib/interfaces/component-actions/recurring-dialog-on-submit";
 import type {
@@ -52,13 +53,20 @@ export async function RecurringDialogOnSubmit({ setFormError, template, setOpen,
       return;
     }
 
+    const dayOfMonth = Number(formData.get("dayOfMonth"));
+    if (!isValidDayOfMonth(dayOfMonth)) {
+      setFormError("Escolha um dia do mês entre 1 e 31.");
+      toast.error("Escolha um dia do mês entre 1 e 31.");
+      return;
+    }
+
     const payload = {
       accountId,
       categoryId,
       type: String(formData.get("type")) as RecurringTemplateRow["type"],
       status: String(formData.get("status")) as RecurringTemplateRow["status"],
       amountCents,
-      dayOfMonth: Number(formData.get("dayOfMonth")),
+      dayOfMonth,
       startMonth: String(formData.get("startMonth") ?? ""),
       endMonth: String(formData.get("endMonth") ?? "") || undefined,
       name,

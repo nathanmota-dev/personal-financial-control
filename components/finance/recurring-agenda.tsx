@@ -6,6 +6,7 @@ import { DashboardCardIllustration } from "@/components/finance/dashboard-card-i
 import { FinanceEmptyState } from "@/components/finance/empty-state";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import { formatBillDay } from "@/lib/dashboard-bills";
+import { effectiveDayInMonth } from "@/lib/day-of-month";
 import { formatMonthLabel, transactionTypeLabels } from "@/lib/finance-ui";
 import type { RecurringAgendaProps } from "@/lib/interfaces/recurring";
 import { buildRecurringAgenda } from "@/lib/recurring-summary";
@@ -31,7 +32,7 @@ export function RecurringAgenda({ month, templates }: RecurringAgendaProps) {
               const StatusIcon = isGenerated ? CheckCircle2 : Clock3;
               return (
                 <li key={template.id} className="flex items-center gap-3 py-3 text-[13px]">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface text-xs font-semibold text-content-strong">{formatBillDay(template.dayOfMonth)}</span>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface text-xs font-semibold text-content-strong">{formatBillDay(effectiveDayInMonth(month, template.dayOfMonth))}</span>
                   <span className="min-w-0 flex-1">
                     <span data-user-content className="block truncate text-content-strong">{template.description}</span>
                     <span className="block text-[11px] text-content-subtle">{transactionTypeLabels[template.type]}</span>
