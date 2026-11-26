@@ -5,7 +5,7 @@ import { RecurringDialogDiv2 } from "@/components/finance/recurring-dialog-recur
 import { RecurringDialogDiv3 } from "@/components/finance/recurring-dialog-recurring-dialog-div3";
 import { RecurringDialogDiv4 } from "@/components/finance/recurring-dialog-recurring-dialog-div4";
 import { RecurringDialogDiv5 } from "@/components/finance/recurring-dialog-recurring-dialog-div5";
-import { Input } from "@/components/ui/input";
+import { DayOfMonthPickerField } from "@/components/finance/day-of-month-picker-field";
 import { Label } from "@/components/ui/label";
 import { MonthPickerField } from "@/components/ui/month-picker-field";
 import type { RecurringDialogDiv6Props } from "@/lib/interfaces/render/recurring-dialog-recurring-dialog-div6";
@@ -31,21 +31,13 @@ export function RecurringDialogDiv6({ formId, selectedType, handleTypeChange, te
                 >
                   Dia do lançamento
                 </Label>
-                <Input
+                <DayOfMonthPickerField
                   id={`${formId}-day`}
                   name="dayOfMonth"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={31}
-                  required
-                  defaultValue={template?.dayOfMonth ?? 5}
-                  placeholder="Ex.: 5"
+                  defaultDay={template?.dayOfMonth ?? 5}
+                  startMonth={startMonth}
                   className={recurringFieldClassName}
                 />
-                <p className="text-xs text-content">
-                  Em meses menores, usamos o último dia disponível.
-                </p>
               </div>
 
               <div className="space-y-2">

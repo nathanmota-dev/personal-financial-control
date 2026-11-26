@@ -13,6 +13,7 @@ import {
 import { RecurringDialog } from "@/components/finance/recurring-dialog";
 import { Button } from "@/components/ui/button";
 import { formatBillDay } from "@/lib/dashboard-bills";
+import { effectiveDayInMonth } from "@/lib/day-of-month";
 import { formatMonthLabel, recurringStatusLabels } from "@/lib/finance-ui";
 import type { RecurringCardProps } from "@/lib/interfaces/recurring";
 import { cn } from "@/lib/utils";
@@ -22,15 +23,19 @@ const statusTones = { active: "success", paused: "warning", ended: "neutral" } a
 export function RecurringCard({ template, accounts, categories, month }: RecurringCardProps) {
   const { formatCurrency } = useFinancialFormatter();
   const generated = template.lastGeneratedMonth === month;
+  const day = effectiveDayInMonth(month, template.dayOfMonth);
   const inactive = template.status !== "active";
   return (
     <li
       aria-label={template.description}
       className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 py-3.5 md:grid-cols-[auto_minmax(0,2fr)_minmax(0,1.3fr)_minmax(7rem,auto)_auto] md:gap-x-4"
     >
-      <span className={cn("flex size-10 shrink-0 flex-col items-center justify-center rounded-xl bg-surface leading-none text-content-strong", inactive && "opacity-60")}>
+      <span
+        title={day === template.dayOfMonth ? undefined : `Dia ${template.dayOfMonth}, no último dia deste mês`}
+        className={cn("flex size-10 shrink-0 flex-col items-center justify-center rounded-xl bg-surface leading-none text-content-strong", inactive && "opacity-60")}
+      >
         <span className="text-[9px] font-semibold tracking-wider text-content-subtle uppercase">Dia</span>
-        <span className="mt-0.5 text-sm font-semibold tabular-nums">{formatBillDay(template.dayOfMonth)}</span>
+        <span className="mt-0.5 text-sm font-semibold tabular-nums">{formatBillDay(day)}</span>
       </span>
       <div className={cn("min-w-0", inactive && "opacity-70")}>
         <h3 data-user-content className="truncate text-[13px] font-semibold text-content-strong">{template.description}</h3>
