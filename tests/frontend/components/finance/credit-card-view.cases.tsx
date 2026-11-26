@@ -82,4 +82,16 @@ describe("credit card view states", () => {
       { scroll: false },
     );
   });
+  it("shows the invoice categories with the spending charts", async () => {
+    const { user } = renderUI(
+      <CreditCardView
+        overview={fixtures.creditCard as never}
+        categories={fixtures.categories as never}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Categoria" }));
+    expect(screen.getByRole("heading", { name: "Gastos por categoria" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Distribuição das despesas" })).toBeVisible();
+    expect(screen.getAllByText("Lazer").length).toBeGreaterThan(0);
+  });
 });
