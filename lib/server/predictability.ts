@@ -17,8 +17,6 @@ import { listCreditCardEvents } from "./projected-balance/commitments";
 import { resolveDb } from "./projected-balance/filters";
 import { listRecurringEvents } from "./projected-balance/recurring";
 
-const variableTypes = new Set<string>(["expense", "investment_contribution"]);
-
 /** The biggest active recurring income (the salary) sets the cycle's pay day. */
 export async function findCycleAnchorDay(db: AppDb, selectedAccounts: ProjectedBalanceAccountRow[]) {
   const accountIds = new Set(selectedAccounts.map((account) => account.id));
@@ -45,7 +43,10 @@ function toBudgetItem(event: ProjectionEvent): PredictabilityBudgetItem {
   };
 }
 
-/** One-off debit, Pix and cash entries; card purchases, bill payments and recurring items stay out. */
+/**
+ * One-off debit, Pix and cash expenses; card purchases, bill payments and recurring items stay out.
+ * Contributions stay out too: they move money into investments, like the one-off income they often come from.
+ */
 export async function listPredictabilityExpenses(
   db: AppDb,
   cycle: PredictabilityCycle,
@@ -78,7 +79,7 @@ export async function listPredictabilityExpenses(
     .filter(
       (row) =>
         row.status !== "cancelled" &&
-        variableTypes.has(row.type) &&
+        row.type === "expense" &&
         !row.recurringTemplateId &&
         !excludedIds.has(row.id)
     )

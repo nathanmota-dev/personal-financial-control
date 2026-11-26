@@ -88,7 +88,7 @@ describe("predictability data", () => {
     expect(august.cycle).toMatchObject({ start: "2026-08-05", end: "2026-09-04" });
   });
 
-  it("only counts one-off debit, Pix and cash entries as daily spending", async () => {
+  it("only counts one-off debit, Pix and cash expenses as daily spending", async () => {
     const { db, checking, savings, card, salary, groceries, brokerage } = await setup();
     await createRecurringTemplate(
       { accountId: checking.id, categoryId: salary.id, type: "income", amountCents: 310000, dayOfMonth: 1, startMonth: "2026-07", description: "Salário" },
@@ -129,13 +129,13 @@ describe("predictability data", () => {
     const result = await getPredictability({ today: "2026-07-02", month: "2026-07" }, db);
 
     expect(result.cycle).toMatchObject({ start: "2026-07-01", end: "2026-07-31", dayCount: 31 });
+    // A one-off contribution is an investment, not spending, even when it leaves the checking account.
     expect(result.days.flatMap((day) => day.expenses.map((expense) => expense.description))).toEqual([
       "Tênis",
       "Agendado",
-      "Aporte avulso",
     ]);
     // The old card purchase reaches the budget through its invoice, never as a daily expense.
-    expect(result.summary).toMatchObject({ creditCardCents: 9000, budgetCents: 301000, spentCents: 42000, remainingCents: 259000 });
+    expect(result.summary).toMatchObject({ creditCardCents: 9000, budgetCents: 301000, spentCents: 35000, remainingCents: 266000 });
     expect(result.days[0].allowanceCents).toBe(9710);
     expect(result.days.slice(0, 5).map((day) => day.status)).toEqual(["consumed", "consumed", "consumed", "partial", "free"]);
     expect(result.days[0].expenses[0]).toMatchObject({ accountName: "Main", categoryName: "Groceries" });
