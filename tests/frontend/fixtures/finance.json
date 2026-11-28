@@ -31440,18 +31440,6 @@
         "amountCents": 442000
       }
     ],
-    "history": [
-      {
-        "id": "94b07be4-9283-462a-81df-ca9e5c788563",
-        "snapshotDate": "2026-07-16",
-        "knownCostCents": 30000,
-        "knownValueCents": 32500,
-        "totalValueCents": 1102500,
-        "unrealizedResultCents": 2500,
-        "createdAt": "2026-10-03T18:31:45.309Z",
-        "updatedAt": "2026-10-03T18:31:45.346Z"
-      }
-    ],
     "lastUpdatedAt": "2026-10-03T18:31:45.345Z"
   },
   "composition": {

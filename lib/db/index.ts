@@ -21,6 +21,7 @@ financialGoalAllocations,
 financialGoals,
 investmentHoldings,
 investmentPortfolio,
+investmentPositionSnapshots,
 investmentPurposeAllocations,
 investmentPurposes,
 monthlyBudgets,
@@ -109,6 +110,7 @@ async function initializeDemoDatabase() {
       await transaction.insert(creditCardLimits).values(demoFixture.creditCardLimits);
       await transaction.insert(investmentPortfolio).values(demoFixture.investmentPortfolio);
       await transaction.insert(investmentHoldings).values(demoFixture.investmentHoldings);
+      await transaction.insert(investmentPositionSnapshots).values(demoFixture.investmentPositionSnapshots);
       await transaction.insert(investmentPurposes).values(demoFixture.investmentPurposes);
       await transaction
         .insert(investmentPurposeAllocations)

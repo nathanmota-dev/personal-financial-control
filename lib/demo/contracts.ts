@@ -8,6 +8,7 @@ financialGoalAllocations,
 financialGoals,
 investmentHoldings,
 investmentPortfolio,
+investmentPositionSnapshots,
 investmentPurposeAllocations,
 investmentPurposes,
 monthlyBudgets,
@@ -27,6 +28,7 @@ export type DemoFixture = {
   creditCardLimits: Array<typeof creditCardLimits.$inferInsert>;
   investmentPortfolio: Array<typeof investmentPortfolio.$inferInsert>;
   investmentHoldings: Array<typeof investmentHoldings.$inferInsert>;
+  investmentPositionSnapshots: Array<typeof investmentPositionSnapshots.$inferInsert>;
   investmentPurposes: Array<typeof investmentPurposes.$inferInsert>;
   investmentPurposeAllocations: Array<typeof investmentPurposeAllocations.$inferInsert>;
   financialGoals: Array<typeof financialGoals.$inferInsert>;

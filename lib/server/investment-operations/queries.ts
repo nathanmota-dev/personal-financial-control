@@ -3,7 +3,6 @@ fixedIncomeTerms,
 investmentAssetClasses,
 investmentHoldings,
 investmentOperations,
-investmentPortfolioSnapshots,
 investmentPositionSnapshots,
 investmentPurposeAllocations,
 investmentPurposes,
@@ -59,11 +58,10 @@ export async function getInvestmentAssetDetails(id: string, database?: Db) {
 
 export async function getInvestmentOverview(database?: Db) {
   const db = await dbOrDefault(database);
-  const [positions, reservePurpose, projection, history] = await Promise.all([
+  const [positions, reservePurpose, projection] = await Promise.all([
     listLongTermInvestmentPositions(db),
     db.query.investmentPurposes.findFirst({ where: and(eq(investmentPurposes.kind, "emergency_reserve"), eq(investmentPurposes.isArchived, false)) }),
     getInvestmentProjection(db),
-    db.query.investmentPortfolioSnapshots.findMany({ orderBy: [asc(investmentPortfolioSnapshots.snapshotDate)] }),
   ]);
   const bank = projection?.bank ?? null;
   const reserveCents = projection?.currentBalanceCents ?? 0;
@@ -76,7 +74,7 @@ export async function getInvestmentOverview(database?: Db) {
   const distribution = bank ? deductReserveFromClasses(classes, bank.reserveCents) : classes;
   // Only bank-tracked withdrawals can wait for a classification.
   const [pendingWithdrawals, reserveDestinations, stalePositions] = bank ? await Promise.all([listPendingReserveWithdrawals(db), listReserveDestinations(db), listStalePositions(db)]) : [[], [], []];
-  return { pendingWithdrawals, reserveDestinations, stalePositions, totalCents: reserveCents + portfolioCents, reserve: { amountCents: reserveCents, purposeId: reservePurpose?.id ?? null, configured: bank ? bank.configuredReserveCents !== null : Boolean(projection) }, bank, portfolioCents, knownCostCents, resultCents: knownValueCents - knownCostCents, distribution, history: history.map(serializeTimestamps), lastUpdatedAt: positions.map((row) => row.updatedAt).sort().at(-1) ?? null };
+  return { pendingWithdrawals, reserveDestinations, stalePositions, totalCents: reserveCents + portfolioCents, reserve: { amountCents: reserveCents, purposeId: reservePurpose?.id ?? null, configured: bank ? bank.configuredReserveCents !== null : Boolean(projection) }, bank, portfolioCents, knownCostCents, resultCents: knownValueCents - knownCostCents, distribution, lastUpdatedAt: positions.map((row) => row.updatedAt).sort().at(-1) ?? null };
 }
 
 export async function getEmergencyReserveComposition(database?: Db) {
