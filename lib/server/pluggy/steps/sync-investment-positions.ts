@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import type { AppDb } from "@/lib/db";
-import { investmentOperations } from "@/lib/db/schema";
+import { investmentHoldings, investmentOperations } from "@/lib/db/schema";
 import type { PluggyAttentionItem, PluggyAttentionReason, PluggyItemRecord, PluggyItemSyncStep, PluggySyncStepContext, PluggySyncStepResult } from "@/lib/interfaces/pluggy";
 import type { PluggyLocalHolding, PluggyMappedInvestment } from "@/lib/interfaces/pluggy-investments";
 import { DomainError, invariant } from "@/lib/server/errors";
@@ -15,7 +15,7 @@ import { yieldWithoutContributions } from "@/lib/reserve-destination";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { bump } from "../bank-import/scope";
 import { contributionsSinceCents } from "../investments/contributions-since";
-import { insertLinkedHolding } from "../investments/create-linked-holding";
+import { bankPurchase, insertLinkedHolding } from "../investments/create-linked-holding";
 import { linkedHoldingsByAsset, suggestHolding, uniqueMatchCodes } from "../investments/match-holdings";
 import { readRemoteInvestments } from "../investments/read-positions";
 import { mapPluggyInvestment } from "../mappers/investment";
@@ -85,9 +85,16 @@ async function linkNewPosition(scope: PositionScope, position: PluggyMappedInves
   bump(scope, "investmentsAutoLinked");
 }
 
+/** Kept for every followed position, quoted or without a value, so the contribution history can use them. */
+async function recordBankPurchase(scope: PositionScope, holding: PluggyLocalHolding, position: PluggyMappedInvestment) {
+  if (holding.principalCents === position.principalCents && holding.purchasedOn === position.purchasedOn) return;
+  await scope.context.write((db) => db.update(investmentHoldings).set(bankPurchase(position)).where(eq(investmentHoldings.id, holding.id)));
+}
+
 async function syncPosition(scope: PositionScope, position: PluggyMappedInvestment, holding: PluggyLocalHolding | undefined) {
   if (!holding) return linkNewPosition(scope, position);
   if (holding.isArchived) return bump(scope, "investmentsIgnored");
+  await recordBankPurchase(scope, holding, position);
   const valueCents = position.currentValueCents;
   if (position.withdrawn) {
     bump(scope, "investmentsWithdrawn");

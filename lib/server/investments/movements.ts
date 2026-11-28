@@ -1,5 +1,7 @@
 import type { AppDb } from "@/lib/db";
-import { transactions } from "@/lib/db/schema";
+import { investmentHoldings, transactions } from "@/lib/db/schema";
+import { buildBankContributionBackfill } from "@/lib/bank-contribution-backfill";
+import type { InvestmentContributionHistory } from "@/lib/interfaces/investments";
 import { normalizeDate } from "@/lib/server/finance";
 import { getFinanceToday } from "@/lib/server/runtime";
 import { createTransaction } from "@/lib/server/transactions";
@@ -54,42 +56,56 @@ export async function createInvestmentWithdrawal(
   );
 }
 
-export async function getInvestmentContributionHistory(database?: InvestmentDb) {
+type MonthTotals = { contributionCents: number; withdrawalCents: number };
+
+/** Active positions the bank follows, with what it reports about their purchase. */
+async function readBankPurchases(db: InvestmentDb) {
+  const holdings = await db.query.investmentHoldings.findMany({ where: eq(investmentHoldings.isArchived, false) });
+  return holdings.filter((holding) => holding.externalAssetId).map(({ principalCents, purchasedOn }) => ({ principalCents, purchasedOn }));
+}
+
+export async function getInvestmentContributionHistory(database?: InvestmentDb): Promise<InvestmentContributionHistory> {
   const db = await resolveReadDb(database);
   const asOfDate = getFinanceToday();
-  const rows = await db.query.transactions.findMany({
-    where: and(
-      inArray(transactions.type, ["investment_contribution", "investment_withdrawal"]),
-      eq(transactions.status, "posted"),
-      lte(transactions.transactionDate, asOfDate)
-    ),
-    orderBy: (table, { asc }) => [asc(table.competenceMonth), asc(table.createdAt)],
-  });
+  const [rows, purchases] = await Promise.all([
+    db.query.transactions.findMany({
+      where: and(
+        inArray(transactions.type, ["investment_contribution", "investment_withdrawal"]),
+        eq(transactions.status, "posted"),
+        lte(transactions.transactionDate, asOfDate)
+      ),
+      orderBy: (table, { asc }) => [asc(table.competenceMonth), asc(table.createdAt)],
+    }),
+    readBankPurchases(db),
+  ]);
 
-  const totalsByMonth = new Map<
-    string,
-    { contributionCents: number; withdrawalCents: number }
-  >();
+  const totalsByMonth = new Map<string, MonthTotals>();
+  const monthTotals = (month: string) => totalsByMonth.get(month) ?? { contributionCents: 0, withdrawalCents: 0 };
+  let recordedNetCents = 0;
 
   for (const row of rows) {
-    const totals = totalsByMonth.get(row.competenceMonth) ?? {
-      contributionCents: 0,
-      withdrawalCents: 0,
-    };
-
-    if (row.type === "investment_contribution") {
-      totals.contributionCents += row.amountCents;
-    } else {
-      totals.withdrawalCents += row.amountCents;
-    }
-
+    const totals = monthTotals(row.competenceMonth);
+    const contribution = row.type === "investment_contribution";
+    if (contribution) totals.contributionCents += row.amountCents;
+    else totals.withdrawalCents += row.amountCents;
+    recordedNetCents += contribution ? row.amountCents : -row.amountCents;
     totalsByMonth.set(row.competenceMonth, totals);
   }
+
+  const recordedSince = rows.map((row) => row.transactionDate).sort()[0] ?? null;
+  const filled = buildBankContributionBackfill(purchases, recordedSince, recordedNetCents);
+  for (const [month, cents] of filled?.monthlyCents ?? []) {
+    const totals = monthTotals(month);
+    totals.contributionCents += cents;
+    totalsByMonth.set(month, totals);
+  }
+  const bankBackfill = filled?.backfill ?? null;
 
   if (!totalsByMonth.size) {
     return {
       totalContributionCents: 0,
       totalWithdrawalCents: 0,
+      bankBackfill,
       points: [],
     };
   }
@@ -104,10 +120,7 @@ export async function getInvestmentContributionHistory(database?: InvestmentDb) 
 
   for (let monthIndex = firstMonthIndex; monthIndex <= lastMonthIndex; monthIndex += 1) {
     const month = indexToMonth(monthIndex);
-    const totals = totalsByMonth.get(month) ?? {
-      contributionCents: 0,
-      withdrawalCents: 0,
-    };
+    const totals = monthTotals(month);
     totalContributionCents += totals.contributionCents;
     totalWithdrawalCents += totals.withdrawalCents;
     cumulativeNetMovementCents += totals.contributionCents - totals.withdrawalCents;
@@ -122,6 +135,7 @@ export async function getInvestmentContributionHistory(database?: InvestmentDb) 
   return {
     totalContributionCents,
     totalWithdrawalCents,
+    bankBackfill,
     points,
   };
 }

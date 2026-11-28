@@ -13,6 +13,10 @@ export type PluggyMappedInvestment = PluggyInvestmentClassification & {
   /** Net of fees and taxes. Null when the bank sent no value in reais, which must never read as a zero balance. */
   currentValueCents: number | null;
   valueAsOf: string;
+  /** Principal still invested, in reais. Null when the bank does not send it. */
+  principalCents: number | null;
+  /** Day the position was bought, so positions older than the recorded movements can fill the history. */
+  purchasedOn: string | null;
   withdrawn: boolean;
   /** `isin` and `code`. They only suggest a holding, because banks can repeat them across positions. */
   matchCodes: string[];

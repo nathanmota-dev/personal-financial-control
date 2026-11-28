@@ -75,8 +75,12 @@ export const pluggyInvestmentSchema = z.looseObject({
   subtype: optionalText,
   // A malformed balance must not reject the page: the position is reported as having no value.
   balance: z.number().nullish().catch(null),
+  /** Principal still invested, after partial redemptions. */
+  amountOriginal: z.number().nullish().catch(null),
   currencyCode: optionalText,
   date: optionalText,
+  purchaseDate: optionalText,
+  issueDate: optionalText,
   issuer: optionalText,
   status: optionalText,
 });

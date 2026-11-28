@@ -47,6 +47,10 @@ export const investmentHoldings = sqliteTable(
     externalAssetId: encryptedText("external_asset_id", "investment_holdings.external_asset_id"),
     currentValueCents: encryptedInteger("current_value_cents", "investment_holdings.current_value_cents").notNull(),
     valueAsOf: encryptedText("value_as_of", "investment_holdings.value_as_of").notNull(),
+    /** Principal the bank reports as still invested. Only bank-linked positions have it. */
+    principalCents: encryptedInteger("principal_cents", "investment_holdings.principal_cents"),
+    /** Purchase date the bank reports for the position. */
+    purchasedOn: encryptedText("purchased_on", "investment_holdings.purchased_on"),
     notes: encryptedText("notes", "investment_holdings.notes"),
     isArchived: encryptedBoolean("is_archived", "investment_holdings.is_archived").notNull().$defaultFn(() => false),
     activeQuoteSymbolHash: text("active_quote_symbol_hash"),

@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { eq } from "drizzle-orm";
 
-import { investmentHoldings, investmentOperations, investmentPortfolio, pluggyItems } from "@/lib/db/schema";
+import { investmentHoldings, investmentOperations, investmentPortfolio, pluggyItems, transactions } from "@/lib/db/schema";
 import type { PluggyApi, PluggyRemoteInvestment } from "@/lib/interfaces/pluggy";
 import { createInvestmentHolding, createInvestmentPurpose, getInvestmentPortfolioDashboard, upsertInvestmentPurposeAllocation } from "@/lib/server/investment-portfolio";
 import { createInvestmentOperation, createOperationalInvestmentAsset, getEmergencyReserveComposition, getInvestmentAssetDetails, getInvestmentOverview, listLongTermInvestmentPositions } from "@/lib/server/investment-operations";
-import { configureInvestmentPortfolio, getInvestmentProjection, setBankReserveAmount } from "@/lib/server/investments";
+import { createAccount } from "@/lib/server/accounts";
+import { createCategory } from "@/lib/server/categories";
+import { configureInvestmentPortfolio, getInvestmentContributionHistory, getInvestmentProjection, setBankReserveAmount } from "@/lib/server/investments";
 import { pluggyRuntime } from "@/lib/server/pluggy/config";
 import { pluggyHttpError } from "@/lib/server/pluggy/errors";
 import { getPluggyInvestmentOverview, linkPluggyInvestment, unlinkPluggyInvestment } from "@/lib/server/pluggy/investments/links";
@@ -425,5 +427,56 @@ describe("reserve yield", () => {
     await database.db.update(investmentPortfolio).set({ reserveAmountCents: null });
     await sync();
     expect(await reserve()).toBeNull();
+  });
+});
+
+describe("contribution history from bank positions", () => {
+  const bought = (id: string, balance: number, amountOriginal: number, purchaseDate: string) => position(id, balance, { amountOriginal, purchaseDate: `${purchaseDate}T03:00:00.000Z` });
+
+  async function recorded(type: "investment_contribution" | "investment_withdrawal", amountCents: number, transactionDate: string) {
+    const account = await createAccount({ name: `Conta ${transactionDate}`, type: "checking", initialBalanceCents: 0 }, database.db);
+    const category = await createCategory({ name: `Reserva ${transactionDate}`, group: "investment" }, database.db);
+    await database.db.insert(transactions).values({ accountId: account.id, categoryId: category.id, type, status: "posted", amountCents, transactionDate, competenceMonth: transactionDate.slice(0, 7), description: "Lançado" });
+  }
+
+  it("keeps the bank's principal and purchase day on followed positions, and drops them on unlink", async () => {
+    positions.push(bought("a", 1050, 1000, "2026-01-06"));
+    const holding = await manualHolding("Local a", 100000);
+    await link("a", holding.id);
+    expect(await row(holding.id)).toMatchObject({ principalCents: 100000, purchasedOn: "2026-01-06" });
+    positions[0] = bought("a", 900, 850, "2026-01-06");
+    await sync();
+    expect(await row(holding.id)).toMatchObject({ principalCents: 85000, currentValueCents: 90000 });
+    await unlinkPluggyInvestment(holding.id, database.db);
+    expect(await row(holding.id)).toMatchObject({ principalCents: null, purchasedOn: null });
+  });
+
+  it("builds the history of a new connection from the positions alone, without yield", async () => {
+    positions.push(bought("a", 2100, 2000, "2026-01-06"), bought("b", 330, 300, "2026-03-05"));
+    await link("a", null);
+    await link("b", null);
+    const history = await getInvestmentContributionHistory(database.db);
+    expect(history).toMatchObject({ totalContributionCents: 230000, totalWithdrawalCents: 0, bankBackfill: { positionsCents: 230000, adjustmentCents: 0, recordedSince: null } });
+    expect(history.points.map((point) => [point.month, point.monthlyContributionCents, point.cumulativeNetMovementCents])).toEqual([
+      ["2026-01", 200000, 200000], ["2026-02", 0, 200000], ["2026-03", 30000, 230000], ["2026-04", 0, 230000], ["2026-05", 0, 230000], ["2026-06", 0, 230000], ["2026-07", 0, 230000],
+    ]);
+  });
+
+  it("adds only the positions older than the records, so the movement ends at the principal invested", async () => {
+    positions.push(bought("old", 900, 800, "2026-02-05"), bought("new", 520, 500, "2026-06-10"));
+    await link("old", null);
+    await link("new", null);
+    await recorded("investment_contribution", 50000, "2026-06-10");
+    await recorded("investment_withdrawal", 25000, "2026-07-01");
+    const history = await getInvestmentContributionHistory(database.db);
+    expect(history.bankBackfill).toEqual({ positionsCents: 80000, adjustmentCents: 25000, recordedSince: "2026-06-10" });
+    expect(history.points[0]).toMatchObject({ month: "2026-02", monthlyContributionCents: 105000 });
+    expect(history.points.find((point) => point.month === "2026-06")).toMatchObject({ monthlyContributionCents: 50000 });
+    expect(history.points.at(-1)?.cumulativeNetMovementCents).toBe(130000);
+  });
+
+  it("keeps the recorded history alone without bank positions", async () => {
+    await recorded("investment_contribution", 50000, "2026-06-10");
+    expect(await getInvestmentContributionHistory(database.db)).toMatchObject({ totalContributionCents: 50000, bankBackfill: null });
   });
 });

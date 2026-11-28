@@ -36,9 +36,22 @@ export type InvestmentProjection = {
   updatedAt?: string;
 };
 
+/** Bank positions bought before the first recorded movement, which fill the months the platform did not see. */
+export type BankContributionBackfill = {
+  /** Principal those positions still hold, placed in their purchase months. */
+  positionsCents: number;
+  /** Principal already redeemed from them, without a known date, placed in the first month. */
+  adjustmentCents: number;
+  /** Day of the first recorded movement. Null when nothing was recorded, so every position fills the history. */
+  recordedSince: string | null;
+};
+
+export type BankPurchase = { principalCents: number | null; purchasedOn: string | null };
+
 export type InvestmentContributionHistory = {
   totalContributionCents: number;
   totalWithdrawalCents: number;
+  bankBackfill: BankContributionBackfill | null;
   points: Array<{
     month: string;
     monthlyContributionCents: number;

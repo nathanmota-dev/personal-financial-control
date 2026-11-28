@@ -10,7 +10,7 @@ import { getFinanceToday } from "@/lib/server/runtime";
 import type { PluggyInvestmentLinkInput } from "../inputs";
 import { mapPluggyInvestment } from "../mappers/investment";
 import { askDestinationsForNewPosition } from "@/lib/server/investments/reserve-destinations";
-import { insertLinkedHolding } from "./create-linked-holding";
+import { bankPurchase, insertLinkedHolding } from "./create-linked-holding";
 import { linkedHoldingsByAsset, PLUGGY_PROVIDER, suggestHolding, uniqueMatchCodes } from "./match-holdings";
 import { readRemoteInvestments } from "./read-positions";
 
@@ -55,12 +55,12 @@ async function findRemotePosition({ itemId, externalAssetId }: PluggyInvestmentL
   return remote;
 }
 
-async function claimHolding(holdingId: string, holdings: PluggyLocalHolding[], externalAssetId: string, tx: Transaction) {
+async function claimHolding(holdingId: string, holdings: PluggyLocalHolding[], position: PluggyMappedInvestment, tx: Transaction) {
   const holding = holdings.find((row) => row.id === holdingId);
   invariant(holding && !holding.isArchived, "INVESTMENT_HOLDING_NOT_FOUND", "Ativo não encontrado.", 404);
   invariant(!holding.externalAssetId, "PLUGGY_HOLDING_ALREADY_LINKED", "Este ativo já está vinculado a outro investimento.", 409);
   await tx.update(investmentHoldings)
-    .set({ externalProvider: PLUGGY_PROVIDER, externalAssetId, updatedAt: currentTimestamp() })
+    .set({ externalProvider: PLUGGY_PROVIDER, externalAssetId: position.externalAssetId, ...bankPurchase(position), updatedAt: currentTimestamp() })
     .where(eq(investmentHoldings.id, holdingId));
 }
 
@@ -70,7 +70,7 @@ export async function linkPluggyInvestment(input: PluggyInvestmentLinkInput, db:
   await db.transaction(async (tx) => {
     const holdings = await tx.query.investmentHoldings.findMany();
     invariant(!linkedHoldingsByAsset(holdings).has(position.externalAssetId), "PLUGGY_INVESTMENT_LINK_EXISTS", "Este investimento já está vinculado.", 409);
-    if (input.holdingId) await claimHolding(input.holdingId, holdings, position.externalAssetId, tx);
+    if (input.holdingId) await claimHolding(input.holdingId, holdings, position, tx);
     else {
       await insertLinkedHolding(tx, position);
       // A new holding adds money the reserve amount did not see.
@@ -81,7 +81,7 @@ export async function linkPluggyInvestment(input: PluggyInvestmentLinkInput, db:
 
 export async function unlinkPluggyInvestment(holdingId: string, db: AppDb) {
   const updated = await db.update(investmentHoldings)
-    .set({ externalProvider: null, externalAssetId: null, updatedAt: currentTimestamp() })
+    .set({ externalProvider: null, externalAssetId: null, principalCents: null, purchasedOn: null, updatedAt: currentTimestamp() })
     .where(eq(investmentHoldings.id, holdingId))
     .returning();
   invariant(updated.length, "INVESTMENT_HOLDING_NOT_FOUND", "Ativo não encontrado.", 404);

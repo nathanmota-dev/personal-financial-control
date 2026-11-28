@@ -39,10 +39,10 @@ export function classifyPluggyInvestment(type?: string | null, subtype?: string 
   return bySubtype[subtype?.trim().toUpperCase() ?? ""] ?? byType[type?.trim().toUpperCase() ?? ""] ?? OTHER;
 }
 
-/** `balance` is net of fees and taxes. `amount` is gross and would overstate what can be withdrawn. */
-function netValueCents({ balance, currencyCode }: PluggyRemoteInvestment) {
-  if (typeof balance !== "number" || balance < 0) return null;
-  return currencyCode && currencyCode.trim().toUpperCase() !== "BRL" ? null : toAmountCents(balance);
+/** Only non-negative amounts in reais; anything else is unknown, never zero. */
+function reaisCents(value: number | null | undefined, currencyCode: string | null | undefined) {
+  if (typeof value !== "number" || value < 0) return null;
+  return currencyCode && currencyCode.trim().toUpperCase() !== "BRL" ? null : toAmountCents(value);
 }
 
 /** Pure. `today` dates a position the bank sent undated. */
@@ -51,8 +51,11 @@ export function mapPluggyInvestment(remote: PluggyRemoteInvestment, today: strin
     externalAssetId: remote.id,
     name: remote.name?.trim() || remote.code?.trim() || "Investimento",
     institutionName: remote.issuer?.trim() || null,
-    currentValueCents: netValueCents(remote),
+    // `balance` is net of fees and taxes. `amount` is gross and would overstate what can be withdrawn.
+    currentValueCents: reaisCents(remote.balance, remote.currencyCode),
     valueAsOf: utcDay(remote.date) ?? today,
+    principalCents: reaisCents(remote.amountOriginal, remote.currencyCode),
+    purchasedOn: utcDay(remote.purchaseDate) ?? utcDay(remote.issueDate),
     withdrawn: remote.status?.trim().toUpperCase() === "TOTAL_WITHDRAWAL",
     matchCodes: [remote.isin, remote.code].flatMap((value) => value?.trim() ? [value.trim()] : []),
     ...classifyPluggyInvestment(remote.type, remote.subtype),

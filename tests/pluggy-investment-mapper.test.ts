@@ -72,6 +72,13 @@ describe("Pluggy investment mapper", () => {
     expect(map({ date: "not-a-date" }).valueAsOf).toBe("2026-07-20");
   });
 
+  it("reads the principal still invested and the purchase day, falling back on the issue day", () => {
+    expect(map({ amountOriginal: 2500, purchaseDate: "2026-01-06T03:00:00.000Z", issueDate: "2026-01-02T03:00:00.000Z" })).toMatchObject({ principalCents: 250000, purchasedOn: "2026-01-06" });
+    expect(map({ purchaseDate: null, issueDate: "2026-01-02T03:00:00.000Z" }).purchasedOn).toBe("2026-01-02");
+    expect(map({ amountOriginal: null, purchaseDate: null })).toMatchObject({ principalCents: null, purchasedOn: null });
+    expect(map({ amountOriginal: 10, currencyCode: "USD" }).principalCents).toBeNull();
+  });
+
   it("falls back on the code and then a generic name", () => {
     expect(map({ name: " ", code: " ABC " }).name).toBe("ABC");
     expect(map({ name: null, code: null }).name).toBe("Investimento");

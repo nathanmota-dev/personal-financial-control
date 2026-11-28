@@ -8,6 +8,7 @@ import { DashboardCardIllustration } from "@/components/finance/dashboard-card-i
 import { formatMonthLabel } from "@/lib/finance-ui";
 import { useFinancialFormatter } from "@/components/finance/privacy/privacy-context";
 import type { InvestmentContributionChartProps } from "@/lib/interfaces/investments";
+import { bankBackfillCents, contributionHistoryDescription } from "@/lib/utils/components/investment-contribution-chart";
 
 export function InvestmentContributionChart({
   history,
@@ -21,14 +22,15 @@ export function InvestmentContributionChart({
   }));
   const latestPoint = history.points.at(-1);
   const netMovementCents = history.totalContributionCents - history.totalWithdrawalCents;
+  const fromBankCents = bankBackfillCents(history);
 
   return (
     <section className="relative flex h-full min-w-0 flex-col rounded-[20px] border border-border bg-card px-[22px] pt-5 pb-6">
       <DashboardCardIllustration src="/images/evolution-chart.webp" />
       <h2 className="text-lg font-semibold leading-[25px]">Aportes e resgates</h2>
-      <p className="mt-1 pr-16 text-xs text-content-muted">Histórico dos lançamentos realizados, sem misturar rendimento estimado</p>
+      <p className="mt-1 pr-16 text-xs text-content-muted">{contributionHistoryDescription(history)}</p>
       <dl className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-3">
-        <InvestmentHistoryMetric label="Total aportado" value={formatCurrency(history.totalContributionCents)} tone="cyan" />
+        <InvestmentHistoryMetric label="Total aportado" value={formatCurrency(history.totalContributionCents)} detail={fromBankCents ? `${formatCurrency(fromBankCents)} informados pelo banco` : undefined} tone="cyan" />
         <InvestmentHistoryMetric label="Total resgatado" value={formatCurrency(history.totalWithdrawalCents)} detail={latestPoint ? formatMonthLabel(latestPoint.month) : "Sem registros"} tone="amber" />
         <InvestmentHistoryMetric label="Movimentação líquida" value={formatCurrency(netMovementCents)} tone="sky" />
       </dl>
