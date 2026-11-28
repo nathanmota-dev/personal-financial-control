@@ -16,6 +16,7 @@ import { resolveProjectionAccounts } from "./projected-balance/accounts";
 import { listCreditCardEvents } from "./projected-balance/commitments";
 import { resolveDb } from "./projected-balance/filters";
 import { listRecurringEvents } from "./projected-balance/recurring";
+import { listSettlementTransactionIds } from "./transactions/settlement-ids";
 
 /** The biggest active recurring income (the salary) sets the cycle's pay day. */
 export async function findCycleAnchorDay(db: AppDb, selectedAccounts: ProjectedBalanceAccountRow[]) {
@@ -44,7 +45,8 @@ function toBudgetItem(event: ProjectionEvent): PredictabilityBudgetItem {
 }
 
 /**
- * One-off debit, Pix and cash expenses; card purchases, bill payments and recurring items stay out.
+ * One-off debit, Pix and cash expenses; card purchases, bill payments and recurring items stay out,
+ * including bank entries linked to a recurring rule, which the budget already counts.
  * Contributions stay out too: they move money into investments, like the one-off income they often come from.
  */
 export async function listPredictabilityExpenses(
@@ -58,7 +60,7 @@ export async function listPredictabilityExpenses(
     return [];
   }
 
-  const [rows, paymentRows, fundingRows] = await Promise.all([
+  const [rows, settlementIds, recurringLinks] = await Promise.all([
     db.query.transactions.findMany({
       where: and(
         inArray(transactions.accountId, ids),
@@ -67,12 +69,12 @@ export async function listPredictabilityExpenses(
       ),
       with: { account: true, category: true },
     }),
-    db.query.creditCardBillPayments.findMany({ columns: { transactionId: true } }),
-    db.query.transactionFundingLinks.findMany({ columns: { expenseTransactionId: true } }),
+    listSettlementTransactionIds(db),
+    db.query.recurringOccurrenceLinks.findMany({ columns: { transactionId: true, kind: true } }),
   ]);
   const excludedIds = new Set([
-    ...paymentRows.map((row) => row.transactionId),
-    ...fundingRows.map((row) => row.expenseTransactionId),
+    ...settlementIds,
+    ...recurringLinks.filter((row) => row.kind !== "dismissed" && row.transactionId).map((row) => row.transactionId as string),
   ]);
 
   return rows

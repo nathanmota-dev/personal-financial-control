@@ -13,6 +13,16 @@ const responseSchema = z.object({
   })).min(1),
 });
 
+const historySchema = z.object({
+  results: z.array(z.object({
+    historicalDataPrice: z.array(z.object({ date: z.number(), close: z.number().positive().nullable().optional() })).default([]),
+  })).min(1),
+});
+
+/** Monthly history is public market data that changes once a day, so it may be cached. */
+const HISTORY_REVALIDATE_SECONDS = 86_400;
+const HISTORY_TIMEOUT_MS = 5_000;
+
 function normalizeMarketState(value?: string): MarketQuote["marketState"] {
   const state = value?.toUpperCase();
   if (state === "REGULAR") return "regular";
@@ -51,5 +61,23 @@ export class BrapiMarketDataProvider implements MarketDataProvider {
       quotedAt,
       marketState: normalizeMarketState(quote.marketState),
     };
+  }
+
+  /** Last close of each month in the range, by `YYYY-MM`. */
+  async getMonthlyCloses(rawSymbol: string, range: string): Promise<Record<string, number>> {
+    const symbol = rawSymbol.trim().toUpperCase();
+    const response = await this.fetcher(`${this.baseUrl}/${encodeURIComponent(symbol)}?range=${encodeURIComponent(range)}&interval=1mo&token=${encodeURIComponent(this.token)}`, {
+      headers: { accept: "application/json" },
+      next: { revalidate: HISTORY_REVALIDATE_SECONDS },
+      signal: AbortSignal.timeout(HISTORY_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new DomainError("MARKET_DATA_HTTP_ERROR", `A brapi respondeu com HTTP ${response.status}.`, response.status);
+    const parsed = historySchema.safeParse(await response.json());
+    if (!parsed.success) throw new DomainError("INVALID_MARKET_DATA", "A brapi retornou um histórico inválido.");
+    const closes: Record<string, number> = {};
+    for (const row of [...parsed.data.results[0].historicalDataPrice].sort((left, right) => left.date - right.date)) {
+      if (row.close) closes[new Date(row.date * 1000).toISOString().slice(0, 7)] = row.close;
+    }
+    return closes;
   }
 }

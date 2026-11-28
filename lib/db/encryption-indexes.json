@@ -9,6 +9,9 @@
     "import_fingerprint",
     "competence_month"
   ],
+  "recurring_occurrence_links": [
+    "competence_month"
+  ],
   "credit_card_charges": [
     "import_fingerprint"
   ],

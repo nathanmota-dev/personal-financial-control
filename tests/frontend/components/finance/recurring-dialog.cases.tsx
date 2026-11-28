@@ -5,6 +5,7 @@ import { createRecurringTemplateAction } from "@/app/actions/finance";
 import { RecurringAgenda } from "@/components/finance/recurring-agenda";
 import { RecurringCard } from "@/components/finance/recurring-card";
 import { RecurringDialog } from "@/components/finance/recurring-dialog";
+import { emptyRecurringOccurrences } from "@/lib/recurring-status";
 import fixtures from "../../fixtures/finance.json";
 import { freezeFinanceDate, renderUI } from "../../helpers";
 
@@ -53,14 +54,14 @@ describe("recurring day of month", () => {
   it("shows the day a recurrence falls on in a shorter month", () => {
     renderUI(
       <ul>
-        <RecurringCard template={{ ...rent, dayOfMonth: 31 } as never} accounts={accounts} categories={categories} month="2027-02" />
+        <RecurringCard template={{ ...rent, dayOfMonth: 31 } as never} accounts={accounts} categories={categories} month="2027-02" occurrences={emptyRecurringOccurrences("2027-02")} />
       </ul>,
     );
     expect(screen.getByTitle("Dia 31, no último dia deste mês")).toHaveTextContent("28");
   });
 
   it("shows the agenda on the day each recurrence falls on", () => {
-    renderUI(<RecurringAgenda month="2026-11" templates={[{ ...rent, dayOfMonth: 31 }] as never} />);
+    renderUI(<RecurringAgenda month="2026-11" occurrences={emptyRecurringOccurrences("2026-11")} templates={[{ ...rent, dayOfMonth: 31 }] as never} />);
     expect(screen.getByText("Aluguel").closest("li")).toHaveTextContent(/^30Aluguel/);
   });
 });

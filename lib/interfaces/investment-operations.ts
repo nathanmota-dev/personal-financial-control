@@ -1,3 +1,4 @@
+import type { InvestmentHistoryWithBenchmarks } from "@/lib/interfaces/investment-history";
 
 import type {
 getInvestmentAssetDetails,
@@ -57,7 +58,7 @@ export type OperationalAssetInput = {
   notes?: string | null;
 };
 
-export type InvestmentOverviewViewProps = { overview: InvestmentOverview };
+export type InvestmentOverviewViewProps = { overview: InvestmentOverview; history?: InvestmentHistoryWithBenchmarks };
 export type OperationalPortfolioViewProps = { positions: InvestmentPosition[] };
 export type InvestmentAssetDetailViewProps = { asset: InvestmentAssetDetails };
 export type AssetFormState = { name: string; ticker: string; institutionName: string; assetClass: OperationalAssetInput["assetClass"]; instrumentType: OperationalAssetInput["instrumentType"]; valuationMode: OperationalAssetInput["valuationMode"]; quoteSymbol: string };

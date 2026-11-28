@@ -2,12 +2,12 @@ import { requirePageSession } from "@/lib/auth/server";
 import { connection } from "next/server";
 
 import { InvestmentOverviewView } from "@/components/finance/investment-overview-view";
-import { getInvestmentOverview } from "@/lib/server/investment-operations";
+import { getInvestmentHistory, getInvestmentOverview } from "@/lib/server/investment-operations";
 
 export default async function InvestmentsPage() {
   await requirePageSession();
   await connection();
 
-  const overview = await getInvestmentOverview();
-  return <InvestmentOverviewView overview={overview} />;
+  const [overview, history] = await Promise.all([getInvestmentOverview(), getInvestmentHistory()]);
+  return <InvestmentOverviewView overview={overview} history={history} />;
 }

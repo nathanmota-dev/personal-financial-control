@@ -1,3 +1,4 @@
 export { archiveOperationalInvestmentAsset,convertLegacyInvestmentAsset,createInvestmentOperation,createOperationalInvestmentAsset,deleteInvestmentOperation,registerManualInvestmentQuote,updateFixedIncomeTerms,updateInvestmentOperation,updateManualInvestmentBalance,updateOperationalInvestmentAsset } from "./investment-operations/mutations";
 export { calculateInvestmentPosition,quantityToUnits,unitsToQuantity } from "./investment-operations/position";
 export { getEmergencyReserveComposition,getInvestmentAssetDetails,getInvestmentOverview,listLongTermInvestmentPositions,refreshInvestmentQuotes } from "./investment-operations/queries";
+export { getInvestmentHistory } from "./investment-operations/history";

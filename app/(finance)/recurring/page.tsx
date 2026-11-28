@@ -5,7 +5,8 @@ import type { RecurringViewProps } from "@/lib/interfaces/recurring";
 import { listAccounts } from "@/lib/server/accounts";
 import { listCategories } from "@/lib/server/categories";
 import { getCategorySpendingReport } from "@/lib/server/dashboard";
-import { listRecurringTemplates } from "@/lib/server/recurring";
+import { listRecurringOccurrences, listRecurringTemplates } from "@/lib/server/recurring";
+import { emptyRecurringOccurrences } from "@/lib/recurring-status";
 import { getFinanceDefaultMonth } from "@/lib/server/runtime";
 
 export default async function RecurringPage({
@@ -20,17 +21,18 @@ export default async function RecurringPage({
     : getFinanceDefaultMonth();
   let data: Pick<
     RecurringViewProps,
-    "accounts" | "categories" | "categorySpending" | "templates"
+    "accounts" | "categories" | "categorySpending" | "occurrences" | "templates"
   > | undefined;
 
   try {
-    const [accounts, categories, templates, categorySpending] = await Promise.all([
+    const [accounts, categories, templates, categorySpending, occurrences] = await Promise.all([
       listAccounts(),
       listCategories(),
       listRecurringTemplates(),
       getCategorySpendingReport(month),
+      listRecurringOccurrences(month),
     ]);
-    data = { accounts, categories, templates, categorySpending };
+    data = { accounts, categories, templates, categorySpending, occurrences };
   } catch {}
 
   return (
@@ -39,6 +41,7 @@ export default async function RecurringPage({
       categories={data?.categories ?? []}
       categorySpending={data?.categorySpending ?? []}
       month={month}
+      occurrences={data?.occurrences ?? emptyRecurringOccurrences(month)}
       templates={data?.templates ?? []}
     />
   );

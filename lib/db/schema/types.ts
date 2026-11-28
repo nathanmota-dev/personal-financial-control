@@ -1,4 +1,4 @@
-import { accountTypes,allocationTypes,categoryGroups,creditCardBillPaymentKinds,creditCardBillStatuses,creditCardChargeKinds,goalCategories,goalStatuses,investmentAssetClasses,investmentInstrumentTypes,investmentReductionEventTypes,investmentReductionSourceTypes,investmentReductionStatuses,investmentWithdrawalOrigins,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
+import { accountTypes,allocationTypes,categoryGroups,creditCardBillPaymentKinds,creditCardBillStatuses,creditCardChargeKinds,goalCategories,goalStatuses,investmentAssetClasses,investmentInstrumentTypes,investmentReductionEventTypes,investmentReductionSourceTypes,investmentReductionStatuses,investmentWithdrawalOrigins,recurringOccurrenceLinkKinds,recurringStatuses,recurringTransactionTypes,transactionFundingLinkTypes,transactionStatuses,transactionTypes } from "./enums";
 
 export type AccountType = (typeof accountTypes)[number];
 
@@ -27,6 +27,8 @@ export type CreditCardBillPaymentKind = (typeof creditCardBillPaymentKinds)[numb
 export type CreditCardChargeKind = (typeof creditCardChargeKinds)[number];
 
 export type RecurringStatus = (typeof recurringStatuses)[number];
+
+export type RecurringOccurrenceLinkKind = (typeof recurringOccurrenceLinkKinds)[number];
 
 export type GoalCategory = (typeof goalCategories)[number];
 

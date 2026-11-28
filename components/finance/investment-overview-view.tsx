@@ -7,6 +7,7 @@ import { BankReserveControl } from "@/components/finance/bank-reserve-control";
 import { DashboardCardIllustration } from "@/components/finance/dashboard-card-illustration";
 import { DashboardCardsMoney } from "@/components/finance/dashboard-cards-money";
 import { InvestmentClassDistribution } from "@/components/finance/investment-class-distribution";
+import { InvestmentHistorySection } from "@/components/finance/investment-history-section";
 import { InvestmentOverviewLink } from "@/components/finance/investment-overview-link";
 import { PageHeader } from "@/components/finance/page-header";
 import { ReserveDestinationNotice } from "@/components/finance/reserve-destination-notice";
@@ -21,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 const gridClassName = "grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]";
 
-export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps) {
+export function InvestmentOverviewView({ overview, history }: InvestmentOverviewViewProps) {
   const { formatCurrency, hidden } = useFinancialFormatter();
   const reserveShare = Math.round(toPercent(overview.reserve.amountCents, overview.totalCents));
   const ResultIcon = overview.resultCents >= 0 ? TrendingUp : TrendingDown;
@@ -90,6 +91,7 @@ export function InvestmentOverviewView({ overview }: InvestmentOverviewViewProps
           illustrationSrc="/images/expenses-pie.webp"
         />
       </div>
+      {history ? <InvestmentHistorySection history={history} /> : null}
       <section aria-label="Atalhos de investimentos" className="grid gap-6 min-[100.0625rem]:gap-5 md:grid-cols-2">
         <InvestmentOverviewLink href="/reserve" illustrationSrc="/images/balance-wallet.webp" title="Reserva" detail={bank ? "Valor do banco, rentabilidade real e projeção" : overview.reserve.configured ? "Saldo estimado, aportes e projeção" : "Configure o saldo em Configurações › Investimentos"} valueCents={overview.reserve.amountCents} action="Acompanhar reserva" />
         <InvestmentOverviewLink href="/investments/portfolio" illustrationSrc="/images/reports-growth-bars.webp" title="Carteira" detail="Posições, cotações e resultado por ativo" valueCents={overview.portfolioCents} action="Ver posições" />

@@ -15,6 +15,7 @@ import * as portfolio from "@/lib/server/investment-portfolio";
 import * as projection from "@/lib/server/projected-balance";
 import * as predictability from "@/lib/server/predictability";
 import { predictabilityFixture } from "./fixtures/predictability";
+import { investmentHistoryFixture } from "./fixtures/investment-history";
 import { requirePageSession } from "@/lib/auth/server";
 import { getOnboarding } from "@/lib/server/onboarding";
 import * as actions from "@/app/actions/finance";
@@ -34,7 +35,7 @@ vi.mock("@/lib/server/accounts", () => ({ listAccounts: vi.fn() }));
 vi.mock("@/lib/server/categories", () => ({ listCategories: vi.fn() }));
 vi.mock("@/lib/server/transactions", () => ({ listTransactions: vi.fn() }));
 vi.mock("@/lib/server/transfers", () => ({ listTransfers: vi.fn() }));
-vi.mock("@/lib/server/recurring", () => ({ listRecurringTemplates: vi.fn() }));
+vi.mock("@/lib/server/recurring", () => ({ listRecurringTemplates: vi.fn(), listRecurringOccurrences: vi.fn() }));
 vi.mock("@/lib/server/dashboard", () => ({
   getDashboardData: vi.fn(),
   getMonthlyDashboard: vi.fn(),
@@ -51,6 +52,7 @@ vi.mock("@/lib/server/investments", () => ({
 vi.mock("@/lib/server/goals", () => ({ getGoalsDashboard: vi.fn() }));
 vi.mock("@/lib/server/investment-operations", () => ({
   getInvestmentOverview: vi.fn(),
+  getInvestmentHistory: vi.fn(),
   getEmergencyReserveComposition: vi.fn(),
   listLongTermInvestmentPositions: vi.fn(),
   getInvestmentAssetDetails: vi.fn(),
@@ -87,6 +89,8 @@ vi.mock("@/app/actions/finance", () => ({
   deleteRecurringTemplateAction: vi.fn(),
   generateRecurringTransactionsAction: vi.fn(),
   markRecurringExpensePaidAction: vi.fn(),
+  listRecurringLinkCandidatesAction: vi.fn(),
+  saveRecurringLinksAction: vi.fn(),
   configureInvestmentPortfolioAction: vi.fn(),
   updateInvestmentSettingsAction: vi.fn(),
   setBankReserveAmountAction: vi.fn(),
@@ -143,6 +147,9 @@ beforeEach(() => {
   vi.mocked(recurring.listRecurringTemplates)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.recurring) as never);
+  vi.mocked(recurring.listRecurringOccurrences)
+    .mockReset()
+    .mockImplementation(async (month) => ({ month, byTemplate: {}, recordedKeys: [] }));
   vi.mocked(dashboard.getDashboardData).mockReset().mockResolvedValue(structuredClone(dashboardFixture));
   vi.mocked(dashboard.getMonthlyDashboard)
     .mockReset()
@@ -183,6 +190,9 @@ beforeEach(() => {
   vi.mocked(operations.getInvestmentOverview)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.overview) as never);
+  vi.mocked(operations.getInvestmentHistory)
+    .mockReset()
+    .mockResolvedValue(structuredClone(investmentHistoryFixture));
   vi.mocked(operations.getEmergencyReserveComposition)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.composition) as never);

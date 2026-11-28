@@ -120,3 +120,23 @@ describe("brapi quote normalization", () => {
     ).rejects.toThrow();
   });
 });
+
+describe("brapi monthly history", () => {
+  it("keeps the last close of each month and skips empty closes", async () => {
+    const { api, fetcher } = provider({
+      results: [{ historicalDataPrice: [
+        { date: Date.UTC(2026, 1, 2) / 1000, close: 120 },
+        { date: Date.UTC(2026, 0, 2) / 1000, close: 100 },
+        { date: Date.UTC(2026, 0, 30) / 1000, close: 110 },
+        { date: Date.UTC(2026, 2, 2) / 1000, close: null },
+      ] }],
+    });
+    expect(await api.getMonthlyCloses(" ^bvsp ", "1y")).toEqual({ "2026-01": 110, "2026-02": 120 });
+    expect(String(fetcher.mock.calls[0][0])).toBe("https://brapi.dev/api/quote/%5EBVSP?range=1y&interval=1mo&token=token%20%26%20secret");
+  });
+
+  it("rejects HTTP errors and malformed history", async () => {
+    await expect(provider({}, 402).api.getMonthlyCloses("^BVSP", "1y")).rejects.toMatchObject({ code: "MARKET_DATA_HTTP_ERROR" });
+    await expect(provider({ results: [] }).api.getMonthlyCloses("^BVSP", "1y")).rejects.toMatchObject({ code: "INVALID_MARKET_DATA" });
+  });
+});
