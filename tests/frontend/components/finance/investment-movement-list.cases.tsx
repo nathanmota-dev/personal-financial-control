@@ -7,7 +7,7 @@ import { renderUI } from "../../helpers";
 const point = (month: string, contribution: number, withdrawal: number) => ({ month, monthlyContributionCents: contribution, monthlyWithdrawalCents: withdrawal, cumulativeNetMovementCents: 0 });
 
 it("lists the chart's months with movement, newest first, with the net of each month", () => {
-  renderUI(<InvestmentMovementList history={{ totalContributionCents: 300_000, totalWithdrawalCents: 50_000, points: [point("2026-08", 100_000, 0), point("2026-09", 0, 0), point("2026-10", 200_000, 50_000)] }} />);
+  renderUI(<InvestmentMovementList history={{ totalContributionCents: 300_000, totalWithdrawalCents: 50_000, bankBackfill: null, points: [point("2026-08", 100_000, 0), point("2026-09", 0, 0), point("2026-10", 200_000, 50_000)] }} />);
   const card = screen.getByRole("region", { name: "Aportes e resgates por mês" });
   const rows = within(card).getAllByRole("listitem");
   expect(rows).toHaveLength(2);
@@ -19,6 +19,6 @@ it("lists the chart's months with movement, newest first, with the net of each m
 });
 
 it("shows an empty state without movements", () => {
-  renderUI(<InvestmentMovementList history={{ totalContributionCents: 0, totalWithdrawalCents: 0, points: [] }} />);
+  renderUI(<InvestmentMovementList history={{ totalContributionCents: 0, totalWithdrawalCents: 0, bankBackfill: null, points: [] }} />);
   expect(screen.getByText("Nenhuma movimentação")).toBeVisible();
 });

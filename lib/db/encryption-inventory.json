@@ -148,6 +148,8 @@
     "external_asset_id": "text",
     "current_value_cents": "integer",
     "value_as_of": "text",
+    "principal_cents": "integer",
+    "purchased_on": "text",
     "notes": "text",
     "is_archived": "boolean",
     "created_at": "timestamp",

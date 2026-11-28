@@ -26543,6 +26543,7 @@
   "history": {
     "totalContributionCents": 720000,
     "totalWithdrawalCents": 80000,
+    "bankBackfill": null,
     "points": [
       {
         "month": "2026-01",
