@@ -13,6 +13,9 @@ test("consolidated investment overview links to portfolio and reserve", async ({
   await expect(
     page.getByRole("heading", { name: "Distribuição por classe" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Evolução do patrimônio", exact: true }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "Abrir carteira" }).click();
   await expect(
     page.getByRole("heading", { name: "Carteira", exact: true }),

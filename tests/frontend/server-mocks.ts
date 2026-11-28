@@ -15,6 +15,7 @@ import * as portfolio from "@/lib/server/investment-portfolio";
 import * as projection from "@/lib/server/projected-balance";
 import * as predictability from "@/lib/server/predictability";
 import { predictabilityFixture } from "./fixtures/predictability";
+import { investmentHistoryFixture } from "./fixtures/investment-history";
 import { requirePageSession } from "@/lib/auth/server";
 import { getOnboarding } from "@/lib/server/onboarding";
 import * as actions from "@/app/actions/finance";
@@ -51,6 +52,7 @@ vi.mock("@/lib/server/investments", () => ({
 vi.mock("@/lib/server/goals", () => ({ getGoalsDashboard: vi.fn() }));
 vi.mock("@/lib/server/investment-operations", () => ({
   getInvestmentOverview: vi.fn(),
+  getInvestmentHistory: vi.fn(),
   getEmergencyReserveComposition: vi.fn(),
   listLongTermInvestmentPositions: vi.fn(),
   getInvestmentAssetDetails: vi.fn(),
@@ -188,6 +190,9 @@ beforeEach(() => {
   vi.mocked(operations.getInvestmentOverview)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.overview) as never);
+  vi.mocked(operations.getInvestmentHistory)
+    .mockReset()
+    .mockResolvedValue(structuredClone(investmentHistoryFixture));
   vi.mocked(operations.getEmergencyReserveComposition)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.composition) as never);

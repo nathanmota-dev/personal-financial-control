@@ -8,6 +8,7 @@ import { financialGoalAllocations } from "./fixture-data/financial-goal-allocati
 import { financialGoals } from "./fixture-data/financial-goals";
 import { investmentHoldings } from "./fixture-data/investment-holdings";
 import { investmentPortfolio } from "./fixture-data/investment-portfolio";
+import { investmentPositionSnapshots } from "./fixture-data/investment-position-snapshots";
 import { investmentPurposeAllocations } from "./fixture-data/investment-purpose-allocations";
 import { investmentPurposes } from "./fixture-data/investment-purposes";
 import { monthlyBudgets } from "./fixture-data/monthly-budgets";
@@ -27,6 +28,7 @@ export const demoFixture: DemoFixture = {
   creditCardLimits,
   investmentPortfolio,
   investmentHoldings,
+  investmentPositionSnapshots,
   investmentPurposes,
   investmentPurposeAllocations,
   financialGoals,
