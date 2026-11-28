@@ -33,6 +33,7 @@ export function RecurringView({
   categories,
   categorySpending,
   month,
+  occurrences,
   templates,
 }: RecurringViewProps) {
   const hasSetup = accounts.length > 0 && categories.length > 0;
@@ -59,8 +60,8 @@ export function RecurringView({
       />
 
       <div className="grid gap-6 min-[100.0625rem]:gap-5 xl:grid-cols-[minmax(0,704fr)_minmax(0,390fr)]">
-        <RecurringSummary month={month} templates={templates} />
-        <RecurringAgenda month={month} templates={templates} />
+        <RecurringSummary month={month} occurrences={occurrences} templates={templates} />
+        <RecurringAgenda month={month} occurrences={occurrences} templates={templates} />
       </div>
 
       <Tabs defaultValue="recurring" className="gap-4">
@@ -71,7 +72,7 @@ export function RecurringView({
             <div className="space-y-6 min-[100.0625rem]:space-y-5">
               {groups.map((group) => {
                 const rows = templates.filter((template) => template.type === group.type).sort((left, right) => left.dayOfMonth - right.dayOfMonth);
-                return rows.length ? <RecurringGroup key={group.type} title={group.title} description={group.description} templates={rows} accounts={accounts} categories={categories} month={month} /> : null;
+                return rows.length ? <RecurringGroup key={group.type} title={group.title} description={group.description} templates={rows} accounts={accounts} categories={categories} month={month} occurrences={occurrences} /> : null;
               })}
             </div>
           ) : (
@@ -103,7 +104,7 @@ export function RecurringView({
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-0">
-          <RecurringCalendar key={month} month={month} templates={templates} />
+          <RecurringCalendar key={month} month={month} occurrences={occurrences} templates={templates} />
         </TabsContent>
       </Tabs>
     </div>

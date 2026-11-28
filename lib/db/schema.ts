@@ -6,12 +6,13 @@ export { investmentHoldings,investmentPortfolio,investmentPurposes } from "./sch
 export { fixedIncomeTerms,investmentOperations,investmentPortfolioSnapshots,investmentPositionSnapshots,investmentQuotes } from "./schema/investment-operations";
 export { investmentPurposeAllocations,investmentReductionEvents,investmentReductionSources } from "./schema/investment-reductions";
 export { accountsRelations,categoriesRelations,financialGoalsRelations,fixedIncomeTermsRelations,investmentHoldingsRelations,investmentOperationsRelations,investmentPurposeAllocationsRelations,investmentPurposesRelations,investmentQuotesRelations,transactionFundingLinksRelations,transactionsRelations } from "./schema/relations-core";
-export { creditCardBillPaymentsRelations,creditCardBillsRelations,creditCardChargesRelations,creditCardInstallmentsRelations,financialGoalAllocationsRelations,investmentReductionEventsRelations,investmentReductionSourcesRelations,recurringTemplatesRelations,transfersRelations } from "./schema/relations-finance";
+export { creditCardBillPaymentsRelations,creditCardBillsRelations,creditCardChargesRelations,creditCardInstallmentsRelations,financialGoalAllocationsRelations,investmentReductionEventsRelations,investmentReductionSourcesRelations,recurringOccurrenceLinksRelations,recurringTemplatesRelations,transfersRelations } from "./schema/relations-finance";
+export { recurringOccurrenceLinks } from "./schema/recurring-links";
 export { recurringTemplates,transactionFundingLinks,transactions,transfers } from "./schema/transactions";
-export { type AccountType,type AllocationType,type CategoryGroup,type CreditCardBillPaymentKind,type CreditCardBillStatus,type CreditCardChargeKind,type GoalCategory,type GoalStatus,type InvestmentAssetClass,type InvestmentInstrumentType,type InvestmentReductionEventType,type InvestmentReductionSourceType,type InvestmentReductionStatus,type RecurringStatus,type RecurringTransactionType,type TransactionFundingLinkType,type TransactionStatus,type TransactionType } from "./schema/types";
+export { type AccountType,type AllocationType,type CategoryGroup,type CreditCardBillPaymentKind,type CreditCardBillStatus,type CreditCardChargeKind,type GoalCategory,type GoalStatus,type InvestmentAssetClass,type InvestmentInstrumentType,type InvestmentReductionEventType,type InvestmentReductionSourceType,type InvestmentReductionStatus,type RecurringOccurrenceLinkKind,type RecurringStatus,type RecurringTransactionType,type TransactionFundingLinkType,type TransactionStatus,type TransactionType } from "./schema/types";
 export { authorizedUsers, userOnboarding } from "./user-schema";
 
 export { monthlyBudgets } from "./schema/budgets";
-export { pluggyAccountKinds, pluggyCategoryRuleDirections, pluggyLedgerOutcomes, pluggySyncRunStatuses } from "./schema/enums";
+export { pluggyAccountKinds, pluggyCategoryRuleDirections, pluggyLedgerOutcomes, pluggySyncRunStatuses, recurringOccurrenceLinkKinds } from "./schema/enums";
 export { pluggyAccountLinks, pluggyCategoryRules, pluggyCategorySuggestions, pluggyImportLedger, pluggyItems, pluggySettings, pluggySyncRuns } from "./schema/pluggy";
 export { aiSettings } from "./schema/ai";

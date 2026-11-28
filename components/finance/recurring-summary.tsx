@@ -11,10 +11,10 @@ import type { RecurringSummaryProps } from "@/lib/interfaces/recurring";
 import { summarizeRecurringMonth } from "@/lib/recurring-summary";
 import { cn } from "@/lib/utils";
 
-export function RecurringSummary({ month, templates }: RecurringSummaryProps) {
+export function RecurringSummary({ month, occurrences, templates }: RecurringSummaryProps) {
   const { formatCurrency, hidden } = useFinancialFormatter();
-  const summary = summarizeRecurringMonth(templates, month);
-  const percent = toPercent(summary.generatedExpenseCents, summary.expenseCents);
+  const summary = summarizeRecurringMonth(templates, month, occurrences);
+  const percent = toPercent(summary.recordedPlannedExpenseCents, summary.expenseCents);
   const stats = [
     { label: "Receitas fixas", value: formatCurrency(summary.incomeCents), hint: "Entradas previstas", icon: TrendingUp },
     { label: "Aportes programados", value: formatCurrency(summary.investmentCents), hint: "Investimentos automáticos", icon: ArrowUpRight },
@@ -35,7 +35,7 @@ export function RecurringSummary({ month, templates }: RecurringSummaryProps) {
         <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: hidden ? 0 : `${Math.min(percent, 100)}%` }} />
       </div>
       <p className="mt-1.5 flex justify-between gap-3 text-[11px] text-content-subtle">
-        <span>{`Lançado ${formatCurrency(summary.generatedExpenseCents)}`}</span>
+        <span>{`Lançado ${formatCurrency(summary.recordedExpenseCents)}`}</span>
         <span>{`A lançar ${formatCurrency(summary.pendingExpenseCents)}`}</span>
       </p>
       <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-5 sm:grid-cols-4">

@@ -21,6 +21,8 @@ import type {
 } from "@/lib/interfaces/pluggy";
 import { getAiConfig } from "@/lib/server/ai/config";
 import { DomainError } from "@/lib/server/errors";
+import { autoLinkRecentRecurringOccurrences } from "@/lib/server/recurring/auto-link";
+import { getFinanceToday } from "@/lib/server/runtime";
 import { pluggyRuntime } from "./config";
 import { accountCheckStep } from "./steps/account-check";
 import { syncCardLimitStep } from "./steps/card-limit";
@@ -147,6 +149,16 @@ function logAiFailure(error: unknown) {
   console.warn(`[ai] Não foi possível sugerir categorias: ${error instanceof Error ? error.name : "erro desconhecido"}.`);
 }
 
+/** Linking recurring rules to the imported entries is a convenience: a failure never changes the outcome of the sync. */
+async function linkRecurringSafely(db: AppDb) {
+  try {
+    await autoLinkRecentRecurringOccurrences(getFinanceToday(), db);
+  } catch (error) {
+    if (replicaError(error)) throw error;
+    console.warn(`[recurring] Não foi possível vincular recorrências: ${error instanceof Error ? error.name : "erro desconhecido"}.`);
+  }
+}
+
 /**
  * Optional and isolated: without a complete AI configuration nothing is loaded or sent, and a failed
  * suggestion never changes the outcome of the sync.
@@ -175,6 +187,7 @@ async function executeSteps(options: PluggySyncOptions, runId: string | null, st
     if (step.scope === "item") await runItemStep(step, items, state);
     else await runAccountStep(step, items, links, state);
   }
+  if (!dryRun) await linkRecurringSafely(options.db);
   const aiConfig = dryRun ? null : await getAiConfig(options.db);
   if (aiConfig && options.defer) options.defer(async () => { await suggestCategoriesSafely(options, aiConfig).catch(logAiFailure); });
   else if (aiConfig) addResult(state.summary, await suggestCategoriesSafely(options, aiConfig));

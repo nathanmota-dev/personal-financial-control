@@ -34,7 +34,7 @@ vi.mock("@/lib/server/accounts", () => ({ listAccounts: vi.fn() }));
 vi.mock("@/lib/server/categories", () => ({ listCategories: vi.fn() }));
 vi.mock("@/lib/server/transactions", () => ({ listTransactions: vi.fn() }));
 vi.mock("@/lib/server/transfers", () => ({ listTransfers: vi.fn() }));
-vi.mock("@/lib/server/recurring", () => ({ listRecurringTemplates: vi.fn() }));
+vi.mock("@/lib/server/recurring", () => ({ listRecurringTemplates: vi.fn(), listRecurringOccurrences: vi.fn() }));
 vi.mock("@/lib/server/dashboard", () => ({
   getDashboardData: vi.fn(),
   getMonthlyDashboard: vi.fn(),
@@ -87,6 +87,8 @@ vi.mock("@/app/actions/finance", () => ({
   deleteRecurringTemplateAction: vi.fn(),
   generateRecurringTransactionsAction: vi.fn(),
   markRecurringExpensePaidAction: vi.fn(),
+  listRecurringLinkCandidatesAction: vi.fn(),
+  saveRecurringLinksAction: vi.fn(),
   configureInvestmentPortfolioAction: vi.fn(),
   updateInvestmentSettingsAction: vi.fn(),
   setBankReserveAmountAction: vi.fn(),
@@ -143,6 +145,9 @@ beforeEach(() => {
   vi.mocked(recurring.listRecurringTemplates)
     .mockReset()
     .mockResolvedValue(structuredClone(fixtures.recurring) as never);
+  vi.mocked(recurring.listRecurringOccurrences)
+    .mockReset()
+    .mockImplementation(async (month) => ({ month, byTemplate: {}, recordedKeys: [] }));
   vi.mocked(dashboard.getDashboardData).mockReset().mockResolvedValue(structuredClone(dashboardFixture));
   vi.mocked(dashboard.getMonthlyDashboard)
     .mockReset()

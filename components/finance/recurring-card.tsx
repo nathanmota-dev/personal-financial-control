@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock3, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 import { CategoryChip } from "@/components/finance/ds/category-chip";
 import { ToneChip } from "@/components/finance/ds/tone-chip";
@@ -11,18 +11,19 @@ import {
   ResumeRecurringButton,
 } from "@/components/finance/recurring-actions";
 import { RecurringDialog } from "@/components/finance/recurring-dialog";
+import { RecurringOccurrenceStatus } from "@/components/finance/recurring-occurrence-status";
 import { Button } from "@/components/ui/button";
 import { formatBillDay } from "@/lib/dashboard-bills";
 import { effectiveDayInMonth } from "@/lib/day-of-month";
 import { formatMonthLabel, recurringStatusLabels } from "@/lib/finance-ui";
 import type { RecurringCardProps } from "@/lib/interfaces/recurring";
+import { isRecurringRecorded } from "@/lib/recurring-status";
 import { cn } from "@/lib/utils";
 
 const statusTones = { active: "success", paused: "warning", ended: "neutral" } as const;
 
-export function RecurringCard({ template, accounts, categories, month }: RecurringCardProps) {
+export function RecurringCard({ template, accounts, categories, month, occurrences }: RecurringCardProps) {
   const { formatCurrency } = useFinancialFormatter();
-  const generated = template.lastGeneratedMonth === month;
   const day = effectiveDayInMonth(month, template.dayOfMonth);
   const inactive = template.status !== "active";
   return (
@@ -43,10 +44,7 @@ export function RecurringCard({ template, accounts, categories, month }: Recurri
           <span data-user-content>{template.account?.name ?? "—"}</span> · desde {formatMonthLabel(template.startMonth)}
           {template.endMonth ? ` até ${formatMonthLabel(template.endMonth)}` : ""}
         </p>
-        <p className={cn("mt-0.5 flex items-center gap-1 text-[11px]", generated ? "text-success" : "text-content-subtle")}>
-          {generated ? <CheckCircle2 className="size-3 shrink-0" aria-hidden="true" /> : <Clock3 className="size-3 shrink-0" aria-hidden="true" />}
-          {generated ? `Lançado em ${formatMonthLabel(month)}` : `Sem lançamento em ${formatMonthLabel(month)}`}
-        </p>
+        <RecurringOccurrenceStatus template={template} month={month} isRecorded={isRecurringRecorded(occurrences, template.id, month)} occurrence={occurrences.byTemplate[template.id]} />
       </div>
       <p className={cn("text-right text-[13px] font-semibold whitespace-nowrap tabular-nums text-content-strong md:order-4", inactive && "opacity-70")}>
         {formatCurrency(template.amountCents)}

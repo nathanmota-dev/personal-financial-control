@@ -4,6 +4,8 @@ import type {
 RecurringCalendarEvent,
 RecurringTemplateRow,
 } from "@/lib/interfaces/recurring";
+import type { RecurringOccurrencesData } from "@/lib/interfaces/recurring-occurrences";
+import { isRecurringRecorded } from "@/lib/recurring-status";
 
 export function isRecurringTemplateVisibleInMonth(
   template: RecurringTemplateRow,
@@ -18,7 +20,8 @@ export function isRecurringTemplateVisibleInMonth(
 
 export function buildRecurringCalendarEvents(
   month: string,
-  templates: RecurringTemplateRow[]
+  templates: RecurringTemplateRow[],
+  occurrences: Pick<RecurringOccurrencesData, "recordedKeys">
 ): RecurringCalendarEvent[] {
   const [year, monthNumber] = month.split("-").map(Number);
   const lastDay = new Date(year, monthNumber, 0).getDate();
@@ -33,7 +36,7 @@ export function buildRecurringCalendarEvents(
       type: template.type,
       accountName: template.account?.name ?? "Conta não informada",
       categoryName: template.category?.name ?? "Sem categoria",
-      isGenerated: template.lastGeneratedMonth === month,
+      isRecorded: isRecurringRecorded(occurrences, template.id, month),
     }))
     .sort(
       (left, right) =>
