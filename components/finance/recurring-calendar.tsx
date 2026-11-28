@@ -20,6 +20,7 @@ getMonthFromDate,
 
 export function RecurringCalendar({
   month,
+  occurrences,
   templates,
 }: RecurringCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(() =>
@@ -27,7 +28,7 @@ export function RecurringCalendar({
   );
 
   const visibleMonth = getMonthFromDate(currentMonth);
-  const events = buildRecurringCalendarEvents(visibleMonth, templates);
+  const events = buildRecurringCalendarEvents(visibleMonth, templates, occurrences);
 
   return (
     <div className={`recurring-calendar ${financeMonthlyCalendarClassName}`}>

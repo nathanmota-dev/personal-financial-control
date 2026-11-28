@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { transactionFundingLinks } from "@/lib/db/schema";
+import { recurringOccurrenceLinks, transactionFundingLinks } from "@/lib/db/schema";
 import { createCreditCardCharge } from "@/lib/server/credit-card";
 import { createCreditCardBillPayment, upsertCreditCardBill } from "@/lib/server/credit-card-bills";
 import { getPredictability } from "@/lib/server/predictability";
@@ -139,6 +139,26 @@ describe("predictability data", () => {
     expect(result.days[0].allowanceCents).toBe(9710);
     expect(result.days.slice(0, 5).map((day) => day.status)).toEqual(["consumed", "consumed", "consumed", "partial", "free"]);
     expect(result.days[0].expenses[0]).toMatchObject({ accountName: "Main", categoryName: "Groceries" });
+  });
+
+  it("leaves out a bank entry linked to a recurring rule, which the budget already counts", async () => {
+    const { db, checking, housing } = await setup();
+    const rent = await createRecurringTemplate(
+      { accountId: checking.id, categoryId: housing.id, type: "expense", amountCents: 90000, dayOfMonth: 5, startMonth: "2026-07", description: "Aluguel" },
+      db
+    );
+    const entry = (description: string) =>
+      createTransaction({ accountId: checking.id, categoryId: housing.id, type: "expense", status: "posted", amountCents: 90000, transactionDate: "2026-07-05", competenceMonth: "2026-07", description }, db);
+    const linked = await entry("PIX ALUGUEL");
+    const undone = await entry("PIX OUTRO");
+    await db.insert(recurringOccurrenceLinks).values([
+      { recurringTemplateId: rent.id, competenceMonth: "2026-07", transactionId: linked.id, kind: "manual" },
+      { recurringTemplateId: rent.id, competenceMonth: "2026-07", transactionId: undone.id, kind: "dismissed" },
+    ]);
+
+    const result = await getPredictability({ today: "2026-07-02", month: "2026-07" }, db);
+
+    expect(result.days.flatMap((day) => day.expenses.map((expense) => expense.description))).toEqual(["PIX OUTRO"]);
   });
 
   it("uses the calendar month and warns when there is no recurring income", async () => {

@@ -44,6 +44,9 @@ export const creditCardChargeKinds = ["purchase", "adjustment"] as const;
 
 export const recurringStatuses = ["active", "paused", "ended"] as const;
 
+/** `dismissed` keeps an automatic link the user undid, so the matcher does not link the same pair again. */
+export const recurringOccurrenceLinkKinds = ["auto", "manual", "dismissed"] as const;
+
 export const goalCategories = [
   "housing",
   "vehicle",

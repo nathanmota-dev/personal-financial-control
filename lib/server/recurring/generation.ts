@@ -7,6 +7,7 @@ createTransaction
 } from "@/lib/server/transactions";
 import { buildDateInMonth as buildTransactionDate } from "@/lib/utils/finance-month";
 import { and,eq,gte,inArray,isNotNull,isNull,lte,or } from "drizzle-orm";
+import { autoLinkRecurringOccurrences } from "./auto-link";
 import { RecurringDb,resolveDb } from "./validation";
 
 export { buildDateInMonth as buildTransactionDate } from "@/lib/utils/finance-month";
@@ -63,6 +64,18 @@ export async function generateRecurringTransactions(month: string, database?: Ap
   const bankOwned = new Set(links.filter((link) => link.isEnabled).map((link) => link.accountId));
   const templates = candidates.filter((template) => !bankOwned.has(template.accountId));
 
+  const created = await generateMissingOccurrences(templates, competenceMonth, today, db);
+  // Rules of bank-owned accounts are paid by imported entries, linked here when the pair is unambiguous.
+  await autoLinkRecurringOccurrences([competenceMonth], db);
+  return created;
+}
+
+async function generateMissingOccurrences(
+  templates: (typeof recurringTemplates.$inferSelect)[],
+  competenceMonth: string,
+  today: string,
+  db: AppDb
+) {
   if (!templates.length) {
     return [];
   }

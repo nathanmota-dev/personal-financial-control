@@ -57,10 +57,10 @@ export function RecurringCalendarEventItem({
               <span data-user-content>{event.categoryName}</span> · {transactionTypeLabels[event.type]}
             </p>
           </div>
-          {event.isGenerated ? (
+          {event.isRecorded ? (
             <span
               className="flex size-4 shrink-0 items-center justify-center rounded-full border border-input bg-muted/30 text-content-strong"
-              title="Lançamento já gerado"
+              title="Já lançado"
             >
               <Check className="size-3" aria-hidden="true" />
             </span>

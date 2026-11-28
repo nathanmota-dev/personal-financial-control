@@ -59,7 +59,9 @@ vi.mock("@/lib/server/recurring", () => ({
   createRecurringTemplate: vi.fn(),
   deleteRecurringTemplate: vi.fn(),
   generateRecurringTransactions: vi.fn(),
+  listRecurringLinkCandidates: vi.fn(),
   pauseRecurringTemplate: vi.fn(),
+  saveRecurringLinks: vi.fn(),
   updateRecurringTemplate: vi.fn(),
 }));
 import * as service7 from "@/lib/server/credit-card";
@@ -251,6 +253,24 @@ const cases = [
     forwarded: ["2026-07"],
     wrapped: true,
     output: "result",
+  },
+  {
+    name: "listRecurringLinkCandidatesAction",
+    action: actions.listRecurringLinkCandidatesAction,
+    service: service6.listRecurringLinkCandidates,
+    args: ["record-1", "2026-07"],
+    forwarded: ["record-1", "2026-07"],
+    wrapped: true,
+    output: "result",
+  },
+  {
+    name: "saveRecurringLinksAction",
+    action: actions.saveRecurringLinksAction,
+    service: service6.saveRecurringLinks,
+    args: [payload],
+    forwarded: [payload],
+    wrapped: true,
+    output: "null",
   },
   {
     name: "configureInvestmentPortfolioAction",
@@ -502,7 +522,7 @@ describe("finance action boundary", () => {
             ? undefined
             : result;
       expect(actual).toEqual(entry.wrapped ? { ok: true, data } : data);
-      if (entry.name === "getInvestmentReductionSourcesAction")
+      if (entry.name === "getInvestmentReductionSourcesAction" || entry.name === "listRecurringLinkCandidatesAction")
         expect(revalidatePath).not.toHaveBeenCalled();
       else
         expect(

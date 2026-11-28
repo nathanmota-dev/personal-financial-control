@@ -27,14 +27,20 @@ function template(overrides: Partial<RecurringTemplateRow> = {}) {
 }
 
 describe("recurring calendar", () => {
-  it("projects active templates into their configured day and marks generated entries", () => {
-    const [event] = buildRecurringCalendarEvents("2026-07", [template()]);
+  it("projects active templates into their configured day and marks recorded entries", () => {
+    const [event] = buildRecurringCalendarEvents("2026-07", [template()], { recordedKeys: [`${baseTemplate.id}:2026-07`] });
 
     expect(event?.date.getFullYear()).toBe(2026);
     expect(event?.date.getMonth()).toBe(6);
     expect(event?.date.getDate()).toBe(12);
     expect(event?.description).toBe("Internet");
-    expect(event?.isGenerated).toBe(true);
+    expect(event?.isRecorded).toBe(true);
+  });
+
+  it("marks each month by its own occurrence, not by the last generated month", () => {
+    const occurrences = { recordedKeys: [`${baseTemplate.id}:2026-06`] };
+    expect(buildRecurringCalendarEvents("2026-06", [template()], occurrences)[0]?.isRecorded).toBe(true);
+    expect(buildRecurringCalendarEvents("2026-07", [template()], occurrences)[0]?.isRecorded).toBe(false);
   });
 
   it("filters templates by status and active interval", () => {
@@ -52,7 +58,7 @@ describe("recurring calendar", () => {
         id: "00000000-0000-0000-0000-000000000007",
         endMonth: "2026-06",
       }),
-    ]);
+    ], { recordedKeys: [] });
 
     expect(events.map((event) => event.id)).toEqual([
       "00000000-0000-0000-0000-000000000004",
@@ -69,7 +75,7 @@ describe("recurring calendar", () => {
   it("clamps day 31 to the last day of the displayed month", () => {
     const [event] = buildRecurringCalendarEvents("2026-04", [
       template({ dayOfMonth: 31, startMonth: "2026-04" }),
-    ]);
+    ], { recordedKeys: [] });
 
     expect(event?.date.getMonth()).toBe(3);
     expect(event?.date.getDate()).toBe(30);

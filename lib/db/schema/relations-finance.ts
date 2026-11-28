@@ -4,6 +4,7 @@ import { creditCardBillPayments,creditCardBills,creditCardCharges,creditCardInst
 import { financialGoalAllocations,financialGoals } from "./goals";
 import { investmentHoldings,investmentPurposes } from "./investment-assets";
 import { investmentPurposeAllocations,investmentReductionEvents,investmentReductionSources } from "./investment-reductions";
+import { recurringOccurrenceLinks } from "./recurring-links";
 import { recurringTemplates,transactions,transfers } from "./transactions";
 
 export const investmentReductionEventsRelations = relations(
@@ -78,8 +79,24 @@ export const recurringTemplatesRelations = relations(
       references: [categories.id],
     }),
     transactions: many(transactions),
+    occurrenceLinks: many(recurringOccurrenceLinks),
   })
 );
+
+export const recurringOccurrenceLinksRelations = relations(recurringOccurrenceLinks, ({ one }) => ({
+  template: one(recurringTemplates, {
+    fields: [recurringOccurrenceLinks.recurringTemplateId],
+    references: [recurringTemplates.id],
+  }),
+  transaction: one(transactions, {
+    fields: [recurringOccurrenceLinks.transactionId],
+    references: [transactions.id],
+  }),
+  charge: one(creditCardCharges, {
+    fields: [recurringOccurrenceLinks.creditCardChargeId],
+    references: [creditCardCharges.id],
+  }),
+}));
 
 export const creditCardChargesRelations = relations(creditCardCharges, ({ one, many }) => ({
   account: one(accounts, {
